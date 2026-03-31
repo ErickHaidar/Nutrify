@@ -3,9 +3,9 @@ class Endpoints {
 
   // ── Supabase ─────────────────────────────────────────────────────────────
   // TODO: ganti dengan nilai dari Supabase Dashboard → Project Settings → API
-  static const String supabaseUrl = 'https://eilxtehpxdnwfxgdgtps.supabase.co';
+  static const String supabaseUrl = 'https://goifacmbmwmbwxgyqmtk.supabase.co';
   static const String supabaseAnonKey =
-      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVpbHh0ZWhweGRud2Z4Z2RndHBzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ1MTk4NTksImV4cCI6MjA5MDA5NTg1OX0.JWFqVU9en7j9UZW5q5B2wvH-ylOxoMTVF5wVY8HTklA';
+      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdvaWZhY21ibXdtYnd4Z3lxbXRrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzI3MjcwODAsImV4cCI6MjA4ODMwMzA4MH0.-h1BL265anOF45H_LkT1mZr9_CQVS7_1EmezuHfDMLo';
 
   // ── Backend Laravel ───────────────────────────────────────────────────────
   // Android emulator  : http://10.0.2.2:8000/api

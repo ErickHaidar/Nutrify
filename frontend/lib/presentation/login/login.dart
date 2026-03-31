@@ -11,6 +11,7 @@ import 'package:boilerplate/utils/locale/app_localization.dart';
 import 'package:boilerplate/utils/routes/routes.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
+import 'package:mobx/mobx.dart' as mobx;
 import 'package:google_fonts/google_fonts.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:supabase_flutter/supabase_flutter.dart' as sb;
@@ -37,10 +38,21 @@ class _LoginScreenState extends State<LoginScreen> {
   // visibility toggles:--------------------------------------------------------
   bool _loginPasswordVisible = false;
 
+  late List<mobx.ReactionDisposer> _disposers;
+  
   @override
   void initState() {
     super.initState();
     _passwordFocusNode = FocusNode();
+
+    // Reaksi otomatis saat login/signup berhasil
+    _disposers = [
+      mobx.reaction((_) => _userStore.success, (bool success) {
+        if (success && mounted) {
+           _handleNavigation();
+        }
+      }),
+    ];
   }
 
   @override
@@ -60,13 +72,11 @@ class _LoginScreenState extends State<LoginScreen> {
         Center(child: _buildRightSide()),
         Observer(
           builder: (context) {
-            return _userStore.success
-                ? navigate(context)
-                : _showErrorMessage(
-                    _userStore.errorStore.errorMessage.isNotEmpty
-                        ? _userStore.errorStore.errorMessage
-                        : _formStore.errorStore.errorMessage,
-                  );
+            return _showErrorMessage(
+              _userStore.errorStore.errorMessage.isNotEmpty
+                  ? _userStore.errorStore.errorMessage
+                  : _formStore.errorStore.errorMessage,
+            );
           },
         ),
         Observer(
@@ -881,18 +891,15 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 
-  Widget navigate(BuildContext context) {
+  void _handleNavigation() {
     SharedPreferences.getInstance().then((prefs) {
       prefs.setBool(Preferences.is_logged_in, true);
     });
 
-    Future.delayed(Duration(milliseconds: 0), () {
-      Navigator.of(
-        context,
-      ).pushNamedAndRemoveUntil(Routes.home, (Route<dynamic> route) => false);
-    });
-
-    return Container();
+    Navigator.of(context).pushNamedAndRemoveUntil(
+      Routes.home, 
+      (Route<dynamic> route) => false
+    );
   }
 
   // General Methods:-----------------------------------------------------------
@@ -949,6 +956,10 @@ class _LoginScreenState extends State<LoginScreen> {
   // dispose:-------------------------------------------------------------------
   @override
   void dispose() {
+    // Bersihkan semua reaction agar tidak memory leak
+    for (var d in _disposers) {
+      d();
+    }
     _userEmailController.dispose();
     _passwordController.dispose();
     _passwordFocusNode.dispose();
