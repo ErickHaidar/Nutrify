@@ -1,0 +1,119 @@
+import 'package:boilerplate/core/data/network/dio/dio_client.dart';
+import 'package:boilerplate/data/network/constants/endpoints.dart';
+import 'package:boilerplate/di/service_locator.dart';
+import 'package:supabase_flutter/supabase_flutter.dart' as sb;
+
+class ApiProfileData {
+  final String name;
+  final String email;
+  final int age;
+  final int weight;
+  final int height;
+  final String gender; // 'male' | 'female'
+  final String goal; // 'cutting' | 'maintenance' | 'bulking'
+  final String
+  activityLevel; // 'sedentary'|'light'|'moderate'|'active'|'very_active'
+  final double bmi;
+  final String bmiStatus;
+  final int targetCalories;
+
+  ApiProfileData({
+    required this.name,
+    required this.email,
+    required this.age,
+    required this.weight,
+    required this.height,
+    required this.gender,
+    required this.goal,
+    required this.activityLevel,
+    required this.bmi,
+    required this.bmiStatus,
+    required this.targetCalories,
+  });
+
+  String get genderDisplay => gender == 'male' ? 'Laki-Laki' : 'Perempuan';
+}
+
+class ProfileApiService {
+  DioClient get _dio => getIt<DioClient>();
+
+  // -------------------------------------------------------------------
+  // Static in-memory cache — shared across all ProfileApiService instances.
+  // Concurrent calls are deduplicated: only 1 HTTP request is in-flight.
+  // Cache is valid for 60 s, or until invalidateCache() is called.
+  // -------------------------------------------------------------------
+  static ApiProfileData? _cache;
+  static DateTime? _cacheTime;
+  static Future<ApiProfileData?>? _ongoingFetch;
+  static const int _cacheTtlSeconds = 60;
+
+  /// Returns profile data from cache when fresh; otherwise fetches once.
+  /// Multiple simultaneous callers share the same in-flight Future.
+  Future<ApiProfileData?> getProfile({bool forceRefresh = false}) {
+    final now = DateTime.now();
+    if (!forceRefresh &&
+        _cache != null &&
+        _cacheTime != null &&
+        now.difference(_cacheTime!).inSeconds < _cacheTtlSeconds) {
+      return Future.value(_cache);
+    }
+    _ongoingFetch ??= _doFetch().whenComplete(() => _ongoingFetch = null);
+    return _ongoingFetch!;
+  }
+
+  Future<ApiProfileData?> _doFetch() async {
+    final res = await _dio.dio.get(Endpoints.profile);
+    final data = res.data as Map<String, dynamic>;
+    final profile = data['profile'] as Map<String, dynamic>?;
+    if (profile == null) {
+      _cache = null;
+      return null;
+    }
+    final email = sb.Supabase.instance.client.auth.currentUser?.email ?? '';
+    _cache = ApiProfileData(
+      name: data['user'] as String? ?? '',
+      email: email,
+      age: (profile['age'] as num?)?.toInt() ?? 0,
+      weight: (profile['weight'] as num?)?.toInt() ?? 0,
+      height: (profile['height'] as num?)?.toInt() ?? 0,
+      gender: profile['gender'] as String? ?? 'male',
+      goal: profile['goal'] as String? ?? 'maintenance',
+      activityLevel: profile['activity_level'] as String? ?? 'sedentary',
+      bmi: (data['bmi'] as num?)?.toDouble() ?? 0,
+      bmiStatus: data['bmi_status'] as String? ?? '',
+      targetCalories: (data['target_calories'] as num?)?.toInt() ?? 0,
+    );
+    _cacheTime = DateTime.now();
+    return _cache;
+  }
+
+  /// Clears cache so the next getProfile() fetches fresh data from the API.
+  static void invalidateCache() {
+    _cache = null;
+    _cacheTime = null;
+    _ongoingFetch = null;
+  }
+
+  Future<void> saveProfile({
+    required int age,
+    required int weight,
+    required int height,
+    required String gender,
+    required String goal,
+    required String activityLevel,
+  }) async {
+    await _dio.dio.post(
+      Endpoints.storeProfile,
+      data: {
+        'age': age,
+        'weight': weight,
+        'height': height,
+        'gender': gender,
+        'goal': goal,
+        'activity_level': activityLevel,
+      },
+    );
+    // Invalidate so next read reflects the saved changes.
+    invalidateCache();
+  }
+}

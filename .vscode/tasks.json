@@ -1,0 +1,27 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Run Ngrok",
+      "type": "shell",
+      "command": "ngrok http --domain=tobie-unpensioning-melia.ngrok-free.dev 8000",
+      "options": {
+        "cwd": "C:\\Users\\Erick\\Music\\nutrify-sprint1-apps\\backend"
+      },
+      "runOptions": {
+        "runOn": "folderOpen"
+      }
+    },
+    {
+      "label": "PHP Artisan Serve",
+      "type": "shell",
+      "command": "php artisan serve --port=8000",
+      "options": {
+        "cwd": "C:\\Users\\Erick\\Music\\nutrify-sprint1-apps\\backend"
+      },
+      "runOptions": {
+        "runOn": "folderOpen"
+      }
+    }
+  ]
+}

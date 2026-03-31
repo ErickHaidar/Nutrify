@@ -1,0 +1,20 @@
+,,,
+ID,Role,Backlog Item,Details
+1,UI/UX," Merancang user flow, wireframe, dan UI page Splashscreen, Onboarding, Login, Register",User flow: Start App -> Splash -> Onboarding (Skip/Next) -> Login/Register. Wireframe & UI design sesuai brand guideline.
+2,QA,Wawancara/Interview (User Research),Mencari 20+ responden terkait kebiasaan pencatatan kalori & target body goals. Fokus pada pain points dan feature set yang dibutuhka
+3,Frontend," Slicing page Splashscreen, Onboarding, Login, Register","Implementasi desain UI/UX untuk halaman autentikasi (Splash, Onboarding, Login, Register) menggunakan framework/library yang dipilih."
+4,Backend," Membuat Schema Table untuk riwayat makan berdasarkan waktu (Pagi, Siang, Malam, Cemilan)","Skema database untuk menampung Food Tracking per hari dengan kolom waktu makan (Breakfast, Lunch, Dinner, Snack). Foreign key ke User & Food."
+5,Backend," Setup Authentication (Login & Register dengan nama, email, password)",Implementasi logic register & login dengan hashing password (misal: bcrypt) dan token generation (misal: JWT).
+6,UI/UX," Merancang UI/UX page Setup Profile & Target (Cutting, Maintenance, Bulking)","Desain UI untuk input data profil (usia, BB, TB, gender, aktivitas) dan pemilihan target (Cutting, Maintenance, Bulking) serta perhitungan BMI/TDEE."
+7,Backend," Membuat Schema Database (User, Profile, Food Dataset, Tracking)","Perancangan ERD dan implementasi skema database utama: User, Profile (terkait BB/TB/Target), Food Dataset (data kalori), dan Tracking (riwayat makan)."
+8,Backend," Setup & Integrasi Dataset Kalori Makanan (Kalori, Protein, Karbohidrat, Gula)","Mengumpulkan dan mengimpor dataset makanan, kalori, dan makronutrisi (Protein, Karbo, Lemak) ke database. Membuat API untuk search data makanan."
+9,UI/UX, Merancang UI/UX page Home / Dashboard (Menampilkan akumulasi total kalori & makro vs target),"Desain dashboard yang menampilkan visualisasi target kalori harian, progress vs target, dan ringkasan makronutrisi."
+10,Frontend, Slicing page Home / Dashboard,"Implementasi desain UI/UX Dashboard (Card, Chart, Progress Bar) menggunakan data dummy sebelum integrasi API."
+11,QA," Testing Sprint 1 (Auth, Profile, Manual Tracking, Dashboard)","Membuat test case & melakukan pengujian fungsionalitas untuk Login, Register, Setup Profile, Input Kalori Manual, dan tampilan Dashboard."
+12,Backend, CRUD pencatatan kalori harian manual,"Membuat API untuk Create, Read, Update, Delete entri makanan manual (nama makanan, kalori, makro) ke tabel Tracking."
+13,Backend, Membuat bisnis logic perhitungan BMI dan TDEE berdasarkan Usia & Aktivitas,Implementasi formula Harris-Benedict/Mifflin-St Jeor untuk menghitung BMR dan TDEE berdasarkan data profil user.
+14,Backend, Membuat API/Logic kalkulasi akumulasi kalori & makronutrisi harian,"Membuat API yang menghitung total kalori, protein, karbohidrat, dan lemak yang sudah dikonsumsi user pada hari tertentu."
+15,Frontend, Slicing Bottom Navigation Bar & Komponen Reusable,"Membuat komponen UI yang dapat digunakan kembali (Button, Input Field, Card) dan implementasi Bottom Nav Bar (Home, Tracking, Profile)."
+16,Frontend, Integrasi API ke Dashboard Home agar angka total kalori & makro tampil real-time,Menghubungkan tampilan Dashboard dengan API akumulasi kalori harian dan API data Target Profile.
+17,UI/UX,UI/UX riwayat tracking kalori (tanggal harian) ,Desain tampilan riwayat tracking yang memungkinkan user melihat total kalori dan detail makanan yang dikonsumsi per hari.
+18,UI/UX," UI/UX untuk riwayat makan berdasarkan waktu (Pagi, Siang, Malam, Cemilan)","Desain tampilan di dalam riwayat tracking yang mengelompokkan makanan berdasarkan waktu makan (Breakfast, Lunch, Dinner, Snack)."
