@@ -118,15 +118,14 @@ flutter doctor
 ### Step 1 — Clone Repository
 
 ```bash
-git clone https://github.com/prodhokter/nutrify.git nutrify-sprint1-apps
+git clone https://github.com/ErickHaidar/Nutrify.git nutrify-sprint1-apps
 cd nutrify-sprint1-apps
-git checkout sprint1-apps
 ```
 
 Verifikasi:
 ```bash
 git branch
-# Output: * sprint1-apps
+# Output: * main
 ```
 
 ---
