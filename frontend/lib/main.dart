@@ -7,9 +7,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await dotenv.load(fileName: ".env");
   await initializeDateFormatting('id_ID', null);
   await setPreferredOrientations();
 

@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 import 'package:nutrify/data/sharedpref/shared_preference_helper.dart';
 import 'package:nutrify/domain/entity/user/user.dart';
@@ -56,7 +57,7 @@ class UserRepositoryImpl extends UserRepository {
     // 1. Inisialisasi Google Sign In
     // PENTING: Dapatkan Client ID Web dari Google Cloud Console
     // Ikuti panduan di google_auth_keystore_guide.md
-    const webClientId = 'MASUKKAN_WEB_CLIENT_ID_ANDA_DI_SINI'; 
+    final webClientId = dotenv.env['GOOGLE_WEB_CLIENT_ID'] ?? ''; 
     
     final GoogleSignIn googleSignIn = GoogleSignIn(
       serverClientId: webClientId,

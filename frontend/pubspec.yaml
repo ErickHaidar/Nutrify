@@ -65,6 +65,7 @@ dependencies:
   fluid_bottom_nav_bar: ^1.4.0
   image_picker: ^1.2.1
   supabase_flutter: ^2.9.0
+  flutter_dotenv: ^6.0.0
   # Y
   # z
 
@@ -90,6 +91,7 @@ flutter_icons:
 flutter:
   uses-material-design: true
   assets:
+    - .env
     - assets/images/
     - assets/icons/
     - assets/lang/
