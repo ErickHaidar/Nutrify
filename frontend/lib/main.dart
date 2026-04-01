@@ -12,9 +12,13 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 Future<void> main() async {
   try {
     WidgetsFlutterBinding.ensureInitialized();
-    await dotenv.load(fileName: ".env");
-    await initializeDateFormatting('id_ID', null);
-    await setPreferredOrientations();
+    
+    // Parallelize independent initializations
+    await Future.wait([
+      dotenv.load(fileName: ".env"),
+      initializeDateFormatting('id_ID', null),
+      setPreferredOrientations(),
+    ]);
 
     await Supabase.initialize(
       url: Endpoints.supabaseUrl,

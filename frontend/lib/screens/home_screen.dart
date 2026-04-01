@@ -19,6 +19,7 @@ class HomeScreenState extends State<HomeScreen> {
   bool _isLoadingData = false;
   final FoodLogApiService _foodLogApi = FoodLogApiService();
   final ProfileApiService _profileApi = ProfileApiService();
+  ApiProfileData? _profile;
   double totalProtein = 0;
   double totalCarbs = 0;
   double totalFat = 0;
@@ -48,6 +49,7 @@ class HomeScreenState extends State<HomeScreen> {
           totalProtein = summary.totals.protein;
           totalCarbs = summary.totals.carbohydrates;
           totalFat = summary.totals.fat;
+          _profile = profile;
           targetCalories = (summary.targetCalories > 0)
               ? summary.targetCalories
               : (profile?.targetCalories ?? 0);
@@ -64,6 +66,89 @@ class HomeScreenState extends State<HomeScreen> {
     } finally {
       _isLoadingData = false;
     }
+  }
+
+  Widget _buildSetupProfileBanner() {
+    return Container(
+      width: double.infinity,
+      margin: const EdgeInsets.only(bottom: 20),
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        gradient: const LinearGradient(
+          colors: [Color(0xFF2D2A4A), Color(0xFF433D67)],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
+        borderRadius: BorderRadius.circular(25),
+        border: Border.all(color: const Color(0xFFFFCC80).withOpacity(0.5), width: 1.5),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.3),
+            blurRadius: 15,
+            offset: const Offset(0, 8),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(10),
+                decoration: BoxDecoration(
+                  color: const Color(0xFFFFCC80).withOpacity(0.1),
+                  shape: BoxShape.circle,
+                ),
+                child: const Icon(Icons.auto_awesome, color: Color(0xFFFFCC80), size: 24),
+              ),
+              const SizedBox(width: 15),
+              const Expanded(
+                child: Text(
+                  'Halo! Perjalanan sehatmu baru dimulai.',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 15),
+          const Text(
+            'Lengkapi data profilmu sekarang untuk mendapatkan target nutrisi yang presisi dan personal.',
+            style: TextStyle(color: Colors.white70, fontSize: 13, height: 1.4),
+          ),
+          const SizedBox(height: 20),
+          SizedBox(
+            width: double.infinity,
+            child: ElevatedButton(
+              onPressed: () async {
+                final result = await Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const BodyDataGoalsScreen()),
+                );
+                if (result == true) {
+                  loadDailyData();
+                }
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: const Color(0xFFFFCC80),
+                foregroundColor: const Color(0xFF2D2A4A),
+                padding: const EdgeInsets.symmetric(vertical: 12),
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+                elevation: 0,
+              ),
+              child: const Text(
+                'Lengkapi Profil Sekarang',
+                style: TextStyle(fontWeight: FontWeight.bold),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
   }
 
   static String formatCalories(int calories) {
@@ -166,6 +251,9 @@ class HomeScreenState extends State<HomeScreen> {
                   ],
                 ),
                 const SizedBox(height: 25),
+
+                // Suggestion for new users
+                if (_profile == null) _buildSetupProfileBanner(),
   
                 // Banner Utama (Tracking Kalori)
                 Container(

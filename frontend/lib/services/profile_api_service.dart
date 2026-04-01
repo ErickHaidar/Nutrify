@@ -62,29 +62,37 @@ class ProfileApiService {
   }
 
   Future<ApiProfileData?> _doFetch() async {
-    final res = await _dio.dio.get(Endpoints.profile);
-    final data = res.data as Map<String, dynamic>;
-    final profile = data['profile'] as Map<String, dynamic>?;
-    if (profile == null) {
+    try {
+      final res = await _dio.dio.get(Endpoints.profile);
+      final data = res.data as Map<String, dynamic>;
+      final profile = data['profile'] as Map<String, dynamic>?;
+      if (profile == null) {
+        _cache = null;
+        return null;
+      }
+      final email = sb.Supabase.instance.client.auth.currentUser?.email ?? '';
+      _cache = ApiProfileData(
+        name: data['user'] as String? ?? '',
+        email: email,
+        age: (profile['age'] as num?)?.toInt() ?? 0,
+        weight: (profile['weight'] as num?)?.toInt() ?? 0,
+        height: (profile['height'] as num?)?.toInt() ?? 0,
+        gender: profile['gender'] as String? ?? 'male',
+        goal: profile['goal'] as String? ?? 'maintenance',
+        activityLevel: profile['activity_level'] as String? ?? 'sedentary',
+        bmi: (data['bmi'] as num?)?.toDouble() ?? 0,
+        bmiStatus: data['bmi_status'] as String? ?? '',
+        targetCalories: (data['target_calories'] as num?)?.toInt() ?? 0,
+      );
+      _cacheTime = DateTime.now();
+      return _cache;
+    } on Exception catch (e) {
+      // In Dio, status 404 will throw a DioException.
+      // We return null instead of throwing, signifying "no profile found".
       _cache = null;
+      _cacheTime = null;
       return null;
     }
-    final email = sb.Supabase.instance.client.auth.currentUser?.email ?? '';
-    _cache = ApiProfileData(
-      name: data['user'] as String? ?? '',
-      email: email,
-      age: (profile['age'] as num?)?.toInt() ?? 0,
-      weight: (profile['weight'] as num?)?.toInt() ?? 0,
-      height: (profile['height'] as num?)?.toInt() ?? 0,
-      gender: profile['gender'] as String? ?? 'male',
-      goal: profile['goal'] as String? ?? 'maintenance',
-      activityLevel: profile['activity_level'] as String? ?? 'sedentary',
-      bmi: (data['bmi'] as num?)?.toDouble() ?? 0,
-      bmiStatus: data['bmi_status'] as String? ?? '',
-      targetCalories: (data['target_calories'] as num?)?.toInt() ?? 0,
-    );
-    _cacheTime = DateTime.now();
-    return _cache;
   }
 
   /// Clears cache so the next getProfile() fetches fresh data from the API.
