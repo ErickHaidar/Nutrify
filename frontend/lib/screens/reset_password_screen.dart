@@ -1,6 +1,6 @@
 import 'package:another_flushbar/flushbar_helper.dart';
-import 'package:boilerplate/constants/colors.dart';
-import 'package:boilerplate/utils/routes/routes.dart';
+import 'package:nutrify/constants/colors.dart';
+import 'package:nutrify/utils/routes/routes.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';

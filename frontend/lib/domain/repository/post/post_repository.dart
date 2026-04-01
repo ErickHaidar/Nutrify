@@ -1,7 +1,7 @@
 import 'dart:async';
 
-import 'package:boilerplate/domain/entity/post/post.dart';
-import 'package:boilerplate/domain/entity/post/post_list.dart';
+import 'package:nutrify/domain/entity/post/post.dart';
+import 'package:nutrify/domain/entity/post/post_list.dart';
 
 abstract class PostRepository {
   Future<PostList> getPosts();

@@ -1,10 +1,10 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:boilerplate/constants/colors.dart';
-import 'package:boilerplate/services/food_api_service.dart';
-import 'package:boilerplate/services/food_log_api_service.dart';
-import 'package:boilerplate/utils/meal_type_mapper.dart';
+import 'package:nutrify/constants/colors.dart';
+import 'package:nutrify/services/food_api_service.dart';
+import 'package:nutrify/services/food_log_api_service.dart';
+import 'package:nutrify/utils/meal_type_mapper.dart';
 import 'food_detail_screen.dart';
 
 class AddMealScreen extends StatefulWidget {

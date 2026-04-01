@@ -158,6 +158,16 @@ mixin _$UserStore on _UserStore, Store {
     return _$loginAsyncAction.run(() => super.login(email, password));
   }
 
+  late final _$signInWithGoogleAsyncAction = AsyncAction(
+    '_UserStore.signInWithGoogle',
+    context: context,
+  );
+
+  @override
+  Future<void> signInWithGoogle() {
+    return _$signInWithGoogleAsyncAction.run(() => super.signInWithGoogle());
+  }
+
   late final _$registerAsyncAction = AsyncAction(
     '_UserStore.register',
     context: context,

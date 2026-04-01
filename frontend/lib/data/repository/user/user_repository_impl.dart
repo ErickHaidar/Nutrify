@@ -1,9 +1,10 @@
 import 'dart:async';
+import 'package:google_sign_in/google_sign_in.dart';
 
-import 'package:boilerplate/data/sharedpref/shared_preference_helper.dart';
-import 'package:boilerplate/domain/entity/user/user.dart';
-import 'package:boilerplate/domain/repository/user/user_repository.dart';
-import 'package:boilerplate/domain/usecase/user/login_usecase.dart';
+import 'package:nutrify/data/sharedpref/shared_preference_helper.dart';
+import 'package:nutrify/domain/entity/user/user.dart';
+import 'package:nutrify/domain/repository/user/user_repository.dart';
+import 'package:nutrify/domain/usecase/user/login_usecase.dart';
 import 'package:supabase_flutter/supabase_flutter.dart' as sb;
 
 class UserRepositoryImpl extends UserRepository {
@@ -48,6 +49,39 @@ class UserRepositoryImpl extends UserRepository {
       email,
       redirectTo: 'nutrify://reset-password-callback',
     );
+  }
+
+  @override
+  Future<void> signInWithGoogle() async {
+    // 1. Inisialisasi Google Sign In
+    // PENTING: Dapatkan Client ID Web dari Google Cloud Console
+    // Ikuti panduan di google_auth_keystore_guide.md
+    const webClientId = 'MASUKKAN_WEB_CLIENT_ID_ANDA_DI_SINI'; 
+    
+    final GoogleSignIn googleSignIn = GoogleSignIn(
+      serverClientId: webClientId,
+    );
+    final googleUser = await googleSignIn.signIn();
+    final googleAuth = await googleUser?.authentication;
+    final accessToken = googleAuth?.accessToken;
+    final idToken = googleAuth?.idToken;
+
+    if (accessToken == null || idToken == null) {
+      throw Exception('Google Sign In gagal: token tidak tersedia');
+    }
+
+    // 2. Sign in ke Supabase dengan token Google
+    final response = await sb.Supabase.instance.client.auth.signInWithIdToken(
+      provider: sb.OAuthProvider.google,
+      idToken: idToken,
+      accessToken: accessToken,
+    );
+
+    final jwt = response.session?.accessToken;
+    if (jwt != null) {
+      await _sharedPrefsHelper.saveAuthToken(jwt);
+      await _sharedPrefsHelper.saveIsLoggedIn(true);
+    }
   }
 
   // Logout:--------------------------------------------------------------------

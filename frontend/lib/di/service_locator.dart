@@ -1,6 +1,6 @@
-import 'package:boilerplate/data/di/data_layer_injection.dart';
-import 'package:boilerplate/domain/di/domain_layer_injection.dart';
-import 'package:boilerplate/presentation/di/presentation_layer_injection.dart';
+import 'package:nutrify/data/di/data_layer_injection.dart';
+import 'package:nutrify/domain/di/domain_layer_injection.dart';
+import 'package:nutrify/presentation/di/presentation_layer_injection.dart';
 import 'package:get_it/get_it.dart';
 
 final getIt = GetIt.instance;

@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:boilerplate/domain/usecase/user/login_usecase.dart';
+import 'package:nutrify/domain/usecase/user/login_usecase.dart';
 
 import '../../entity/user/user.dart';
 
@@ -14,6 +14,8 @@ abstract class UserRepository {
   });
 
   Future<void> forgotPassword(String email);
+
+  Future<void> signInWithGoogle();
 
   Future<void> logout();
 

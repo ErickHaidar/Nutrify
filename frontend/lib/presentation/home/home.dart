@@ -1,10 +1,10 @@
-import 'package:boilerplate/data/sharedpref/constants/preferences.dart';
-import 'package:boilerplate/di/service_locator.dart';
-import 'package:boilerplate/presentation/home/store/language/language_store.dart';
-import 'package:boilerplate/presentation/home/store/theme/theme_store.dart';
-import 'package:boilerplate/presentation/post/post_list.dart';
-import 'package:boilerplate/utils/locale/app_localization.dart';
-import 'package:boilerplate/utils/routes/routes.dart';
+import 'package:nutrify/data/sharedpref/constants/preferences.dart';
+import 'package:nutrify/di/service_locator.dart';
+import 'package:nutrify/presentation/home/store/language/language_store.dart';
+import 'package:nutrify/presentation/home/store/theme/theme_store.dart';
+import 'package:nutrify/presentation/post/post_list.dart';
+import 'package:nutrify/utils/locale/app_localization.dart';
+import 'package:nutrify/utils/routes/routes.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:shared_preferences/shared_preferences.dart';

@@ -18,7 +18,7 @@
 /// In order to use this newly created setting or even the colours in it, you would just
 /// `import` this file in your project, anywhere you needed it.
 /// `import 'path/to/setting.dart';`
-import 'package:boilerplate/constants/colors.dart';
+import 'package:nutrify/constants/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 

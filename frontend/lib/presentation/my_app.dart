@@ -1,14 +1,14 @@
 import 'dart:async';
 
-import 'package:boilerplate/constants/app_theme.dart';
-import 'package:boilerplate/constants/strings.dart';
-import 'package:boilerplate/data/sharedpref/shared_preference_helper.dart';
-import 'package:boilerplate/presentation/home/store/language/language_store.dart';
-import 'package:boilerplate/presentation/home/store/theme/theme_store.dart';
-import 'package:boilerplate/presentation/login/store/login_store.dart';
-import 'package:boilerplate/screens/splash_screen.dart';
-import 'package:boilerplate/utils/locale/app_localization.dart';
-import 'package:boilerplate/utils/routes/routes.dart';
+import 'package:nutrify/constants/app_theme.dart';
+import 'package:nutrify/constants/strings.dart';
+import 'package:nutrify/data/sharedpref/shared_preference_helper.dart';
+import 'package:nutrify/presentation/home/store/language/language_store.dart';
+import 'package:nutrify/presentation/home/store/theme/theme_store.dart';
+import 'package:nutrify/presentation/login/store/login_store.dart';
+import 'package:nutrify/screens/splash_screen.dart';
+import 'package:nutrify/utils/locale/app_localization.dart';
+import 'package:nutrify/utils/routes/routes.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';

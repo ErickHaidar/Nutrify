@@ -1,7 +1,7 @@
 
-import 'package:boilerplate/core/domain/usecase/use_case.dart';
-import 'package:boilerplate/domain/entity/post/post_list.dart';
-import 'package:boilerplate/domain/repository/post/post_repository.dart';
+import 'package:nutrify/core/domain/usecase/use_case.dart';
+import 'package:nutrify/domain/entity/post/post_list.dart';
+import 'package:nutrify/domain/repository/post/post_repository.dart';
 
 class GetPostUseCase extends UseCase<PostList, void> {
 

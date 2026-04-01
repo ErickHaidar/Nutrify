@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:boilerplate/constants/assets.dart';
+import 'package:nutrify/constants/assets.dart';
 import 'add_meal_screen.dart';
 import 'body_data_goals_screen.dart';
 import 'tracking_kalori_screen.dart';

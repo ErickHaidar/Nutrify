@@ -1,17 +1,17 @@
 import 'dart:async';
 
-import 'package:boilerplate/core/stores/error/error_store.dart';
-import 'package:boilerplate/core/stores/form/form_store.dart';
-import 'package:boilerplate/domain/repository/setting/setting_repository.dart';
-import 'package:boilerplate/domain/repository/user/user_repository.dart';
-import 'package:boilerplate/domain/usecase/post/get_post_usecase.dart';
-import 'package:boilerplate/domain/usecase/user/is_logged_in_usecase.dart';
-import 'package:boilerplate/domain/usecase/user/login_usecase.dart';
-import 'package:boilerplate/domain/usecase/user/save_login_in_status_usecase.dart';
-import 'package:boilerplate/presentation/home/store/language/language_store.dart';
-import 'package:boilerplate/presentation/home/store/theme/theme_store.dart';
-import 'package:boilerplate/presentation/login/store/login_store.dart';
-import 'package:boilerplate/presentation/post/store/post_store.dart';
+import 'package:nutrify/core/stores/error/error_store.dart';
+import 'package:nutrify/core/stores/form/form_store.dart';
+import 'package:nutrify/domain/repository/setting/setting_repository.dart';
+import 'package:nutrify/domain/repository/user/user_repository.dart';
+import 'package:nutrify/domain/usecase/post/get_post_usecase.dart';
+import 'package:nutrify/domain/usecase/user/is_logged_in_usecase.dart';
+import 'package:nutrify/domain/usecase/user/login_usecase.dart';
+import 'package:nutrify/domain/usecase/user/save_login_in_status_usecase.dart';
+import 'package:nutrify/presentation/home/store/language/language_store.dart';
+import 'package:nutrify/presentation/home/store/theme/theme_store.dart';
+import 'package:nutrify/presentation/login/store/login_store.dart';
+import 'package:nutrify/presentation/post/store/post_store.dart';
 
 import '../../../di/service_locator.dart';
 

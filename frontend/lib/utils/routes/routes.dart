@@ -1,6 +1,6 @@
-import 'package:boilerplate/presentation/login/login.dart';
-import 'package:boilerplate/screens/main_navigation_screen.dart';
-import 'package:boilerplate/screens/reset_password_screen.dart';
+import 'package:nutrify/presentation/login/login.dart';
+import 'package:nutrify/screens/main_navigation_screen.dart';
+import 'package:nutrify/screens/reset_password_screen.dart';
 import 'package:flutter/material.dart';
 
 class Routes {

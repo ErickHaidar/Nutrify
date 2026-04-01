@@ -1,8 +1,8 @@
 import 'dart:async';
 
-import 'package:boilerplate/data/network/constants/endpoints.dart';
-import 'package:boilerplate/di/service_locator.dart';
-import 'package:boilerplate/presentation/my_app.dart';
+import 'package:nutrify/data/network/constants/endpoints.dart';
+import 'package:nutrify/di/service_locator.dart';
+import 'package:nutrify/presentation/my_app.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:intl/date_symbol_data_local.dart';

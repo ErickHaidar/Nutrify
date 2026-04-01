@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:boilerplate/data/sharedpref/constants/preferences.dart';
-import 'package:boilerplate/utils/routes/routes.dart';
-import 'package:boilerplate/constants/assets.dart';
+import 'package:nutrify/data/sharedpref/constants/preferences.dart';
+import 'package:nutrify/utils/routes/routes.dart';
+import 'package:nutrify/constants/assets.dart';
 import 'edit_profile_screen.dart';
 import 'change_goal_screen.dart';
 import '../services/profile_api_service.dart';

@@ -5,7 +5,7 @@ plugins {
 }
 
 android {
-    namespace = "com.iotecksolutions.todoapp"
+    namespace = "com.nutrify.app"
     compileSdk = 36 // Required by your plugins
     ndkVersion = flutter.ndkVersion
 
@@ -19,7 +19,7 @@ android {
     }
 
     defaultConfig {
-        applicationId = "com.iotecksolutions.todoapp"
+        applicationId = "com.nutrify.app"
         minSdk = flutter.minSdkVersion
         targetSdk = 36
         versionCode = flutter.versionCode

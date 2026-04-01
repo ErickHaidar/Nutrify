@@ -1,6 +1,6 @@
-import 'package:boilerplate/core/stores/error/error_store.dart';
-import 'package:boilerplate/domain/entity/post/post_list.dart';
-import 'package:boilerplate/utils/dio/dio_error_util.dart';
+import 'package:nutrify/core/stores/error/error_store.dart';
+import 'package:nutrify/domain/entity/post/post_list.dart';
+import 'package:nutrify/utils/dio/dio_error_util.dart';
 import 'package:mobx/mobx.dart';
 
 import '../../../domain/usecase/post/get_post_usecase.dart';

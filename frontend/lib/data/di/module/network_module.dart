@@ -1,11 +1,11 @@
-import 'package:boilerplate/core/data/network/dio/configs/dio_configs.dart';
-import 'package:boilerplate/core/data/network/dio/dio_client.dart';
-import 'package:boilerplate/core/data/network/dio/interceptors/auth_interceptor.dart';
-import 'package:boilerplate/core/data/network/dio/interceptors/logging_interceptor.dart';
-import 'package:boilerplate/data/network/apis/posts/post_api.dart';
-import 'package:boilerplate/data/network/constants/endpoints.dart';
-import 'package:boilerplate/data/network/interceptors/error_interceptor.dart';
-import 'package:boilerplate/data/network/rest_client.dart';
+import 'package:nutrify/core/data/network/dio/configs/dio_configs.dart';
+import 'package:nutrify/core/data/network/dio/dio_client.dart';
+import 'package:nutrify/core/data/network/dio/interceptors/auth_interceptor.dart';
+import 'package:nutrify/core/data/network/dio/interceptors/logging_interceptor.dart';
+import 'package:nutrify/data/network/apis/posts/post_api.dart';
+import 'package:nutrify/data/network/constants/endpoints.dart';
+import 'package:nutrify/data/network/interceptors/error_interceptor.dart';
+import 'package:nutrify/data/network/rest_client.dart';
 import 'package:event_bus/event_bus.dart';
 import 'package:supabase_flutter/supabase_flutter.dart' as sb;
 

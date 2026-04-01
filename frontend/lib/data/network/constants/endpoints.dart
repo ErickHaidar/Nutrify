@@ -11,7 +11,7 @@ class Endpoints {
   // Android emulator  : http://10.0.2.2:8000/api
   // Perangkat fisik   : http://<IP_LOKAL_KAMU>:8000/api  (cek dengan ipconfig)
   // Ngrok tunnel      : https://flexible-selected-fish.ngrok-free.app/api
-  static const String baseUrl = 'https://tobie-unpensioning-melia.ngrok-free.dev/api';
+  static const String baseUrl = 'https://nutrify-app.my.id/api';
 
   static const int receiveTimeout = 30000;
   static const int connectionTimeout = 30000;

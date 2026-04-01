@@ -1,6 +1,6 @@
-import 'package:boilerplate/core/stores/error/error_store.dart';
-import 'package:boilerplate/domain/entity/language/Language.dart';
-import 'package:boilerplate/domain/repository/setting/setting_repository.dart';
+import 'package:nutrify/core/stores/error/error_store.dart';
+import 'package:nutrify/domain/entity/language/Language.dart';
+import 'package:nutrify/domain/repository/setting/setting_repository.dart';
 import 'package:mobx/mobx.dart';
 
 part 'language_store.g.dart';

@@ -1,7 +1,7 @@
-import 'package:boilerplate/services/food_api_service.dart';
-import 'package:boilerplate/core/data/network/dio/dio_client.dart';
-import 'package:boilerplate/data/network/constants/endpoints.dart';
-import 'package:boilerplate/di/service_locator.dart';
+import 'package:nutrify/services/food_api_service.dart';
+import 'package:nutrify/core/data/network/dio/dio_client.dart';
+import 'package:nutrify/data/network/constants/endpoints.dart';
+import 'package:nutrify/di/service_locator.dart';
 
 class MealNutrition {
   final double calories;

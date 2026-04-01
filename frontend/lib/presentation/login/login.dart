@@ -1,14 +1,14 @@
 import 'package:another_flushbar/flushbar_helper.dart';
-import 'package:boilerplate/constants/colors.dart';
-import 'package:boilerplate/constants/assets.dart';
-import 'package:boilerplate/core/stores/form/form_store.dart';
-import 'package:boilerplate/core/widgets/empty_app_bar_widget.dart';
-import 'package:boilerplate/core/widgets/progress_indicator_widget.dart';
-import 'package:boilerplate/data/sharedpref/constants/preferences.dart';
-import 'package:boilerplate/presentation/login/store/login_store.dart';
-import 'package:boilerplate/utils/device/device_utils.dart';
-import 'package:boilerplate/utils/locale/app_localization.dart';
-import 'package:boilerplate/utils/routes/routes.dart';
+import 'package:nutrify/constants/colors.dart';
+import 'package:nutrify/constants/assets.dart';
+import 'package:nutrify/core/stores/form/form_store.dart';
+import 'package:nutrify/core/widgets/empty_app_bar_widget.dart';
+import 'package:nutrify/core/widgets/progress_indicator_widget.dart';
+import 'package:nutrify/data/sharedpref/constants/preferences.dart';
+import 'package:nutrify/presentation/login/store/login_store.dart';
+import 'package:nutrify/utils/device/device_utils.dart';
+import 'package:nutrify/utils/locale/app_localization.dart';
+import 'package:nutrify/utils/routes/routes.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:mobx/mobx.dart' as mobx;
@@ -391,7 +391,13 @@ class _LoginScreenState extends State<LoginScreen> {
         const SizedBox(width: 16),
         Expanded(
           child: GestureDetector(
-            onTap: _comingSoon,
+            onTap: () async {
+              try {
+                await _userStore.signInWithGoogle();
+              } catch (e) {
+                _showErrorMessage('Login Google gagal: $e');
+              }
+            },
             child: Container(
               height: 60,
               decoration: BoxDecoration(

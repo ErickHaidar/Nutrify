@@ -1,8 +1,8 @@
-import 'package:boilerplate/core/stores/error/error_store.dart';
-import 'package:boilerplate/core/stores/form/form_store.dart';
-import 'package:boilerplate/domain/repository/user/user_repository.dart';
-import 'package:boilerplate/domain/usecase/user/is_logged_in_usecase.dart';
-import 'package:boilerplate/domain/usecase/user/save_login_in_status_usecase.dart';
+import 'package:nutrify/core/stores/error/error_store.dart';
+import 'package:nutrify/core/stores/form/form_store.dart';
+import 'package:nutrify/domain/repository/user/user_repository.dart';
+import 'package:nutrify/domain/usecase/user/is_logged_in_usecase.dart';
+import 'package:nutrify/domain/usecase/user/save_login_in_status_usecase.dart';
 import 'package:mobx/mobx.dart';
 import 'package:supabase_flutter/supabase_flutter.dart' as sb;
 
@@ -98,6 +98,24 @@ abstract class _UserStore with Store {
           errorStore.errorMessage = _parseAuthError(e);
           throw e;
         });
+  }
+
+  @action
+  Future<void> signInWithGoogle() async {
+    errorStore.errorMessage = '';
+    isRegisterLoading = true; // Use loading state
+    try {
+      await _userRepository.signInWithGoogle();
+      isLoggedIn = true;
+      success = true;
+    } catch (e) {
+      isLoggedIn = false;
+      success = false;
+      errorStore.errorMessage = _parseAuthError(e);
+      rethrow;
+    } finally {
+      isRegisterLoading = false;
+    }
   }
 
   // Register:-----------------------------------------------------------------

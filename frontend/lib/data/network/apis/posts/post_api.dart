@@ -1,9 +1,9 @@
 import 'dart:async';
 
-import 'package:boilerplate/core/data/network/dio/dio_client.dart';
-import 'package:boilerplate/data/network/constants/endpoints.dart';
-import 'package:boilerplate/data/network/rest_client.dart';
-import 'package:boilerplate/domain/entity/post/post_list.dart';
+import 'package:nutrify/core/data/network/dio/dio_client.dart';
+import 'package:nutrify/data/network/constants/endpoints.dart';
+import 'package:nutrify/data/network/rest_client.dart';
+import 'package:nutrify/domain/entity/post/post_list.dart';
 
 class PostApi {
   // dio instance
