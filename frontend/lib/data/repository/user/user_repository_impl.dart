@@ -52,16 +52,23 @@ class UserRepositoryImpl extends UserRepository {
     );
   }
 
+  GoogleSignIn? _googleSignIn;
+
+  GoogleSignIn _getGoogleSignIn() {
+    if (_googleSignIn != null) return _googleSignIn!;
+    
+    final webClientId = dotenv.env['GOOGLE_WEB_CLIENT_ID'] ?? '';
+    _googleSignIn = GoogleSignIn(
+      clientId: webClientId,
+      serverClientId: webClientId,
+    );
+    return _googleSignIn!;
+  }
+
   @override
   Future<void> signInWithGoogle() async {
     // 1. Inisialisasi Google Sign In
-    // PENTING: Dapatkan Client ID Web dari Google Cloud Console
-    // Ikuti panduan di google_auth_keystore_guide.md
-    final webClientId = dotenv.env['GOOGLE_WEB_CLIENT_ID'] ?? ''; 
-    
-    final GoogleSignIn googleSignIn = GoogleSignIn(
-      serverClientId: webClientId,
-    );
+    final googleSignIn = _getGoogleSignIn();
     final googleUser = await googleSignIn.signIn();
     final googleAuth = await googleUser?.authentication;
     final accessToken = googleAuth?.accessToken;

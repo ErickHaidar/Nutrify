@@ -6,7 +6,7 @@ plugins {
 
 android {
     namespace = "com.nutrify.app"
-    compileSdk = 36 // Required by your plugins
+    compileSdk = 35 // Required by your plugins
     ndkVersion = flutter.ndkVersion
 
     compileOptions {
@@ -21,7 +21,7 @@ android {
     defaultConfig {
         applicationId = "com.nutrify.app"
         minSdk = flutter.minSdkVersion
-        targetSdk = 36
+        targetSdk = 35
         versionCode = flutter.versionCode
         versionName = flutter.versionName
     }

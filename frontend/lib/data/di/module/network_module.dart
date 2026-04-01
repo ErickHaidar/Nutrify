@@ -33,7 +33,7 @@ class NetworkModule {
 
     // dio:---------------------------------------------------------------------
     getIt.registerSingleton<DioConfigs>(
-      const DioConfigs(
+      DioConfigs(
         baseUrl: Endpoints.baseUrl,
         connectionTimeout: Endpoints.connectionTimeout,
         receiveTimeout:Endpoints.receiveTimeout,

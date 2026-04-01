@@ -10,18 +10,35 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 Future<void> main() async {
-  WidgetsFlutterBinding.ensureInitialized();
-  await dotenv.load(fileName: ".env");
-  await initializeDateFormatting('id_ID', null);
-  await setPreferredOrientations();
+  try {
+    WidgetsFlutterBinding.ensureInitialized();
+    await dotenv.load(fileName: ".env");
+    await initializeDateFormatting('id_ID', null);
+    await setPreferredOrientations();
 
-  await Supabase.initialize(
-    url: Endpoints.supabaseUrl,
-    anonKey: Endpoints.supabaseAnonKey,
-  );
+    await Supabase.initialize(
+      url: Endpoints.supabaseUrl,
+      anonKey: Endpoints.supabaseAnonKey,
+    );
 
-  await ServiceLocator.configureDependencies();
-  runApp(MyApp());
+    await ServiceLocator.configureDependencies();
+    runApp(MyApp());
+  } catch (e, stacktrace) {
+    debugPrint("Fatal Initialization Error: $e");
+    debugPrint(stacktrace.toString());
+    
+    // Fallback UI or simple error screen
+    runApp(MaterialApp(
+      home: Scaffold(
+        body: Center(
+          child: Padding(
+            padding: const EdgeInsets.all(24.0),
+            child: SelectableText("Nutrify failed to start.\n\nError: $e"),
+          ),
+        ),
+      ),
+    ));
+  }
 }
 
 Future<void> setPreferredOrientations() {
