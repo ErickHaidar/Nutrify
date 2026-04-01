@@ -48,7 +48,7 @@ class HomeScreenState extends State<HomeScreen> {
         _profileApi.getProfile(forceRefresh: forceRefresh).catchError((_) => null),
       ]);
 
-      final summary = results[0];
+      final summary = results[0] as DailySummary?;
       final profile = results[1] as ApiProfileData?;
 
       if (mounted) {
