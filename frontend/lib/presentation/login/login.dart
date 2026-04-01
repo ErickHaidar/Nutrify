@@ -49,7 +49,26 @@ class _LoginScreenState extends State<LoginScreen> {
     _disposers = [
       mobx.reaction((_) => _userStore.success, (bool success) {
         if (success && mounted) {
-           _handleNavigation();
+          _handleNavigation();
+        }
+      }),
+      mobx.reaction((_) => _userStore.registerSuccess, (bool success) {
+        if (success && mounted) {
+          FlushbarHelper.createSuccess(
+            message: 'Akun berhasil dibuat! Silakan cek email Anda untuk konfirmasi.',
+            title: 'Sign Up Berhasil',
+            duration: const Duration(seconds: 5),
+          ).show(context);
+        }
+      }),
+      mobx.reaction((_) => _userStore.errorStore.errorMessage, (String message) {
+        if (message.isNotEmpty && mounted) {
+          _showErrorMessage(message);
+        }
+      }),
+      mobx.reaction((_) => _formStore.errorStore.errorMessage, (String message) {
+        if (message.isNotEmpty && mounted) {
+          _showErrorMessage(message);
         }
       }),
     ];
@@ -70,15 +89,7 @@ class _LoginScreenState extends State<LoginScreen> {
     return Stack(
       children: <Widget>[
         Center(child: _buildRightSide()),
-        Observer(
-          builder: (context) {
-            return _showErrorMessage(
-              _userStore.errorStore.errorMessage.isNotEmpty
-                  ? _userStore.errorStore.errorMessage
-                  : _formStore.errorStore.errorMessage,
-            );
-          },
-        ),
+        // Removing the old Observer-based error side effect which caused assertion errors
         Observer(
           builder: (context) {
             return Visibility(
@@ -945,17 +956,12 @@ class _LoginScreenState extends State<LoginScreen> {
 
   _showErrorMessage(String message) {
     if (message.isNotEmpty) {
-      Future.delayed(Duration(milliseconds: 0), () {
-        if (message.isNotEmpty) {
-          FlushbarHelper.createError(
-            message: message,
-            title: AppLocalizations.of(context).translate('home_tv_error'),
-            duration: Duration(seconds: 3),
-          )..show(context);
-        }
-      });
+      FlushbarHelper.createError(
+        message: message,
+        title: AppLocalizations.of(context).translate('home_tv_error'),
+        duration: Duration(seconds: 3),
+      )..show(context);
     }
-
     return SizedBox.shrink();
   }
 

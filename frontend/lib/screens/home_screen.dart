@@ -36,35 +36,53 @@ class HomeScreenState extends State<HomeScreen> {
     loadDailyData();
   }
 
-  void loadDailyData() async {
+  void loadDailyData({bool forceRefresh = false}) async {
     if (_isLoadingData) return;
     _isLoadingData = true;
     final now = DateTime.now();
+
     try {
-      final summary = await _foodLogApi.getSummary(now);
-      final profile = await _profileApi.getProfile();
+      // Parallelize fetching for better performance
+      final results = await Future.wait([
+        _foodLogApi.getSummary(now).catchError((_) => null),
+        _profileApi.getProfile(forceRefresh: forceRefresh).catchError((_) => null),
+      ]);
+
+      final summary = results[0];
+      final profile = results[1] as ApiProfileData?;
+
       if (mounted) {
         setState(() {
-          totalCalories = summary.totalCaloriesInt;
-          totalProtein = summary.totals.protein;
-          totalCarbs = summary.totals.carbohydrates;
-          totalFat = summary.totals.fat;
-          _profile = profile;
-          targetCalories = (summary.targetCalories > 0)
-              ? summary.targetCalories
-              : (profile?.targetCalories ?? 0);
-          caloriesByType = {
-            'Makan Pagi': summary.caloriesForMeal('Breakfast'),
-            'Makan Siang': summary.caloriesForMeal('Lunch'),
-            'Makan Malam': summary.caloriesForMeal('Dinner'),
-            'Cemilan': summary.caloriesForMeal('Snack'),
-          };
+          if (profile != null) {
+            _profile = profile;
+          }
+
+          if (summary != null) {
+            totalCalories = summary.totalCaloriesInt;
+            totalProtein = summary.totals.protein;
+            totalCarbs = summary.totals.carbohydrates;
+            totalFat = summary.totals.fat;
+            targetCalories = (summary.targetCalories > 0)
+                ? summary.targetCalories
+                : (profile?.targetCalories ?? 0);
+            caloriesByType = {
+              'Makan Pagi': summary.caloriesForMeal('Breakfast'),
+              'Makan Siang': summary.caloriesForMeal('Lunch'),
+              'Makan Malam': summary.caloriesForMeal('Dinner'),
+              'Cemilan': summary.caloriesForMeal('Snack'),
+            };
+          } else if (profile != null) {
+            // If summary failed but profile succeeded, at least update target
+            targetCalories = profile.targetCalories;
+          }
         });
       }
-    } catch (_) {
-      // Keep existing values on error
     } finally {
-      _isLoadingData = false;
+      if (mounted) {
+        setState(() {
+          _isLoadingData = false;
+        });
+      }
     }
   }
 
@@ -130,7 +148,7 @@ class HomeScreenState extends State<HomeScreen> {
                   MaterialPageRoute(builder: (context) => const BodyDataGoalsScreen()),
                 );
                 if (result == true) {
-                  loadDailyData();
+                  loadDailyData(forceRefresh: true);
                 }
               },
               style: ElevatedButton.styleFrom(
@@ -332,7 +350,7 @@ class HomeScreenState extends State<HomeScreen> {
                       ),
                     );
                     if (result == true) {
-                      loadDailyData();
+                      loadDailyData(forceRefresh: true);
                     }
                   },
                   borderRadius: BorderRadius.circular(20),
