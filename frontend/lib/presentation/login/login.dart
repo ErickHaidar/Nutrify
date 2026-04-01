@@ -52,15 +52,6 @@ class _LoginScreenState extends State<LoginScreen> {
           _handleNavigation();
         }
       }),
-      mobx.reaction((_) => _userStore.registerSuccess, (bool success) {
-        if (success && mounted) {
-          FlushbarHelper.createSuccess(
-            message: 'Akun berhasil dibuat! Silakan cek email Anda untuk konfirmasi.',
-            title: 'Sign Up Berhasil',
-            duration: const Duration(seconds: 5),
-          ).show(context);
-        }
-      }),
       mobx.reaction((_) => _userStore.errorStore.errorMessage, (String message) {
         if (message.isNotEmpty && mounted) {
           _showErrorMessage(message);
