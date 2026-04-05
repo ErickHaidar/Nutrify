@@ -35,34 +35,40 @@ class _MyAppState extends State<MyApp> {
   @override
   void initState() {
     super.initState();
-    _authSubscription = Supabase.instance.client.auth.onAuthStateChange.listen((
-      data,
-    ) {
-      if (data.event == AuthChangeEvent.signedOut) {
-        // Session habis atau user di-sign-out dari luar
-        _userStore.clearSession();
-        _prefs.removeAuthToken();
-        _prefs.saveIsLoggedIn(false);
-        MyApp.navigatorKey.currentState?.pushNamedAndRemoveUntil(
-          Routes.login,
-          (route) => false,
-        );
-      } else if (data.event == AuthChangeEvent.tokenRefreshed) {
-        // Supabase auto-refresh token — simpan token baru ke SharedPrefs
-        // supaya Dio AuthInterceptor selalu gunakan token terbaru
-        final newToken = data.session?.accessToken;
-        if (newToken != null) {
-          _prefs.saveAuthToken(newToken);
+    try {
+      _authSubscription = Supabase.instance.client.auth.onAuthStateChange.listen((
+        data,
+      ) {
+        if (data.event == AuthChangeEvent.signedOut) {
+          // Session habis atau user di-sign-out dari luar
+          _userStore.clearSession();
+          _prefs.removeAuthToken();
+          _prefs.saveIsLoggedIn(false);
+          MyApp.navigatorKey.currentState?.pushNamedAndRemoveUntil(
+            Routes.login,
+            (route) => false,
+          );
+        } else if (data.event == AuthChangeEvent.tokenRefreshed) {
+          // Supabase auto-refresh token — simpan token baru ke SharedPrefs
+          // supaya Dio AuthInterceptor selalu gunakan token terbaru
+          final newToken = data.session?.accessToken;
+          if (newToken != null) {
+            _prefs.saveAuthToken(newToken);
+          }
+        } else if (data.event == AuthChangeEvent.passwordRecovery) {
+          // User membuka link reset password dari email — arahkan ke layar
+          // ganti password.
+          MyApp.navigatorKey.currentState?.pushNamedAndRemoveUntil(
+            Routes.resetPassword,
+            (route) => false,
+          );
         }
-      } else if (data.event == AuthChangeEvent.passwordRecovery) {
-        // User membuka link reset password dari email — arahkan ke layar
-        // ganti password.
-        MyApp.navigatorKey.currentState?.pushNamedAndRemoveUntil(
-          Routes.resetPassword,
-          (route) => false,
-        );
-      }
-    });
+      });
+    } catch (e) {
+      debugPrint('Error subscribing to auth changes: $e');
+      // Initialize an empty dummy subscription to avoid late initialization error in dispose()
+      _authSubscription = const Stream<AuthState>.empty().listen((_) {});
+    }
   }
 
   @override

@@ -96,8 +96,7 @@ class UserRepositoryImpl extends UserRepository {
   @override
   Future<void> logout() async {
     await sb.Supabase.instance.client.auth.signOut();
-    await _sharedPrefsHelper.removeAuthToken();
-    await _sharedPrefsHelper.saveIsLoggedIn(false);
+    await _sharedPrefsHelper.clearUserData();
   }
 
   @override

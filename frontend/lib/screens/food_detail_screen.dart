@@ -12,6 +12,7 @@ class FoodDetailScreen extends StatefulWidget {
   final FoodLogEntry? logEntry;
   final String mealType;
   final DateTime? date;
+  final bool batchMode; // Add this line
 
   const FoodDetailScreen({
     super.key,
@@ -19,6 +20,7 @@ class FoodDetailScreen extends StatefulWidget {
     this.logEntry,
     this.date,
     required this.mealType,
+    this.batchMode = false, // Add this line
   }) : assert(food != null || logEntry != null, 'Either food or logEntry must be provided');
 
   @override
@@ -90,6 +92,17 @@ class _FoodDetailScreenState extends State<FoodDetailScreen> {
     String mealTimeMapped = MealTypeMapper.toApi(widget.mealType);
 
     try {
+      if (widget.batchMode) {
+        // If in batchMode, return the data instead of saving to API
+        if (mounted) {
+          Navigator.pop(context, {
+            'multiplier': _multiplier,
+            'unit': _selectedUnit,
+          });
+        }
+        return;
+      }
+
       if (widget.logEntry != null) {
         await _foodLogApi.updateLog(
           widget.logEntry!.id,

@@ -49,4 +49,11 @@ abstract class _PostStore with Store {
       errorStore.errorMessage = DioExceptionUtil.handleError(error);
     });
   }
+
+  @action
+  void reset() {
+    postList = null;
+    fetchPostsFuture = ObservableFuture<PostList?>(emptyPostResponse);
+    success = false;
+  }
 }

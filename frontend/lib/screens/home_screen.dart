@@ -19,7 +19,7 @@ class HomeScreenState extends State<HomeScreen> {
   bool _isLoadingData = false;
   final FoodLogApiService _foodLogApi = FoodLogApiService();
   final ProfileApiService _profileApi = ProfileApiService();
-  ApiProfileData? _profile;
+  ApiProfileData? _profile; // Simpan data profil tunggal agar konsisten di seluruh UI
   double totalProtein = 0;
   double totalCarbs = 0;
   double totalFat = 0;
@@ -270,10 +270,12 @@ class HomeScreenState extends State<HomeScreen> {
                 ),
                 const SizedBox(height: 25),
 
-                // Suggestion for new users
-                if (_profile == null) _buildSetupProfileBanner(),
-  
-                // Banner Utama (Tracking Kalori)
+                // Cek apakah profil sudah lengkap (ada data & tidak nol)
+                if (_profile == null ||
+                    _profile!.age == 0 ||
+                    _profile!.weight == 0 ||
+                    _profile!.height == 0)
+                  _buildCompleteProfileBanner(),
                 Container(
                   width: double.infinity,
                   padding: const EdgeInsets.all(20),
@@ -378,7 +380,7 @@ class HomeScreenState extends State<HomeScreen> {
                             ),
                             SizedBox(height: 4),
                             Text(
-                              '${_formatCalories(totalCalories)} / ${_formatCalories(targetCalories)} kCal',
+                              '${_formatCalories(targetCalories)} kCal',
                               style: const TextStyle(
                                 color: Color(0xFFFFCC80),
                                 fontWeight: FontWeight.bold,
@@ -440,6 +442,85 @@ class HomeScreenState extends State<HomeScreen> {
             ),
           ),
         ),
+      ),
+    );
+  }
+  Widget _buildCompleteProfileBanner() {
+    return Container(
+      width: double.infinity,
+      margin: const EdgeInsets.only(bottom: 25),
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: const Color(0xFF2D2A4A),
+        borderRadius: BorderRadius.circular(25),
+        border: Border.all(color: Colors.white10),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(10),
+                decoration: BoxDecoration(
+                  color: Colors.white.withOpacity(0.05),
+                  shape: BoxShape.circle,
+                ),
+                child: const Icon(
+                  Icons.auto_awesome,
+                  color: Color(0xFFFFCC80),
+                  size: 24,
+                ),
+              ),
+              const SizedBox(width: 15),
+              const Expanded(
+                child: Text(
+                  'Halo! Perjalanan sehatmu baru dimulai.',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 15),
+          const Text(
+            'Lengkapi data profilmu sekarang untuk mendapatkan target nutrisi yang presisi dan personal.',
+            style: TextStyle(color: Colors.white70, fontSize: 13, height: 1.5),
+          ),
+          const SizedBox(height: 20),
+          SizedBox(
+            width: double.infinity,
+            child: ElevatedButton(
+              onPressed: () async {
+                final result = await Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const BodyDataGoalsScreen(),
+                  ),
+                );
+                if (result == true) {
+                  loadDailyData();
+                }
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: const Color(0xFFFFCC80),
+                foregroundColor: const Color(0xFF2D2A4A),
+                padding: const EdgeInsets.symmetric(vertical: 16),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(15),
+                ),
+                elevation: 0,
+              ),
+              child: const Text(
+                'Lengkapi Profil Sekarang',
+                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import 'package:nutrify/data/sharedpref/constants/preferences.dart';
+import 'package:nutrify/di/service_locator.dart';
+import 'package:nutrify/presentation/login/store/login_store.dart';
 import 'package:nutrify/utils/routes/routes.dart';
 import 'package:nutrify/constants/assets.dart';
 import 'edit_profile_screen.dart';
@@ -11,10 +11,10 @@ class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
 
   @override
-  State<ProfileScreen> createState() => _ProfileScreenState();
+  State<ProfileScreen> createState() => ProfileScreenState();
 }
 
-class _ProfileScreenState extends State<ProfileScreen> {
+class ProfileScreenState extends State<ProfileScreen> {
   final _profileApiService = ProfileApiService();
   ApiProfileData? _profile;
   bool _isLoading = true;
@@ -22,10 +22,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
   @override
   void initState() {
     super.initState();
-    _loadProfile();
+    loadProfile();
   }
 
-  Future<void> _loadProfile() async {
+  Future<void> loadProfile() async {
     try {
       final profile = await _profileApiService.getProfile();
       if (mounted) {
@@ -188,7 +188,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     ),
                   );
                   if (result == true) {
-                    _loadProfile();
+                    loadProfile();
                   }
                 },
               ),
@@ -205,7 +205,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     ),
                   );
                   if (result == true) {
-                    _loadProfile();
+                    loadProfile();
                   }
                 },
               ),
@@ -227,14 +227,16 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 icon: Icons.logout,
                 label: 'Logout',
                 destination: null,
-                onPressed: () {
-                  SharedPreferences.getInstance().then((preference) {
-                    preference.setBool(Preferences.is_logged_in, false);
+                onPressed: () async {
+                  // Gunakan UserStore untuk logout yang tersinkronisasi
+                  // (menghapus token, set prefs, dan signOut dari Supabase)
+                  await getIt<UserStore>().logout();
+                  if (context.mounted) {
                     Navigator.of(context).pushNamedAndRemoveUntil(
                       Routes.login,
                       (Route<dynamic> route) => false,
                     );
-                  });
+                  }
                 },
               ),
               const SizedBox(height: 30),

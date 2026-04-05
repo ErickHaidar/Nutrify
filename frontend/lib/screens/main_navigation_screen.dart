@@ -21,9 +21,15 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
     if (index == 0) {
       _homeKey.currentState?.loadDailyData();
     }
+    // If switching to Profile tab, trigger a refresh
+    if (index == 2) {
+      _profileKey.currentState?.loadProfile();
+    }
   }
 
   final GlobalKey<HomeScreenState> _homeKey = GlobalKey<HomeScreenState>();
+  final GlobalKey<ProfileScreenState> _profileKey =
+      GlobalKey<ProfileScreenState>();
 
   late List<Widget> _pages;
 
@@ -33,7 +39,7 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
     _pages = [
       HomeScreen(key: _homeKey),
       const HistoryScreen(),
-      const ProfileScreen(),
+      ProfileScreen(key: _profileKey),
     ];
   }
 

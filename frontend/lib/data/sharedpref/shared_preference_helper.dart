@@ -24,6 +24,15 @@ class SharedPreferenceHelper {
     return _sharedPreference.remove(Preferences.auth_token);
   }
 
+  /// Clears all user-related data from SharedPreferences.
+  /// This should be called on logout to prevent data lingering across sessions.
+  Future<void> clearUserData() async {
+    await _sharedPreference.remove(Preferences.auth_token);
+    await _sharedPreference.remove(Preferences.is_logged_in);
+    await _sharedPreference.remove(Preferences.user_profile);
+    await _sharedPreference.remove(Preferences.meal_history);
+  }
+
   // Login:---------------------------------------------------------------------
   Future<bool> get isLoggedIn async {
     return _sharedPreference.getBool(Preferences.is_logged_in) ?? false;

@@ -1,8 +1,9 @@
-import 'package:nutrify/constants/assets.dart';
-import 'package:nutrify/constants/colors.dart';
 import 'package:nutrify/data/sharedpref/shared_preference_helper.dart';
 import 'package:nutrify/di/service_locator.dart';
+import 'package:nutrify/presentation/login/store/login_store.dart';
 import 'package:nutrify/utils/routes/routes.dart';
+import 'package:nutrify/constants/colors.dart';
+import 'package:nutrify/constants/assets.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -22,19 +23,27 @@ class _SplashScreenState extends State<SplashScreen> {
   }
 
   Future<void> _checkAuthAndNavigate() async {
-    // Minimum splash display time for branding
+    // Branding delay: gives Supabase time to recover session from storage
     await Future.delayed(const Duration(milliseconds: 1500));
     if (!mounted) return;
 
-    final session = Supabase.instance.client.auth.currentSession;
+    final supabase = Supabase.instance.client;
+    final session = supabase.auth.currentSession;
+    final userStore = getIt<UserStore>();
 
     if (session != null) {
-      // Valid session — persist the latest token for Dio's AuthInterceptor
+      // Valid session — ensure local state is synced
       await getIt<SharedPreferenceHelper>().saveAuthToken(session.accessToken);
       await getIt<SharedPreferenceHelper>().saveIsLoggedIn(true);
+      userStore.isLoggedIn = true;
+      
       if (!mounted) return;
       Navigator.of(context).pushReplacementNamed(Routes.home);
     } else {
+      // No session — ensure local state is cleared
+      await getIt<SharedPreferenceHelper>().saveIsLoggedIn(false);
+      userStore.isLoggedIn = false;
+
       if (!mounted) return;
       Navigator.of(context).pushReplacementNamed(Routes.login);
     }

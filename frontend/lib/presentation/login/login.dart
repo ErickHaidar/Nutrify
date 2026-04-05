@@ -377,22 +377,6 @@ class _LoginScreenState extends State<LoginScreen> {
       children: [
         Expanded(
           child: GestureDetector(
-            onTap: _comingSoon,
-            child: Container(
-              height: 60,
-              decoration: BoxDecoration(
-                color: NutrifyTheme.darkCard,
-                borderRadius: BorderRadius.circular(30),
-              ),
-              child: const Center(
-                child: Icon(Icons.apple, color: Colors.white, size: 30),
-              ),
-            ),
-          ),
-        ),
-        const SizedBox(width: 16),
-        Expanded(
-          child: GestureDetector(
             onTap: () async {
               try {
                 await _userStore.signInWithGoogle();
@@ -444,63 +428,166 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   void _showForgotPasswordDialog() {
-    final emailCtrl = TextEditingController(
-      text: _userEmailController.text.trim(),
-    );
-    // showDialog<String> returns the email on success, null on cancel.
-    // Using .then() ensures flushbar shows only after dialog is fully gone.
     showDialog<String>(
       context: context,
-      builder: (dialogCtx) {
-        bool isLoading = false;
-        return StatefulBuilder(
-          builder: (ctx, setDialogState) {
-            return AlertDialog(
-              backgroundColor: NutrifyTheme.lightCard,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(20),
+      builder: (dialogCtx) => _ForgotPasswordDialogContent(
+        initialEmail: _userEmailController.text.trim(),
+      ),
+    ).then((sentEmail) {
+      if (sentEmail != null && mounted) {
+        FlushbarHelper.createSuccess(
+          message: 'Link reset password telah dikirim ke $sentEmail',
+          title: 'Email Terkirim!',
+          duration: const Duration(seconds: 4),
+        ).show(context);
+      }
+    });
+  }
+
+  void _showSignUpModal() {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (modalCtx) => _SignUpModalContent(
+        initialEmail: _userEmailController.text.trim(),
+      ),
+    ).then((registered) {
+      // Sheet is fully dismissed — safe to show flushbar in parent context
+      if ((registered ?? false) && mounted) {
+        FlushbarHelper.createSuccess(
+          message: 'Akun berhasil dibuat! Cek email Anda untuk konfirmasi.',
+          title: 'Berhasil!',
+          duration: const Duration(seconds: 4),
+        ).show(context);
+      }
+    });
+  }
+
+  void _handleNavigation() {
+    SharedPreferences.getInstance().then((prefs) {
+      prefs.setBool(Preferences.is_logged_in, true);
+    });
+
+    Navigator.of(context).pushNamedAndRemoveUntil(
+      Routes.home, 
+      (Route<dynamic> route) => false
+    );
+  }
+
+  // General Methods:-----------------------------------------------------------
+
+  _showErrorMessage(String message) {
+    if (message.isNotEmpty) {
+      FlushbarHelper.createError(
+        message: message,
+        title: AppLocalizations.of(context).translate('home_tv_error'),
+        duration: Duration(seconds: 3),
+      )..show(context);
+    }
+    return SizedBox.shrink();
+  }
+
+  // dispose:-------------------------------------------------------------------
+  @override
+  void dispose() {
+    // Bersihkan semua reaction agar tidak memory leak
+    for (var d in _disposers) {
+      d();
+    }
+    _userEmailController.dispose();
+    _passwordController.dispose();
+    _passwordFocusNode.dispose();
+    super.dispose();
+  }
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// MODAL COMPONENTS (Managed as separate StatefulWidgets to avoid
+// "TextEditingController used after being disposed" errors during transition
+// animations)
+// ─────────────────────────────────────────────────────────────────────────────
+
+class _ForgotPasswordDialogContent extends StatefulWidget {
+  final String initialEmail;
+  const _ForgotPasswordDialogContent({required this.initialEmail});
+
+  @override
+  State<_ForgotPasswordDialogContent> createState() =>
+      _ForgotPasswordDialogContentState();
+}
+
+class _ForgotPasswordDialogContentState
+    extends State<_ForgotPasswordDialogContent> {
+  late final TextEditingController emailCtrl;
+  final _userStore = getIt<UserStore>();
+  bool isLoading = false;
+
+  @override
+  void initState() {
+    super.initState();
+    emailCtrl = TextEditingController(text: widget.initialEmail);
+  }
+
+  @override
+  void dispose() {
+    emailCtrl.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Dialog(
+      backgroundColor: NutrifyTheme.lightCard,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(20),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(20.0),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(
+              'Reset Password',
+              style: GoogleFonts.montserrat(
+                color: Colors.white,
+                fontWeight: FontWeight.bold,
+                fontSize: 18,
               ),
-              title: Text(
-                'Reset Password',
-                style: GoogleFonts.montserrat(
-                  color: Colors.white,
-                  fontWeight: FontWeight.bold,
+            ),
+            const SizedBox(height: 16),
+            const Text(
+              'Masukkan email Anda. Kami akan kirim link reset password.',
+              style: TextStyle(color: Colors.white70, fontSize: 13),
+            ),
+            const SizedBox(height: 16),
+            Container(
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: TextField(
+                controller: emailCtrl,
+                keyboardType: TextInputType.emailAddress,
+                decoration: const InputDecoration(
+                  hintText: 'Email',
+                  hintStyle: TextStyle(color: Colors.grey),
+                  prefixIcon: Icon(
+                    Icons.email_outlined,
+                    color: Colors.grey,
+                  ),
+                  border: InputBorder.none,
+                  contentPadding: EdgeInsets.symmetric(vertical: 12),
                 ),
               ),
-              content: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Text(
-                    'Masukkan email Anda. Kami akan kirim link reset password.',
-                    style: TextStyle(color: Colors.white70, fontSize: 13),
-                  ),
-                  const SizedBox(height: 16),
-                  Container(
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    child: TextField(
-                      controller: emailCtrl,
-                      keyboardType: TextInputType.emailAddress,
-                      decoration: InputDecoration(
-                        hintText: 'Email',
-                        hintStyle: TextStyle(color: Colors.grey),
-                        prefixIcon: Icon(
-                          Icons.email_outlined,
-                          color: Colors.grey,
-                        ),
-                        border: InputBorder.none,
-                        contentPadding: EdgeInsets.symmetric(vertical: 12),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-              actions: [
+            ),
+            const SizedBox(height: 20),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
                 TextButton(
-                  onPressed: () => Navigator.pop(dialogCtx),
-                  child: Text('Batal', style: TextStyle(color: Colors.white54)),
+                  onPressed: () => Navigator.pop(context),
+                  child: const Text('Batal', style: TextStyle(color: Colors.white54)),
                 ),
                 ElevatedButton(
                   onPressed: isLoading
@@ -508,14 +595,22 @@ class _LoginScreenState extends State<LoginScreen> {
                       : () async {
                           final email = emailCtrl.text.trim();
                           if (email.isEmpty) return;
-                          setDialogState(() => isLoading = true);
+
+                          setState(() => isLoading = true);
                           try {
                             await _userStore.forgotPassword(email);
-                            // Return the email so .then() can show success msg
-                            Navigator.pop(dialogCtx, email);
+                            if (mounted) {
+                              Navigator.pop(context, email);
+                            }
                           } catch (e) {
-                            Navigator.pop(dialogCtx);
-                            _showErrorMessage(_parseError(e));
+                            if (mounted) {
+                              setState(() => isLoading = false);
+                              // Error handling inside dialog
+                              FlushbarHelper.createError(
+                                message: _parseError(e),
+                                title: 'Kesalahan',
+                              ).show(context);
+                            }
                           }
                         },
                   style: ElevatedButton.styleFrom(
@@ -542,380 +637,13 @@ class _LoginScreenState extends State<LoginScreen> {
                         ),
                 ),
               ],
-            );
-          },
-        );
-      },
-    ).then((sentEmail) {
-      emailCtrl.dispose();
-      // At this point the dialog animation is done — safe to show flushbar
-      if (sentEmail != null && mounted) {
-        FlushbarHelper.createSuccess(
-          message: 'Link reset password telah dikirim ke $sentEmail',
-          title: 'Email Terkirim!',
-          duration: const Duration(seconds: 4),
-        ).show(context);
-      }
-    });
-  }
-
-  void _showSignUpModal() {
-    final nameCtrl = TextEditingController();
-    final emailCtrl = TextEditingController();
-    final passCtrl = TextEditingController();
-
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      backgroundColor: Colors.transparent,
-      builder: (modalCtx) {
-        bool passVisible = false;
-        bool isLoading = false;
-        String? errorMsg;
-
-        return StatefulBuilder(
-          builder: (ctx, setModalState) {
-            return Padding(
-              padding: EdgeInsets.only(
-                bottom: MediaQuery.of(ctx).viewInsets.bottom,
-              ),
-              child: Container(
-                height: MediaQuery.of(ctx).size.height * 0.95,
-                decoration: const BoxDecoration(
-                  color: Color(0xFF49426E),
-                  borderRadius: BorderRadius.only(
-                    topLeft: Radius.circular(40),
-                    topRight: Radius.circular(40),
-                  ),
-                ),
-                child: Stack(
-                  children: [
-                    ClipRRect(
-                      borderRadius: const BorderRadius.only(
-                        topLeft: Radius.circular(40),
-                        topRight: Radius.circular(40),
-                      ),
-                      child: Image.asset(
-                        Assets.makananRegister,
-                        height: MediaQuery.of(ctx).size.height * 0.25,
-                        width: double.infinity,
-                        fit: BoxFit.cover,
-                        errorBuilder: (_, __, ___) => Container(
-                          height: MediaQuery.of(ctx).size.height * 0.25,
-                          color: NutrifyTheme.darkCard,
-                        ),
-                      ),
-                    ),
-                    Positioned(
-                      top: 20,
-                      left: 20,
-                      child: GestureDetector(
-                        onTap: () => Navigator.pop(modalCtx),
-                        child: Container(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 16,
-                            vertical: 8,
-                          ),
-                          decoration: BoxDecoration(
-                            color: const Color(0xFF35315D).withOpacity(0.85),
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                          child: Text(
-                            'Nutrify',
-                            style: GoogleFonts.montserrat(
-                              color: NutrifyTheme.accentOrange,
-                              fontWeight: FontWeight.bold,
-                              fontStyle: FontStyle.italic,
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-                    Padding(
-                      padding: EdgeInsets.only(
-                        top: MediaQuery.of(ctx).size.height * 0.1,
-                      ),
-                      child: Container(
-                        width: double.infinity,
-                        clipBehavior: Clip.antiAlias,
-                        decoration: const BoxDecoration(
-                          color: Color(0xFF49426E),
-                          borderRadius: BorderRadius.only(
-                            topLeft: Radius.circular(40),
-                            topRight: Radius.circular(40),
-                          ),
-                        ),
-                        child: SingleChildScrollView(
-                          padding: const EdgeInsets.symmetric(horizontal: 24.0),
-                          child: Column(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              const SizedBox(height: 20),
-                              Image.asset(
-                                Assets.nutrifyLogo,
-                                height: 70,
-                                fit: BoxFit.contain,
-                                errorBuilder: (_, __, ___) => Icon(
-                                  Icons.pie_chart_outline,
-                                  color: NutrifyTheme.accentOrange,
-                                  size: 60,
-                                ),
-                              ),
-                              const SizedBox(height: 8),
-                              Text(
-                                'Nutrify',
-                                style: GoogleFonts.montserrat(
-                                  fontSize: 36,
-                                  fontWeight: FontWeight.w900,
-                                  fontStyle: FontStyle.italic,
-                                  color: NutrifyTheme.accentOrange,
-                                ),
-                              ),
-                              Text(
-                                'Buat Akun Baru',
-                                style: GoogleFonts.montserrat(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.w600,
-                                  color: Colors.white.withOpacity(0.9),
-                                ),
-                              ),
-                              const SizedBox(height: 24),
-                              if (errorMsg != null)
-                                Container(
-                                  padding: const EdgeInsets.symmetric(
-                                    horizontal: 16,
-                                    vertical: 10,
-                                  ),
-                                  margin: const EdgeInsets.only(bottom: 12),
-                                  decoration: BoxDecoration(
-                                    color: Colors.red.shade700.withOpacity(
-                                      0.25,
-                                    ),
-                                    borderRadius: BorderRadius.circular(10),
-                                    border: Border.all(
-                                      color: Colors.red.shade300,
-                                    ),
-                                  ),
-                                  child: Text(
-                                    errorMsg!,
-                                    style: const TextStyle(
-                                      color: Colors.white,
-                                      fontSize: 13,
-                                    ),
-                                  ),
-                                ),
-                              _buildRegisterTextField(
-                                controller: nameCtrl,
-                                hint: 'Nama lengkap',
-                                icon: Icons.person_outline,
-                              ),
-                              const SizedBox(height: 14),
-                              _buildRegisterTextField(
-                                controller: emailCtrl,
-                                hint: 'Email',
-                                icon: Icons.email_outlined,
-                                keyboardType: TextInputType.emailAddress,
-                              ),
-                              const SizedBox(height: 14),
-                              Container(
-                                decoration: BoxDecoration(
-                                  color: Colors.white,
-                                  borderRadius: BorderRadius.circular(15),
-                                ),
-                                child: TextField(
-                                  controller: passCtrl,
-                                  obscureText: !passVisible,
-                                  style: const TextStyle(color: Colors.black87),
-                                  decoration: InputDecoration(
-                                    hintText: 'Password (min. 6 karakter)',
-                                    hintStyle: TextStyle(
-                                      color: Colors.grey[600],
-                                    ),
-                                    prefixIcon: Icon(
-                                      Icons.lock_outline,
-                                      color: Colors.grey[600],
-                                    ),
-                                    suffixIcon: GestureDetector(
-                                      onTap: () => setModalState(
-                                        () => passVisible = !passVisible,
-                                      ),
-                                      child: Icon(
-                                        passVisible
-                                            ? Icons.visibility_off_outlined
-                                            : Icons.visibility_outlined,
-                                        color: Colors.grey[600],
-                                      ),
-                                    ),
-                                    border: InputBorder.none,
-                                    contentPadding: const EdgeInsets.symmetric(
-                                      vertical: 15,
-                                    ),
-                                  ),
-                                ),
-                              ),
-                              const SizedBox(height: 32),
-                              SizedBox(
-                                width: double.infinity,
-                                height: 58,
-                                child: ElevatedButton(
-                                  onPressed: isLoading
-                                      ? null
-                                      : () async {
-                                          final name = nameCtrl.text.trim();
-                                          final email = emailCtrl.text.trim();
-                                          final pass = passCtrl.text;
-                                          if (name.isEmpty ||
-                                              email.isEmpty ||
-                                              pass.isEmpty) {
-                                            setModalState(
-                                              () => errorMsg =
-                                                  'Semua field harus diisi',
-                                            );
-                                            return;
-                                          }
-                                          if (pass.length < 6) {
-                                            setModalState(
-                                              () => errorMsg =
-                                                  'Password minimal 6 karakter',
-                                            );
-                                            return;
-                                          }
-                                          setModalState(() {
-                                            isLoading = true;
-                                            errorMsg = null;
-                                          });
-                                          try {
-                                            await _userStore.register(
-                                              name,
-                                              email,
-                                              pass,
-                                            );
-                                            if (ctx.mounted) {
-                                              // Return true so .then() shows
-                                              // the success flushbar safely
-                                              Navigator.pop(modalCtx, true);
-                                            }
-                                          } catch (e) {
-                                            setModalState(() {
-                                              errorMsg = _parseError(e);
-                                              isLoading = false;
-                                            });
-                                          }
-                                        },
-                                  style: ElevatedButton.styleFrom(
-                                    backgroundColor: const Color(0xFF35315D),
-                                    disabledBackgroundColor: const Color(
-                                      0xFF35315D,
-                                    ).withOpacity(0.5),
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(30),
-                                    ),
-                                  ),
-                                  child: isLoading
-                                      ? const SizedBox(
-                                          width: 24,
-                                          height: 24,
-                                          child: CircularProgressIndicator(
-                                            strokeWidth: 2.5,
-                                            color: NutrifyTheme.accentOrange,
-                                          ),
-                                        )
-                                      : Text(
-                                          'Sign Up',
-                                          style: TextStyle(
-                                            color: NutrifyTheme.accentOrange,
-                                            fontSize: 18,
-                                            fontWeight: FontWeight.bold,
-                                          ),
-                                        ),
-                                ),
-                              ),
-                              const SizedBox(height: 12),
-                              TextButton(
-                                onPressed: () => Navigator.pop(modalCtx),
-                                child: Text(
-                                  'Sudah punya akun? Masuk',
-                                  style: TextStyle(
-                                    color: Colors.white.withOpacity(0.7),
-                                  ),
-                                ),
-                              ),
-                              const SizedBox(height: 32),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            );
-          },
-        );
-      },
-    ).then((registered) {
-      // Defer disposal: Flutter may still rebuild the exiting modal
-      // during the dismiss animation, so the controllers must stay
-      // alive until the next microtask.
-      Future.microtask(() {
-        nameCtrl.dispose();
-        emailCtrl.dispose();
-        passCtrl.dispose();
-      });
-      // Sheet is fully dismissed — safe to show flushbar in parent context
-      if ((registered ?? false) && mounted) {
-        FlushbarHelper.createSuccess(
-          message: 'Akun berhasil dibuat! Cek email Anda untuk konfirmasi.',
-          title: 'Berhasil!',
-          duration: const Duration(seconds: 4),
-        ).show(context);
-      }
-    });
-  }
-
-  Widget _buildRegisterTextField({
-    required TextEditingController controller,
-    required String hint,
-    required IconData icon,
-    TextInputType keyboardType = TextInputType.text,
-  }) {
-    return Container(
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(15),
-      ),
-      child: TextField(
-        controller: controller,
-        keyboardType: keyboardType,
-        style: const TextStyle(color: Colors.black87),
-        decoration: InputDecoration(
-          hintText: hint,
-          hintStyle: TextStyle(color: Colors.grey[600]),
-          prefixIcon: Icon(icon, color: Colors.grey[600]),
-          border: InputBorder.none,
-          contentPadding: const EdgeInsets.symmetric(vertical: 15),
+            ),
+          ],
         ),
       ),
     );
   }
 
-  void _handleNavigation() {
-    SharedPreferences.getInstance().then((prefs) {
-      prefs.setBool(Preferences.is_logged_in, true);
-    });
-
-    Navigator.of(context).pushNamedAndRemoveUntil(
-      Routes.home, 
-      (Route<dynamic> route) => false
-    );
-  }
-
-  // General Methods:-----------------------------------------------------------
-
-  /// Parses a Supabase [AuthException] or generic exception into a user-
-  /// friendly Indonesian message.  Used in the sign-up modal and forgot-
-  /// password dialog so they don't write to the shared errorStore (which
-  /// would trigger a duplicate red flushbar from the login Observer).
   String _parseError(dynamic e) {
     if (e is sb.AuthException) {
       final msg = e.message.toLowerCase();
@@ -944,28 +672,369 @@ class _LoginScreenState extends State<LoginScreen> {
     }
     return 'Terjadi kesalahan. Silakan coba lagi.';
   }
+}
 
-  _showErrorMessage(String message) {
-    if (message.isNotEmpty) {
-      FlushbarHelper.createError(
-        message: message,
-        title: AppLocalizations.of(context).translate('home_tv_error'),
-        duration: Duration(seconds: 3),
-      )..show(context);
-    }
-    return SizedBox.shrink();
+class _SignUpModalContent extends StatefulWidget {
+  final String initialEmail;
+  const _SignUpModalContent({required this.initialEmail});
+
+  @override
+  State<_SignUpModalContent> createState() => _SignUpModalContentState();
+}
+
+class _SignUpModalContentState extends State<_SignUpModalContent> {
+  final _userStore = getIt<UserStore>();
+  late final TextEditingController nameCtrl;
+  late final TextEditingController emailCtrl;
+  final passCtrl = TextEditingController();
+  bool passVisible = false;
+  bool isLoading = false;
+  String? errorMsg;
+
+  @override
+  void initState() {
+    super.initState();
+    nameCtrl = TextEditingController();
+    emailCtrl = TextEditingController(text: widget.initialEmail);
   }
 
-  // dispose:-------------------------------------------------------------------
   @override
   void dispose() {
-    // Bersihkan semua reaction agar tidak memory leak
-    for (var d in _disposers) {
-      d();
-    }
-    _userEmailController.dispose();
-    _passwordController.dispose();
-    _passwordFocusNode.dispose();
+    nameCtrl.dispose();
+    emailCtrl.dispose();
+    passCtrl.dispose();
     super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: EdgeInsets.only(
+        bottom: MediaQuery.of(context).viewInsets.bottom,
+      ),
+      child: Container(
+        height: MediaQuery.of(context).size.height * 0.95,
+        decoration: const BoxDecoration(
+          color: Color(0xFF49426E),
+          borderRadius: BorderRadius.only(
+            topLeft: Radius.circular(40),
+            topRight: Radius.circular(40),
+          ),
+        ),
+        child: Stack(
+          children: [
+            ClipRRect(
+              borderRadius: const BorderRadius.only(
+                topLeft: Radius.circular(40),
+                topRight: Radius.circular(40),
+              ),
+              child: Image.asset(
+                Assets.makananRegister,
+                height: MediaQuery.of(context).size.height * 0.25,
+                width: double.infinity,
+                fit: BoxFit.cover,
+                errorBuilder: (_, __, ___) => Container(
+                  height: MediaQuery.of(context).size.height * 0.25,
+                  color: NutrifyTheme.darkCard,
+                ),
+              ),
+            ),
+            Positioned(
+              top: 20,
+              left: 20,
+              child: GestureDetector(
+                onTap: () => Navigator.pop(context),
+                child: Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 8,
+                  ),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFF35315D).withOpacity(0.85),
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: Text(
+                    'Nutrify',
+                    style: GoogleFonts.montserrat(
+                      color: NutrifyTheme.accentOrange,
+                      fontWeight: FontWeight.bold,
+                      fontStyle: FontStyle.italic,
+                    ),
+                  ),
+                ),
+              ),
+            ),
+            Padding(
+              padding: EdgeInsets.only(
+                top: MediaQuery.of(context).size.height * 0.1,
+              ),
+              child: Container(
+                width: double.infinity,
+                clipBehavior: Clip.antiAlias,
+                decoration: const BoxDecoration(
+                  color: Color(0xFF49426E),
+                  borderRadius: BorderRadius.only(
+                    topLeft: Radius.circular(40),
+                    topRight: Radius.circular(40),
+                  ),
+                ),
+                child: SingleChildScrollView(
+                  padding: const EdgeInsets.symmetric(horizontal: 24.0),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      const SizedBox(height: 20),
+                      Image.asset(
+                        Assets.nutrifyLogo,
+                        height: 70,
+                        fit: BoxFit.contain,
+                        errorBuilder: (_, __, ___) => Icon(
+                          Icons.pie_chart_outline,
+                          color: NutrifyTheme.accentOrange,
+                          size: 60,
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      Text(
+                        'Nutrify',
+                        style: GoogleFonts.montserrat(
+                          fontSize: 36,
+                          fontWeight: FontWeight.w900,
+                          fontStyle: FontStyle.italic,
+                          color: NutrifyTheme.accentOrange,
+                        ),
+                      ),
+                      Text(
+                        'Buat Akun Baru',
+                        style: GoogleFonts.montserrat(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w600,
+                          color: Colors.white.withOpacity(0.9),
+                        ),
+                      ),
+                      const SizedBox(height: 24),
+                      if (errorMsg != null)
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 16,
+                            vertical: 10,
+                          ),
+                          margin: const EdgeInsets.only(bottom: 12),
+                          decoration: BoxDecoration(
+                            color: Colors.red.shade700.withOpacity(
+                              0.25,
+                            ),
+                            borderRadius: BorderRadius.circular(10),
+                            border: Border.all(
+                              color: Colors.red.shade300,
+                            ),
+                          ),
+                          child: Text(
+                            errorMsg!,
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 13,
+                            ),
+                          ),
+                        ),
+                      _buildRegisterTextField(
+                        controller: nameCtrl,
+                        hint: 'Nama lengkap',
+                        icon: Icons.person_outline,
+                      ),
+                      const SizedBox(height: 14),
+                      _buildRegisterTextField(
+                        controller: emailCtrl,
+                        hint: 'Email',
+                        icon: Icons.email_outlined,
+                        keyboardType: TextInputType.emailAddress,
+                      ),
+                      const SizedBox(height: 14),
+                      Container(
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(15),
+                        ),
+                        child: TextField(
+                          controller: passCtrl,
+                          obscureText: !passVisible,
+                          style: const TextStyle(color: Colors.black87),
+                          decoration: InputDecoration(
+                            hintText: 'Password (min. 6 karakter)',
+                            hintStyle: TextStyle(
+                              color: Colors.grey[600],
+                            ),
+                            prefixIcon: Icon(
+                              Icons.lock_outline,
+                              color: Colors.grey[600],
+                            ),
+                            suffixIcon: GestureDetector(
+                              onTap: () => setState(
+                                () => passVisible = !passVisible,
+                              ),
+                              child: Icon(
+                                passVisible
+                                    ? Icons.visibility_off_outlined
+                                    : Icons.visibility_outlined,
+                                color: Colors.grey[600],
+                              ),
+                            ),
+                            border: InputBorder.none,
+                            contentPadding: const EdgeInsets.symmetric(
+                              vertical: 15,
+                            ),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 32),
+                      SizedBox(
+                        width: double.infinity,
+                        height: 58,
+                        child: ElevatedButton(
+                          onPressed: isLoading
+                              ? null
+                              : () async {
+                                  final name = nameCtrl.text.trim();
+                                  final email = emailCtrl.text.trim();
+                                  final pass = passCtrl.text;
+                                  if (name.isEmpty ||
+                                      email.isEmpty ||
+                                      pass.isEmpty) {
+                                    setState(
+                                      () => errorMsg =
+                                          'Semua field harus diisi',
+                                    );
+                                    return;
+                                  }
+                                  if (pass.length < 6) {
+                                    setState(
+                                      () => errorMsg =
+                                          'Password minimal 6 karakter',
+                                    );
+                                    return;
+                                  }
+                                  setState(() {
+                                    isLoading = true;
+                                    errorMsg = null;
+                                  });
+                                  try {
+                                    await _userStore.register(
+                                      name,
+                                      email,
+                                      pass,
+                                    );
+                                    if (mounted) {
+                                      Navigator.pop(context, true);
+                                    }
+                                  } catch (e) {
+                                    setState(() {
+                                      errorMsg = _parseError(e);
+                                      isLoading = false;
+                                    });
+                                  }
+                                },
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: const Color(0xFF35315D),
+                            disabledBackgroundColor: const Color(
+                              0xFF35315D,
+                            ).withOpacity(0.5),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(30),
+                            ),
+                          ),
+                          child: isLoading
+                              ? const SizedBox(
+                                  width: 24,
+                                  height: 24,
+                                  child: CircularProgressIndicator(
+                                    strokeWidth: 2.5,
+                                    color: NutrifyTheme.accentOrange,
+                                  ),
+                                )
+                              : Text(
+                                  'Sign Up',
+                                  style: TextStyle(
+                                    color: NutrifyTheme.accentOrange,
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                        ),
+                      ),
+                      const SizedBox(height: 12),
+                      TextButton(
+                        onPressed: () => Navigator.pop(context),
+                        child: Text(
+                          'Sudah punya akun? Masuk',
+                          style: TextStyle(
+                            color: Colors.white.withOpacity(0.7),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 32),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildRegisterTextField({
+    required TextEditingController controller,
+    required String hint,
+    required IconData icon,
+    TextInputType keyboardType = TextInputType.text,
+  }) {
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(15),
+      ),
+      child: TextField(
+        controller: controller,
+        keyboardType: keyboardType,
+        style: const TextStyle(color: Colors.black87),
+        decoration: InputDecoration(
+          hintText: hint,
+          hintStyle: TextStyle(color: Colors.grey[600]),
+          prefixIcon: Icon(icon, color: Colors.grey[600]),
+          border: InputBorder.none,
+          contentPadding: const EdgeInsets.symmetric(vertical: 15),
+        ),
+      ),
+    );
+  }
+
+  String _parseError(dynamic e) {
+    if (e is sb.AuthException) {
+      final msg = e.message.toLowerCase();
+      if (msg.contains('invalid login credentials') ||
+          msg.contains('invalid_credentials')) {
+        return 'Email atau password salah';
+      }
+      if (msg.contains('email not confirmed')) {
+        return 'Cek email Anda untuk konfirmasi akun terlebih dahulu';
+      }
+      if (msg.contains('user already registered') ||
+          msg.contains('already registered')) {
+        return 'Email sudah terdaftar, silakan login';
+      }
+      if (msg.contains('password should be at least') ||
+          msg.contains('weak_password')) {
+        return 'Password minimal 6 karakter';
+      }
+      if (msg.contains('unable to validate email')) {
+        return 'Format email tidak valid';
+      }
+      if (msg.contains('rate limit')) {
+        return 'Terlalu banyak percobaan. Tunggu sebentar.';
+      }
+      return e.message.isNotEmpty ? e.message : 'Terjadi kesalahan autentikasi';
+    }
+    return 'Terjadi kesalahan. Silakan coba lagi.';
   }
 }

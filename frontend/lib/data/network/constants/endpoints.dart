@@ -8,17 +8,20 @@ class Endpoints {
   static String get supabaseAnonKey => dotenv.env['SUPABASE_ANON_KEY'] ?? '';
 
   // ── Backend Laravel (Ambil dari .env) ──────────────────────────────────
-  static String get baseUrl => dotenv.env['BASE_URL'] ?? 'https://nutrify-app.my.id/api';
+  static String get baseUrl {
+    final url = dotenv.env['BASE_URL'] ?? 'https://nutrify-app.my.id/api/';
+    return url.endsWith('/') ? url : '$url/';
+  }
 
   static int get receiveTimeout => int.tryParse(dotenv.env['RECEIVE_TIMEOUT'] ?? '') ?? 30000;
   static int get connectionTimeout => int.tryParse(dotenv.env['CONNECTION_TIMEOUT'] ?? '') ?? 30000;
 
   // ── API Endpoints (path relatif terhadap baseUrl) ─────────────────────────
-  static const String profile = '/profile';
-  static const String storeProfile = '/profile/store';
-  static const String foods = '/foods';
-  static const String foodLogs = '/food-logs';
-  static const String foodLogsSummary = '/food-logs/summary';
+  static const String profile = 'profile';
+  static const String storeProfile = 'profile/store';
+  static const String foods = 'foods';
+  static const String foodLogs = 'food-logs';
+  static const String foodLogsSummary = 'food-logs/summary';
 
   // Legacy
   static const String getPosts = '/posts';

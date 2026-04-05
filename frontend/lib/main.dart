@@ -10,39 +10,54 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 Future<void> main() async {
-  try {
+  await runZonedGuarded(() async {
     WidgetsFlutterBinding.ensureInitialized();
     
-    // Parallelize independent initializations
-    await Future.wait([
-      dotenv.load(fileName: ".env"),
-      initializeDateFormatting('id_ID', null),
-      setPreferredOrientations(),
-    ]);
-
-    await Supabase.initialize(
-      url: Endpoints.supabaseUrl,
-      anonKey: Endpoints.supabaseAnonKey,
-    );
-
-    await ServiceLocator.configureDependencies();
-    runApp(MyApp());
-  } catch (e, stacktrace) {
-    debugPrint("Fatal Initialization Error: $e");
-    debugPrint(stacktrace.toString());
+    debugPrint('Starting app initialization...');
     
-    // Fallback UI or simple error screen
-    runApp(MaterialApp(
-      home: Scaffold(
-        body: Center(
-          child: Padding(
-            padding: const EdgeInsets.all(24.0),
-            child: SelectableText("Nutrify failed to start.\n\nError: $e"),
+    try {
+      debugPrint('Loading .env file & resources...');
+      // Parallelize independent initializations
+      await Future.wait([
+        dotenv.load(fileName: ".env"),
+        initializeDateFormatting('id_ID', null),
+        setPreferredOrientations(),
+      ]);
+      debugPrint('Core resources loaded.');
+
+      debugPrint('Initializing Supabase...');
+      await Supabase.initialize(
+        url: Endpoints.supabaseUrl,
+        anonKey: Endpoints.supabaseAnonKey,
+      );
+      debugPrint('Supabase initialized.');
+
+      debugPrint('Configuring Service Locator...');
+      await ServiceLocator.configureDependencies();
+      debugPrint('Service Locator configured.');
+
+      debugPrint('Running MyApp...');
+      runApp(MyApp());
+    } catch (e, stacktrace) {
+      debugPrint('FATAL ERROR DURING INITIALIZATION: $e');
+      debugPrint('STACKTRACE: $stacktrace');
+      
+      // Fallback UI or simple error screen
+      runApp(MaterialApp(
+        home: Scaffold(
+          body: Center(
+            child: Padding(
+              padding: const EdgeInsets.all(24.0),
+              child: SelectableText("Nutrify failed to start.\n\nError: $e"),
+            ),
           ),
         ),
-      ),
-    ));
-  }
+      ));
+    }
+  }, (error, stack) {
+    debugPrint('Zoned error: $error');
+    debugPrint('Zoned stack: $stack');
+  });
 }
 
 Future<void> setPreferredOrientations() {
