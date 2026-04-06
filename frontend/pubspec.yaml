@@ -1,5 +1,5 @@
 name: nutrify
-description: A flutter boilerplate project created using MobX and Provider.
+description: A flutter boilerplate project created using MobX and Provider,Pengujian tertutup.
 
 # The following defines the version and build number for your application.
 # A version number is three numbers separated by dots, like 1.2.43
@@ -7,7 +7,7 @@ description: A flutter boilerplate project created using MobX and Provider.
 # Both the version and the builder number may be overridden in flutter
 # build by specifying --build-name and --build-number, respectively.
 # Read more about versioning at semver.org.
-version: 1.0.0+1
+version: 1.0.0+5
 
 environment:
   sdk: '>=3.8.0 <4.0.0'
@@ -63,7 +63,7 @@ dependencies:
   # X
   xxtea: ^2.1.0
   fluid_bottom_nav_bar: ^1.4.0
-  image_picker: ^1.2.1
+  # (belum digunakan) image_picker: ^1.2.1
   supabase_flutter: ^2.9.0
   flutter_dotenv: ^6.0.0
   # Y

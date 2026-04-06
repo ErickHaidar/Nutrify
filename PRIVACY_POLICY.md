@@ -31,4 +31,4 @@ If you choose to use Google Sign-In, we collect your email and name from your Go
 We may update our Privacy Policy from time to time. We will notify you of any changes by posting the new Privacy Policy on this page.
 
 ## 6. Contact Us
-If you have any questions about this Privacy Policy, please contact us at: **(Your Email Address Here)**
+If you have any questions about this Privacy Policy, please contact us at: [ibnuhabib017@gmail.com]
