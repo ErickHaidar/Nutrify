@@ -1,5 +1,5 @@
 import 'dart:async';
-import 'package:google_sign_in/google_sign_in.dart';
+import 'package:google_sign_in/google_sign_in.dart' as auth;
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 import 'package:nutrify/data/sharedpref/shared_preference_helper.dart';
@@ -52,13 +52,13 @@ class UserRepositoryImpl extends UserRepository {
     );
   }
 
-  GoogleSignIn? _googleSignIn;
+  auth.GoogleSignIn? _googleSignIn;
 
-  GoogleSignIn _getGoogleSignIn() {
+  auth.GoogleSignIn _getGoogleSignIn() {
     if (_googleSignIn != null) return _googleSignIn!;
-    
+
     final webClientId = dotenv.env['GOOGLE_WEB_CLIENT_ID'] ?? '';
-    _googleSignIn = GoogleSignIn(
+    _googleSignIn = auth.GoogleSignIn(
       clientId: webClientId,
       serverClientId: webClientId,
     );
@@ -68,7 +68,7 @@ class UserRepositoryImpl extends UserRepository {
   @override
   Future<void> signInWithGoogle() async {
     // 1. Inisialisasi Google Sign In
-    final googleSignIn = _getGoogleSignIn();
+    final auth.GoogleSignIn googleSignIn = _getGoogleSignIn();
     final googleUser = await googleSignIn.signIn();
     final googleAuth = await googleUser?.authentication;
     final accessToken = googleAuth?.accessToken;
@@ -95,8 +95,33 @@ class UserRepositoryImpl extends UserRepository {
   // Logout:--------------------------------------------------------------------
   @override
   Future<void> logout() async {
-    await sb.Supabase.instance.client.auth.signOut();
-    await _sharedPrefsHelper.clearUserData();
+    try {
+      // 1. Logout dari Supabase (Menghapus session di server)
+      await sb.Supabase.instance.client.auth.signOut();
+
+      // 2. Logout dari Google (Menghapus cache akun di HP)
+      final auth.GoogleSignIn googleSignIn = _getGoogleSignIn();
+      
+      // Cek apakah user sedang login lewat Google
+      if (await googleSignIn.isSignedIn()) {
+        // signOut() hanya menghapus session lokal
+        await googleSignIn.signOut();
+        
+        // Opsional: Gunakan disconnect() jika ingin benar-benar menghapus 
+        // izin aplikasi dari akun Google user (paksa login ulang total).
+        // await googleSignIn.disconnect();
+      }
+
+      // 3. Hapus data di Shared Preferences (Token, status login, dll)
+      await _sharedPrefsHelper.clearUserData();
+      await _sharedPrefsHelper.saveIsLoggedIn(false);
+    //ignore: avoid_print
+      print('Logout berhasil');
+    } catch (e) {
+      //ignore: avoid_print
+      print('Terjadi kesalahan saat logout: $e');
+      rethrow;
+    }
   }
 
   @override
