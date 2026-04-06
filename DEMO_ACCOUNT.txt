@@ -1,0 +1,17 @@
+# Akun Demo (Google Play Console)
+
+Gunakan informasi ini untuk bagian "App Access" di Play Console jika tim Google butuh login ke aplikasi untuk proses review.
+
+---------------------------
+## Informasi Akun Demo
+- **Email**: nutrify.demo@example.com
+- **Password**: NutrifyDemo123!
+- **Note**: Akun ini harus Anda daftarkan terlebih dahulu di database Supabase Anda agar Tim Google bisa login.
+---------------------------
+
+Pastikan Anda melakukan langkah-langkah berikut di Supabase Dashboard:
+1. Buka **Authentication > Users**.
+2. Klik **Add User > Create New User**.
+3. Masukkan Email & Password di atas.
+4. Klik **Confirm User** secara manual supaya statusnya aktif (Verified).
+5. Selesai! Tim Google bisa menguji aplikasi sekarang.
