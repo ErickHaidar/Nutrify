@@ -19,7 +19,8 @@ class HomeScreenState extends State<HomeScreen> {
   bool _isLoadingData = false;
   final FoodLogApiService _foodLogApi = FoodLogApiService();
   final ProfileApiService _profileApi = ProfileApiService();
-  ApiProfileData? _profile; // Simpan data profil tunggal agar konsisten di seluruh UI
+  ApiProfileData?
+  _profile; // Simpan data profil tunggal agar konsisten di seluruh UI
   double totalProtein = 0;
   double totalCarbs = 0;
   double totalFat = 0;
@@ -45,7 +46,9 @@ class HomeScreenState extends State<HomeScreen> {
       // Parallelize fetching for better performance
       final results = await Future.wait([
         _foodLogApi.getSummary(now).catchError((_) => null),
-        _profileApi.getProfile(forceRefresh: forceRefresh).catchError((_) => null),
+        _profileApi
+            .getProfile(forceRefresh: forceRefresh)
+            .catchError((_) => null),
       ]);
 
       final summary = results[0] as DailySummary?;
@@ -127,8 +130,6 @@ class HomeScreenState extends State<HomeScreen> {
     }
   }
 
-
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -139,7 +140,8 @@ class HomeScreenState extends State<HomeScreen> {
           color: const Color(0xFFFFCC80),
           backgroundColor: const Color(0xFF2D2A4A),
           child: SingleChildScrollView(
-            physics: const AlwaysScrollableScrollPhysics(), // Important for RefreshIndicator
+            physics:
+                const AlwaysScrollableScrollPhysics(), // Important for RefreshIndicator
             padding: const EdgeInsets.symmetric(horizontal: 20),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -213,7 +215,10 @@ class HomeScreenState extends State<HomeScreen> {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          const Icon(Icons.restaurant, color: Color(0xFF2D2A4A)),
+                          const Icon(
+                            Icons.restaurant,
+                            color: Color(0xFF2D2A4A),
+                          ),
                           Column(
                             crossAxisAlignment: CrossAxisAlignment.end,
                             children: [
@@ -239,7 +244,8 @@ class HomeScreenState extends State<HomeScreen> {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (context) => const TrackingKaloriScreen(),
+                              builder: (context) =>
+                                  const TrackingKaloriScreen(),
                             ),
                           );
                         },
@@ -258,7 +264,7 @@ class HomeScreenState extends State<HomeScreen> {
                   ),
                 ),
                 const SizedBox(height: 20),
-  
+
                 // Target Kalori Row
                 InkWell(
                   onTap: () async {
@@ -314,7 +320,7 @@ class HomeScreenState extends State<HomeScreen> {
 
                 const Divider(color: Colors.white10),
                 const SizedBox(height: 10),
-  
+
                 // Grid Makan
                 GridView.count(
                   shrinkWrap: true,
@@ -362,6 +368,7 @@ class HomeScreenState extends State<HomeScreen> {
       ),
     );
   }
+
   Widget _buildCompleteProfileBanner() {
     return Container(
       width: double.infinity,

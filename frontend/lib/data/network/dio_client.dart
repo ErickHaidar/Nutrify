@@ -25,7 +25,7 @@ class DioClient {
       );
       return response.data;
     } catch (e) {
-      print(e.toString());
+      // Link error
       throw e;
     }
   }

@@ -114,3 +114,7 @@ app.*.map.json
 
 # Secrets
 .env
+# Signed Bundle/APK
+*.jks
+*.keystore
+android/key.properties

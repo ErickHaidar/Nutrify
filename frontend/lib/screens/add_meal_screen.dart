@@ -74,7 +74,7 @@ class _AddMealScreenState extends State<AddMealScreen> {
         });
       }
     } catch (e) {
-      debugPrint('Error loading meal logs: $e');
+      // Error loading meal logs
     }
   }
 

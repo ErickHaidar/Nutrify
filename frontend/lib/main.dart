@@ -14,11 +14,11 @@ Future<void> main() async {
 
   await runZonedGuarded(() async {
     try {
-      debugPrint('Step 1: Loading environment variables...');
+      // Step 1: Loading environment variables...
       // HARUS await secara mandiri, jangan digabung Future.wait agar variabel tersedia bagi yang lain
       await dotenv.load(fileName: ".env");
 
-      debugPrint('Step 2: Initializing Supabase...');
+      // Step 2: Initializing Supabase...
       // Gunakan nilai langsung dari dotenv untuk memastikan akurasi
       final supabaseUrl = dotenv.env['SUPABASE_URL'] ?? '';
       final supabaseAnonKey = dotenv.env['SUPABASE_ANON_KEY'] ?? '';
@@ -32,7 +32,7 @@ Future<void> main() async {
         anonKey: supabaseAnonKey,
       );
 
-      debugPrint('Step 3: Initializing local resources & dependencies...');
+      // Step 3: Initializing local resources & dependencies...
       // Fungsi-fungsi yang tidak saling bergantung bisa dijalankan bersamaan
       await Future.wait([
         initializeDateFormatting('id_ID', null),
@@ -40,12 +40,11 @@ Future<void> main() async {
         ServiceLocator.configureDependencies(),
       ]);
 
-      debugPrint('Step 4: Running MyApp...');
+      // Step 4: Running MyApp...
       runApp(MyApp()); // Hapus 'const' jika constructor MyApp tidak mendukungnya
 
-    } catch (e, stacktrace) {
-      debugPrint('FATAL ERROR: $e');
-      debugPrint('STACKTRACE: $stacktrace');
+    } catch (e) {
+      // Log errors if needed (consider using a logging framework for production)
       
       runApp(MaterialApp(
         debugShowCheckedModeBanner: false,
@@ -60,7 +59,7 @@ Future<void> main() async {
       ));
     }
   }, (error, stack) {
-    debugPrint('Global Zoned Error: $error');
+    // Global logging if needed
   });
 }
 

@@ -65,7 +65,7 @@ class _MyAppState extends State<MyApp> {
         }
       });
     } catch (e) {
-      debugPrint('Error subscribing to auth changes: $e');
+      // Error subscribing to auth changes
       // Initialize an empty dummy subscription to avoid late initialization error in dispose()
       _authSubscription = const Stream<AuthState>.empty().listen((_) {});
     }

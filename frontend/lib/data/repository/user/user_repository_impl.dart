@@ -101,13 +101,13 @@ class UserRepositoryImpl extends UserRepository {
 
       // 2. Logout dari Google (Menghapus cache akun di HP)
       final auth.GoogleSignIn googleSignIn = _getGoogleSignIn();
-      
+
       // Cek apakah user sedang login lewat Google
       if (await googleSignIn.isSignedIn()) {
         // signOut() hanya menghapus session lokal
         await googleSignIn.signOut();
-        
-        // Opsional: Gunakan disconnect() jika ingin benar-benar menghapus 
+
+        // Opsional: Gunakan disconnect() jika ingin benar-benar menghapus
         // izin aplikasi dari akun Google user (paksa login ulang total).
         // await googleSignIn.disconnect();
       }
@@ -115,11 +115,11 @@ class UserRepositoryImpl extends UserRepository {
       // 3. Hapus data di Shared Preferences (Token, status login, dll)
       await _sharedPrefsHelper.clearUserData();
       await _sharedPrefsHelper.saveIsLoggedIn(false);
-    //ignore: avoid_print
-      print('Logout berhasil');
+      //ignore: avoid_print
+      // Success
     } catch (e) {
       //ignore: avoid_print
-      print('Terjadi kesalahan saat logout: $e');
+      // Error logout
       rethrow;
     }
   }
