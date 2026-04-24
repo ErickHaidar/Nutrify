@@ -6,6 +6,7 @@ import 'package:nutrify/domain/usecase/user/save_login_in_status_usecase.dart';
 import 'package:mobx/mobx.dart';
 import 'package:supabase_flutter/supabase_flutter.dart' as sb;
 import 'package:nutrify/di/service_locator.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../../domain/entity/user/user.dart';
 import '../../../domain/usecase/user/login_usecase.dart';
@@ -96,7 +97,9 @@ abstract class _UserStore with Store {
           success = true;
         })
         .catchError((e) {
-          isLoggedIn = false;
+          final prefs = getIt<SharedPreferences>();
+    prefs.remove('profile_image');
+    isLoggedIn = false;
           success = false;
           errorStore.errorMessage = _parseAuthError(e);
           throw e;
@@ -112,7 +115,9 @@ abstract class _UserStore with Store {
       isLoggedIn = true;
       success = true;
     } catch (e) {
-      isLoggedIn = false;
+      final prefs = getIt<SharedPreferences>();
+    prefs.remove('profile_image');
+    isLoggedIn = false;
       success = false;
       errorStore.errorMessage = _parseAuthError(e);
       rethrow;
@@ -164,6 +169,8 @@ abstract class _UserStore with Store {
     await _saveLoginStatusUseCase.call(params: false);
     ProfileApiService.invalidateCache(); // Invalidate cache on logout
     getIt<PostStore>().reset(); // Reset post store on logout
+    final prefs = getIt<SharedPreferences>();
+    prefs.remove('profile_image');
     isLoggedIn = false;
   }
 
@@ -172,6 +179,8 @@ abstract class _UserStore with Store {
   void clearSession() {
     ProfileApiService.invalidateCache(); // Invalidate cache on clear session
     getIt<PostStore>().reset(); // Reset post store on clear session
+    final prefs = getIt<SharedPreferences>();
+    prefs.remove('profile_image');
     isLoggedIn = false;
   }
 

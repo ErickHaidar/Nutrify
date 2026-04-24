@@ -2,6 +2,8 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../services/profile_api_service.dart';
+import '../widgets/nutrify_calendar_picker.dart';
+import 'package:nutrify/constants/colors.dart';
 
 class BodyDataGoalsScreen extends StatefulWidget {
   const BodyDataGoalsScreen({super.key});
@@ -13,8 +15,8 @@ class BodyDataGoalsScreen extends StatefulWidget {
 class _BodyDataGoalsScreenState extends State<BodyDataGoalsScreen> {
   final _profileApi = ProfileApiService();
   final _heightController = TextEditingController();
-  final _ageController = TextEditingController();
   final _weightController = TextEditingController();
+  DateTime? _birthDate;
 
   // API enum values
   String _selectedGender = 'male'; // 'male' | 'female'
@@ -40,7 +42,6 @@ class _BodyDataGoalsScreenState extends State<BodyDataGoalsScreen> {
     _loadData();
     _heightController.addListener(() => setState(() {}));
     _weightController.addListener(() => setState(() {}));
-    _ageController.addListener(() => setState(() {}));
   }
 
   Future<void> _loadData() async {
@@ -49,7 +50,9 @@ class _BodyDataGoalsScreenState extends State<BodyDataGoalsScreen> {
       if (profile != null && mounted) {
         setState(() {
           _heightController.text = profile.height.toString();
-          _ageController.text = profile.age.toString();
+          if (profile.age > 0) {
+            _birthDate = DateTime(DateTime.now().year - profile.age, 1, 1);
+          }
           _weightController.text = profile.weight.toString();
           _selectedGender = profile.gender;
           _selectedActivity = profile.activityLevel;
@@ -68,7 +71,7 @@ class _BodyDataGoalsScreenState extends State<BodyDataGoalsScreen> {
   Future<void> _saveData() async {
     if (_isSaving) return;
 
-    final age = int.tryParse(_ageController.text) ?? 0;
+    final age = _birthDate != null ? _computeAge(_birthDate!) : 0;
     final weight = int.tryParse(_weightController.text) ?? 0;
     final height = int.tryParse(_heightController.text) ?? 0;
 
@@ -100,12 +103,17 @@ class _BodyDataGoalsScreenState extends State<BodyDataGoalsScreen> {
     }
   }
 
-  // ── Live calorie preview (client-side Mifflin-St Jeor) ────────────────────
+  int _computeAge(DateTime dob) {
+    final today = DateTime.now();
+    int age = today.year - dob.year;
+    if (today.month < dob.month || (today.month == dob.month && today.day < dob.day)) age--;
+    return age;
+  }
 
   int _calculateTargetCalories() {
     double w = double.tryParse(_weightController.text) ?? 0;
     double h = double.tryParse(_heightController.text) ?? 0;
-    int a = int.tryParse(_ageController.text) ?? 0;
+    int a = _birthDate != null ? _computeAge(_birthDate!) : 0;
     if (w == 0 || h == 0 || a == 0) return 0;
 
     double bmr;
@@ -134,24 +142,24 @@ class _BodyDataGoalsScreenState extends State<BodyDataGoalsScreen> {
   Widget build(BuildContext context) {
     if (_isLoading) {
       return const Scaffold(
-        backgroundColor: Color(0xFF433D67),
-        body: Center(child: CircularProgressIndicator()),
+        backgroundColor: AppColors.cream,
+        body: Center(child: CircularProgressIndicator(color: AppColors.navy)),
       );
     }
 
     return Scaffold(
-      backgroundColor: const Color(0xFF433D67),
+      backgroundColor: AppColors.cream,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.white),
+          icon: const Icon(Icons.arrow_back, color: AppColors.navy),
           onPressed: () => Navigator.pop(context),
         ),
         title: Text(
           'Body Data & Goals',
           style: GoogleFonts.montserrat(
-              fontWeight: FontWeight.bold, color: Colors.white),
+              fontWeight: FontWeight.bold, color: AppColors.navy),
         ),
         centerTitle: true,
       ),
@@ -160,14 +168,49 @@ class _BodyDataGoalsScreenState extends State<BodyDataGoalsScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            _buildSectionHeader('Personal Information'),
+            _buildSectionHeader('Informasi Personal'),
             const SizedBox(height: 20),
             Row(
               children: [
                 Expanded(
-                    child: _buildInputField('Height (cm)', _heightController)),
+                    child: _buildInputField('Tinggi Badan (cm)', _heightController)),
                 const SizedBox(width: 16),
-                Expanded(child: _buildInputField('Age', _ageController)),
+                Expanded(
+                  child: GestureDetector(
+                    onTap: () async {
+                      final picked = await showNutrifyDatePicker(
+                        context,
+                        initialDate: _birthDate ?? DateTime(DateTime.now().year - 25),
+                        firstDate: DateTime(1900),
+                        lastDate: DateTime.now(),
+                      );
+                      if (picked != null) setState(() => _birthDate = picked);
+                    },
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Text('Tanggal Lahir', style: TextStyle(color: AppColors.navy, fontSize: 12, fontWeight: FontWeight.bold)),
+                        const SizedBox(height: 8),
+                        Container(
+                          height: 50,
+                          padding: const EdgeInsets.symmetric(horizontal: 16),
+                          alignment: Alignment.centerLeft,
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(15),
+                            border: Border.all(color: AppColors.navy.withOpacity(0.1)),
+                          ),
+                          child: Text(
+                            _birthDate != null
+                              ? '${_birthDate!.day.toString().padLeft(2,'0')} ${['Jan','Feb','Mar','Apr','Mei','Jun','Jul','Agu','Sep','Okt','Nov','Des'][_birthDate!.month-1]} ${_birthDate!.year}'
+                              : 'Pilih tanggal',
+                            style: TextStyle(color: _birthDate != null ? AppColors.navy : AppColors.navy.withOpacity(0.4)),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
               ],
             ),
             const SizedBox(height: 16),
@@ -175,13 +218,13 @@ class _BodyDataGoalsScreenState extends State<BodyDataGoalsScreen> {
               children: [
                 Expanded(
                     child: _buildInputField(
-                        'Weight (kg)', _weightController)),
+                        'Berat Badan (kg)', _weightController)),
               ],
             ),
             const SizedBox(height: 16),
-            const Text('Gender',
+            const Text('Jenis Kelamin',
                 style: TextStyle(
-                    color: Color(0xFFFFCC80),
+                    color: AppColors.navy,
                     fontSize: 13,
                     fontWeight: FontWeight.bold)),
             const SizedBox(height: 10),
@@ -203,17 +246,17 @@ class _BodyDataGoalsScreenState extends State<BodyDataGoalsScreen> {
               ],
             ),
             const SizedBox(height: 35),
-            _buildSectionHeader('Daily Activity'),
+            _buildSectionHeader('Aktivitas Harian'),
             const SizedBox(height: 15),
-            _buildActivityTile('Lightly Active', '1-3 days of exercise/week',
+            _buildActivityTile('Lightly Active', '1-3 hari olahraga/minggu',
                 Icons.directions_walk, 'light'),
             _buildActivityTile('Moderately Active',
-                '3-5 days of exercise/week', Icons.fitness_center, 'moderate'),
+                '3-5 hari olahraga/minggu', Icons.fitness_center, 'moderate'),
             _buildActivityTile(
-                'Highly Active', '6-7 days of intense exercise', Icons.bolt,
+                'Highly Active', '6-7 hari olahraga intensif', Icons.bolt,
                 'active'),
             const SizedBox(height: 35),
-            _buildSectionHeader('Main Goal'),
+            _buildSectionHeader('Target Utama'),
             const SizedBox(height: 15),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -227,7 +270,7 @@ class _BodyDataGoalsScreenState extends State<BodyDataGoalsScreen> {
               ],
             ),
             const SizedBox(height: 35),
-            _buildSectionHeader('Live Calorie Preview'),
+            _buildSectionHeader('Estimasi Target Kalori'),
             const SizedBox(height: 15),
             _buildCaloriePreview(),
             const SizedBox(height: 35),
@@ -237,10 +280,9 @@ class _BodyDataGoalsScreenState extends State<BodyDataGoalsScreen> {
               child: ElevatedButton(
                 onPressed: _isSaving ? null : _saveData,
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFF2D2A4A),
+                  backgroundColor: AppColors.navy,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(30),
-                    side: const BorderSide(color: Color(0xFFFFCC80), width: 1),
                   ),
                 ),
                 child: _isSaving
@@ -249,17 +291,17 @@ class _BodyDataGoalsScreenState extends State<BodyDataGoalsScreen> {
                         height: 24,
                         child: CircularProgressIndicator(
                           strokeWidth: 2,
-                          color: Color(0xFFFFCC80),
+                          color: Colors.white,
                         ),
                       )
-                    : const Text('Confirm Profile',
+                    : const Text('Simpan Profil',
                         style: TextStyle(
-                            color: Color(0xFFFFCC80),
+                            color: Colors.white,
                             fontWeight: FontWeight.bold,
                             fontSize: 16)),
               ),
             ),
-            const SizedBox(height: 20),
+            SizedBox(height: MediaQuery.of(context).padding.bottom + 20),
           ],
         ),
       ),
@@ -272,11 +314,11 @@ class _BodyDataGoalsScreenState extends State<BodyDataGoalsScreen> {
       children: [
         Text(title,
             style: const TextStyle(
-                color: Colors.white,
+                color: AppColors.navy,
                 fontSize: 18,
                 fontWeight: FontWeight.bold)),
         const SizedBox(height: 5),
-        const Divider(color: Colors.white24),
+        const Divider(color: AppColors.navy, thickness: 0.1),
       ],
     );
   }
@@ -287,18 +329,19 @@ class _BodyDataGoalsScreenState extends State<BodyDataGoalsScreen> {
       children: [
         Text(label,
             style: const TextStyle(
-                color: Color(0xFFFFCC80),
+                color: AppColors.navy,
                 fontSize: 12,
                 fontWeight: FontWeight.bold)),
         const SizedBox(height: 8),
         Container(
           padding: const EdgeInsets.symmetric(horizontal: 16),
           decoration: BoxDecoration(
-              color: const Color(0xFF2D2A4A),
-              borderRadius: BorderRadius.circular(20)),
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(15),
+              border: Border.all(color: AppColors.navy.withOpacity(0.1))),
           child: TextField(
             controller: controller,
-            style: const TextStyle(color: Colors.white),
+            style: const TextStyle(color: AppColors.navy),
             keyboardType: TextInputType.number,
             decoration: const InputDecoration(border: InputBorder.none),
           ),
@@ -314,15 +357,13 @@ class _BodyDataGoalsScreenState extends State<BodyDataGoalsScreen> {
         height: 50,
         alignment: Alignment.center,
         decoration: BoxDecoration(
-          color: const Color(0xFF2D2A4A),
+          color: isSelected ? AppColors.peach : Colors.white,
           borderRadius: BorderRadius.circular(25),
-          border: isSelected
-              ? Border.all(color: const Color(0xFFFFCC80), width: 2)
-              : null,
+          border: Border.all(color: isSelected ? AppColors.navy : AppColors.navy.withOpacity(0.1), width: isSelected ? 2 : 1),
         ),
         child: Text(text,
             style: TextStyle(
-                color: isSelected ? const Color(0xFFFFCC80) : Colors.white,
+                color: AppColors.navy,
                 fontWeight: isSelected ? FontWeight.bold : FontWeight.normal)),
       ),
     );
@@ -337,15 +378,13 @@ class _BodyDataGoalsScreenState extends State<BodyDataGoalsScreen> {
         margin: const EdgeInsets.only(bottom: 12),
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: const Color(0xFF2D2A4A),
-          borderRadius: BorderRadius.circular(25),
-          border: isSelected
-              ? Border.all(color: const Color(0xFFFFCC80), width: 2)
-              : null,
+          color: isSelected ? AppColors.peach : Colors.white,
+          borderRadius: BorderRadius.circular(20),
+          border: Border.all(color: isSelected ? AppColors.navy : AppColors.navy.withOpacity(0.1), width: isSelected ? 2 : 1),
         ),
         child: Row(
           children: [
-            Icon(icon, color: Colors.white70),
+            Icon(icon, color: AppColors.navy),
             const SizedBox(width: 15),
             Expanded(
               child: Column(
@@ -353,15 +392,15 @@ class _BodyDataGoalsScreenState extends State<BodyDataGoalsScreen> {
                 children: [
                   Text(title,
                       style: const TextStyle(
-                          color: Colors.white, fontWeight: FontWeight.bold)),
+                          color: AppColors.navy, fontWeight: FontWeight.bold)),
                   Text(subtitle,
                       style:
-                          const TextStyle(color: Colors.white54, fontSize: 11)),
+                          const TextStyle(color: AppColors.navy, fontSize: 11)),
                 ],
               ),
             ),
             if (isSelected)
-              const Icon(Icons.check_circle, color: Color(0xFFFFCC80)),
+              const Icon(Icons.check_circle, color: AppColors.navy),
           ],
         ),
       ),
@@ -378,24 +417,22 @@ class _BodyDataGoalsScreenState extends State<BodyDataGoalsScreen> {
           Container(
             padding: const EdgeInsets.all(15),
             decoration: BoxDecoration(
-              color: const Color(0xFF2D2A4A),
+              color: isSelected ? AppColors.amber : Colors.white,
               shape: BoxShape.circle,
-              border: isSelected
-                  ? Border.all(color: const Color(0xFFFFCC80), width: 2)
-                  : null,
+              border: Border.all(color: isSelected ? AppColors.navy : AppColors.navy.withOpacity(0.1), width: 2),
             ),
             child: Icon(icon,
-                color: isSelected ? const Color(0xFFFFCC80) : Colors.white54,
+                color: AppColors.navy,
                 size: 28),
           ),
           const SizedBox(height: 8),
           Text(title,
               style: TextStyle(
-                  color: isSelected ? const Color(0xFFFFCC80) : Colors.white,
-                  fontWeight: FontWeight.bold,
+                  color: AppColors.navy,
+                  fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
                   fontSize: 13)),
           Text(subtitle,
-              style: const TextStyle(color: Colors.white54, fontSize: 10)),
+              style: const TextStyle(color: AppColors.navy, fontSize: 10)),
         ],
       ),
     );
@@ -410,21 +447,21 @@ class _BodyDataGoalsScreenState extends State<BodyDataGoalsScreen> {
       width: double.infinity,
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: const Color(0xFF2D2A4A),
+        color: AppColors.peach,
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: const Color(0xFFFFCC80).withOpacity(0.3)),
+        border: Border.all(color: AppColors.navy.withOpacity(0.2)),
       ),
       child: Column(
         children: [
           const Text(
-            'Estimated Daily Calorie Target',
-            style: TextStyle(color: Colors.white70, fontSize: 13),
+            'Estimasi Target Kalori Harian',
+            style: TextStyle(color: AppColors.navy, fontSize: 13),
           ),
           const SizedBox(height: 8),
           Text(
             '$formatted kCal',
             style: const TextStyle(
-              color: Color(0xFFFFCC80),
+              color: AppColors.navy,
               fontSize: 32,
               fontWeight: FontWeight.bold,
             ),

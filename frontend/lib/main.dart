@@ -9,10 +9,10 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 Future<void> main() async {
-  // Pastikan binding diinisialisasi di paling atas
-  WidgetsFlutterBinding.ensureInitialized();
-
   await runZonedGuarded(() async {
+    // Pastikan binding diinisialisasi di paling atas DALAM zone
+    WidgetsFlutterBinding.ensureInitialized();
+
     try {
       // Step 1: Loading environment variables...
       // HARUS await secara mandiri, jangan digabung Future.wait agar variabel tersedia bagi yang lain

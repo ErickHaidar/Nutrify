@@ -2,6 +2,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../services/profile_api_service.dart';
+import 'package:nutrify/constants/colors.dart';
 
 class ChangeGoalScreen extends StatefulWidget {
   const ChangeGoalScreen({super.key});
@@ -117,29 +118,29 @@ class _ChangeGoalScreenState extends State<ChangeGoalScreen> {
   Widget build(BuildContext context) {
     if (_isLoading) {
       return const Scaffold(
-        backgroundColor: Color(0xFF433D67),
-        body: Center(child: CircularProgressIndicator()),
+        backgroundColor: AppColors.cream,
+        body: Center(child: CircularProgressIndicator(color: AppColors.navy)),
       );
     }
 
     return Scaffold(
-      backgroundColor: const Color(0xFF433D67),
+      backgroundColor: AppColors.cream,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.white),
+          icon: const Icon(Icons.arrow_back, color: AppColors.navy),
           onPressed: () => Navigator.pop(context),
         ),
         title: Text(
-          'Change Goal',
+          'Ubah Target',
           style: GoogleFonts.montserrat(
-              fontWeight: FontWeight.bold, color: Colors.white),
+              fontWeight: FontWeight.bold, color: AppColors.navy),
         ),
         centerTitle: true,
         actions: [
           IconButton(
-            icon: const Icon(Icons.info_outline, color: Color(0xFFFFCC80)),
+            icon: const Icon(Icons.info_outline, color: AppColors.navy),
             onPressed: () {},
           )
         ],
@@ -150,29 +151,29 @@ class _ChangeGoalScreenState extends State<ChangeGoalScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              "What's your focus?",
+              "Apa fokus kamu?",
               style: GoogleFonts.montserrat(
                 fontSize: 24,
                 fontWeight: FontWeight.bold,
-                color: Colors.white,
+                color: AppColors.navy,
               ),
             ),
             const SizedBox(height: 8),
             const Text(
-              'select the primary goal for your fitness journey.',
-              style: TextStyle(color: Colors.white54, fontSize: 13),
+              'pilih target utama untuk perjalanan kebugaranmu.',
+              style: TextStyle(color: AppColors.navy, fontSize: 13),
             ),
             const SizedBox(height: 30),
-            _buildActivityTile('Lightly Active', '1-3 days of exercise/week',
+            _buildActivityTile('Lightly Active', '1-3 hari olahraga/minggu',
                 Icons.directions_walk),
             _buildActivityTile('Moderately Active',
-                '3-5 days of exercise/week', Icons.fitness_center),
+                '3-5 hari olahraga/minggu', Icons.fitness_center),
             _buildActivityTile(
-                'Highly Active', '6-7 days of intense exercise', Icons.bolt),
+                'Highly Active', '6-7 hari olahraga intensif', Icons.bolt),
             const SizedBox(height: 35),
-            const Text('Main Goal',
+            const Text('Target Utama',
                 style: TextStyle(
-                    color: Colors.white,
+                    color: AppColors.navy,
                     fontWeight: FontWeight.bold,
                     fontSize: 16)),
             const SizedBox(height: 20),
@@ -188,13 +189,12 @@ class _ChangeGoalScreenState extends State<ChangeGoalScreen> {
             SizedBox(
               width: double.infinity,
               height: 60,
-              child: OutlinedButton(
+              child: ElevatedButton(
                 onPressed: _isSaving ? null : _saveData,
-                style: OutlinedButton.styleFrom(
-                  side: const BorderSide(color: Color(0xFFFFCC80), width: 1.5),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: AppColors.navy,
                   shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(30)),
-                  backgroundColor: Colors.transparent,
                 ),
                 child: _isSaving
                     ? const SizedBox(
@@ -202,13 +202,13 @@ class _ChangeGoalScreenState extends State<ChangeGoalScreen> {
                         height: 24,
                         child: CircularProgressIndicator(
                           strokeWidth: 2,
-                          color: Color(0xFFFFCC80),
+                          color: Colors.white,
                         ),
                       )
                     : const Text(
-                        'Confirm Change',
+                        'Konfirmasi Perubahan',
                         style: TextStyle(
-                            color: Color(0xFFFFCC80),
+                            color: Colors.white,
                             fontWeight: FontWeight.bold,
                             fontSize: 16),
                       ),
@@ -234,15 +234,13 @@ class _ChangeGoalScreenState extends State<ChangeGoalScreen> {
         margin: const EdgeInsets.only(bottom: 12),
         padding: const EdgeInsets.all(20),
         decoration: BoxDecoration(
-          color: const Color(0xFF2D2A4A),
-          borderRadius: BorderRadius.circular(40),
-          border: isSelected
-              ? Border.all(color: const Color(0xFFFFCC80), width: 2)
-              : null,
+          color: isSelected ? AppColors.peach : Colors.white,
+          borderRadius: BorderRadius.circular(20),
+          border: Border.all(color: isSelected ? AppColors.navy : AppColors.navy.withOpacity(0.1), width: isSelected ? 2 : 1),
         ),
         child: Row(
           children: [
-            Icon(icon, color: Colors.white70),
+            Icon(icon, color: AppColors.navy),
             const SizedBox(width: 15),
             Expanded(
               child: Column(
@@ -250,15 +248,15 @@ class _ChangeGoalScreenState extends State<ChangeGoalScreen> {
                 children: [
                   Text(title,
                       style: const TextStyle(
-                          color: Colors.white, fontWeight: FontWeight.bold)),
+                          color: AppColors.navy, fontWeight: FontWeight.bold)),
                   Text(subtitle,
                       style:
-                          const TextStyle(color: Colors.white54, fontSize: 11)),
+                          const TextStyle(color: AppColors.navy, fontSize: 11)),
                 ],
               ),
             ),
             if (isSelected)
-              const Icon(Icons.check_circle, color: Color(0xFFFFCC80)),
+              const Icon(Icons.check_circle, color: AppColors.navy),
           ],
         ),
       ),
@@ -279,24 +277,22 @@ class _ChangeGoalScreenState extends State<ChangeGoalScreen> {
           Container(
             padding: const EdgeInsets.all(18),
             decoration: BoxDecoration(
-              color: const Color(0xFF2D2A4A),
+              color: isSelected ? AppColors.amber : Colors.white,
               shape: BoxShape.circle,
-              border: isSelected
-                  ? Border.all(color: const Color(0xFFFFCC80), width: 2)
-                  : null,
+              border: Border.all(color: isSelected ? AppColors.navy : AppColors.navy.withOpacity(0.1), width: 2),
             ),
             child: Icon(icon,
-                color: isSelected ? const Color(0xFFFFCC80) : Colors.white54,
+                color: AppColors.navy,
                 size: 28),
           ),
           const SizedBox(height: 10),
           Text(title,
               style: TextStyle(
-                  color: isSelected ? const Color(0xFFFFCC80) : Colors.white,
-                  fontWeight: FontWeight.bold,
+                  color: AppColors.navy,
+                  fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
                   fontSize: 13)),
           Text(subtitle,
-              style: const TextStyle(color: Colors.white54, fontSize: 10)),
+              style: const TextStyle(color: AppColors.navy, fontSize: 10)),
         ],
       ),
     );

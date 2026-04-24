@@ -138,13 +138,13 @@ class _FoodDetailScreenState extends State<FoodDetailScreen> {
         backgroundColor: Colors.transparent,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.white),
+          icon: const Icon(Icons.arrow_back, color: AppColors.navy),
           onPressed: () => Navigator.pop(context),
         ),
         title: Text(
           _foodName,
           style: GoogleFonts.montserrat(
-            color: const Color(0xFFFFDAB9), // Peachy color like image
+            color: AppColors.navy, // Navy from new palette
             fontWeight: FontWeight.bold,
           ),
         ),
@@ -157,7 +157,7 @@ class _FoodDetailScreenState extends State<FoodDetailScreen> {
             Container(
               padding: const EdgeInsets.all(24),
               decoration: BoxDecoration(
-                color: NutrifyTheme.darkCard,
+                color: AppColors.peach,
                 borderRadius: BorderRadius.circular(24),
               ),
               child: Column(
@@ -172,13 +172,13 @@ class _FoodDetailScreenState extends State<FoodDetailScreen> {
                     ),
                     child: Row(
                       children: [
-                        const Icon(Icons.scale_outlined, color: Colors.black54),
+                        const Icon(Icons.scale_outlined, color: AppColors.navy),
                         const SizedBox(width: 16),
                         Expanded(
                           child: TextField(
                             controller: _amountController,
                             keyboardType: TextInputType.number,
-                            style: const TextStyle(color: Colors.black87, fontSize: 18),
+                            style: const TextStyle(color: AppColors.navy, fontSize: 18),
                             decoration: const InputDecoration(
                               border: InputBorder.none,
                             ),
@@ -207,7 +207,7 @@ class _FoodDetailScreenState extends State<FoodDetailScreen> {
             Container(
               padding: const EdgeInsets.all(24),
               decoration: BoxDecoration(
-                color: NutrifyTheme.darkCard,
+                color: AppColors.peach,
                 borderRadius: BorderRadius.circular(24),
               ),
               child: Column(
@@ -216,7 +216,7 @@ class _FoodDetailScreenState extends State<FoodDetailScreen> {
                   Text(
                     'Informasi Gizi',
                     style: GoogleFonts.montserrat(
-                      color: Colors.white,
+                      color: AppColors.navy,
                       fontWeight: FontWeight.bold,
                       fontSize: 18,
                     ),
@@ -237,8 +237,8 @@ class _FoodDetailScreenState extends State<FoodDetailScreen> {
               child: ElevatedButton(
                 onPressed: _isSaving ? null : _handleSave,
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFFFFCC80),
-                  foregroundColor: Colors.black87,
+                  backgroundColor: AppColors.navy,
+                  foregroundColor: Colors.white,
                   padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 12),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(12),
@@ -256,6 +256,7 @@ class _FoodDetailScreenState extends State<FoodDetailScreen> {
                       ),
               ),
             ),
+            SizedBox(height: MediaQuery.of(context).padding.bottom + 16),
           ],
         ),
       ),
@@ -269,15 +270,15 @@ class _FoodDetailScreenState extends State<FoodDetailScreen> {
       child: Container(
         padding: const EdgeInsets.symmetric(vertical: 12),
         decoration: BoxDecoration(
-          color: isSelected ? Colors.white : Colors.transparent,
+          color: isSelected ? AppColors.navy : Colors.transparent,
           borderRadius: BorderRadius.circular(12),
-          border: isSelected ? null : Border.all(color: Colors.white24),
+          border: isSelected ? null : Border.all(color: AppColors.navy.withOpacity(0.2)),
         ),
         child: Center(
           child: Text(
             unit,
             style: TextStyle(
-              color: isSelected ? Colors.black87 : Colors.white70,
+              color: isSelected ? Colors.white : AppColors.navy,
               fontSize: 12,
               fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
             ),
@@ -293,8 +294,8 @@ class _FoodDetailScreenState extends State<FoodDetailScreen> {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Text(label, style: const TextStyle(color: Colors.white70, fontSize: 16)),
-          Text(value, style: const TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold)),
+          Text(label, style: TextStyle(color: AppColors.navy.withOpacity(0.7), fontSize: 16)),
+          Text(value, style: const TextStyle(color: AppColors.navy, fontSize: 16, fontWeight: FontWeight.bold)),
         ],
       ),
     );
