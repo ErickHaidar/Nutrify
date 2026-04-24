@@ -70,7 +70,9 @@ class _LoginScreenState extends State<LoginScreen> {
     return Scaffold(
       primary: true,
       appBar: EmptyAppBar(),
-      body: _buildBody(),
+      body: SafeArea(
+        child: _buildBody(),
+      ),
       backgroundColor: NutrifyTheme.background,
     );
   }
@@ -94,37 +96,51 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   Widget _buildRightSide() {
-    return SingleChildScrollView(
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 24.0),
-        child: Column(
-          mainAxisSize: MainAxisSize.max,
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            SizedBox(height: 60),
-            _buildLogo(),
-            SizedBox(height: 16),
-            _buildTitle(),
-            SizedBox(height: 8),
-            _buildSubtitle(),
-            SizedBox(height: 48),
-            _buildEmailField(),
-            SizedBox(height: 16),
-            _buildPasswordField(),
-            _buildForgotPasswordButton(),
-            SizedBox(height: 24),
-            _buildSignInButton(),
-            SizedBox(height: 32),
-            _buildOrDivider(),
-            SizedBox(height: 32),
-            _buildSocialButtons(),
-            SizedBox(height: 48),
-            _buildSignUpFooter(),
-            SizedBox(height: 40),
-          ],
-        ),
-      ),
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        return SingleChildScrollView(
+          child: ConstrainedBox(
+            constraints: BoxConstraints(
+              minHeight: constraints.maxHeight,
+            ),
+            child: IntrinsicHeight(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 24.0),
+                child: Column(
+                  mainAxisSize: MainAxisSize.max,
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: <Widget>[
+                    const SizedBox(height: 16),
+                    Spacer(flex: 2),
+                    _buildLogo(),
+                    const SizedBox(height: 12),
+                    _buildTitle(),
+                    const SizedBox(height: 4),
+                    _buildSubtitle(),
+                    const SizedBox(height: 32),
+                    Spacer(flex: 2),
+                    _buildEmailField(),
+                    const SizedBox(height: 12),
+                    _buildPasswordField(),
+                    _buildForgotPasswordButton(),
+                    const SizedBox(height: 12),
+                    _buildSignInButton(),
+                    const SizedBox(height: 24),
+                    _buildOrDivider(),
+                    const SizedBox(height: 24),
+                    _buildSocialButtons(),
+                    const SizedBox(height: 32),
+                    Spacer(flex: 4),
+                    _buildSignUpFooter(),
+                    const SizedBox(height: 20),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        );
+      },
     );
   }
 

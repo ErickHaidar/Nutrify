@@ -1,4 +1,7 @@
+import 'dart:io';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:nutrify/di/service_locator.dart';
 import 'package:nutrify/presentation/login/store/login_store.dart';
 import 'package:nutrify/utils/routes/routes.dart';
@@ -18,10 +21,12 @@ class ProfileScreenState extends State<ProfileScreen> {
   final _profileApiService = ProfileApiService();
   ApiProfileData? _profile;
   bool _isLoading = true;
+  String? _profileImagePath;
 
   @override
   void initState() {
     super.initState();
+    _profileImagePath = getIt<SharedPreferences>().getString('profile_image');
     loadProfile();
   }
 
@@ -80,32 +85,21 @@ class ProfileScreenState extends State<ProfileScreen> {
               Center(
                 child: Column(
                   children: [
-                    Stack(
-                      alignment: Alignment.bottomRight,
-                      children: [
-                        CircleAvatar(
-                          radius: 50,
-                          backgroundColor: const Color(0xFF5A5380),
-                          child: const Icon(
-                            Icons.person,
-                            size: 60,
-                            color: Color(0xFFFFDDBE),
-                          ),
-                        ),
-                        Container(
-                          padding: const EdgeInsets.all(4),
-                          decoration: BoxDecoration(
-                            color: const Color(0xFF2D2A4A),
-                            shape: BoxShape.circle,
-                            border: Border.all(color: Colors.white, width: 1.5),
-                          ),
-                          child: const Icon(
-                            Icons.edit,
-                            size: 14,
-                            color: Colors.white,
-                          ),
-                        ),
-                      ],
+                    CircleAvatar(
+                      radius: 50,
+                      backgroundColor: const Color(0xFF5A5380),
+                      backgroundImage: _profileImagePath != null
+                          ? (kIsWeb
+                              ? NetworkImage(_profileImagePath!)
+                              : FileImage(File(_profileImagePath!))) as ImageProvider
+                          : null,
+                      child: _profileImagePath == null
+                          ? const Icon(
+                              Icons.person,
+                              size: 60,
+                              color: Color(0xFFFFDDBE),
+                            )
+                          : null,
                     ),
                     const SizedBox(height: 12),
                     Text(
@@ -188,6 +182,9 @@ class ProfileScreenState extends State<ProfileScreen> {
                     ),
                   );
                   if (result == true) {
+                    setState(() {
+                      _profileImagePath = getIt<SharedPreferences>().getString('profile_image');
+                    });
                     loadProfile();
                   }
                 },

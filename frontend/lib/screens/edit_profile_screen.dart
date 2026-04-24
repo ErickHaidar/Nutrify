@@ -1,5 +1,10 @@
+import 'dart:io';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../services/profile_api_service.dart';
+import '../../di/service_locator.dart';
 
 class EditProfileScreen extends StatefulWidget {
   const EditProfileScreen({super.key});
@@ -20,10 +25,17 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   bool _isLoading = true;
   bool _isSaving = false;
 
+  XFile? _profileImage;
+  final ImagePicker _picker = ImagePicker();
+
   @override
   void initState() {
     super.initState();
     _loadProfile();
+    final savedImagePath = getIt<SharedPreferences>().getString('profile_image');
+    if (savedImagePath != null) {
+      _profileImage = XFile(savedImagePath);
+    }
     _heightController.addListener(() => setState(() {}));
     _weightController.addListener(() => setState(() {}));
     _ageController.addListener(() => setState(() {}));
@@ -94,6 +106,56 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     }
   }
 
+  Future<void> _pickImage(ImageSource source) async {
+    try {
+      final pickedFile = await _picker.pickImage(source: source);
+      if (pickedFile != null) {
+        setState(() {
+          _profileImage = pickedFile;
+        });
+        await getIt<SharedPreferences>().setString('profile_image', pickedFile.path);
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Failed to pick image: $e')),
+        );
+      }
+    }
+  }
+
+  void _showImagePickerModal() {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: const Color(0xFF2D2A4A),
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (ctx) => SafeArea(
+        child: Wrap(
+          children: [
+            ListTile(
+              leading: const Icon(Icons.photo_library, color: Color(0xFFFFCC80)),
+              title: const Text('Buka Galeri', style: TextStyle(color: Colors.white)),
+              onTap: () {
+                Navigator.pop(ctx);
+                _pickImage(ImageSource.gallery);
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.camera_alt, color: Color(0xFFFFCC80)),
+              title: const Text('Buka Kamera', style: TextStyle(color: Colors.white)),
+              onTap: () {
+                Navigator.pop(ctx);
+                _pickImage(ImageSource.camera);
+              },
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
   int _calculateTarget() {
     final w = double.tryParse(_weightController.text) ?? 0;
     final h = double.tryParse(_heightController.text) ?? 0;
@@ -145,10 +207,38 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         child: Column(
           children: [
             // Avatar placeholder
-            const CircleAvatar(
-              radius: 50,
-              backgroundColor: Color(0xFF2D2A4A),
-              child: Icon(Icons.person, size: 60, color: Color(0xFFFFCC80)),
+            GestureDetector(
+              onTap: _showImagePickerModal,
+              child: Stack(
+                alignment: Alignment.bottomRight,
+                children: [
+                  CircleAvatar(
+                    radius: 50,
+                    backgroundColor: const Color(0xFF2D2A4A),
+                    backgroundImage: _profileImage != null
+                        ? (kIsWeb
+                            ? NetworkImage(_profileImage!.path)
+                            : FileImage(File(_profileImage!.path))) as ImageProvider
+                        : null,
+                    child: _profileImage == null
+                        ? const Icon(Icons.person, size: 60, color: Color(0xFFFFCC80))
+                        : null,
+                  ),
+                  Container(
+                    padding: const EdgeInsets.all(6),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFFFFCC80),
+                      shape: BoxShape.circle,
+                      border: Border.all(color: const Color(0xFF433D67), width: 2),
+                    ),
+                    child: const Icon(
+                      Icons.camera_alt,
+                      size: 18,
+                      color: Color(0xFF2D2A4A),
+                    ),
+                  ),
+                ],
+              ),
             ),
             const SizedBox(height: 32),
 

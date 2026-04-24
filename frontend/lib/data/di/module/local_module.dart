@@ -14,13 +14,11 @@ import '../../../di/service_locator.dart';
 class LocalModule {
   static Future<void> configureLocalModuleInjection() async {
     // Parallelize getting instances
-    final results = await Future.wait([
-      SharedPreferences.getInstance(),
-      getApplicationDocumentsDirectory(),
-    ]);
-    
-    final sharedPrefs = results[0] as SharedPreferences;
-    final appDocDir = results[1] as Directory;
+    final sharedPrefs = await SharedPreferences.getInstance();
+    Directory? appDocDir;
+    if (!kIsWeb) {
+      appDocDir = await getApplicationDocumentsDirectory();
+    }
 
     // preference manager:------------------------------------------------------
     getIt.registerSingleton<SharedPreferences>(sharedPrefs);
@@ -31,7 +29,7 @@ class LocalModule {
     // database:----------------------------------------------------------------
     final sembastClient = await SembastClient.provideDatabase(
       databaseName: DBConstants.DB_NAME,
-      databasePath: kIsWeb ? "/assets/db" : appDocDir.path,
+      databasePath: kIsWeb ? "/assets/db" : appDocDir!.path,
     );
     getIt.registerSingleton<SembastClient>(sembastClient);
 
