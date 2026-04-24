@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:nutrify/constants/colors.dart';
 
 class ProfileMenuItem extends StatelessWidget {
   final String label;
@@ -22,9 +23,9 @@ class ProfileMenuItem extends StatelessWidget {
         margin: const EdgeInsets.only(bottom: 12),
         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
         decoration: BoxDecoration(
-          color: const Color(0xFF2D2A4A),
+          color: NutrifyTheme.darkCard,
           borderRadius: BorderRadius.circular(30),
-          border: isHighlighted ? Border.all(color: const Color(0xFFFFCC80), width: 1.5) : null,
+          border: isHighlighted ? Border.all(color: AppColors.amber, width: 1.5) : null,
         ),
         child: Row(
           children: [

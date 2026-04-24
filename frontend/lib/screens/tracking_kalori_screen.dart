@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:nutrify/constants/colors.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'dart:math' as math;
 import '../services/food_log_api_service.dart';
@@ -73,7 +74,7 @@ class _TrackingKaloriScreenState extends State<TrackingKaloriScreen> {
 
     if (_isLoading) {
       return const Scaffold(
-        backgroundColor: Color(0xFF433D67),
+      backgroundColor: NutrifyTheme.background,
         body: Center(child: CircularProgressIndicator()),
       );
     }

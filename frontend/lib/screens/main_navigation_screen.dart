@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'home_screen.dart';
 import 'profile_screen.dart';
 import 'history_screen.dart';
+import 'komunitas_screen.dart';
+import 'package:nutrify/constants/colors.dart';
 
 class MainNavigationScreen extends StatefulWidget {
   const MainNavigationScreen({super.key});
@@ -21,8 +23,8 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
     if (index == 0) {
       _homeKey.currentState?.loadDailyData();
     }
-    // If switching to Profile tab, trigger a refresh
-    if (index == 2) {
+    // If switching to Profil tab, trigger a refresh
+    if (index == 3) {
       _profileKey.currentState?.loadProfile();
     }
   }
@@ -39,6 +41,7 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
     _pages = [
       HomeScreen(key: _homeKey),
       const HistoryScreen(),
+      KomunitasScreen(),
       ProfileScreen(key: _profileKey),
     ];
   }
@@ -46,15 +49,15 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF433D67),
+      backgroundColor: NutrifyTheme.background,
       body: IndexedStack(
         index: _selectedIndex,
         children: _pages,
       ),
       bottomNavigationBar: BottomNavigationBar(
-        backgroundColor: const Color(0xFF2D2A4A),
-        selectedItemColor: const Color(0xFFFFCC80),
-        unselectedItemColor: Colors.white38,
+        backgroundColor: NutrifyTheme.background,
+        selectedItemColor: NutrifyTheme.accentOrange,
+        unselectedItemColor: NutrifyTheme.darkCard.withOpacity(0.5),
         currentIndex: _selectedIndex,
         onTap: _onItemTapped,
         type: BottomNavigationBarType.fixed,
@@ -66,6 +69,10 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
           BottomNavigationBarItem(
             icon: Icon(Icons.history),
             label: 'Riwayat',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.forum),
+            label: 'Komunitas',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.person),

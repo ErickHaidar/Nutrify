@@ -6,6 +6,7 @@ import 'package:nutrify/services/food_api_service.dart';
 import 'package:nutrify/services/food_log_api_service.dart';
 import 'package:nutrify/utils/meal_type_mapper.dart';
 import 'food_detail_screen.dart';
+import 'package:nutrify/constants/assets.dart';
 
 class AddMealScreen extends StatefulWidget {
   final String mealType;
@@ -193,11 +194,11 @@ class _AddMealScreenState extends State<AddMealScreen> {
           'Tambah $_currentMealType',
           style: GoogleFonts.montserrat(
             fontWeight: FontWeight.bold,
-            color: NutrifyTheme.accentOrange,
+            color: AppColors.navy,
           ),
         ),
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.white),
+          icon: const Icon(Icons.arrow_back, color: AppColors.navy),
           onPressed: () => Navigator.pop(context, _isDirty),
         ),
         actions: [
@@ -237,24 +238,26 @@ class _AddMealScreenState extends State<AddMealScreen> {
           ),
         ],
       ),
-      body: Column(
+      body: SafeArea(
+        bottom: true,
+        child: Column(
         children: [
-          // Search bar
+          // Search bar (styled with new palette)
           Padding(
             padding: const EdgeInsets.fromLTRB(24, 8, 24, 0),
             child: Container(
               decoration: BoxDecoration(
-                color: Colors.white,
+                color: Colors.white, // White background for search bar
                 borderRadius: BorderRadius.circular(15),
               ),
               child: TextField(
                 controller: _searchController,
                 onChanged: _onSearchChanged,
-                style: const TextStyle(color: Colors.black87),
+                style: const TextStyle(color: AppColors.navy),
                 decoration: InputDecoration(
                   hintText: 'Cari makanan...',
-                  hintStyle: TextStyle(color: Colors.grey[600]),
-                  prefixIcon: Icon(Icons.search, color: Colors.grey[600]),
+                  hintStyle: const TextStyle(color: Colors.black38),
+                  prefixIcon: const Icon(Icons.search, color: AppColors.navy),
                   suffixIcon: _isSearching
                       ? const Padding(
                           padding: EdgeInsets.all(12),
@@ -280,8 +283,8 @@ class _AddMealScreenState extends State<AddMealScreen> {
                       _searchController.text.isEmpty
                           ? 'Belum ada makanan yang ditambahkan'
                           : 'Tidak ada hasil ditemukan',
-                      style: const TextStyle(
-                        color: Colors.white54,
+                      style: TextStyle(
+                        color: AppColors.navy.withOpacity(0.5),
                         fontSize: 14,
                       ),
                     ),
@@ -294,6 +297,7 @@ class _AddMealScreenState extends State<AddMealScreen> {
           ),
         ],
       ),
+    ),
       floatingActionButton: _isSavingBatch
           ? const FloatingActionButton(
               onPressed: null,
@@ -302,10 +306,11 @@ class _AddMealScreenState extends State<AddMealScreen> {
             )
           : (_draftSelections.isEmpty
               ? null
-              : FloatingActionButton(
+              : FloatingActionButton.large(
                   onPressed: _handleConfirmBatch,
-                  backgroundColor: const Color(0xFFFFCC80),
-                  child: const Icon(Icons.check, color: Color(0xFF2D2A4A)),
+                  // Dark Navy FAB with white checkmark
+                  backgroundColor: AppColors.navy,
+                  child: const Icon(Icons.check, color: Colors.white),
                 )),
     );
   }
@@ -345,12 +350,12 @@ class _AddMealScreenState extends State<AddMealScreen> {
         margin: const EdgeInsets.only(bottom: 8),
         padding: const EdgeInsets.all(12),
         decoration: BoxDecoration(
-          color: NutrifyTheme.darkCard,
+          color: AppColors.peach,
           borderRadius: BorderRadius.circular(12),
         ),
         child: Row(
           children: [
-            const Icon(Icons.restaurant, color: Color(0xFFFFCC80), size: 24),
+            const Icon(Icons.restaurant, color: AppColors.navy, size: 24),
             const SizedBox(width: 12),
             Expanded(
               child: Column(
@@ -359,13 +364,13 @@ class _AddMealScreenState extends State<AddMealScreen> {
                   Text(
                     food.name,
                     style: const TextStyle(
-                      color: Colors.white,
+                      color: AppColors.navy,
                       fontWeight: FontWeight.w500,
                     ),
                   ),
                   Text(
                     '${food.calories.toStringAsFixed(0)} kcal · ${food.servingSize}',
-                    style: const TextStyle(color: Colors.white54, fontSize: 12),
+                    style: TextStyle(color: AppColors.navy.withOpacity(0.6), fontSize: 12),
                   ),
                 ],
               ),
@@ -398,17 +403,15 @@ class _AddMealScreenState extends State<AddMealScreen> {
                 final confirm = await showDialog<bool>(
                   context: context,
                   builder: (ctx) => AlertDialog(
-                    backgroundColor: NutrifyTheme.darkCard,
-                    title: const Text('Hapus Makanan',
-                        style: TextStyle(color: Colors.white)),
-                    content: const Text(
-                        'Apakah Anda yakin ingin menghapus makanan ini dari riwayat?',
-                        style: TextStyle(color: Colors.white70)),
+                    backgroundColor: AppColors.cream,
+                    title: const Text('Hapus Makanan', style: TextStyle(color: AppColors.navy)),
+                    content: Text(
+                        'Apakah Anda yakin ingin menghapus makanan ini dari riwayat?', style: TextStyle(color: AppColors.navy.withOpacity(0.7))),
                     actions: [
                       TextButton(
                         onPressed: () => Navigator.pop(ctx, false),
-                        child: const Text('Batal',
-                            style: TextStyle(color: Colors.white54)),
+                        child: Text('Batal',
+                            style: TextStyle(color: AppColors.navy.withOpacity(0.5))),
                       ),
                       TextButton(
                         onPressed: () => Navigator.pop(ctx, true),
@@ -446,9 +449,15 @@ class _AddMealScreenState extends State<AddMealScreen> {
               }
             });
           },
-          activeColor: const Color(0xFFFFCC80),
-          checkColor: NutrifyTheme.darkCard,
-          side: const BorderSide(color: Colors.white38),
+          // Custom checkbox style to match new palette
+          fillColor: MaterialStateProperty.resolveWith<Color?>((Set<MaterialState> states) {
+            if (states.contains(MaterialState.selected)) {
+              return AppColors.navy; // Navy fill when selected
+            }
+            return AppColors.peach; // Peach background when not selected
+          }),
+          side: BorderSide(color: AppColors.navy),
+          checkColor: Colors.white,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(4),
           ),

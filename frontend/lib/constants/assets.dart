@@ -8,10 +8,13 @@ class Assets {
   static const String carBackground = "assets/images/img_login.jpg";
   static const String nutrifyLogo = "assets/images/nutrify-logo.png";
   static const String makananRegister = "assets/images/makanan_register.png";
+  static const String iconGoogle = "assets/images/google_icon.png";
 
   // meal icons
   static const String iconPagi = "assets/images/pagi.png";
   static const String iconSiang = "assets/images/siang.png";
   static const String iconMalam = "assets/images/malam.png";
   static const String iconCemilan = "assets/images/cemilan.png";
+  // Checklist icon for meal selection
+  static const String checklistIcon = "assets/images/Ceklis menu.png";
 }

@@ -1,19 +1,53 @@
 import 'package:flutter/material.dart';
+import '../widgets/nutrify_calendar_picker.dart';
 import '../widgets/custom_input.dart';
 import '../widgets/activity_tile.dart';
+import 'package:nutrify/constants/colors.dart';
 
-class BodyDataScreen extends StatelessWidget {
+class BodyDataScreen extends StatefulWidget {
   const BodyDataScreen({super.key});
+  @override
+  State<BodyDataScreen> createState() => _BodyDataScreenState();
+}
+
+class _BodyDataScreenState extends State<BodyDataScreen> {
+  DateTime? _birthDate;
+  String _selectedActivity = 'moderate'; // matched with state logic if any
+
+  String _birthDateText() {
+    if (_birthDate == null) return 'Pilih tanggal lahir';
+    final d = _birthDate!;
+    final months = [
+      'Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'
+    ];
+    return '${d.day.toString().padLeft(2, '0')} ${months[d.month - 1]} ${d.year}';
+  }
+
+  Future<void> _showBirthDatePicker() async {
+    final picked = await showNutrifyDatePicker(
+      context,
+      initialDate: _birthDate ?? DateTime(DateTime.now().year - 20),
+      firstDate: DateTime(1900),
+      lastDate: DateTime.now(),
+    );
+    if (picked != null) {
+      setState(() => _birthDate = picked);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF433D67),
+      backgroundColor: AppColors.cream,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
-        leading: IconButton(icon: const Icon(Icons.arrow_back), onPressed: () {}),
-        title: const Text('Body Data & Goals', style: TextStyle(fontSize: 18)),
+        leading: IconButton(
+            icon: const Icon(Icons.arrow_back, color: AppColors.navy),
+            onPressed: () {
+              Navigator.pop(context);
+            }),
+        title: const Text('Data Tubuh dan Target', style: TextStyle(fontSize: 18, color: AppColors.navy, fontWeight: FontWeight.bold)),
         centerTitle: true,
       ),
       body: SingleChildScrollView(
@@ -21,56 +55,63 @@ class BodyDataScreen extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text('Personal Information', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+            const SizedBox(height: 10),
+            const Text('Informasi Personal', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: AppColors.navy)),
             const SizedBox(height: 20),
-            
-            // Grid Input Section
-            const Row(
+            Row(
               children: [
-                Expanded(child: CustomInputField(label: 'Height (cm)', initialValue: '175')),
-                SizedBox(width: 16),
-                Expanded(child: CustomInputField(label: 'Age', initialValue: '25')),
+                const Expanded(child: CustomInputField(label: 'Tinggi Badan (cm)', initialValue: '175')),
+                const SizedBox(width: 16),
+                Expanded(
+                  child: CustomInputField(
+                    label: 'Tanggal Lahir',
+                    initialValue: _birthDate == null ? 'Pilih' : _birthDateText(),
+                    onTap: _showBirthDatePicker,
+                    readOnly: true,
+                  ),
+                ),
               ],
             ),
             const SizedBox(height: 16),
             const Row(
               children: [
-                Expanded(child: CustomInputField(label: 'Current Weight (kg)', initialValue: '70')),
-                SizedBox(width: 16),
-                Expanded(child: CustomInputField(label: 'Target Weight (kg)', initialValue: '65')),
+                Expanded(child: CustomInputField(label: 'Berat Badan Saat Ini (kg)', initialValue: '70')),
+                const SizedBox(width: 16),
+                Expanded(child: CustomInputField(label: 'Target Berat Badan (kg)', initialValue: '65')),
               ],
             ),
-            
             const SizedBox(height: 30),
-            const Text('Daily Activity', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+            const Text('Aktivitas Harian', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: AppColors.navy)),
             const SizedBox(height: 15),
-            const ActivitySelectionTile(
-              title: 'Moderately Active', 
-              subtitle: '3-5 days of exercise/week', 
+            ActivitySelectionTile(
+              title: 'Moderately Active',
+              subtitle: '3-5 hari olahraga/minggu',
               icon: Icons.fitness_center,
-              isSelected: true,
+              isSelected: _selectedActivity == 'moderate',
+              onTap: () => setState(() => _selectedActivity = 'moderate'),
             ),
-            const ActivitySelectionTile(
-              title: 'Highly Active', 
-              subtitle: '6-7 days of intense exercise', 
+            ActivitySelectionTile(
+              title: 'Highly Active',
+              subtitle: '6-7 hari olahraga intensif',
               icon: Icons.bolt,
+              isSelected: _selectedActivity == 'highly',
+              onTap: () => setState(() => _selectedActivity = 'highly'),
             ),
-
             const SizedBox(height: 40),
-            // Confirm Button
             SizedBox(
               width: double.infinity,
-              height: 50,
+              height: 55,
               child: ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFF2D2A4A),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(25)),
-                ),
                 onPressed: () {},
-                child: const Text('Confirm Profile', style: TextStyle(color: Colors.white)),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: AppColors.navy,
+                  foregroundColor: Colors.white,
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
+                ),
+                child: const Text('Simpan Profil', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
               ),
             ),
-            const SizedBox(height: 20),
+            SizedBox(height: MediaQuery.of(context).padding.bottom + 30),
           ],
         ),
       ),

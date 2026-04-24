@@ -16,18 +16,23 @@ class AppColors {
     900: const Color(0xFFD56217)
   };
 
-  static const Color nutrifyBackground = Color(0xFF49426E);
-  static const Color nutrifyTitle = Color(0xFFF8C888);
-  static const Color nutrifyButton = Color(0xFF35315D);
-  static const Color nutrifyButtonText = Color(0xFFF8C888);
+  static const Color nutrifyBackground = Color(0xFFFAF1E8);
+  static const Color nutrifyTitle = Color(0xFFF1C28E);
+  static const Color nutrifyButton = Color(0xFF322E53);
+  static const Color nutrifyButtonText = Colors.white;
   static const Color nutrifyFieldBackground = Color(0xFFFFFFFF);
-  static const Color nutrifyAccent = Color(0xFFF8C888);
+  static const Color nutrifyAccent = Color(0xFFF1C28E);
+  // New Palette Constants
+  static const Color cream = Color(0xFFFAF1E8);
+  static const Color peach = Color(0xFFFFD1A6);
+  static const Color navy = Color(0xFF322E53);
+  static const Color amber = Color(0xFFF1C28E);
 }
 
 class NutrifyTheme {
-  static const Color background = Color(0xFF49426E);
-  static const Color darkCard = Color(0xFF2D2B52);
-  static const Color lightCard = Color(0xFF4A477B);
-  static const Color accentOrange = Color(0xFFFDBA74);
+  static const Color background = Color(0xFFFAF1E8);
+  static const Color darkCard = Color(0xFF322E53);
+  static const Color lightCard = Color(0xFFFFD1A6);
+  static const Color accentOrange = Color(0xFFF1C28E);
   static const Color dashboardCard = Color(0xFFFFD1A9);
 }

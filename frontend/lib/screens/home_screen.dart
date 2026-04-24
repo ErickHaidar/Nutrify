@@ -3,6 +3,7 @@ import 'package:nutrify/constants/assets.dart';
 import 'add_meal_screen.dart';
 import 'body_data_goals_screen.dart';
 import 'tracking_kalori_screen.dart';
+import 'package:nutrify/constants/colors.dart';
 import '../services/food_log_api_service.dart';
 import '../services/profile_api_service.dart';
 
@@ -19,8 +20,7 @@ class HomeScreenState extends State<HomeScreen> {
   bool _isLoadingData = false;
   final FoodLogApiService _foodLogApi = FoodLogApiService();
   final ProfileApiService _profileApi = ProfileApiService();
-  ApiProfileData?
-  _profile; // Simpan data profil tunggal agar konsisten di seluruh UI
+  ApiProfileData? _profile;
   double totalProtein = 0;
   double totalCarbs = 0;
   double totalFat = 0;
@@ -43,12 +43,9 @@ class HomeScreenState extends State<HomeScreen> {
     final now = DateTime.now();
 
     try {
-      // Parallelize fetching for better performance
       final results = await Future.wait([
         _foodLogApi.getSummary(now).catchError((_) => null),
-        _profileApi
-            .getProfile(forceRefresh: forceRefresh)
-            .catchError((_) => null),
+        _profileApi.getProfile(forceRefresh: forceRefresh).catchError((_) => null),
       ]);
 
       final summary = results[0] as DailySummary?;
@@ -75,7 +72,6 @@ class HomeScreenState extends State<HomeScreen> {
               'Cemilan': summary.caloriesForMeal('Snack'),
             };
           } else if (profile != null) {
-            // If summary failed but profile succeeded, at least update target
             targetCalories = profile.targetCalories;
           }
         });
@@ -101,18 +97,7 @@ class HomeScreenState extends State<HomeScreen> {
   String _getFormattedDate() {
     final now = DateTime.now();
     final months = [
-      'Januari',
-      'Februari',
-      'Maret',
-      'April',
-      'Mei',
-      'Juni',
-      'Juli',
-      'Agustus',
-      'September',
-      'Oktober',
-      'November',
-      'Desember',
+      'Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember',
     ];
     return "${now.day.toString().padLeft(2, '0')} ${months[now.month - 1]} ${now.year}";
   }
@@ -133,15 +118,14 @@ class HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF433D67),
+      backgroundColor: NutrifyTheme.background,
       body: SafeArea(
         child: RefreshIndicator(
           onRefresh: () async => loadDailyData(),
-          color: const Color(0xFFFFCC80),
-          backgroundColor: const Color(0xFF2D2A4A),
+          color: NutrifyTheme.accentOrange,
+          backgroundColor: NutrifyTheme.darkCard,
           child: SingleChildScrollView(
-            physics:
-                const AlwaysScrollableScrollPhysics(), // Important for RefreshIndicator
+            physics: const AlwaysScrollableScrollPhysics(),
             padding: const EdgeInsets.symmetric(horizontal: 20),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -161,53 +145,58 @@ class HomeScreenState extends State<HomeScreen> {
                               height: 40,
                               width: 40,
                             ),
-                            Text(
+                            const SizedBox(width: 8),
+                            const Text(
                               'Nutrify',
                               style: TextStyle(
                                 fontSize: 28,
                                 fontWeight: FontWeight.bold,
                                 fontStyle: FontStyle.italic,
-                                color: Colors.orange[200],
+                                color: NutrifyTheme.accentOrange,
                               ),
                             ),
                           ],
                         ),
                         Text(
                           _getFormattedDate(),
-                          style: const TextStyle(
-                            color: Colors.white70,
+                          style: TextStyle(
+                            color: NutrifyTheme.darkCard.withOpacity(0.6),
                             fontSize: 12,
                           ),
                         ),
                       ],
                     ),
-                    const CircleAvatar(
-                      backgroundColor: Colors.white10,
-                      child: Icon(Icons.person, color: Colors.white),
+                    CircleAvatar(
+                      backgroundColor: NutrifyTheme.darkCard.withOpacity(0.1),
+                      child: const Icon(Icons.person, color: NutrifyTheme.darkCard),
                     ),
                   ],
                 ),
                 const SizedBox(height: 25),
 
-                // Cek apakah profil sudah lengkap (ada data & tidak nol)
-                if (_profile == null ||
-                    _profile!.age == 0 ||
-                    _profile!.weight == 0 ||
-                    _profile!.height == 0)
+                // Card/banner
+                if (_profile == null || _profile!.age == 0 || _profile!.weight == 0 || _profile!.height == 0)
                   _buildCompleteProfileBanner(),
+
+                // Tracking Kalori Harian Card
                 Container(
                   width: double.infinity,
-                  padding: const EdgeInsets.all(20),
+                  padding: const EdgeInsets.all(25),
                   decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(25),
+                    color: NutrifyTheme.lightCard,
+                    borderRadius: BorderRadius.circular(30),
                     image: const DecorationImage(
-                      image: NetworkImage(
-                        'https://images.unsplash.com/photo-1490645935967-10de6ba17061?q=80&w=500',
-                      ),
+                      image: AssetImage(Assets.makananRegister),
                       fit: BoxFit.cover,
-                      opacity: 0.3,
+                      opacity: 0.15,
                     ),
-                    color: const Color(0xFFFFDDBE),
+                    boxShadow: [
+                      BoxShadow(
+                        color: NutrifyTheme.lightCard.withOpacity(0.4),
+                        blurRadius: 20,
+                        offset: const Offset(0, 10),
+                      ),
+                    ],
                   ),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -215,57 +204,97 @@ class HomeScreenState extends State<HomeScreen> {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          const Icon(
-                            Icons.restaurant,
-                            color: Color(0xFF2D2A4A),
+                          Container(
+                            padding: const EdgeInsets.all(8),
+                            decoration: BoxDecoration(
+                              color: NutrifyTheme.darkCard.withOpacity(0.1),
+                              shape: BoxShape.circle,
+                            ),
+                            child: const Icon(
+                              Icons.restaurant,
+                              color: NutrifyTheme.darkCard,
+                              size: 20,
+                            ),
                           ),
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.end,
-                            children: [
-                              const Text(
-                                'Tracking Kalori Harian',
-                                style: TextStyle(color: Color(0xFF2D2A4A)),
-                              ),
-                              Text(
-                                '${_formatCalories(totalCalories)} KAL',
-                                style: const TextStyle(
-                                  fontSize: 26,
-                                  fontWeight: FontWeight.bold,
-                                  color: Color(0xFF2D2A4A),
-                                ),
-                              ),
-                            ],
+                          const Text(
+                            'Tracking Kalori Harian',
+                            style: TextStyle(
+                              color: NutrifyTheme.darkCard,
+                              fontSize: 14,
+                              fontWeight: FontWeight.bold,
+                            ),
                           ),
                         ],
                       ),
                       const SizedBox(height: 20),
-                      ElevatedButton(
-                        onPressed: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) =>
-                                  const TrackingKaloriScreen(),
+                      Text(
+                        '${_formatCalories(totalCalories)} KAL',
+                        style: const TextStyle(
+                          fontSize: 36,
+                          fontWeight: FontWeight.w900,
+                          color: NutrifyTheme.darkCard,
+                          letterSpacing: 1.2,
+                        ),
+                      ),
+                      const SizedBox(height: 20),
+                      ClipRRect(
+                        borderRadius: BorderRadius.circular(10),
+                        child: LinearProgressIndicator(
+                          value: targetCalories > 0
+                              ? (totalCalories / targetCalories).clamp(0.0, 1.0)
+                              : 0,
+                          backgroundColor: NutrifyTheme.darkCard.withOpacity(0.1),
+                          valueColor: const AlwaysStoppedAnimation<Color>(
+                              NutrifyTheme.darkCard),
+                          minHeight: 10,
+                        ),
+                      ),
+                      const SizedBox(height: 25),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            '${(targetCalories > 0 ? (totalCalories / targetCalories * 100).toInt() : 0)}% dari target',
+                            style: TextStyle(
+                              color: NutrifyTheme.darkCard.withOpacity(0.8),
+                              fontSize: 13,
+                              fontWeight: FontWeight.w600,
                             ),
-                          );
-                        },
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: const Color(0xFF433D67),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12),
                           ),
-                        ),
-                        child: const Text(
-                          'Rincian',
-                          style: TextStyle(color: Colors.white),
-                        ),
+                          ElevatedButton(
+                            onPressed: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => const TrackingKaloriScreen(),
+                                ),
+                              );
+                            },
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: NutrifyTheme.darkCard,
+                              foregroundColor: Colors.white,
+                              elevation: 0,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(15),
+                              ),
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 20, vertical: 12),
+                            ),
+                            child: const Text(
+                              'Rincian',
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ),
+                        ],
                       ),
                     ],
                   ),
                 ),
                 const SizedBox(height: 20),
 
-                // Target Kalori Row
+                // Target Kalori Card
                 InkWell(
                   onTap: () async {
                     final result = await Navigator.push(
@@ -278,15 +307,19 @@ class HomeScreenState extends State<HomeScreen> {
                       loadDailyData(forceRefresh: true);
                     }
                   },
-                  borderRadius: BorderRadius.circular(20),
+                  borderRadius: BorderRadius.circular(25),
                   child: Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 20,
-                      vertical: 15,
-                    ),
+                    padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 18),
                     decoration: BoxDecoration(
-                      color: const Color(0xFF2D2A4A),
-                      borderRadius: BorderRadius.circular(20),
+                      color: NutrifyTheme.lightCard,
+                      borderRadius: BorderRadius.circular(25),
+                      boxShadow: [
+                        BoxShadow(
+                          color: NutrifyTheme.lightCard.withOpacity(0.4),
+                          blurRadius: 15,
+                          offset: const Offset(0, 8),
+                        ),
+                      ],
                     ),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -297,29 +330,29 @@ class HomeScreenState extends State<HomeScreen> {
                             Text(
                               'Target Kalori Harian',
                               style: TextStyle(
-                                color: Colors.white54,
-                                fontSize: 12,
+                                color: NutrifyTheme.darkCard.withOpacity(0.7),
+                                fontSize: 13,
+                                fontWeight: FontWeight.w500,
                               ),
                             ),
-                            SizedBox(height: 4),
+                            const SizedBox(height: 6),
                             Text(
                               '${_formatCalories(targetCalories)} kCal',
                               style: const TextStyle(
-                                color: Color(0xFFFFCC80),
+                                color: NutrifyTheme.darkCard,
                                 fontWeight: FontWeight.bold,
+                                fontSize: 18,
                               ),
                             ),
                           ],
                         ),
-                        Icon(Icons.chevron_right, color: Color(0xFFFFCC80)),
+                        const Icon(Icons.chevron_right, color: NutrifyTheme.darkCard),
                       ],
                     ),
                   ),
                 ),
                 const SizedBox(height: 10),
-
-                const Divider(color: Colors.white10),
-                const SizedBox(height: 10),
+                const Divider(color: Colors.black12, height: 40),
 
                 // Grid Makan
                 GridView.count(
@@ -333,28 +366,28 @@ class HomeScreenState extends State<HomeScreen> {
                     MealTile(
                       title: 'Makan Pagi',
                       imagePath: Assets.iconPagi,
-                      color: Colors.amber,
+                      color: NutrifyTheme.accentOrange,
                       calories: caloriesByType['Makan Pagi'] ?? 0,
                       onTap: () => _navigateToAddMeal('Makan Pagi'),
                     ),
                     MealTile(
                       title: 'Makan Siang',
                       imagePath: Assets.iconSiang,
-                      color: Colors.orange,
+                      color: NutrifyTheme.darkCard,
                       calories: caloriesByType['Makan Siang'] ?? 0,
                       onTap: () => _navigateToAddMeal('Makan Siang'),
                     ),
                     MealTile(
                       title: 'Makan Malam',
                       imagePath: Assets.iconMalam,
-                      color: Colors.indigoAccent,
+                      color: NutrifyTheme.lightCard,
                       calories: caloriesByType['Makan Malam'] ?? 0,
                       onTap: () => _navigateToAddMeal('Makan Malam'),
                     ),
                     MealTile(
                       title: 'Cemilan',
                       imagePath: Assets.iconCemilan,
-                      color: Colors.brown,
+                      color: NutrifyTheme.accentOrange,
                       calories: caloriesByType['Cemilan'] ?? 0,
                       onTap: () => _navigateToAddMeal('Cemilan'),
                     ),
@@ -373,11 +406,17 @@ class HomeScreenState extends State<HomeScreen> {
     return Container(
       width: double.infinity,
       margin: const EdgeInsets.only(bottom: 25),
-      padding: const EdgeInsets.all(20),
+      padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
-        color: const Color(0xFF2D2A4A),
-        borderRadius: BorderRadius.circular(25),
-        border: Border.all(color: Colors.white10),
+        color: AppColors.peach,
+        borderRadius: BorderRadius.circular(24),
+        boxShadow: [
+          BoxShadow(
+            color: AppColors.peach.withOpacity(0.4),
+            blurRadius: 15,
+            offset: const Offset(0, 5),
+          ),
+        ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -387,12 +426,12 @@ class HomeScreenState extends State<HomeScreen> {
               Container(
                 padding: const EdgeInsets.all(10),
                 decoration: BoxDecoration(
-                  color: Colors.white.withOpacity(0.05),
+                  color: AppColors.navy.withOpacity(0.08),
                   shape: BoxShape.circle,
                 ),
                 child: const Icon(
                   Icons.auto_awesome,
-                  color: Color(0xFFFFCC80),
+                  color: AppColors.navy,
                   size: 24,
                 ),
               ),
@@ -401,18 +440,22 @@ class HomeScreenState extends State<HomeScreen> {
                 child: Text(
                   'Halo! Perjalanan sehatmu baru dimulai.',
                   style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 18,
+                    color: AppColors.navy,
+                    fontSize: 16,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
               ),
             ],
           ),
-          const SizedBox(height: 15),
+          const SizedBox(height: 12),
           const Text(
             'Lengkapi data profilmu sekarang untuk mendapatkan target nutrisi yang presisi dan personal.',
-            style: TextStyle(color: Colors.white70, fontSize: 13, height: 1.5),
+            style: TextStyle(
+              color: AppColors.navy,
+              fontSize: 13,
+              height: 1.5,
+            ),
           ),
           const SizedBox(height: 20),
           SizedBox(
@@ -430,13 +473,14 @@ class HomeScreenState extends State<HomeScreen> {
                 }
               },
               style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFFFFCC80),
-                foregroundColor: const Color(0xFF2D2A4A),
+                backgroundColor: Colors.white,
+                foregroundColor: AppColors.navy,
                 padding: const EdgeInsets.symmetric(vertical: 16),
+                elevation: 2,
+                shadowColor: AppColors.navy.withOpacity(0.15),
                 shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(15),
+                  borderRadius: BorderRadius.circular(12),
                 ),
-                elevation: 0,
               ),
               child: const Text(
                 'Lengkapi Profil Sekarang',
@@ -459,38 +503,49 @@ class MealTile extends StatelessWidget {
   final VoidCallback onTap;
 
   const MealTile({
-    super.key,
+    Key? key,
     required this.title,
     required this.imagePath,
     required this.color,
     required this.calories,
     required this.onTap,
-  });
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
+    final bool isDark = color == NutrifyTheme.darkCard;
+    final Color textColor = isDark ? Colors.white : NutrifyTheme.darkCard;
+    final Color subTextColor = isDark ? Colors.white54 : NutrifyTheme.darkCard.withOpacity(0.5);
+
     return InkWell(
       onTap: onTap,
-      borderRadius: BorderRadius.circular(20),
+      borderRadius: BorderRadius.circular(25),
       child: Container(
-        padding: const EdgeInsets.all(12),
+        padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: const Color(0xFF2D2A4A),
-          borderRadius: BorderRadius.circular(20),
+          color: color,
+          borderRadius: BorderRadius.circular(25),
+          boxShadow: [
+            BoxShadow(
+              color: color.withOpacity(0.2),
+              blurRadius: 10,
+              offset: const Offset(0, 4),
+            ),
+          ],
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Row(
               children: [
-                const Icon(Icons.add_circle, size: 16, color: Colors.white54),
+                Icon(Icons.add_circle, size: 16, color: subTextColor),
                 const SizedBox(width: 6),
                 Text(
                   title,
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 13,
-                    fontWeight: FontWeight.w500,
-                    color: Colors.white,
+                    fontWeight: FontWeight.w600,
+                    color: textColor,
                   ),
                 ),
               ],
@@ -499,8 +554,8 @@ class MealTile extends StatelessWidget {
             Center(
               child: Image.asset(
                 imagePath,
-                height: 48,
-                width: 48,
+                height: 50,
+                width: 50,
                 fit: BoxFit.contain,
               ),
             ),
@@ -508,13 +563,11 @@ class MealTile extends StatelessWidget {
             Align(
               alignment: Alignment.bottomRight,
               child: Text(
-                calories > 0
-                    ? '${HomeScreenState.formatCalories(calories)} Kal'
-                    : '- Kal',
-                style: const TextStyle(
+                calories > 0 ? '${HomeScreenState.formatCalories(calories)} Kal' : '- Kal',
+                style: TextStyle(
                   fontSize: 12,
                   fontWeight: FontWeight.bold,
-                  color: Colors.white38,
+                  color: subTextColor,
                 ),
               ),
             ),
