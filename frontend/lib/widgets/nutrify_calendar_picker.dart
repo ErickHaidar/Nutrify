@@ -74,28 +74,64 @@ class _NutrifyCalendarPickerState extends State<NutrifyCalendarPicker> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'PILIH TAHUN',
-                      style: TextStyle(
-                        color: AppColors.navy.withOpacity(0.5),
-                        fontSize: 10,
-                        fontWeight: FontWeight.w600,
-                        letterSpacing: 1.5,
+                GestureDetector(
+                  onTap: () async {
+                    final selectedDate = await showDatePicker(
+                      context: context,
+                      initialDate: _displayedMonth,
+                      firstDate: widget.firstDate,
+                      lastDate: widget.lastDate,
+                      initialDatePickerMode: DatePickerMode.year,
+                      builder: (context, child) {
+                        return Theme(
+                          data: Theme.of(context).copyWith(
+                            colorScheme: const ColorScheme.light(
+                              primary: AppColors.navy,
+                              onPrimary: Colors.white,
+                              surface: AppColors.cream,
+                              onSurface: AppColors.navy,
+                            ),
+                          ),
+                          child: child!,
+                        );
+                      },
+                    );
+                    if (selectedDate != null) {
+                      setState(() {
+                        _displayedMonth = DateTime(selectedDate.year, selectedDate.month, 1);
+                        _selectedDate = selectedDate;
+                      });
+                    }
+                  },
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        children: [
+                          Text(
+                            'PILIH TAHUN & BULAN',
+                            style: TextStyle(
+                              color: AppColors.navy.withOpacity(0.5),
+                              fontSize: 10,
+                              fontWeight: FontWeight.w600,
+                              letterSpacing: 1.5,
+                            ),
+                          ),
+                          const SizedBox(width: 4),
+                          Icon(Icons.arrow_drop_down, color: AppColors.navy.withOpacity(0.5), size: 16),
+                        ],
                       ),
-                    ),
-                    const SizedBox(height: 4),
-                    Text(
-                      _monthYearLabel,
-                      style: const TextStyle(
-                        color: AppColors.navy,
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
+                      const SizedBox(height: 4),
+                      Text(
+                        _monthYearLabel,
+                        style: const TextStyle(
+                          color: AppColors.navy,
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
                 Row(
                   children: [
@@ -179,8 +215,8 @@ class _NutrifyCalendarPickerState extends State<NutrifyCalendarPicker> {
       calendarDays.add(DateTime(_displayedMonth.year, _displayedMonth.month, i));
     }
 
-    // Pad end to make it a multiple of 7
-    while (calendarDays.length % 7 != 0) {
+    // Pad end to make it exactly 6 rows (42 cells)
+    while (calendarDays.length < 42) {
       calendarDays.add(null);
     }
 

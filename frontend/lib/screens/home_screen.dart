@@ -118,12 +118,12 @@ class HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: NutrifyTheme.background,
+      backgroundColor: AppColors.cream,
       body: SafeArea(
         child: RefreshIndicator(
           onRefresh: () async => loadDailyData(),
-          color: NutrifyTheme.accentOrange,
-          backgroundColor: NutrifyTheme.darkCard,
+          color: AppColors.amber,
+          backgroundColor: AppColors.navy,
           child: SingleChildScrollView(
             physics: const AlwaysScrollableScrollPhysics(),
             padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -160,15 +160,15 @@ class HomeScreenState extends State<HomeScreen> {
                         Text(
                           _getFormattedDate(),
                           style: TextStyle(
-                            color: NutrifyTheme.darkCard.withOpacity(0.6),
+                            color: AppColors.navy.withOpacity(0.6),
                             fontSize: 12,
                           ),
                         ),
                       ],
                     ),
                     CircleAvatar(
-                      backgroundColor: NutrifyTheme.darkCard.withOpacity(0.1),
-                      child: const Icon(Icons.person, color: NutrifyTheme.darkCard),
+                      backgroundColor: AppColors.navy.withOpacity(0.1),
+                      child: const Icon(Icons.person, color: AppColors.navy),
                     ),
                   ],
                 ),
@@ -207,19 +207,19 @@ class HomeScreenState extends State<HomeScreen> {
                           Container(
                             padding: const EdgeInsets.all(8),
                             decoration: BoxDecoration(
-                              color: NutrifyTheme.darkCard.withOpacity(0.1),
+                              color: AppColors.navy.withOpacity(0.1),
                               shape: BoxShape.circle,
                             ),
                             child: const Icon(
                               Icons.restaurant,
-                              color: NutrifyTheme.darkCard,
+                              color: AppColors.navy,
                               size: 20,
                             ),
                           ),
                           const Text(
                             'Tracking Kalori Harian',
                             style: TextStyle(
-                              color: NutrifyTheme.darkCard,
+                              color: AppColors.navy,
                               fontSize: 14,
                               fontWeight: FontWeight.bold,
                             ),
@@ -232,7 +232,7 @@ class HomeScreenState extends State<HomeScreen> {
                         style: const TextStyle(
                           fontSize: 36,
                           fontWeight: FontWeight.w900,
-                          color: NutrifyTheme.darkCard,
+                          color: AppColors.navy,
                           letterSpacing: 1.2,
                         ),
                       ),
@@ -243,9 +243,9 @@ class HomeScreenState extends State<HomeScreen> {
                           value: targetCalories > 0
                               ? (totalCalories / targetCalories).clamp(0.0, 1.0)
                               : 0,
-                          backgroundColor: NutrifyTheme.darkCard.withOpacity(0.1),
+                          backgroundColor: AppColors.navy.withOpacity(0.1),
                           valueColor: const AlwaysStoppedAnimation<Color>(
-                              NutrifyTheme.darkCard),
+                              AppColors.navy),
                           minHeight: 10,
                         ),
                       ),
@@ -256,7 +256,7 @@ class HomeScreenState extends State<HomeScreen> {
                           Text(
                             '${(targetCalories > 0 ? (totalCalories / targetCalories * 100).toInt() : 0)}% dari target',
                             style: TextStyle(
-                              color: NutrifyTheme.darkCard.withOpacity(0.8),
+                              color: AppColors.navy.withOpacity(0.8),
                               fontSize: 13,
                               fontWeight: FontWeight.w600,
                             ),
@@ -271,7 +271,7 @@ class HomeScreenState extends State<HomeScreen> {
                               );
                             },
                             style: ElevatedButton.styleFrom(
-                              backgroundColor: NutrifyTheme.darkCard,
+                              backgroundColor: AppColors.navy,
                               foregroundColor: Colors.white,
                               elevation: 0,
                               shape: RoundedRectangleBorder(
@@ -330,7 +330,7 @@ class HomeScreenState extends State<HomeScreen> {
                             Text(
                               'Target Kalori Harian',
                               style: TextStyle(
-                                color: NutrifyTheme.darkCard.withOpacity(0.7),
+                                color: AppColors.navy.withOpacity(0.7),
                                 fontSize: 13,
                                 fontWeight: FontWeight.w500,
                               ),
@@ -339,14 +339,14 @@ class HomeScreenState extends State<HomeScreen> {
                             Text(
                               '${_formatCalories(targetCalories)} kCal',
                               style: const TextStyle(
-                                color: NutrifyTheme.darkCard,
+                                color: AppColors.navy,
                                 fontWeight: FontWeight.bold,
                                 fontSize: 18,
                               ),
                             ),
                           ],
                         ),
-                        const Icon(Icons.chevron_right, color: NutrifyTheme.darkCard),
+                        const Icon(Icons.chevron_right, color: AppColors.navy),
                       ],
                     ),
                   ),
@@ -366,28 +366,28 @@ class HomeScreenState extends State<HomeScreen> {
                     MealTile(
                       title: 'Makan Pagi',
                       imagePath: Assets.iconPagi,
-                      color: NutrifyTheme.accentOrange,
+                      color: AppColors.peach,
                       calories: caloriesByType['Makan Pagi'] ?? 0,
                       onTap: () => _navigateToAddMeal('Makan Pagi'),
                     ),
                     MealTile(
                       title: 'Makan Siang',
                       imagePath: Assets.iconSiang,
-                      color: NutrifyTheme.darkCard,
+                      color: AppColors.peach,
                       calories: caloriesByType['Makan Siang'] ?? 0,
                       onTap: () => _navigateToAddMeal('Makan Siang'),
                     ),
                     MealTile(
                       title: 'Makan Malam',
                       imagePath: Assets.iconMalam,
-                      color: NutrifyTheme.lightCard,
+                      color: AppColors.peach,
                       calories: caloriesByType['Makan Malam'] ?? 0,
                       onTap: () => _navigateToAddMeal('Makan Malam'),
                     ),
                     MealTile(
                       title: 'Cemilan',
                       imagePath: Assets.iconCemilan,
-                      color: NutrifyTheme.accentOrange,
+                      color: AppColors.peach,
                       calories: caloriesByType['Cemilan'] ?? 0,
                       onTap: () => _navigateToAddMeal('Cemilan'),
                     ),
@@ -513,9 +513,9 @@ class MealTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final bool isDark = color == NutrifyTheme.darkCard;
-    final Color textColor = isDark ? Colors.white : NutrifyTheme.darkCard;
-    final Color subTextColor = isDark ? Colors.white54 : NutrifyTheme.darkCard.withOpacity(0.5);
+    final bool isDark = color == AppColors.navy;
+    final Color textColor = isDark ? Colors.white : AppColors.navy;
+    final Color subTextColor = isDark ? Colors.white54 : AppColors.navy.withOpacity(0.5);
 
     return InkWell(
       onTap: onTap,

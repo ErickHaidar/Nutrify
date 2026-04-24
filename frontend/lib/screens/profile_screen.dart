@@ -260,12 +260,16 @@ class ProfileScreenState extends State<ProfileScreen> {
             style: const TextStyle(color: Colors.white54, fontSize: 11),
           ),
           const SizedBox(height: 4),
-          Text(
-            value,
-            style: const TextStyle(
-              color: Color(0xFFFFCC80),
-              fontSize: 14,
-              fontWeight: FontWeight.bold,
+          FittedBox(
+            fit: BoxFit.scaleDown,
+            alignment: Alignment.centerLeft,
+            child: Text(
+              value,
+              style: const TextStyle(
+                color: Color(0xFFFFCC80),
+                fontSize: 14,
+                fontWeight: FontWeight.bold,
+              ),
             ),
           ),
         ],
