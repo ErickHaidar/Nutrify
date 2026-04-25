@@ -70,11 +70,10 @@ class _SplashScreenState extends State<SplashScreen> {
             const SizedBox(height: 16),
             Text(
               'Nutrify',
-              style: GoogleFonts.montserrat(
-                fontSize: 48,
+              style: GoogleFonts.inter(
+                fontSize: 30,
                 fontWeight: FontWeight.w900,
-                fontStyle: FontStyle.italic,
-                color: NutrifyTheme.accentOrange,
+                color: const Color(0xFFFFB26B),
               ),
             ),
             const SizedBox(height: 8),

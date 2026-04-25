@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:nutrify/di/service_locator.dart';
 import 'package:nutrify/presentation/login/store/login_store.dart';
@@ -67,13 +68,12 @@ class ProfileScreenState extends State<ProfileScreen> {
               Row(
                 children: [
                   Image.asset(Assets.nutrifyLogo, height: 40, width: 40),
-                  const Text(
+                  Text(
                     'Nutrify',
-                    style: TextStyle(
-                      fontSize: 28,
-                      fontWeight: FontWeight.bold,
-                      fontStyle: FontStyle.italic,
-                      color: Color(0xFFFFDDBE),
+                    style: GoogleFonts.inter(
+                      fontSize: 30,
+                      fontWeight: FontWeight.w900,
+                      color: const Color(0xFFFFB26B),
                     ),
                   ),
                 ],
