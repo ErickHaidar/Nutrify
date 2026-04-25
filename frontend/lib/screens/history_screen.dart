@@ -1,5 +1,6 @@
 // lib/screens/history_screen.dart
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import '../constants/colors.dart';
 import '../services/food_log_api_service.dart';
@@ -97,13 +98,12 @@ class _HistoryScreenState extends State<HistoryScreen> {
                             height: 40,
                             width: 40,
                           ),
-                          const Text(
+                          Text(
                             'Nutrify',
-                            style: TextStyle(
-                              fontSize: 28,
-                              fontWeight: FontWeight.bold,
-                              fontStyle: FontStyle.italic,
-                              color: Color(0xFFFFDDBE),
+                            style: GoogleFonts.inter(
+                              fontSize: 30,
+                              fontWeight: FontWeight.w900,
+                              color: const Color(0xFFFFB26B),
                             ),
                           ),
                         ],
