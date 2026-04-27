@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:nutrify/constants/assets.dart';
 import 'add_meal_screen.dart';
 import 'body_data_goals_screen.dart';
@@ -156,13 +157,12 @@ class HomeScreenState extends State<HomeScreen> {
                               width: 40,
                             ),
                             const SizedBox(width: 8),
-                            const Text(
+                            Text(
                               'Nutrify',
-                              style: TextStyle(
-                                fontSize: 28,
-                                fontWeight: FontWeight.bold,
-                                fontStyle: FontStyle.italic,
-                                color: NutrifyTheme.accentOrange,
+                              style: GoogleFonts.inter(
+                                fontSize: 30,
+                                fontWeight: FontWeight.w900,
+                                color: const Color(0xFFFFB26B),
                               ),
                             ),
                           ],

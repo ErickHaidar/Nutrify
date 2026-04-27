@@ -57,7 +57,7 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
       bottomNavigationBar: BottomNavigationBar(
         backgroundColor: NutrifyTheme.darkCard,
         selectedItemColor: NutrifyTheme.accentOrange,
-        unselectedItemColor: Colors.white54,
+        unselectedItemColor: NutrifyTheme.background.withOpacity(0.5),
         currentIndex: _selectedIndex,
         onTap: _onItemTapped,
         type: BottomNavigationBarType.fixed,

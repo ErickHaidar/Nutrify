@@ -172,11 +172,10 @@ class _LoginScreenState extends State<LoginScreen> {
     return Text(
       'Nutrify',
       textAlign: TextAlign.center,
-      style: GoogleFonts.montserrat(
-        fontSize: 48,
+      style: GoogleFonts.inter(
+        fontSize: 30,
         fontWeight: FontWeight.w900,
-        fontStyle: FontStyle.italic,
-        color: NutrifyTheme.accentOrange,
+        color: const Color(0xFFFFB26B),
       ),
     );
   }
@@ -854,10 +853,10 @@ class _SignUpModalContentState extends State<_SignUpModalContent> {
                   ),
                   child: Text(
                     'Nutrify',
-                    style: GoogleFonts.montserrat(
-                      color: NutrifyTheme.accentOrange,
-                      fontWeight: FontWeight.bold,
-                      fontStyle: FontStyle.italic,
+                    style: GoogleFonts.inter(
+                      fontSize: 30,
+                      fontWeight: FontWeight.w900,
+                      color: const Color(0xFFFFB26B),
                     ),
                   ),
                 ),
@@ -896,11 +895,10 @@ class _SignUpModalContentState extends State<_SignUpModalContent> {
                       const SizedBox(height: 8),
                       Text(
                         'Nutrify',
-                        style: GoogleFonts.montserrat(
-                          fontSize: 36,
+                        style: GoogleFonts.inter(
+                          fontSize: 30,
                           fontWeight: FontWeight.w900,
-                          fontStyle: FontStyle.italic,
-                          color: NutrifyTheme.accentOrange,
+                          color: const Color(0xFFFFB26B),
                         ),
                       ),
                       Text(

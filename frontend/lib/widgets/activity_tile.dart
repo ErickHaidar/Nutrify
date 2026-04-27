@@ -48,3 +48,4 @@ class ActivitySelectionTile extends StatelessWidget {
     );
   }
 }
+}

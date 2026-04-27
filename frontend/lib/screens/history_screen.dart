@@ -1,11 +1,14 @@
 // lib/screens/history_screen.dart
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import '../constants/colors.dart';
 import '../services/food_log_api_service.dart';
 import '../services/profile_api_service.dart';
 import '../widgets/nutrify_calendar_picker.dart';
 import 'food_detail_screen.dart';
+import '../constants/assets.dart';
+import '../widgets/nutrify_calendar_picker.dart';
 
 class HistoryScreen extends StatefulWidget {
   const HistoryScreen({super.key});
@@ -59,15 +62,14 @@ class _HistoryScreenState extends State<HistoryScreen> {
   }
 
   void _showCalendarPicker() async {
-    final DateTime? picked = await showNutrifyDatePicker(
+    final date = await showNutrifyDatePicker(
       context,
       initialDate: _selectedDate,
-      firstDate: DateTime(2000),
+      firstDate: DateTime(2020),
       lastDate: DateTime.now(),
     );
-
-    if (picked != null && picked != _selectedDate) {
-      _onDateChanged(picked);
+    if (date != null && mounted) {
+      _onDateChanged(date);
     }
   }
 
@@ -77,7 +79,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: NutrifyTheme.background,
+      backgroundColor: AppColors.cream,
       body: SafeArea(
         child: Column(
           children: [
@@ -97,13 +99,12 @@ class _HistoryScreenState extends State<HistoryScreen> {
                             height: 40,
                             width: 40,
                           ),
-                          const Text(
+                          Text(
                             'Nutrify',
-                            style: TextStyle(
-                              fontSize: 28,
-                              fontWeight: FontWeight.bold,
-                              fontStyle: FontStyle.italic,
-                              color: AppColors.navy,
+                            style: GoogleFonts.inter(
+                              fontSize: 30,
+                              fontWeight: FontWeight.w900,
+                              color: AppColors.peach,
                             ),
                           ),
                         ],
@@ -111,15 +112,21 @@ class _HistoryScreenState extends State<HistoryScreen> {
                       Text(
                         'History Nutrisi',
                         style: TextStyle(
-                          color: AppColors.navy.withOpacity(0.7),
+                          color: AppColors.navy,
                           fontSize: 12,
                         ),
                       ),
                     ],
                   ),
-                  IconButton(
-                    icon: const Icon(Icons.calendar_month, color: AppColors.navy),
-                    onPressed: _showCalendarPicker,
+                  Container(
+                    decoration: BoxDecoration(
+                      color: Colors.grey.withOpacity(0.1),
+                      shape: BoxShape.circle,
+                    ),
+                    child: IconButton(
+                      icon: const Icon(Icons.calendar_month, color: AppColors.navy),
+                      onPressed: _showCalendarPicker,
+                    ),
                   ),
                 ],
               ),
@@ -131,8 +138,8 @@ class _HistoryScreenState extends State<HistoryScreen> {
                   ? const Center(child: CircularProgressIndicator())
                   : RefreshIndicator(
                       onRefresh: _loadData,
-                      color: AppColors.navy,
-                      backgroundColor: NutrifyTheme.lightCard,
+                      color: NutrifyTheme.accentOrange,
+                      backgroundColor: AppColors.cream,
                       child: SingleChildScrollView(
                         physics: const AlwaysScrollableScrollPhysics(),
                         padding: const EdgeInsets.all(20),
@@ -162,16 +169,16 @@ class _HistoryScreenState extends State<HistoryScreen> {
 
                             // Meal Categories
                             _buildMealSection(
-                                'Makan Pagi', 'Breakfast', Icons.wb_sunny_outlined),
+                                'Makan Pagi', 'Breakfast', Assets.iconPagi),
                             const SizedBox(height: 15),
                             _buildMealSection(
-                                'Makan Siang', 'Lunch', Icons.wb_cloudy_outlined),
+                                'Makan Siang', 'Lunch', Assets.iconSiang),
                             const SizedBox(height: 15),
                             _buildMealSection(
-                                'Makan Malam', 'Dinner', Icons.nightlight_outlined),
+                                'Makan Malam', 'Dinner', Assets.iconMalam),
                             const SizedBox(height: 15),
                             _buildMealSection(
-                                'Cemilan', 'Snack', Icons.cookie_outlined),
+                                'Cemilan', 'Snack', Assets.iconCemilan),
 
                             if (_logs.isEmpty)
                               Padding(
@@ -200,7 +207,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
     );
   }
 
-  Widget _buildMealSection(String label, String mealKey, IconData icon) {
+  Widget _buildMealSection(String label, String mealKey, String iconPath) {
     final mealLogs = _logsForMeal(mealKey);
     final mealNutrition = _summary.byMeal[mealKey];
     final totalKcal = mealNutrition?.calories.round() ?? 0;
@@ -208,14 +215,21 @@ class _HistoryScreenState extends State<HistoryScreen> {
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: NutrifyTheme.lightCard,
+        color: AppColors.peach,
         borderRadius: BorderRadius.circular(25),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.05),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
+          ),
+        ],
       ),
       child: Column(
         children: [
           Row(
             children: [
-              Icon(icon, color: AppColors.navy),
+              Image.asset(iconPath, width: 32, height: 32),
               const SizedBox(width: 12),
               Text(
                 label,
@@ -302,8 +316,15 @@ class _HistoryScreenState extends State<HistoryScreen> {
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: NutrifyTheme.lightCard,
-        borderRadius: BorderRadius.circular(20),
+        color: AppColors.peach,
+        borderRadius: BorderRadius.circular(25),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.05),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
+          ),
+        ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -338,8 +359,6 @@ class _HistoryScreenState extends State<HistoryScreen> {
         ],
       ),
     );
-  }
 }
 
-
-// End of HistoryScreen
+}
