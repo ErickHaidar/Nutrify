@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:nutrify/constants/colors.dart';
 
+enum _SelectionMode { day, month, year }
+
 class NutrifyCalendarPicker extends StatefulWidget {
   final DateTime initialDate;
   final DateTime firstDate;
@@ -22,163 +24,233 @@ class NutrifyCalendarPicker extends StatefulWidget {
 class _NutrifyCalendarPickerState extends State<NutrifyCalendarPicker> {
   late DateTime _displayedMonth;
   DateTime? _selectedDate;
+  _SelectionMode _mode = _SelectionMode.year; // Always start from Year
+  late int _startYear;
 
   static const _monthNames = [
-    'Januari',
-    'Februari',
-    'Maret',
-    'April',
-    'Mei',
-    'Juni',
-    'Juli',
-    'Agustus',
-    'September',
-    'Oktober',
-    'November',
-    'Desember'
+    'Januari', 'Februari', 'Maret', 'April',
+    'Mei', 'Juni', 'Juli', 'Agustus',
+    'September', 'Oktober', 'November', 'Desember'
   ];
+
+  static const _dayLabels = ['MIN', 'SEN', 'SEL', 'RAB', 'KAM', 'JUM', 'SAB'];
 
   @override
   void initState() {
     super.initState();
     _displayedMonth = DateTime(widget.initialDate.year, widget.initialDate.month);
     _selectedDate = widget.initialDate;
+    _startYear = (_displayedMonth.year ~/ 12) * 12;
   }
 
-  void _previousMonth() {
+  void _previous() {
     setState(() {
-      _displayedMonth = DateTime(_displayedMonth.year, _displayedMonth.month - 1);
+      if (_mode == _SelectionMode.day) {
+        _displayedMonth = DateTime(_displayedMonth.year, _displayedMonth.month - 1);
+      } else if (_mode == _SelectionMode.year) {
+        _startYear -= 12;
+      }
     });
   }
 
-  void _nextMonth() {
+  void _next() {
     setState(() {
-      _displayedMonth = DateTime(_displayedMonth.year, _displayedMonth.month + 1);
+      if (_mode == _SelectionMode.day) {
+        _displayedMonth = DateTime(_displayedMonth.year, _displayedMonth.month + 1);
+      } else if (_mode == _SelectionMode.year) {
+        _startYear += 12;
+      }
     });
   }
 
-  String get _monthYearLabel =>
-      '${_monthNames[_displayedMonth.month - 1]} ${_displayedMonth.year}';
+  String get _headerLabel {
+    if (_mode == _SelectionMode.day) {
+      return '${_monthNames[_displayedMonth.month - 1]} ${_displayedMonth.year}';
+    } else if (_mode == _SelectionMode.month) {
+      return '${_displayedMonth.year}';
+    } else {
+      return '$_startYear \u2013 ${_startYear + 11}';
+    }
+  }
+
+  String get _modeLabel {
+    switch (_mode) {
+      case _SelectionMode.year:
+        return 'PILIH TAHUN';
+      case _SelectionMode.month:
+        return 'PILIH BULAN';
+      case _SelectionMode.day:
+        return 'PILIH HARI';
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      decoration: const BoxDecoration(
-        color: Color(0xFFFFD1A8),
-        borderRadius: BorderRadius.vertical(top: Radius.circular(40)),
-      ),
-      padding: const EdgeInsets.all(24),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          // 0. Handle
-          Container(
-            width: 50,
-            height: 4,
-            decoration: BoxDecoration(
-              color: AppColors.navy.withOpacity(0.3),
-              borderRadius: BorderRadius.circular(2),
-            ),
-          ),
-          const SizedBox(height: 25),
-          // 1. Header Section (Month Navigation)
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              IconButton(
-                icon: const Icon(Icons.chevron_left, color: AppColors.navy, size: 24),
-                onPressed: _previousMonth,
-              ),
-              Text(
-                _monthYearLabel,
-                style: const TextStyle(
-                  color: AppColors.navy,
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
+    return Dialog(
+      backgroundColor: Colors.transparent,
+      insetPadding: const EdgeInsets.symmetric(horizontal: 24, vertical: 40),
+      child: Container(
+        decoration: BoxDecoration(
+          color: const Color(0xFFFAF1E8),
+          borderRadius: BorderRadius.circular(28),
+        ),
+        padding: const EdgeInsets.fromLTRB(20, 24, 20, 20),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            // Mode label
+            Align(
+              alignment: Alignment.centerLeft,
+              child: Text(
+                _modeLabel,
+                style: TextStyle(
+                  color: AppColors.navy.withOpacity(0.5),
+                  fontSize: 11,
+                  fontWeight: FontWeight.w700,
+                  letterSpacing: 1.5,
                 ),
               ),
-              IconButton(
-                icon: const Icon(Icons.chevron_right, color: AppColors.navy, size: 24),
-                onPressed: _nextMonth,
-              ),
-            ],
-          ),
-          const SizedBox(height: 20),
-            const SizedBox(height: 16),
-            // 2. Weekday Header Row
-            Padding(
-              padding: const EdgeInsets.symmetric(vertical: 8),
-              child: Row(
-                children: ['M', 'S', 'S', 'R', 'K', 'J', 'S']
-                    .map((label) => Expanded(
-                          child: Center(
-                            child: Text(
-                              label,
-                              style: const TextStyle(
-                                color: AppColors.navy,
-                                fontSize: 13,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                          ),
-                        ))
-                    .toList(),
-              ),
             ),
-            // 3. Date Grid
-            _buildDateGrid(),
-            // 4. "Pilih" Button
-            Padding(
-              padding: const EdgeInsets.only(top: 24),
-              child: SizedBox(
-                width: 220,
-                child: ElevatedButton(
-                  onPressed: _selectedDate != null
-                      ? () => Navigator.pop(context, _selectedDate)
-                      : null,
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: AppColors.navy,
-                    foregroundColor: Colors.white,
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(35)),
-                    padding: const EdgeInsets.symmetric(vertical: 16),
+            const SizedBox(height: 6),
+
+            // Header: label + nav arrows
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                GestureDetector(
+                  onTap: () {
+                    setState(() {
+                      if (_mode == _SelectionMode.day) {
+                        _mode = _SelectionMode.month;
+                      } else if (_mode == _SelectionMode.month) {
+                        _mode = _SelectionMode.year;
+                      }
+                    });
+                  },
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(
+                        _headerLabel,
+                        style: const TextStyle(
+                          color: AppColors.navy,
+                          fontSize: 22,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      if (_mode != _SelectionMode.year) ...[
+                        const SizedBox(width: 4),
+                        Icon(
+                          Icons.keyboard_arrow_down_rounded,
+                          color: AppColors.navy.withOpacity(0.6),
+                          size: 20,
+                        ),
+                      ],
+                    ],
                   ),
-                  child: const Text('Pilih Tanggal',
-                      style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+                ),
+                Row(
+                  children: [
+                    _NavButton(
+                      onTap: _mode == _SelectionMode.month ? null : _previous,
+                      icon: Icons.chevron_left,
+                    ),
+                    const SizedBox(width: 4),
+                    _NavButton(
+                      onTap: _mode == _SelectionMode.month ? null : _next,
+                      icon: Icons.chevron_right,
+                    ),
+                  ],
+                ),
+              ],
+            ),
+            const SizedBox(height: 16),
+
+            // Content grid
+            if (_mode == _SelectionMode.day) ...[
+              _buildWeekdayHeader(),
+              const SizedBox(height: 4),
+              _buildDateGrid(),
+            ] else if (_mode == _SelectionMode.month) ...[
+              _buildMonthGrid(),
+            ] else ...[
+              _buildYearGrid(),
+            ],
+
+            const SizedBox(height: 20),
+
+            // Confirm button - only enabled when a date is selected in day mode
+            SizedBox(
+              width: double.infinity,
+              child: ElevatedButton(
+                onPressed: (_selectedDate != null && _mode == _SelectionMode.day)
+                    ? () => Navigator.pop(context, _selectedDate)
+                    : null,
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: AppColors.navy,
+                  disabledBackgroundColor: AppColors.navy.withOpacity(0.25),
+                  foregroundColor: Colors.white,
+                  disabledForegroundColor: Colors.white.withOpacity(0.5),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(40),
+                  ),
+                  padding: const EdgeInsets.symmetric(vertical: 16),
+                  elevation: 0,
+                ),
+                child: const Text(
+                  'Pilih',
+                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
                 ),
               ),
             ),
           ],
         ),
-      );
-    }
+      ),
+    );
+  }
+
+  Widget _buildWeekdayHeader() {
+    return Row(
+      children: _dayLabels
+          .map(
+            (label) => Expanded(
+              child: Center(
+                child: Text(
+                  label,
+                  style: TextStyle(
+                    color: AppColors.navy.withOpacity(0.5),
+                    fontSize: 10,
+                    fontWeight: FontWeight.w700,
+                    letterSpacing: 0.5,
+                  ),
+                ),
+              ),
+            ),
+          )
+          .toList(),
+    );
+  }
 
   Widget _buildDateGrid() {
-    final firstDayOfMonth = DateTime(_displayedMonth.year, _displayedMonth.month, 1);
-    final lastDayOfMonth = DateTime(_displayedMonth.year, _displayedMonth.month + 1, 0);
-    final startWeekday = firstDayOfMonth.weekday % 7; // Sunday = 0
-
+    final firstDayOfMonth =
+        DateTime(_displayedMonth.year, _displayedMonth.month, 1);
+    final lastDayOfMonth =
+        DateTime(_displayedMonth.year, _displayedMonth.month + 1, 0);
+    final startWeekday = firstDayOfMonth.weekday % 7; // Sunday=0
     final daysInMonth = lastDayOfMonth.day;
+
     final List<DateTime?> calendarDays = [];
-
-    // Pad start
-    for (int i = 0; i < startWeekday; i++) {
-      calendarDays.add(null);
-    }
-
-    // Fill days
+    for (int i = 0; i < startWeekday; i++) calendarDays.add(null);
     for (int i = 1; i <= daysInMonth; i++) {
       calendarDays.add(DateTime(_displayedMonth.year, _displayedMonth.month, i));
     }
-
-    // Pad end to make it exactly 6 rows (42 cells)
-    while (calendarDays.length < 42) {
-      calendarDays.add(null);
-    }
+    while (calendarDays.length % 7 != 0) calendarDays.add(null);
 
     return GridView.count(
       crossAxisCount: 7,
       shrinkWrap: true,
       physics: const NeverScrollableScrollPhysics(),
+      childAspectRatio: 1.0,
       children: calendarDays.map((date) {
         if (date == null) return const SizedBox.shrink();
 
@@ -187,56 +259,177 @@ class _NutrifyCalendarPickerState extends State<NutrifyCalendarPicker> {
             date.month == _selectedDate!.month &&
             date.day == _selectedDate!.day;
 
-        final now = DateTime.now();
-        final isToday = date.year == now.year &&
-            date.month == now.month &&
-            date.day == now.day;
-
-        final isOutOfRange = date.isBefore(widget.firstDate) || date.isAfter(widget.lastDate);
+        final isOutOfRange = date.isBefore(widget.firstDate) ||
+            date.isAfter(widget.lastDate);
 
         return GestureDetector(
           onTap: isOutOfRange
               ? null
-              : () {
-                  setState(() {
-                    _selectedDate = date;
-                  });
-                },
-            child: Container(
-              margin: const EdgeInsets.all(4),
-              decoration: BoxDecoration(
-                color: isSelected ? const Color(0xFFF1C28E) : Colors.transparent,
-                shape: BoxShape.circle,
-              ),
-              child: Center(
-                child: Text(
-                  '${date.day}',
-                  style: TextStyle(
-                    color: isOutOfRange
-                        ? AppColors.navy.withOpacity(0.2)
-                        : (isSelected ? AppColors.navy : AppColors.navy),
-                    fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
-                    fontSize: 14,
-                  ),
+              : () => setState(() => _selectedDate = date),
+          child: Container(
+            margin: const EdgeInsets.all(2),
+            decoration: BoxDecoration(
+              color: isSelected
+                  ? const Color(0xFFF1C28E)
+                  : Colors.transparent,
+              shape: BoxShape.circle,
+              boxShadow: isSelected
+                  ? [
+                      BoxShadow(
+                        color: const Color(0xFFF1C28E).withOpacity(0.5),
+                        blurRadius: 6,
+                      )
+                    ]
+                  : null,
+            ),
+            child: Center(
+              child: Text(
+                '${date.day}',
+                style: TextStyle(
+                  color: isOutOfRange
+                      ? AppColors.navy.withOpacity(0.2)
+                      : AppColors.navy,
+                  fontWeight:
+                      isSelected ? FontWeight.bold : FontWeight.normal,
+                  fontSize: 13,
                 ),
               ),
             ),
+          ),
         );
       }).toList(),
     );
   }
+
+  Widget _buildMonthGrid() {
+    return GridView.count(
+      crossAxisCount: 3,
+      shrinkWrap: true,
+      childAspectRatio: 2.2,
+      physics: const NeverScrollableScrollPhysics(),
+      children: List.generate(12, (index) {
+        final isSelected = _displayedMonth.month == index + 1;
+        return GestureDetector(
+          onTap: () => setState(() {
+            _displayedMonth = DateTime(_displayedMonth.year, index + 1);
+            _mode = _SelectionMode.day;
+          }),
+          child: Container(
+            margin: const EdgeInsets.all(4),
+            decoration: BoxDecoration(
+              color: isSelected
+                  ? const Color(0xFFF1C28E)
+                  : Colors.transparent,
+              borderRadius: BorderRadius.circular(20),
+            ),
+            child: Center(
+              child: Text(
+                _monthNames[index],
+                style: TextStyle(
+                  color: AppColors.navy,
+                  fontWeight:
+                      isSelected ? FontWeight.bold : FontWeight.normal,
+                  fontSize: 13,
+                ),
+              ),
+            ),
+          ),
+        );
+      }),
+    );
+  }
+
+  Widget _buildYearGrid() {
+    return GridView.count(
+      crossAxisCount: 3,
+      shrinkWrap: true,
+      childAspectRatio: 2.2,
+      physics: const NeverScrollableScrollPhysics(),
+      children: List.generate(12, (index) {
+        final year = _startYear + index;
+        final isSelected = _displayedMonth.year == year;
+        final isOutOfRange = year < widget.firstDate.year ||
+            year > widget.lastDate.year;
+
+        return GestureDetector(
+          onTap: isOutOfRange
+              ? null
+              : () => setState(() {
+                    _displayedMonth = DateTime(year, _displayedMonth.month);
+                    _mode = _SelectionMode.month;
+                  }),
+          child: Container(
+            margin: const EdgeInsets.all(4),
+            decoration: BoxDecoration(
+              color: isSelected
+                  ? const Color(0xFFF1C28E)
+                  : Colors.transparent,
+              borderRadius: BorderRadius.circular(20),
+            ),
+            child: Center(
+              child: Text(
+                '$year',
+                style: TextStyle(
+                  color: isOutOfRange
+                      ? AppColors.navy.withOpacity(0.2)
+                      : AppColors.navy,
+                  fontWeight:
+                      isSelected ? FontWeight.bold : FontWeight.normal,
+                  fontSize: 13,
+                ),
+              ),
+            ),
+          ),
+        );
+      }),
+    );
+  }
 }
 
+// ─── Small navigation button ───────────────────────────────────────────────────
+
+class _NavButton extends StatelessWidget {
+  final VoidCallback? onTap;
+  final IconData icon;
+
+  const _NavButton({required this.onTap, required this.icon});
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        width: 36,
+        height: 36,
+        decoration: BoxDecoration(
+          color: AppColors.navy.withOpacity(0.08),
+          shape: BoxShape.circle,
+        ),
+        child: Icon(
+          icon,
+          color: onTap == null
+              ? AppColors.navy.withOpacity(0.2)
+              : AppColors.navy,
+          size: 22,
+        ),
+      ),
+    );
+  }
+}
+
+// ─── Helper function ───────────────────────────────────────────────────────────
+
+/// Shows the Nutrify date picker as a centered Dialog.
+/// Flow: Year → Month → Day
 Future<DateTime?> showNutrifyDatePicker(
   BuildContext context, {
   DateTime? initialDate,
   DateTime? firstDate,
   DateTime? lastDate,
 }) {
-  return showModalBottomSheet<DateTime>(
+  return showDialog<DateTime>(
     context: context,
-    backgroundColor: Colors.transparent,
-    isScrollControlled: true,
+    barrierColor: Colors.black.withOpacity(0.4),
     builder: (context) => NutrifyCalendarPicker(
       initialDate: initialDate ?? DateTime.now(),
       firstDate: firstDate ?? DateTime(1900),

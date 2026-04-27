@@ -133,44 +133,60 @@ class ProfileScreenState extends State<ProfileScreen> {
               Center(
                 child: Column(
                   children: [
-                    Stack(
-                      children: [
-                        Container(
-                          width: 100,
-                          height: 100,
-                          decoration: BoxDecoration(
-                            color: const Color(0xFFC4BDB1),
-                            borderRadius: BorderRadius.circular(25),
-                            image: _profileImagePath != null
-                                ? DecorationImage(
-                                    image: (kIsWeb
-                                            ? NetworkImage(_profileImagePath!)
-                                            : FileImage(
-                                                File(_profileImagePath!)))
-                                        as ImageProvider,
-                                    fit: BoxFit.cover,
-                                  )
+                    GestureDetector(
+                      onTap: () async {
+                        final result = await Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const EditProfileScreen(),
+                          ),
+                        );
+                        if (result == true) {
+                          setState(() {
+                            _profileImagePath = getIt<SharedPreferences>().getString('profile_image');
+                          });
+                          loadProfile();
+                        }
+                      },
+                      child: Stack(
+                        children: [
+                          Container(
+                            width: 100,
+                            height: 100,
+                            decoration: BoxDecoration(
+                              color: const Color(0xFFC4BDB1),
+                              borderRadius: BorderRadius.circular(25),
+                              image: _profileImagePath != null
+                                  ? DecorationImage(
+                                      image: (kIsWeb
+                                              ? NetworkImage(_profileImagePath!)
+                                              : FileImage(
+                                                  File(_profileImagePath!)))
+                                          as ImageProvider,
+                                      fit: BoxFit.cover,
+                                    )
+                                  : null,
+                            ),
+                            child: _profileImagePath == null
+                                ? const Icon(Icons.person,
+                                    size: 60, color: AppColors.navy)
                                 : null,
                           ),
-                          child: _profileImagePath == null
-                              ? const Icon(Icons.person,
-                                  size: 60, color: AppColors.navy)
-                              : null,
-                        ),
-                        Positioned(
-                          bottom: 0,
-                          right: 0,
-                          child: Container(
-                            padding: const EdgeInsets.all(4),
-                            decoration: const BoxDecoration(
-                              color: AppColors.navy,
-                              shape: BoxShape.circle,
+                          Positioned(
+                            bottom: 0,
+                            right: 0,
+                            child: Container(
+                              padding: const EdgeInsets.all(4),
+                              decoration: const BoxDecoration(
+                                color: AppColors.navy,
+                                shape: BoxShape.circle,
+                              ),
+                              child: const Icon(Icons.edit,
+                                  size: 14, color: Colors.white),
                             ),
-                            child: const Icon(Icons.edit,
-                                size: 14, color: Colors.white),
                           ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
                     const SizedBox(height: 12),
                     Text(

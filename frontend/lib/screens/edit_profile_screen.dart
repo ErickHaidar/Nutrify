@@ -4,6 +4,10 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../services/profile_api_service.dart';
+import '../utils/age_calculator.dart';
+import '../widgets/nutrify_calendar_picker.dart';
+import '../constants/colors.dart';
+
 import '../constants/colors.dart';
 import '../../di/service_locator.dart';
 
@@ -33,6 +37,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   String? _initialGender;
   String? _initialGoal;
   String? _initialActivityLevel;
+
+  DateTime? _birthDate;
 
   bool get _hasChanges {
     return _heightController.text != _initialHeight ||
@@ -79,6 +85,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
           _goal = profile.goal;
           _activityLevel = profile.activityLevel;
 
+          _birthDate = DateTime(DateTime.now().year - profile.age, 1, 1);
+
           _initialHeight = _heightController.text;
           _initialWeight = _weightController.text;
           _initialAge = _ageController.text;
@@ -88,6 +96,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
 
           _isLoading = false;
         });
+
       } else if (mounted) {
         setState(() => _isLoading = false);
       }
@@ -148,7 +157,43 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     }
   }
 
+  Future<void> _showBirthDatePicker() async {
+    final picked = await showNutrifyDatePicker(
+      context,
+      initialDate: _birthDate ?? DateTime(DateTime.now().year - 20, 1, 1),
+      firstDate: DateTime(1900),
+      lastDate: DateTime.now(),
+    );
+    if (picked != null) {
+      setState(() {
+        _birthDate = picked;
+        _ageController.text = calculateAge(picked).toString();
+      });
+    }
+  }
+
+  String _birthDateText() {
+    if (_birthDate == null) return 'Pilih tanggal lahir';
+    final d = _birthDate!;
+    final months = [
+      'Januari',
+      'Februari',
+      'Maret',
+      'April',
+      'Mei',
+      'Juni',
+      'Juli',
+      'Agustus',
+      'September',
+      'Oktober',
+      'November',
+      'Desember'
+    ];
+    return '${d.day.toString().padLeft(2, '0')} ${months[d.month - 1]} ${d.year}';
+  }
+
   void _showImagePickerModal() {
+
     showModalBottomSheet(
       context: context,
       backgroundColor: const Color(0xFF2D2A4A),
@@ -296,6 +341,11 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                   ),
                 ),
               ],
+            ),
+            CustomInputField(
+              label: 'TANGGAL LAHIR',
+              initialValue: _birthDateText(),
+              onTap: _showBirthDatePicker,
             ),
             CustomInputField(
               label: 'Target Berat Badan',
