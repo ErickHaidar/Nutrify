@@ -124,4 +124,14 @@ class ProfileApiService {
     // Invalidate so next read reflects the saved changes.
     invalidateCache();
   }
+
+  Future<void> updateFcmToken(String token) async {
+    final userId = sb.Supabase.instance.client.auth.currentUser?.id;
+    if (userId == null) return;
+
+    await _dio.dio.post(
+      Endpoints.profile, // Assuming profile endpoint handles token update or use a specific one
+      data: {'fcm_token': token},
+    );
+  }
 }

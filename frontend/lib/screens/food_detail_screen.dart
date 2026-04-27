@@ -6,6 +6,8 @@ import 'package:nutrify/constants/colors.dart';
 import 'package:nutrify/utils/meal_type_mapper.dart';
 import 'package:nutrify/services/food_api_service.dart';
 import 'package:nutrify/services/food_log_api_service.dart';
+import 'package:nutrify/di/service_locator.dart';
+import 'package:nutrify/services/notification_service.dart';
 
 class FoodDetailScreen extends StatefulWidget {
   final FoodItem? food;
@@ -119,6 +121,10 @@ class _FoodDetailScreenState extends State<FoodDetailScreen> {
           date: widget.date,
         );
       }
+      
+      // Reschedule notifications with updated menu
+      await getIt<NotificationService>().scheduleMealReminders();
+
       if (mounted) Navigator.pop(context, true);
     } catch (e) {
       if (mounted) {

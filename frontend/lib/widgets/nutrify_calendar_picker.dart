@@ -62,106 +62,62 @@ class _NutrifyCalendarPickerState extends State<NutrifyCalendarPicker> {
 
   @override
   Widget build(BuildContext context) {
-    return Dialog(
-      backgroundColor: AppColors.cream,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
-      child: Padding(
-        padding: const EdgeInsets.all(24),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            // 1. Header Section
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                GestureDetector(
-                  onTap: () async {
-                    final selectedDate = await showDatePicker(
-                      context: context,
-                      initialDate: _displayedMonth,
-                      firstDate: widget.firstDate,
-                      lastDate: widget.lastDate,
-                      initialDatePickerMode: DatePickerMode.year,
-                      builder: (context, child) {
-                        return Theme(
-                          data: Theme.of(context).copyWith(
-                            colorScheme: const ColorScheme.light(
-                              primary: AppColors.navy,
-                              onPrimary: Colors.white,
-                              surface: AppColors.cream,
-                              onSurface: AppColors.navy,
-                            ),
-                          ),
-                          child: child!,
-                        );
-                      },
-                    );
-                    if (selectedDate != null) {
-                      setState(() {
-                        _displayedMonth = DateTime(selectedDate.year, selectedDate.month, 1);
-                        _selectedDate = selectedDate;
-                      });
-                    }
-                  },
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
-                        children: [
-                          Text(
-                            'PILIH TAHUN & BULAN',
-                            style: TextStyle(
-                              color: AppColors.navy.withOpacity(0.5),
-                              fontSize: 10,
-                              fontWeight: FontWeight.w600,
-                              letterSpacing: 1.5,
-                            ),
-                          ),
-                          const SizedBox(width: 4),
-                          Icon(Icons.arrow_drop_down, color: AppColors.navy.withOpacity(0.5), size: 16),
-                        ],
-                      ),
-                      const SizedBox(height: 4),
-                      Text(
-                        _monthYearLabel,
-                        style: const TextStyle(
-                          color: AppColors.navy,
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                Row(
-                  children: [
-                    IconButton(
-                      icon: const Icon(Icons.chevron_left, color: AppColors.navy, size: 20),
-                      onPressed: _previousMonth,
-                    ),
-                    IconButton(
-                      icon: const Icon(Icons.chevron_right, color: AppColors.navy, size: 20),
-                      onPressed: _nextMonth,
-                    ),
-                  ],
-                ),
-              ],
+    return Container(
+      decoration: const BoxDecoration(
+        color: Color(0xFFFFD1A8),
+        borderRadius: BorderRadius.vertical(top: Radius.circular(40)),
+      ),
+      padding: const EdgeInsets.all(24),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          // 0. Handle
+          Container(
+            width: 50,
+            height: 4,
+            decoration: BoxDecoration(
+              color: AppColors.navy.withOpacity(0.3),
+              borderRadius: BorderRadius.circular(2),
             ),
+          ),
+          const SizedBox(height: 25),
+          // 1. Header Section (Month Navigation)
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              IconButton(
+                icon: const Icon(Icons.chevron_left, color: AppColors.navy, size: 24),
+                onPressed: _previousMonth,
+              ),
+              Text(
+                _monthYearLabel,
+                style: const TextStyle(
+                  color: AppColors.navy,
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              IconButton(
+                icon: const Icon(Icons.chevron_right, color: AppColors.navy, size: 24),
+                onPressed: _nextMonth,
+              ),
+            ],
+          ),
+          const SizedBox(height: 20),
             const SizedBox(height: 16),
             // 2. Weekday Header Row
             Padding(
               padding: const EdgeInsets.symmetric(vertical: 8),
               child: Row(
-                children: ['MIN', 'SEN', 'SEL', 'RAB', 'KAM', 'JUM', 'SAB']
+                children: ['M', 'S', 'S', 'R', 'K', 'J', 'S']
                     .map((label) => Expanded(
                           child: Center(
                             child: Text(
                               label,
                               style: const TextStyle(
                                 color: AppColors.navy,
-                                fontSize: 10,
-                                fontWeight: FontWeight.w600,
-                                letterSpacing: 1.2,
+                                fontSize: 13,
+                                fontWeight: FontWeight.bold,
                               ),
                             ),
                           ),
@@ -173,9 +129,9 @@ class _NutrifyCalendarPickerState extends State<NutrifyCalendarPicker> {
             _buildDateGrid(),
             // 4. "Pilih" Button
             Padding(
-              padding: const EdgeInsets.only(top: 16),
+              padding: const EdgeInsets.only(top: 24),
               child: SizedBox(
-                width: double.infinity,
+                width: 220,
                 child: ElevatedButton(
                   onPressed: _selectedDate != null
                       ? () => Navigator.pop(context, _selectedDate)
@@ -183,19 +139,18 @@ class _NutrifyCalendarPickerState extends State<NutrifyCalendarPicker> {
                   style: ElevatedButton.styleFrom(
                     backgroundColor: AppColors.navy,
                     foregroundColor: Colors.white,
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
-                    padding: const EdgeInsets.symmetric(vertical: 14),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(35)),
+                    padding: const EdgeInsets.symmetric(vertical: 16),
                   ),
-                  child: const Text('Pilih',
+                  child: const Text('Pilih Tanggal',
                       style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
                 ),
               ),
             ),
           ],
         ),
-      ),
-    );
-  }
+      );
+    }
 
   Widget _buildDateGrid() {
     final firstDayOfMonth = DateTime(_displayedMonth.year, _displayedMonth.month, 1);
@@ -247,24 +202,25 @@ class _NutrifyCalendarPickerState extends State<NutrifyCalendarPicker> {
                     _selectedDate = date;
                   });
                 },
-          child: Container(
-            margin: const EdgeInsets.all(4),
-            decoration: BoxDecoration(
-              color: isSelected ? AppColors.amber : Colors.transparent,
-              shape: BoxShape.circle,
-            ),
-            child: Center(
-              child: Text(
-                '${date.day}',
-                style: TextStyle(
-                  color: isOutOfRange
-                      ? AppColors.navy.withOpacity(0.25)
-                      : AppColors.navy,
-                  fontWeight: (isSelected || isToday) ? FontWeight.bold : FontWeight.normal,
+            child: Container(
+              margin: const EdgeInsets.all(4),
+              decoration: BoxDecoration(
+                color: isSelected ? const Color(0xFFF1C28E) : Colors.transparent,
+                shape: BoxShape.circle,
+              ),
+              child: Center(
+                child: Text(
+                  '${date.day}',
+                  style: TextStyle(
+                    color: isOutOfRange
+                        ? AppColors.navy.withOpacity(0.2)
+                        : (isSelected ? AppColors.navy : AppColors.navy),
+                    fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+                    fontSize: 14,
+                  ),
                 ),
               ),
             ),
-          ),
         );
       }).toList(),
     );
@@ -277,16 +233,15 @@ Future<DateTime?> showNutrifyDatePicker(
   DateTime? firstDate,
   DateTime? lastDate,
 }) {
-  return showDialog<DateTime>(
+  return showModalBottomSheet<DateTime>(
     context: context,
-    barrierDismissible: true,
+    backgroundColor: Colors.transparent,
+    isScrollControlled: true,
     builder: (context) => NutrifyCalendarPicker(
       initialDate: initialDate ?? DateTime.now(),
       firstDate: firstDate ?? DateTime(1900),
       lastDate: lastDate ?? DateTime.now(),
-      onDateSelected: (date) {
-        // This is handled by Navigator.pop in the widget's button
-      },
+      onDateSelected: (date) {},
     ),
   );
 }

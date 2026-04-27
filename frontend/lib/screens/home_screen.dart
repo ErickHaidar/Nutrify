@@ -7,6 +7,7 @@ import 'tracking_kalori_screen.dart';
 import 'package:nutrify/constants/colors.dart';
 import '../services/food_log_api_service.dart';
 import '../services/profile_api_service.dart';
+import '../widgets/notification_modal.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -116,6 +117,15 @@ class HomeScreenState extends State<HomeScreen> {
     }
   }
 
+  void _showNotifications() {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.transparent,
+      isScrollControlled: true,
+      builder: (context) => const NotificationModal(),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -166,9 +176,12 @@ class HomeScreenState extends State<HomeScreen> {
                         ),
                       ],
                     ),
-                    CircleAvatar(
-                      backgroundColor: AppColors.navy.withOpacity(0.1),
-                      child: const Icon(Icons.person, color: AppColors.navy),
+                    GestureDetector(
+                      onTap: _showNotifications,
+                      child: CircleAvatar(
+                        backgroundColor: AppColors.navy.withOpacity(0.1),
+                        child: const Icon(Icons.notifications, color: AppColors.navy),
+                      ),
                     ),
                   ],
                 ),
@@ -424,15 +437,11 @@ class HomeScreenState extends State<HomeScreen> {
           Row(
             children: [
               Container(
-                padding: const EdgeInsets.all(10),
-                decoration: BoxDecoration(
-                  color: AppColors.navy.withOpacity(0.08),
-                  shape: BoxShape.circle,
-                ),
-                child: const Icon(
-                  Icons.auto_awesome,
+                width: 48,
+                height: 48,
+                decoration: const BoxDecoration(
                   color: AppColors.navy,
-                  size: 24,
+                  shape: BoxShape.circle,
                 ),
               ),
               const SizedBox(width: 15),

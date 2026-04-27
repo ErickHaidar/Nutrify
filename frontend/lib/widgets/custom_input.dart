@@ -40,5 +40,6 @@ class CustomInputField extends StatelessWidget {
         ),
       ],
     );
+  }
 }
 }

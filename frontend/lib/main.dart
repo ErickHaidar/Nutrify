@@ -2,6 +2,9 @@ import 'dart:async';
 
 import 'package:nutrify/di/service_locator.dart';
 import 'package:nutrify/presentation/my_app.dart';
+import 'package:nutrify/services/notification_service.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:intl/date_symbol_data_local.dart';
@@ -14,6 +17,13 @@ Future<void> main() async {
     WidgetsFlutterBinding.ensureInitialized();
 
     try {
+      // Step 0: Firebase Initialization (Required for Push Notifications)
+      try {
+        await Firebase.initializeApp();
+      } catch (e) {
+        print("Firebase Initialization failed: $e. Ensure google-services.json is added.");
+      }
+
       // Step 1: Loading environment variables...
       // HARUS await secara mandiri, jangan digabung Future.wait agar variabel tersedia bagi yang lain
       await dotenv.load(fileName: ".env");
@@ -39,6 +49,12 @@ Future<void> main() async {
         setPreferredOrientations(),
         ServiceLocator.configureDependencies(),
       ]);
+
+      // Step 3b: Schedule notifications if enabled
+      final prefs = getIt<SharedPreferences>();
+      if (prefs.getBool('notifications_enabled') ?? true) {
+        await getIt<NotificationService>().scheduleMealReminders();
+      }
 
       // Step 4: Running MyApp...
       runApp(MyApp()); // Hapus 'const' jika constructor MyApp tidak mendukungnya

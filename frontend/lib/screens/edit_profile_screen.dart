@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../services/profile_api_service.dart';
+import '../constants/colors.dart';
 import '../../di/service_locator.dart';
 
 class EditProfileScreen extends StatefulWidget {
@@ -24,6 +25,23 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   String _activityLevel = 'sedentary';
   bool _isLoading = true;
   bool _isSaving = false;
+
+  // Initial State Tracking
+  String? _initialHeight;
+  String? _initialWeight;
+  String? _initialAge;
+  String? _initialGender;
+  String? _initialGoal;
+  String? _initialActivityLevel;
+
+  bool get _hasChanges {
+    return _heightController.text != _initialHeight ||
+        _weightController.text != _initialWeight ||
+        _ageController.text != _initialAge ||
+        _gender != _initialGender ||
+        _goal != _initialGoal ||
+        _activityLevel != _initialActivityLevel;
+  }
 
   XFile? _profileImage;
   final ImagePicker _picker = ImagePicker();
@@ -60,6 +78,14 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
           _gender = profile.gender;
           _goal = profile.goal;
           _activityLevel = profile.activityLevel;
+
+          _initialHeight = _heightController.text;
+          _initialWeight = _weightController.text;
+          _initialAge = _ageController.text;
+          _initialGender = _gender;
+          _initialGoal = _goal;
+          _initialActivityLevel = _activityLevel;
+
           _isLoading = false;
         });
       } else if (mounted) {
@@ -91,10 +117,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         activityLevel: _activityLevel,
       );
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Profil berhasil diperbarui')),
-        );
-        Navigator.pop(context, true);
+        setState(() => _isSaving = false);
+        _showSuccessDialog();
       }
     } catch (e) {
       if (mounted) {
@@ -181,24 +205,24 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   Widget build(BuildContext context) {
     if (_isLoading) {
       return const Scaffold(
-        backgroundColor: Color(0xFF433D67),
+        backgroundColor: AppColors.cream,
         body: Center(child: CircularProgressIndicator()),
       );
     }
 
     return Scaffold(
-      backgroundColor: const Color(0xFF433D67),
+      backgroundColor: AppColors.cream,
       resizeToAvoidBottomInset: true,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.white),
+          icon: const Icon(Icons.arrow_back, color: AppColors.navy),
           onPressed: () => Navigator.pop(context),
         ),
         title: const Text(
-          'Edit Profile',
-          style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white),
+          'Edit Profil',
+          style: TextStyle(fontWeight: FontWeight.bold, color: AppColors.navy),
         ),
         centerTitle: true,
       ),
@@ -212,29 +236,37 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
               child: Stack(
                 alignment: Alignment.bottomRight,
                 children: [
-                  CircleAvatar(
-                    radius: 50,
-                    backgroundColor: const Color(0xFF2D2A4A),
-                    backgroundImage: _profileImage != null
-                        ? (kIsWeb
-                            ? NetworkImage(_profileImage!.path)
-                            : FileImage(File(_profileImage!.path))) as ImageProvider
-                        : null,
+                  Container(
+                    width: 100,
+                    height: 100,
+                    decoration: BoxDecoration(
+                      color: const Color(0xFFC4BDB1),
+                      borderRadius: BorderRadius.circular(25),
+                      image: _profileImage != null
+                          ? DecorationImage(
+                              image: (kIsWeb
+                                      ? NetworkImage(_profileImage!.path)
+                                      : FileImage(File(_profileImage!.path)))
+                                  as ImageProvider,
+                              fit: BoxFit.cover,
+                            )
+                          : null,
+                    ),
                     child: _profileImage == null
-                        ? const Icon(Icons.person, size: 60, color: Color(0xFFFFCC80))
+                        ? const Icon(Icons.person,
+                            size: 60, color: AppColors.navy)
                         : null,
                   ),
                   Container(
                     padding: const EdgeInsets.all(6),
-                    decoration: BoxDecoration(
-                      color: const Color(0xFFFFCC80),
+                    decoration: const BoxDecoration(
+                      color: AppColors.navy,
                       shape: BoxShape.circle,
-                      border: Border.all(color: const Color(0xFF433D67), width: 2),
                     ),
                     child: const Icon(
-                      Icons.camera_alt,
-                      size: 18,
-                      color: Color(0xFF2D2A4A),
+                      Icons.edit,
+                      size: 14,
+                      color: Colors.white,
                     ),
                   ),
                 ],
@@ -242,7 +274,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
             ),
             const SizedBox(height: 32),
 
-            _buildSectionLabel('BODY COMPOSITION'),
+            _buildSectionLabel('Body Composition'),
             const SizedBox(height: 16),
             Row(
               children: [
@@ -265,28 +297,50 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                 ),
               ],
             ),
-            const SizedBox(height: 24),
-            Row(
-              children: [
-                Expanded(
-                  child: ProfileInput(
-                    controller: _ageController,
-                    label: 'AGE',
-                    icon: Icons.cake_outlined,
-                    keyboardType: TextInputType.number,
-                  ),
-                ),
-                const SizedBox(width: 16),
-                Expanded(child: _buildGenderDropdown()),
-              ],
+            CustomInputField(
+              label: 'Target Berat Badan',
+              initialValue: '80 Kg', // Placeholder or add logic
+              onTap: () {}, // Optional
             ),
 
             const SizedBox(height: 32),
-            _buildSectionLabel('GOAL & ACTIVITY'),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                const Text(
+                  'Aktivitas',
+                  style: TextStyle(
+                    color: AppColors.navy,
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                Text(
+                  'pilih satu aktivitas',
+                  style: TextStyle(
+                    color: AppColors.navy.withOpacity(0.6),
+                    fontSize: 12,
+                  ),
+                ),
+              ],
+            ),
             const SizedBox(height: 16),
-            _buildGoalDropdown(),
+            _buildActivitySelection(),
+
+            const SizedBox(height: 32),
+            const Align(
+              alignment: Alignment.centerLeft,
+              child: Text(
+                'Tujuan Utama',
+                style: TextStyle(
+                  color: AppColors.navy,
+                  fontSize: 14,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+            ),
             const SizedBox(height: 16),
-            _buildActivityDropdown(),
+            _buildGoalSelection(),
 
             const SizedBox(height: 32),
             _buildCaloriePreview(),
@@ -296,26 +350,27 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
               width: double.infinity,
               height: 58,
               child: ElevatedButton(
-                onPressed: _isSaving ? null : _saveChanges,
+                onPressed: (_isSaving || !_hasChanges) ? null : _saveChanges,
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFFFFCC80),
-                  foregroundColor: const Color(0xFF2D2A4A),
+                  backgroundColor: AppColors.navy,
+                  disabledBackgroundColor: const Color(0xFF8F8E9D),
+                  foregroundColor: Colors.white,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(30),
                   ),
-                  elevation: 2,
+                  elevation: 0,
                 ),
                 child: _isSaving
                     ? const SizedBox(
                         height: 22,
                         width: 22,
                         child: CircularProgressIndicator(
-                          color: Color(0xFF2D2A4A),
+                          color: Colors.white,
                           strokeWidth: 2,
                         ),
                       )
                     : const Text(
-                        'Save Profile Changes',
+                        'Simpan Perubahan',
                         style: TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.bold,
@@ -418,52 +473,121 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     );
   }
 
-  Widget _buildActivityDropdown() {
-    const levels = {
-      'sedentary': 'Sedentary (Tidak aktif)',
-      'light': 'Light (Sedikit aktif)',
-      'moderate': 'Moderate (Cukup aktif)',
-      'active': 'Active (Aktif)',
-      'very_active': 'Very Active (Sangat aktif)',
-    };
+  Widget _buildActivitySelection() {
+    final levels = [
+      {'id': 'light', 'title': 'Aktivitas Ringan', 'subtitle': 'Olahraga 1-3 kali seminggu', 'icon': Icons.directions_walk},
+      {'id': 'moderate', 'title': 'Aktivitas Sedang', 'subtitle': 'Olahraga 3-5 kali seminggu', 'icon': Icons.fitness_center},
+      {'id': 'active', 'title': 'Aktivitas Tinggi', 'subtitle': 'Olahraga 6-7 kali seminggu', 'icon': Icons.bolt},
+    ];
+
     return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        const Text(
-          'ACTIVITY LEVEL',
-          style: TextStyle(
-            fontSize: 11,
-            fontWeight: FontWeight.w600,
-            color: Color(0xFFFFCC80),
-            letterSpacing: 0.5,
-          ),
-        ),
-        const SizedBox(height: 10),
-        Container(
-          decoration: BoxDecoration(
-            color: const Color(0xFF2D2A4A),
-            borderRadius: BorderRadius.circular(16),
-          ),
-          padding: const EdgeInsets.symmetric(horizontal: 12),
-          child: DropdownButtonHideUnderline(
-            child: DropdownButton<String>(
-              value: _activityLevel,
-              isExpanded: true,
-              dropdownColor: const Color(0xFF2D2A4A),
-              style: const TextStyle(color: Colors.white, fontSize: 15),
-              iconEnabledColor: const Color(0xFFFFCC80),
-              items: levels.entries
-                  .map(
-                    (e) => DropdownMenuItem(value: e.key, child: Text(e.value)),
-                  )
-                  .toList(),
-              onChanged: (v) {
-                if (v != null) setState(() => _activityLevel = v);
-              },
+      children: levels.map((level) {
+        final bool isSelected = _activityLevel == level['id'];
+        return GestureDetector(
+          onTap: () => setState(() => _activityLevel = level['id'] as String),
+          child: Container(
+            margin: const EdgeInsets.only(bottom: 15),
+            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+            decoration: BoxDecoration(
+              color: const Color(0xFFFFD1A8),
+              borderRadius: BorderRadius.circular(40),
+              border: isSelected ? Border.all(color: AppColors.navy, width: 2) : null,
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.05),
+                  blurRadius: 10,
+                  offset: const Offset(0, 4),
+                ),
+              ],
+            ),
+            child: Row(
+              children: [
+                Icon(level['icon'] as IconData, color: AppColors.navy, size: 24),
+                const SizedBox(width: 15),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        level['title'] as String,
+                        style: const TextStyle(
+                          color: AppColors.navy,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 15,
+                        ),
+                      ),
+                      Text(
+                        level['subtitle'] as String,
+                        style: TextStyle(
+                          color: AppColors.navy.withOpacity(0.6),
+                          fontSize: 12,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                if (isSelected)
+                  const Icon(Icons.check_circle, color: AppColors.navy, size: 24),
+              ],
             ),
           ),
-        ),
-      ],
+        );
+      }).toList(),
+    );
+  }
+
+  Widget _buildGoalSelection() {
+    final goals = [
+      {'id': 'cutting', 'title': 'Cutting', 'subtitle': 'Lose Fat', 'icon': Icons.trending_down},
+      {'id': 'maintenance', 'title': 'Maintain', 'subtitle': 'Stay Fit', 'icon': Icons.scale},
+      {'id': 'bulking', 'title': 'Bulking', 'subtitle': 'Gain Muscle', 'icon': Icons.trending_up},
+    ];
+
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceAround,
+      children: goals.map((goal) {
+        final bool isSelected = _goal == goal['id'];
+        return GestureDetector(
+          onTap: () => setState(() => _goal = goal['id'] as String),
+          child: Column(
+            children: [
+              Container(
+                width: 70,
+                height: 70,
+                decoration: BoxDecoration(
+                  color: const Color(0xFFFFD1A8),
+                  shape: BoxShape.circle,
+                  border: isSelected ? Border.all(color: AppColors.navy, width: 2) : null,
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.1),
+                      blurRadius: 10,
+                      offset: const Offset(0, 4),
+                    ),
+                  ],
+                ),
+                child: Icon(goal['icon'] as IconData, color: AppColors.navy, size: 28),
+              ),
+              const SizedBox(height: 10),
+              Text(
+                goal['title'] as String,
+                style: const TextStyle(
+                  color: AppColors.navy,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 13,
+                ),
+              ),
+              Text(
+                goal['subtitle'] as String,
+                style: TextStyle(
+                  color: AppColors.navy.withOpacity(0.5),
+                  fontSize: 11,
+                ),
+              ),
+            ],
+          ),
+        );
+      }).toList(),
     );
   }
 
@@ -473,15 +597,14 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       width: double.infinity,
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: const Color(0xFF2D2A4A),
+        color: const Color(0xFFFFD1A8),
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: const Color(0xFFFFCC80).withOpacity(0.3)),
       ),
       child: Column(
         children: [
           const Text(
             'Estimated Daily Calorie Target',
-            style: TextStyle(color: Color(0xFFFFCC80), fontSize: 13),
+            style: TextStyle(color: AppColors.navy, fontSize: 13),
           ),
           const SizedBox(height: 8),
           Text(
@@ -489,7 +612,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                 ? '${target.toString().replaceAllMapped(RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (Match m) => '${m[1]}.')} kCal'
                 : '- kCal',
             style: const TextStyle(
-              color: Colors.white,
+              color: AppColors.navy,
               fontSize: 32,
               fontWeight: FontWeight.bold,
             ),
@@ -504,13 +627,133 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       alignment: Alignment.centerLeft,
       child: Text(
         text,
-        style: TextStyle(
-          color: Colors.white.withOpacity(0.5),
-          letterSpacing: 1.2,
-          fontSize: 12,
+        style: const TextStyle(
+          color: AppColors.navy,
+          fontSize: 16,
           fontWeight: FontWeight.bold,
         ),
       ),
+    );
+  }
+
+  void _showSuccessDialog() {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) => Center(
+        child: Container(
+          margin: const EdgeInsets.symmetric(horizontal: 40),
+          padding: const EdgeInsets.all(30),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(30),
+          ),
+          child: Material(
+            color: Colors.transparent,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Container(
+                  width: 80,
+                  height: 80,
+                  decoration: const BoxDecoration(
+                    color: Color(0xFFFFD1AB),
+                    shape: BoxShape.circle,
+                  ),
+                  child: const Icon(Icons.check, color: Colors.white, size: 40),
+                ),
+                const SizedBox(height: 25),
+                const Text(
+                  'Berhasil Disimpan',
+                  style: TextStyle(
+                    color: AppColors.navy,
+                    fontSize: 22,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                const SizedBox(height: 12),
+                const Text(
+                  'Perubahan profil Anda telah berhasil diperbarui.',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    color: Colors.grey,
+                    fontSize: 14,
+                  ),
+                ),
+                const SizedBox(height: 30),
+                SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton(
+                    onPressed: () {
+                      Navigator.pop(context); // Pop dialog
+                      Navigator.pop(context, true); // Pop screen
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: AppColors.navy,
+                      foregroundColor: Colors.white,
+                      padding: const EdgeInsets.symmetric(vertical: 16),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(15),
+                      ),
+                    ),
+                    child: const Text(
+                      'Oke',
+                      style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class CustomInputField extends StatelessWidget {
+  final String label;
+  final String initialValue;
+  final VoidCallback? onTap;
+
+  const CustomInputField({
+    super.key,
+    required this.label,
+    required this.initialValue,
+    this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const SizedBox(height: 24),
+        Text(
+          label,
+          style: const TextStyle(
+            fontSize: 14,
+            fontWeight: FontWeight.w500,
+            color: AppColors.navy,
+          ),
+        ),
+        const SizedBox(height: 10),
+        GestureDetector(
+          onTap: onTap,
+          child: Container(
+            width: double.infinity,
+            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+            decoration: BoxDecoration(
+              color: const Color(0xFFFFD1A8),
+              borderRadius: BorderRadius.circular(40),
+            ),
+            child: Text(
+              initialValue,
+              style: const TextStyle(color: AppColors.navy, fontSize: 15),
+            ),
+          ),
+        ),
+      ],
     );
   }
 }
@@ -537,32 +780,26 @@ class ProfileInput extends StatelessWidget {
         Text(
           label,
           style: const TextStyle(
-            fontSize: 11,
-            fontWeight: FontWeight.w600,
-            color: Color(0xFFFFCC80),
-            letterSpacing: 0.5,
+            fontSize: 14,
+            fontWeight: FontWeight.w500,
+            color: AppColors.navy,
           ),
         ),
         const SizedBox(height: 10),
         Container(
           decoration: BoxDecoration(
-            color: const Color(0xFF2D2A4A),
-            borderRadius: BorderRadius.circular(16),
+            color: const Color(0xFFFFD1A8),
+            borderRadius: BorderRadius.circular(40),
           ),
           child: TextField(
             controller: controller,
             keyboardType: keyboardType,
-            style: const TextStyle(color: Colors.white, fontSize: 15),
+            style: const TextStyle(color: AppColors.navy, fontSize: 15),
             decoration: InputDecoration(
-              prefixIcon: Icon(
-                icon,
-                color: const Color(0xFFFFCC80).withOpacity(0.7),
-                size: 20,
-              ),
               border: InputBorder.none,
               contentPadding: const EdgeInsets.symmetric(
-                horizontal: 16,
-                vertical: 15,
+                horizontal: 20,
+                vertical: 16,
               ),
             ),
           ),

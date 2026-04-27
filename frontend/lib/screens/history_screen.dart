@@ -5,6 +5,7 @@ import 'package:intl/intl.dart';
 import '../constants/colors.dart';
 import '../services/food_log_api_service.dart';
 import '../services/profile_api_service.dart';
+import '../widgets/nutrify_calendar_picker.dart';
 import 'food_detail_screen.dart';
 import '../constants/assets.dart';
 import '../widgets/nutrify_calendar_picker.dart';
@@ -108,7 +109,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
                           ),
                         ],
                       ),
-                      const Text(
+                      Text(
                         'History Nutrisi',
                         style: TextStyle(
                           color: AppColors.navy,
@@ -277,7 +278,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
                     },
                     borderRadius: BorderRadius.circular(8),
                     child: Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 4),
+                      padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 8),
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
