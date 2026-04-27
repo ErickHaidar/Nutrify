@@ -163,26 +163,189 @@ class _AddMealScreenState extends State<AddMealScreen> {
     );
   }
 
-  Future<void> _search(String query) async {
-    setState(() => _isSearching = true);
-    try {
-      final r = await _foodApi.searchFoods(query);
-      if (mounted) {
-        setState(() {
-          _results = r;
-          _isSearching = false;
-        });
-      }
-    } catch (_) {
-      if (mounted) {
-        setState(() {
-          _results = [];
-          _isSearching = false;
-        });
-      }
-    }
+Future<void> _search(String query) async {
+setState(() => _isSearching = true);
+try {
+final r = await _foodApi.searchFoods(query);
+if (mounted) {
+setState(() {
+_results = r;
+_isSearching = false;
+});
+}
+} catch (_) {
+if (mounted) {
+setState(() {
+_results = [];
+_isSearching = false;
+});
+}
+}
+}
+
+  void _showTutorialDialog() {
+    showDialog(
+      context: context,
+      barrierColor: Colors.black.withOpacity(0.6),
+      builder: (context) => Dialog(
+        backgroundColor: const Color(0xFF4A446F), // Muted Indigo from Card Panduan.png
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                'Panduan Menambah Makanan',
+                style: GoogleFonts.montserrat(
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 18,
+                ),
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 24),
+              _buildTutorialStep(
+                '1. ',
+                'Cari Makanan',
+                ' : Ketik menu makanan atau minuman anda.',
+                null,
+                'assets/images/Gambar Search (1).png',
+                customImageWidth: 90,
+              ),
+              _buildTutorialStep(
+                '2. ',
+                'Tambah cepat',
+                ' : Centang kotak checklist di kanan.',
+                '(Menggunakan porsi template standar, tidak mengedit)',
+                'assets/images/Tambah Cepat (2).png',
+                customImageWidth: 95,
+              ),
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 4),
+                child: Text(
+                  'Atau',
+                  style: GoogleFonts.montserrat(
+                    color: const Color(0xFFFFD1A4),
+                    fontSize: 14,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+              _buildTutorialStep(
+                '2. ',
+                'Atur Manual',
+                ' : Klik area tengah kotak makanan.',
+                '(Sesuaikan takaran porsi (gram/buah) sebelum simpan)',
+                'assets/images/Atur Manual (2).png',
+                customImageWidth: 95,
+              ),
+              _buildTutorialStep(
+                '3. ',
+                'Simpan',
+                ' : Ketuk tombol ceklish disebelah pojok kanan bawah untuk simpan.\\n(Untuk Mencatat Kalori Anda)',
+                null,
+                'assets/images/Simpan.png',
+                customImageWidth: 60,
+              ),
+              const SizedBox(height: 24),
+              SizedBox(
+                width: double.infinity,
+                child: ElevatedButton(
+                  onPressed: () => Navigator.pop(context),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xFFFFD1A4), // Light Peach from Mengerti.png
+                    foregroundColor: const Color(0xFF2D3154), // Dark Navy text from Mengerti.png
+                    shape: const StadiumBorder(),
+                    padding: const EdgeInsets.symmetric(vertical: 14),
+                    elevation: 0,
+                  ),
+                  child: Text('Mengerti',
+                    style: GoogleFonts.montserrat(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 16,
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
   }
 
+  Widget _buildTutorialStep(String number, String title, String description, String? subtitle, String imagePath, {double? customImageWidth}) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 12),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Illustration Box - transparent background, fixed size to prevent overflow
+          SizedBox(
+            width: 110,
+            height: 70,
+            child: Container(
+              decoration: BoxDecoration(
+                color: Colors.transparent,
+                borderRadius: BorderRadius.circular(16),
+              ),
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(16),
+                child: Image.asset(
+                  imagePath,
+                  width: customImageWidth ?? 110,
+                  height: 70,
+                  fit: BoxFit.contain,
+                ),
+              ),
+            ),
+          ),
+          const SizedBox(width: 12),
+          // Text Column
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                RichText(
+                  text: TextSpan(
+                    style: GoogleFonts.montserrat(
+                      color: Colors.white,
+                      fontSize: 12,
+                      height: 1.4,
+                    ),
+                    children: [
+                      TextSpan(
+                        text: number,
+                        style: const TextStyle(fontWeight: FontWeight.bold),
+                      ),
+                      TextSpan(
+                        text: title,
+                        style: const TextStyle(
+                          color: Color(0xFFFFD1A4), // Peach title
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      TextSpan(text: description),
+                    ],
+                  ),
+                ),
+                if (subtitle != null)
+                  Text(
+                    subtitle,
+                    style: GoogleFonts.montserrat(
+                      color: const Color(0xFFA09CB5), // Muted color for subtitles
+                      fontSize: 11,
+                      height: 1.4,
+                    ),
+                  ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -202,39 +365,12 @@ class _AddMealScreenState extends State<AddMealScreen> {
           onPressed: () => Navigator.pop(context, _isDirty),
         ),
         actions: [
-          PopupMenuButton<String>(
+          IconButton(
             icon: const Icon(
-              Icons.keyboard_arrow_down,
-              color: NutrifyTheme.accentOrange,
+              Icons.info_outline,
+              color: AppColors.navy,
             ),
-            offset: const Offset(0, 50),
-            color: NutrifyTheme.darkCard,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(15),
-            ),
-            onSelected: (value) {
-              setState(() => _currentMealType = value);
-              _loadMealLogs();
-            },
-            itemBuilder: (context) =>
-                ['Makan Pagi', 'Makan Siang', 'Makan Malam', 'Cemilan']
-                    .map(
-                      (choice) => PopupMenuItem<String>(
-                        value: choice,
-                        child: Text(
-                          choice,
-                          style: TextStyle(
-                            color: choice == _currentMealType
-                                ? NutrifyTheme.accentOrange
-                                : Colors.white,
-                            fontWeight: choice == _currentMealType
-                                ? FontWeight.bold
-                                : FontWeight.normal,
-                          ),
-                        ),
-                      ),
-                    )
-                    .toList(),
+            onPressed: _showTutorialDialog,
           ),
         ],
       ),
