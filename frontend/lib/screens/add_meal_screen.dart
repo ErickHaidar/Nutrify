@@ -7,6 +7,8 @@ import 'package:nutrify/services/food_log_api_service.dart';
 import 'package:nutrify/utils/meal_type_mapper.dart';
 import 'food_detail_screen.dart';
 import 'package:nutrify/constants/assets.dart';
+import 'package:nutrify/di/service_locator.dart';
+import 'package:nutrify/services/notification_service.dart';
 
 class AddMealScreen extends StatefulWidget {
   final String mealType;
@@ -126,6 +128,9 @@ class _AddMealScreenState extends State<AddMealScreen> {
       if (operations.isNotEmpty) {
         await Future.wait(operations);
         _isDirty = true;
+        
+        // Reschedule notifications with updated menu
+        await getIt<NotificationService>().scheduleMealReminders();
       }
 
       if (mounted) {
@@ -423,8 +428,9 @@ class _AddMealScreenState extends State<AddMealScreen> {
                 );
 
                 if (confirm == true) {
-                  await _foodLogApi.deleteLog(logId);
+                  await _foodLogApi.deleteLog(logId!);
                   _isDirty = true;
+                  await getIt<NotificationService>().scheduleMealReminders();
                   _loadMealLogs();
                 }
               }

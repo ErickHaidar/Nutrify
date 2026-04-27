@@ -1027,6 +1027,13 @@ class _SignUpModalContentState extends State<_SignUpModalContent> {
                                     );
                                     return;
                                   }
+                                  if (!email.toLowerCase().endsWith('@gmail.com')) {
+                                    setState(
+                                      () => errorMsg =
+                                          'Hanya akun @gmail.com yang diperbolehkan',
+                                    );
+                                    return;
+                                  }
                                   if (pass.length < 6) {
                                     setState(
                                       () => errorMsg =

@@ -55,9 +55,9 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
         children: _pages,
       ),
       bottomNavigationBar: BottomNavigationBar(
-        backgroundColor: NutrifyTheme.background,
+        backgroundColor: NutrifyTheme.darkCard,
         selectedItemColor: NutrifyTheme.accentOrange,
-        unselectedItemColor: NutrifyTheme.darkCard.withOpacity(0.5),
+        unselectedItemColor: Colors.white54,
         currentIndex: _selectedIndex,
         onTap: _onItemTapped,
         type: BottomNavigationBarType.fixed,

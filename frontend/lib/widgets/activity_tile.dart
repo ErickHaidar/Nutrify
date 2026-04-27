@@ -46,4 +46,5 @@ class ActivitySelectionTile extends StatelessWidget {
         ),
       ),
     );
+  }
 }

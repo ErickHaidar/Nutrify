@@ -4,6 +4,7 @@ import 'package:intl/intl.dart';
 import '../constants/colors.dart';
 import '../services/food_log_api_service.dart';
 import '../services/profile_api_service.dart';
+import '../widgets/nutrify_calendar_picker.dart';
 import 'food_detail_screen.dart';
 
 class HistoryScreen extends StatefulWidget {
@@ -57,18 +58,17 @@ class _HistoryScreenState extends State<HistoryScreen> {
     _loadData();
   }
 
-  void _showCalendarPicker() {
-    showModalBottomSheet(
-      context: context,
-      backgroundColor: Colors.transparent,
-      isScrollControlled: true,
-      builder: (context) {
-        return _CalendarPickerModal(
-          initialDate: _selectedDate,
-          onDateSelected: _onDateChanged,
-        );
-      },
+  void _showCalendarPicker() async {
+    final DateTime? picked = await showNutrifyDatePicker(
+      context,
+      initialDate: _selectedDate,
+      firstDate: DateTime(2000),
+      lastDate: DateTime.now(),
     );
+
+    if (picked != null && picked != _selectedDate) {
+      _onDateChanged(picked);
+    }
   }
 
   List<FoodLogEntry> _logsForMeal(String mealTime) =>
@@ -103,22 +103,22 @@ class _HistoryScreenState extends State<HistoryScreen> {
                               fontSize: 28,
                               fontWeight: FontWeight.bold,
                               fontStyle: FontStyle.italic,
-                              color: Color(0xFFFFDDBE),
+                              color: AppColors.navy,
                             ),
                           ),
                         ],
                       ),
-                      const Text(
+                      Text(
                         'History Nutrisi',
                         style: TextStyle(
-                          color: Colors.white70,
+                          color: AppColors.navy.withOpacity(0.7),
                           fontSize: 12,
                         ),
                       ),
                     ],
                   ),
                   IconButton(
-                    icon: const Icon(Icons.calendar_month, color: Color(0xFFFFCC80)),
+                    icon: const Icon(Icons.calendar_month, color: AppColors.navy),
                     onPressed: _showCalendarPicker,
                   ),
                 ],
@@ -131,8 +131,8 @@ class _HistoryScreenState extends State<HistoryScreen> {
                   ? const Center(child: CircularProgressIndicator())
                   : RefreshIndicator(
                       onRefresh: _loadData,
-                      color: NutrifyTheme.accentOrange,
-                      backgroundColor: NutrifyTheme.darkCard,
+                      color: AppColors.navy,
+                      backgroundColor: NutrifyTheme.lightCard,
                       child: SingleChildScrollView(
                         physics: const AlwaysScrollableScrollPhysics(),
                         padding: const EdgeInsets.all(20),
@@ -208,19 +208,19 @@ class _HistoryScreenState extends State<HistoryScreen> {
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: NutrifyTheme.darkCard,
+        color: NutrifyTheme.lightCard,
         borderRadius: BorderRadius.circular(25),
       ),
       child: Column(
         children: [
           Row(
             children: [
-              Icon(icon, color: NutrifyTheme.accentOrange),
+              Icon(icon, color: AppColors.navy),
               const SizedBox(width: 12),
               Text(
                 label,
                 style: const TextStyle(
-                  color: Colors.white,
+                  color: AppColors.navy,
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
                 ),
@@ -229,7 +229,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
               Text(
                 '$totalKcal kcal',
                 style: const TextStyle(
-                  color: NutrifyTheme.accentOrange,
+                  color: AppColors.navy,
                   fontSize: 16,
                   fontWeight: FontWeight.bold,
                 ),
@@ -241,7 +241,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
               padding: const EdgeInsets.only(top: 12),
               child: Text(
                 'Belum ada catatan',
-                style: TextStyle(color: Colors.white30, fontSize: 13),
+                style: TextStyle(color: AppColors.navy.withOpacity(0.3), fontSize: 13),
               ),
             )
           else
@@ -264,22 +264,22 @@ class _HistoryScreenState extends State<HistoryScreen> {
                     },
                     borderRadius: BorderRadius.circular(8),
                     child: Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 4),
+                      padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 8),
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           Expanded(
                             child: Text(
                               entry.foodName,
-                              style: const TextStyle(
-                                  color: Colors.white70, fontSize: 14),
+                              style: TextStyle(
+                                  color: AppColors.navy.withOpacity(0.7), fontSize: 14),
                               overflow: TextOverflow.ellipsis,
                             ),
                           ),
                           Text(
                             '${entry.calories.round()} kcal',
-                            style: const TextStyle(
-                                color: Colors.white70, fontSize: 14),
+                            style: TextStyle(
+                                color: AppColors.navy.withOpacity(0.7), fontSize: 14),
                           ),
                         ],
                       ),
@@ -302,7 +302,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: NutrifyTheme.darkCard,
+        color: NutrifyTheme.lightCard,
         borderRadius: BorderRadius.circular(20),
       ),
       child: Column(
@@ -310,7 +310,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
         children: [
           Text(
             title,
-            style: const TextStyle(color: Colors.white54, fontSize: 12),
+            style: TextStyle(color: AppColors.navy.withOpacity(0.5), fontSize: 12),
           ),
           const SizedBox(height: 8),
           Row(
@@ -321,7 +321,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
                 child: Text(
                   value,
                   style: const TextStyle(
-                    color: Colors.white,
+                    color: AppColors.navy,
                     fontSize: 24,
                     fontWeight: FontWeight.bold,
                   ),
@@ -331,7 +331,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
               const SizedBox(width: 4),
               Text(
                 unit,
-                style: const TextStyle(color: Colors.white54, fontSize: 12),
+                style: TextStyle(color: AppColors.navy.withOpacity(0.5), fontSize: 12),
               ),
             ],
           ),
@@ -341,224 +341,5 @@ class _HistoryScreenState extends State<HistoryScreen> {
   }
 }
 
-// ─── Calendar Picker (kept from original, no changes needed) ──────────────
 
-class _CalendarPickerModal extends StatefulWidget {
-  final DateTime initialDate;
-  final Function(DateTime) onDateSelected;
-
-  const _CalendarPickerModal({
-    required this.initialDate,
-    required this.onDateSelected,
-  });
-
-  @override
-  State<_CalendarPickerModal> createState() => _CalendarPickerModalState();
-}
-
-class _CalendarPickerModalState extends State<_CalendarPickerModal> {
-  late DateTime _tempSelectedDate;
-  late DateTime _currentMonth;
-
-  @override
-  void initState() {
-    super.initState();
-    _tempSelectedDate = widget.initialDate;
-    _currentMonth = DateTime(widget.initialDate.year, widget.initialDate.month);
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      height: MediaQuery.of(context).size.height * 0.75,
-      decoration: const BoxDecoration(
-        color: Color(0xFF38345F),
-        borderRadius: BorderRadius.only(
-          topLeft: Radius.circular(30),
-          topRight: Radius.circular(30),
-        ),
-      ),
-      child: Column(
-        children: [
-          const SizedBox(height: 12),
-          Container(
-            width: 40,
-            height: 4,
-            decoration: BoxDecoration(
-              color: Colors.white24,
-              borderRadius: BorderRadius.circular(2),
-            ),
-          ),
-          const SizedBox(height: 25),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                IconButton(
-                  icon: const Icon(Icons.chevron_left, color: Colors.white),
-                  onPressed: () {
-                    setState(() {
-                      _currentMonth = DateTime(
-                          _currentMonth.year, _currentMonth.month - 1);
-                    });
-                  },
-                ),
-                Text(
-                  DateFormat('MMMM yyyy', 'id_ID').format(_currentMonth),
-                  style: const TextStyle(
-                    color: Colors.white,
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                IconButton(
-                  icon: const Icon(Icons.chevron_right, color: Colors.white),
-                  onPressed: () {
-                    setState(() {
-                      _currentMonth = DateTime(
-                          _currentMonth.year, _currentMonth.month + 1);
-                    });
-                  },
-                ),
-              ],
-            ),
-          ),
-          const SizedBox(height: 20),
-          _buildWeekdayHeader(),
-          Expanded(child: _buildDateGrid()),
-          _buildBottomBar(),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildWeekdayHeader() {
-    final weekdays = ['S', 'M', 'T', 'W', 'T', 'F', 'S'];
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 20),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceAround,
-        children: weekdays
-            .map((day) => Text(
-                  day,
-                  style: const TextStyle(
-                      color: Colors.white54, fontWeight: FontWeight.bold),
-                ))
-            .toList(),
-      ),
-    );
-  }
-
-  Widget _buildDateGrid() {
-    final firstDayOfMonth =
-        DateTime(_currentMonth.year, _currentMonth.month, 1);
-    final lastDayOfMonth =
-        DateTime(_currentMonth.year, _currentMonth.month + 1, 0);
-    final daysInMonth = lastDayOfMonth.day;
-    final firstWeekday = firstDayOfMonth.weekday % 7;
-
-    return GridView.builder(
-      padding: const EdgeInsets.all(20),
-      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: 7,
-        mainAxisSpacing: 10,
-        crossAxisSpacing: 10,
-      ),
-      itemCount: daysInMonth + firstWeekday,
-      itemBuilder: (context, index) {
-        if (index < firstWeekday) {
-          return const SizedBox.shrink();
-        }
-        final day = index - firstWeekday + 1;
-        final date = DateTime(_currentMonth.year, _currentMonth.month, day);
-        final isSelected = date.year == _tempSelectedDate.year &&
-            date.month == _tempSelectedDate.month &&
-            date.day == _tempSelectedDate.day;
-        final isToday = date.year == DateTime.now().year &&
-            date.month == DateTime.now().month &&
-            date.day == DateTime.now().day;
-
-        return GestureDetector(
-          onTap: () {
-            setState(() {
-              _tempSelectedDate = date;
-            });
-          },
-          child: Container(
-            alignment: Alignment.center,
-            decoration: BoxDecoration(
-              color:
-                  isSelected ? NutrifyTheme.accentOrange : Colors.transparent,
-              shape: BoxShape.circle,
-              border: isToday && !isSelected
-                  ? Border.all(color: NutrifyTheme.accentOrange, width: 1)
-                  : null,
-            ),
-            child: Text(
-              day.toString(),
-              style: TextStyle(
-                color: isSelected ? Colors.black : Colors.white,
-                fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
-              ),
-            ),
-          ),
-        );
-      },
-    );
-  }
-
-  Widget _buildBottomBar() {
-    return Container(
-      padding: const EdgeInsets.all(20),
-      decoration: const BoxDecoration(
-        color: Color(0xFF2D2B52),
-        borderRadius: BorderRadius.only(
-          topLeft: Radius.circular(30),
-          topRight: Radius.circular(30),
-        ),
-      ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const Text(
-                'SELECTED DAY',
-                style: TextStyle(
-                    color: Colors.white54,
-                    fontSize: 10,
-                    fontWeight: FontWeight.bold),
-              ),
-              const SizedBox(height: 4),
-              Text(
-                DateFormat('dd MMM yyyy').format(_tempSelectedDate),
-                style: const TextStyle(
-                    color: Colors.white, fontWeight: FontWeight.bold),
-              ),
-            ],
-          ),
-          ElevatedButton(
-            onPressed: () {
-              widget.onDateSelected(_tempSelectedDate);
-              Navigator.pop(context);
-            },
-            style: ElevatedButton.styleFrom(
-              backgroundColor: const Color(0xFF38345F),
-              side: const BorderSide(color: NutrifyTheme.accentOrange),
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(20)),
-              padding:
-                  const EdgeInsets.symmetric(horizontal: 30, vertical: 12),
-            ),
-            child: const Text('Select Date',
-                style: TextStyle(
-                    color: Colors.white, fontWeight: FontWeight.bold)),
-          ),
-        ],
-      ),
-    );
-  }
-}
+// End of HistoryScreen

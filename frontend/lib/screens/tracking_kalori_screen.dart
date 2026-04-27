@@ -80,27 +80,27 @@ class _TrackingKaloriScreenState extends State<TrackingKaloriScreen> {
     }
 
     return Scaffold(
-      backgroundColor: const Color(0xFF433D67),
+      backgroundColor: NutrifyTheme.background,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.white),
+          icon: const Icon(Icons.arrow_back, color: AppColors.navy),
           onPressed: () => Navigator.pop(context),
         ),
         title: Text(
           'Tracking Kalori Harian',
           style: GoogleFonts.montserrat(
             fontWeight: FontWeight.bold,
-            color: const Color(0xFFFFCC80),
+            color: AppColors.navy,
             fontSize: 18,
           ),
         ),
       ),
       body: RefreshIndicator(
         onRefresh: _loadData,
-        color: const Color(0xFFFFCC80),
-        backgroundColor: const Color(0xFF2D2A4A),
+        color: AppColors.navy,
+        backgroundColor: NutrifyTheme.lightCard,
         child: SingleChildScrollView(
           physics: const AlwaysScrollableScrollPhysics(),
           padding: const EdgeInsets.fromLTRB(20, 12, 20, 32),
@@ -131,7 +131,7 @@ class _TrackingKaloriScreenState extends State<TrackingKaloriScreen> {
                           endAngle: 3 * math.pi / 2,
                         ),
                         backgroundColor:
-                            const Color(0xFFFFDDBE).withOpacity(0.15),
+                            AppColors.amber.withOpacity(0.3),
                         strokeWidth: 14,
                       ),
                     ),
@@ -141,7 +141,7 @@ class _TrackingKaloriScreenState extends State<TrackingKaloriScreen> {
                         Text(
                           'Total Kalori',
                           style: GoogleFonts.montserrat(
-                            color: Colors.white70,
+                            color: AppColors.navy.withOpacity(0.7),
                             fontSize: 13,
                             fontWeight: FontWeight.w500,
                           ),
@@ -150,7 +150,7 @@ class _TrackingKaloriScreenState extends State<TrackingKaloriScreen> {
                         Text(
                           _formatCalories(_totalCalories),
                           style: GoogleFonts.montserrat(
-                            color: Colors.white,
+                            color: AppColors.navy,
                             fontSize: 42,
                             fontWeight: FontWeight.bold,
                           ),
@@ -158,7 +158,7 @@ class _TrackingKaloriScreenState extends State<TrackingKaloriScreen> {
                         Text(
                           'kkal',
                           style: GoogleFonts.montserrat(
-                            color: Colors.white70,
+                            color: AppColors.navy.withOpacity(0.7),
                             fontSize: 16,
                           ),
                         ),
@@ -179,7 +179,7 @@ class _TrackingKaloriScreenState extends State<TrackingKaloriScreen> {
                       icon: Icons.local_fire_department_rounded,
                       iconColor: remaining == 0
                           ? Colors.redAccent
-                          : const Color(0xFF69F0AE),
+                          : AppColors.navy,
                     ),
                   ),
                   const SizedBox(width: 12),
@@ -188,7 +188,7 @@ class _TrackingKaloriScreenState extends State<TrackingKaloriScreen> {
                       label: 'Target Kalori Harian',
                       value: '${_formatCalories(_targetCalories)} kkal',
                       icon: Icons.flag_rounded,
-                      iconColor: const Color(0xFFFFCC80),
+                      iconColor: AppColors.navy,
                     ),
                   ),
                 ],
@@ -199,7 +199,7 @@ class _TrackingKaloriScreenState extends State<TrackingKaloriScreen> {
               Text(
                 'Makronutrien',
                 style: GoogleFonts.montserrat(
-                  color: Colors.white,
+                  color: AppColors.navy,
                   fontWeight: FontWeight.bold,
                   fontSize: 16,
                 ),
@@ -208,7 +208,7 @@ class _TrackingKaloriScreenState extends State<TrackingKaloriScreen> {
               _buildMacroBar(
                 label: 'Karbohidrat',
                 icon: Icons.grain_rounded,
-                color: const Color(0xFF64B5F6),
+                color: AppColors.navy,
                 current: _totalCarbohydrates,
                 target: targetCarbs.toDouble(),
                 unit: 'g',
@@ -217,7 +217,7 @@ class _TrackingKaloriScreenState extends State<TrackingKaloriScreen> {
               _buildMacroBar(
                 label: 'Protein',
                 icon: Icons.fitness_center_rounded,
-                color: const Color(0xFFEF9A9A),
+                color: AppColors.navy,
                 current: _totalProtein,
                 target: targetProtein.toDouble(),
                 unit: 'g',
@@ -226,7 +226,7 @@ class _TrackingKaloriScreenState extends State<TrackingKaloriScreen> {
               _buildMacroBar(
                 label: 'Lemak',
                 icon: Icons.water_drop_rounded,
-                color: const Color(0xFFFFE082),
+                color: AppColors.navy,
                 current: _totalFat,
                 target: targetFat.toDouble(),
                 unit: 'g',
@@ -237,7 +237,7 @@ class _TrackingKaloriScreenState extends State<TrackingKaloriScreen> {
               Text(
                 'Riwayat per Waktu Makan',
                 style: GoogleFonts.montserrat(
-                  color: Colors.white,
+                  color: AppColors.navy,
                   fontWeight: FontWeight.bold,
                   fontSize: 16,
                 ),
@@ -261,7 +261,7 @@ class _TrackingKaloriScreenState extends State<TrackingKaloriScreen> {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
       decoration: BoxDecoration(
-        color: const Color(0xFF2D2A4A),
+        color: NutrifyTheme.lightCard,
         borderRadius: BorderRadius.circular(16),
       ),
       child: Row(
@@ -282,12 +282,12 @@ class _TrackingKaloriScreenState extends State<TrackingKaloriScreen> {
               children: [
                 Text(
                   label,
-                  style: const TextStyle(color: Colors.white54, fontSize: 12),
+                  style: const TextStyle(color: AppColors.navy, fontSize: 12),
                 ),
                 Text(
                   value,
                   style: GoogleFonts.montserrat(
-                    color: Colors.white,
+                    color: AppColors.navy,
                     fontWeight: FontWeight.bold,
                     fontSize: 14,
                   ),
@@ -314,7 +314,7 @@ class _TrackingKaloriScreenState extends State<TrackingKaloriScreen> {
     return Container(
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
-        color: const Color(0xFF2D2A4A),
+        color: NutrifyTheme.lightCard,
         borderRadius: BorderRadius.circular(16),
       ),
       child: Column(
@@ -326,7 +326,7 @@ class _TrackingKaloriScreenState extends State<TrackingKaloriScreen> {
               Text(
                 label,
                 style: const TextStyle(
-                  color: Colors.white,
+                  color: AppColors.navy,
                   fontWeight: FontWeight.w600,
                   fontSize: 14,
                 ),
@@ -335,7 +335,7 @@ class _TrackingKaloriScreenState extends State<TrackingKaloriScreen> {
               Text(
                 '${current.toStringAsFixed(1)} / ${target.toStringAsFixed(0)} $unit',
                 style: TextStyle(
-                  color: over ? Colors.redAccent : Colors.white70,
+                  color: over ? Colors.redAccent : AppColors.navy.withOpacity(0.7),
                   fontSize: 13,
                   fontWeight: FontWeight.w500,
                 ),
@@ -348,7 +348,7 @@ class _TrackingKaloriScreenState extends State<TrackingKaloriScreen> {
             child: LinearProgressIndicator(
               value: ratio,
               minHeight: 8,
-              backgroundColor: Colors.white12,
+              backgroundColor: AppColors.navy.withOpacity(0.1),
               valueColor: AlwaysStoppedAnimation<Color>(
                 over ? Colors.redAccent : color,
               ),
@@ -376,7 +376,7 @@ class _TrackingKaloriScreenState extends State<TrackingKaloriScreen> {
         margin: const EdgeInsets.only(bottom: 8),
         padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
         decoration: BoxDecoration(
-          color: const Color(0xFF2D2A4A),
+          color: NutrifyTheme.lightCard,
           borderRadius: BorderRadius.circular(14),
         ),
         child: Row(
@@ -386,13 +386,13 @@ class _TrackingKaloriScreenState extends State<TrackingKaloriScreen> {
               height: 36,
               decoration: BoxDecoration(
                 color: hasData
-                    ? const Color(0xFFFFCC80).withOpacity(0.18)
-                    : Colors.white10,
+                    ? AppColors.navy.withOpacity(0.1)
+                    : AppColors.navy.withOpacity(0.05),
                 shape: BoxShape.circle,
               ),
               child: Icon(
                 icon,
-                color: hasData ? const Color(0xFFFFCC80) : Colors.white30,
+                color: hasData ? AppColors.navy : AppColors.navy.withOpacity(0.3),
                 size: 18,
               ),
             ),
@@ -401,7 +401,7 @@ class _TrackingKaloriScreenState extends State<TrackingKaloriScreen> {
               child: Text(
                 label,
                 style: TextStyle(
-                  color: hasData ? Colors.white : Colors.white54,
+                  color: hasData ? AppColors.navy : AppColors.navy.withOpacity(0.5),
                   fontWeight: FontWeight.w500,
                   fontSize: 14,
                 ),
@@ -414,15 +414,15 @@ class _TrackingKaloriScreenState extends State<TrackingKaloriScreen> {
                   Text(
                     '$kcal kkal',
                     style: GoogleFonts.montserrat(
-                      color: const Color(0xFFFFCC80),
+                      color: AppColors.navy,
                       fontWeight: FontWeight.bold,
                       fontSize: 14,
                     ),
                   ),
                   Text(
                     'P ${meal!.protein.toStringAsFixed(0)}g  C ${meal.carbohydrates.toStringAsFixed(0)}g  L ${meal.fat.toStringAsFixed(0)}g',
-                    style: const TextStyle(
-                      color: Colors.white38,
+                    style: TextStyle(
+                      color: AppColors.navy.withOpacity(0.4),
                       fontSize: 11,
                     ),
                   ),
