@@ -241,7 +241,7 @@ class NotificationService {
       title: title,
       body: body,
       scheduledDate: _nextInstanceOfTime(hour, minute),
-      notificationDetails: const NotificationDetails(
+      notificationDetails: NotificationDetails(
         android: AndroidNotificationDetails(
           'meal_reminders',
           'Meal Reminders',
@@ -249,7 +249,7 @@ class NotificationService {
           importance: Importance.max,
           priority: Priority.high,
         ),
-        iOS: DarwinNotificationDetails(),
+        iOS: const DarwinNotificationDetails(),
       ),
       androidScheduleMode: canScheduleExact 
           ? AndroidScheduleMode.exactAllowWhileIdle 
