@@ -7,6 +7,7 @@ import '../services/profile_api_service.dart';
 import '../utils/age_calculator.dart';
 import '../widgets/nutrify_calendar_picker.dart';
 import '../constants/colors.dart';
+import 'package:nutrify/utils/locale/app_strings.dart';
 
 import '../constants/colors.dart';
 import '../../di/service_locator.dart';
@@ -151,7 +152,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Failed to pick image: $e')),
+          SnackBar(content: Text('${AppStrings.failedToPickImage}: $e')),
         );
       }
     }
@@ -173,22 +174,9 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   }
 
   String _birthDateText() {
-    if (_birthDate == null) return 'Pilih tanggal lahir';
+    if (_birthDate == null) return AppStrings.selectBirthDate;
     final d = _birthDate!;
-    final months = [
-      'Januari',
-      'Februari',
-      'Maret',
-      'April',
-      'Mei',
-      'Juni',
-      'Juli',
-      'Agustus',
-      'September',
-      'Oktober',
-      'November',
-      'Desember'
-    ];
+    final months = AppStrings.monthNames;
     return '${d.day.toString().padLeft(2, '0')} ${months[d.month - 1]} ${d.year}';
   }
 
@@ -205,7 +193,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
           children: [
             ListTile(
               leading: const Icon(Icons.photo_library, color: Color(0xFFFFCC80)),
-              title: const Text('Buka Galeri', style: TextStyle(color: Colors.white)),
+              title: Text(AppStrings.openGallery, style: const TextStyle(color: Colors.white)),
               onTap: () {
                 Navigator.pop(ctx);
                 _pickImage(ImageSource.gallery);
@@ -213,7 +201,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
             ),
             ListTile(
               leading: const Icon(Icons.camera_alt, color: Color(0xFFFFCC80)),
-              title: const Text('Buka Kamera', style: TextStyle(color: Colors.white)),
+              title: Text(AppStrings.openCamera, style: const TextStyle(color: Colors.white)),
               onTap: () {
                 Navigator.pop(ctx);
                 _pickImage(ImageSource.camera);
@@ -265,9 +253,9 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
           icon: const Icon(Icons.arrow_back, color: AppColors.navy),
           onPressed: () => Navigator.pop(context),
         ),
-        title: const Text(
-          'Edit Profil',
-          style: TextStyle(fontWeight: FontWeight.bold, color: AppColors.navy),
+        title: Text(
+          AppStrings.editProfile,
+          style: const TextStyle(fontWeight: FontWeight.bold, color: AppColors.navy),
         ),
         centerTitle: true,
       ),
@@ -319,14 +307,14 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
             ),
             const SizedBox(height: 32),
 
-            _buildSectionLabel('Body Composition'),
+            _buildSectionLabel(AppStrings.bodyComposition),
             const SizedBox(height: 16),
             Row(
               children: [
                 Expanded(
                   child: ProfileInput(
                     controller: _heightController,
-                    label: 'HEIGHT (CM)',
+                    label: AppStrings.heightCm,
                     icon: Icons.height,
                     keyboardType: TextInputType.number,
                   ),
@@ -335,7 +323,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                 Expanded(
                   child: ProfileInput(
                     controller: _weightController,
-                    label: 'WEIGHT (KG)',
+                    label: AppStrings.weightKg,
                     icon: Icons.monitor_weight_outlined,
                     keyboardType: TextInputType.number,
                   ),
@@ -343,12 +331,12 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
               ],
             ),
             CustomInputField(
-              label: 'TANGGAL LAHIR',
+              label: AppStrings.birthDate,
               initialValue: _birthDateText(),
               onTap: _showBirthDatePicker,
             ),
             CustomInputField(
-              label: 'Target Berat Badan',
+              label: AppStrings.targetWeight,
               initialValue: '80 Kg', // Placeholder or add logic
               onTap: () {}, // Optional
             ),
@@ -357,8 +345,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                const Text(
-                  'Aktivitas',
+                Text(
+                  AppStrings.activity,
                   style: TextStyle(
                     color: AppColors.navy,
                     fontSize: 16,
@@ -366,7 +354,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                   ),
                 ),
                 Text(
-                  'pilih satu aktivitas',
+                  AppStrings.selectOneActivity,
                   style: TextStyle(
                     color: AppColors.navy.withOpacity(0.6),
                     fontSize: 12,
@@ -378,10 +366,10 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
             _buildActivitySelection(),
 
             const SizedBox(height: 32),
-            const Align(
+            Align(
               alignment: Alignment.centerLeft,
               child: Text(
-                'Tujuan Utama',
+                AppStrings.mainGoal,
                 style: TextStyle(
                   color: AppColors.navy,
                   fontSize: 14,
@@ -419,8 +407,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                           strokeWidth: 2,
                         ),
                       )
-                    : const Text(
-                        'Simpan Perubahan',
+                    : Text(
+                        AppStrings.saveChanges,
                         style: TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.bold,
@@ -525,9 +513,9 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
 
   Widget _buildActivitySelection() {
     final levels = [
-      {'id': 'light', 'title': 'Aktivitas Ringan', 'subtitle': 'Olahraga 1-3 kali seminggu', 'icon': Icons.directions_walk},
-      {'id': 'moderate', 'title': 'Aktivitas Sedang', 'subtitle': 'Olahraga 3-5 kali seminggu', 'icon': Icons.fitness_center},
-      {'id': 'active', 'title': 'Aktivitas Tinggi', 'subtitle': 'Olahraga 6-7 kali seminggu', 'icon': Icons.bolt},
+      {'id': 'light', 'title': AppStrings.lightActivity, 'subtitle': AppStrings.lightActivitySub, 'icon': Icons.directions_walk},
+      {'id': 'moderate', 'title': AppStrings.moderateActivity, 'subtitle': AppStrings.moderateActivitySub, 'icon': Icons.fitness_center},
+      {'id': 'active', 'title': AppStrings.highActivity, 'subtitle': AppStrings.highActivitySub, 'icon': Icons.bolt},
     ];
 
     return Column(
@@ -588,9 +576,9 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
 
   Widget _buildGoalSelection() {
     final goals = [
-      {'id': 'cutting', 'title': 'Cutting', 'subtitle': 'Lose Fat', 'icon': Icons.trending_down},
-      {'id': 'maintenance', 'title': 'Maintain', 'subtitle': 'Stay Fit', 'icon': Icons.scale},
-      {'id': 'bulking', 'title': 'Bulking', 'subtitle': 'Gain Muscle', 'icon': Icons.trending_up},
+      {'id': 'cutting', 'title': AppStrings.cutting, 'subtitle': AppStrings.loseFat, 'icon': Icons.trending_down},
+      {'id': 'maintenance', 'title': AppStrings.maintain, 'subtitle': AppStrings.stayFit, 'icon': Icons.scale},
+      {'id': 'bulking', 'title': AppStrings.bulking, 'subtitle': AppStrings.gainMuscle, 'icon': Icons.trending_up},
     ];
 
     return Row(
@@ -713,8 +701,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                   child: const Icon(Icons.check, color: Colors.white, size: 40),
                 ),
                 const SizedBox(height: 25),
-                const Text(
-                  'Berhasil Disimpan',
+                Text(
+                  AppStrings.savedSuccessfully,
                   style: TextStyle(
                     color: AppColors.navy,
                     fontSize: 22,
@@ -722,8 +710,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                   ),
                 ),
                 const SizedBox(height: 12),
-                const Text(
-                  'Perubahan profil Anda telah berhasil diperbarui.',
+                Text(
+                  AppStrings.profileUpdated,
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     color: Colors.grey,
@@ -746,8 +734,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                         borderRadius: BorderRadius.circular(15),
                       ),
                     ),
-                    child: const Text(
-                      'Oke',
+                    child: Text(
+                      AppStrings.ok,
                       style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
                     ),
                   ),

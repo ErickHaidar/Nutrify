@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:nutrify/constants/colors.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'dart:math' as math;
+import 'package:nutrify/utils/locale/app_strings.dart';
 import '../services/food_log_api_service.dart';
 import '../services/profile_api_service.dart';
 
@@ -89,7 +90,7 @@ class _TrackingKaloriScreenState extends State<TrackingKaloriScreen> {
           onPressed: () => Navigator.pop(context),
         ),
         title: Text(
-          'Tracking Kalori Harian',
+          AppStrings.dailyCalorieTracking,
           style: GoogleFonts.montserrat(
             fontWeight: FontWeight.bold,
             color: AppColors.navy,
@@ -139,7 +140,7 @@ class _TrackingKaloriScreenState extends State<TrackingKaloriScreen> {
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         Text(
-                          'Total Kalori',
+                          AppStrings.totalCalories,
                           style: GoogleFonts.montserrat(
                             color: AppColors.navy.withOpacity(0.7),
                             fontSize: 13,
@@ -174,7 +175,7 @@ class _TrackingKaloriScreenState extends State<TrackingKaloriScreen> {
                 children: [
                   Expanded(
                     child: _buildStatCard(
-                      label: 'Sisa',
+                      label: AppStrings.remaining,
                       value: '${_formatCalories(remaining)} kkal',
                       icon: Icons.local_fire_department_rounded,
                       iconColor: remaining == 0
@@ -185,7 +186,7 @@ class _TrackingKaloriScreenState extends State<TrackingKaloriScreen> {
                   const SizedBox(width: 12),
                   Expanded(
                     child: _buildStatCard(
-                      label: 'Target Kalori Harian',
+                      label: AppStrings.dailyCalorieTarget,
                       value: '${_formatCalories(_targetCalories)} kkal',
                       icon: Icons.flag_rounded,
                       iconColor: AppColors.navy,
@@ -197,7 +198,7 @@ class _TrackingKaloriScreenState extends State<TrackingKaloriScreen> {
 
               // ── Makronutrien ─────────────────────────────────────────────
               Text(
-                'Makronutrien',
+                AppStrings.macronutrients,
                 style: GoogleFonts.montserrat(
                   color: AppColors.navy,
                   fontWeight: FontWeight.bold,
@@ -206,7 +207,7 @@ class _TrackingKaloriScreenState extends State<TrackingKaloriScreen> {
               ),
               const SizedBox(height: 12),
               _buildMacroBar(
-                label: 'Karbohidrat',
+                label: AppStrings.carbohydrates,
                 icon: Icons.grain_rounded,
                 color: AppColors.navy,
                 current: _totalCarbohydrates,
@@ -215,7 +216,7 @@ class _TrackingKaloriScreenState extends State<TrackingKaloriScreen> {
               ),
               const SizedBox(height: 10),
               _buildMacroBar(
-                label: 'Protein',
+                label: AppStrings.protein,
                 icon: Icons.fitness_center_rounded,
                 color: AppColors.navy,
                 current: _totalProtein,
@@ -224,7 +225,7 @@ class _TrackingKaloriScreenState extends State<TrackingKaloriScreen> {
               ),
               const SizedBox(height: 10),
               _buildMacroBar(
-                label: 'Lemak',
+                label: AppStrings.fat,
                 icon: Icons.water_drop_rounded,
                 color: AppColors.navy,
                 current: _totalFat,
@@ -235,7 +236,7 @@ class _TrackingKaloriScreenState extends State<TrackingKaloriScreen> {
 
               // ── Per Waktu Makan ──────────────────────────────────────────
               Text(
-                'Riwayat per Waktu Makan',
+                AppStrings.historyPerMealTime,
                 style: GoogleFonts.montserrat(
                   color: AppColors.navy,
                   fontWeight: FontWeight.bold,
@@ -360,11 +361,11 @@ class _TrackingKaloriScreenState extends State<TrackingKaloriScreen> {
   }
 
   List<Widget> _buildMealRows() {
-    const meals = [
-      ('Breakfast', 'Makan Pagi', Icons.wb_sunny_rounded),
-      ('Lunch', 'Makan Siang', Icons.light_mode_rounded),
-      ('Dinner', 'Makan Malam', Icons.nights_stay_rounded),
-      ('Snack', 'Cemilan', Icons.cookie_rounded),
+    final meals = [
+      ('Breakfast', AppStrings.breakfast, Icons.wb_sunny_rounded),
+      ('Lunch', AppStrings.lunch, Icons.light_mode_rounded),
+      ('Dinner', AppStrings.dinner, Icons.nights_stay_rounded),
+      ('Snack', AppStrings.snack, Icons.cookie_rounded),
     ];
 
     return meals.map<Widget>((m) {
@@ -429,8 +430,8 @@ class _TrackingKaloriScreenState extends State<TrackingKaloriScreen> {
                 ],
               ),
             ] else
-              const Text(
-                'Belum ada catatan',
+              Text(
+                AppStrings.noRecordYet,
                 style: TextStyle(color: Colors.white30, fontSize: 12),
               ),
           ],

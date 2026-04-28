@@ -4,6 +4,7 @@ import 'package:nutrify/utils/routes/routes.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:nutrify/utils/locale/app_strings.dart';
 
 class ResetPasswordScreen extends StatefulWidget {
   const ResetPasswordScreen({super.key});
@@ -31,15 +32,15 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
     final confirmPass = _confirmPasswordCtrl.text.trim();
 
     if (newPass.isEmpty || confirmPass.isEmpty) {
-      _showError('Semua field harus diisi');
+      _showError(AppStrings.allFieldsRequired);
       return;
     }
     if (newPass.length < 6) {
-      _showError('Password minimal 6 karakter');
+      _showError(AppStrings.passwordMinLength);
       return;
     }
     if (newPass != confirmPass) {
-      _showError('Password dan konfirmasi tidak cocok');
+      _showError(AppStrings.passwordsMismatch);
       return;
     }
 
@@ -50,8 +51,8 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
       );
       if (!mounted) return;
       FlushbarHelper.createSuccess(
-        message: 'Password berhasil diperbarui. Silakan login.',
-        title: 'Berhasil!',
+        message: AppStrings.passwordUpdated,
+        title: AppStrings.success,
         duration: const Duration(seconds: 3),
       ).show(context).then((_) {
         if (mounted) {
@@ -62,9 +63,9 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
         }
       });
     } on AuthException catch (e) {
-      _showError(e.message.isNotEmpty ? e.message : 'Gagal memperbarui password');
+      _showError(e.message.isNotEmpty ? e.message : AppStrings.failedToUpdate);
     } catch (_) {
-      _showError('Terjadi kesalahan. Silakan coba lagi.');
+      _showError(AppStrings.generalError);
     } finally {
       if (mounted) setState(() => _isLoading = false);
     }
@@ -86,7 +87,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
         backgroundColor: NutrifyTheme.darkCard,
         elevation: 0,
         title: Text(
-          'Buat Password Baru',
+          AppStrings.createNewPassword,
           style: GoogleFonts.montserrat(
             color: NutrifyTheme.accentOrange,
             fontWeight: FontWeight.bold,
@@ -102,7 +103,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
             children: [
               const SizedBox(height: 24),
               Text(
-                'Password Baru',
+                AppStrings.newPassword,
                 style: TextStyle(
                   color: Colors.white.withOpacity(0.85),
                   fontSize: 13,
@@ -112,14 +113,14 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
               const SizedBox(height: 8),
               _buildPasswordField(
                 controller: _newPasswordCtrl,
-                hint: 'Masukkan password baru',
+                hint: AppStrings.enterNewPassword,
                 visible: _newPassVisible,
                 onToggle: () =>
                     setState(() => _newPassVisible = !_newPassVisible),
               ),
               const SizedBox(height: 20),
               Text(
-                'Konfirmasi Password',
+                AppStrings.confirmPassword,
                 style: TextStyle(
                   color: Colors.white.withOpacity(0.85),
                   fontSize: 13,
@@ -129,7 +130,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
               const SizedBox(height: 8),
               _buildPasswordField(
                 controller: _confirmPasswordCtrl,
-                hint: 'Ulangi password baru',
+                hint: AppStrings.repeatNewPassword,
                 visible: _confirmPassVisible,
                 onToggle: () => setState(
                     () => _confirmPassVisible = !_confirmPassVisible),
@@ -158,7 +159,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                           ),
                         )
                       : Text(
-                          'Simpan Password',
+                          AppStrings.savePassword,
                           style: TextStyle(
                             color: NutrifyTheme.darkCard,
                             fontSize: 16,

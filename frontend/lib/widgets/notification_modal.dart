@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import '../constants/colors.dart';
 import '../services/food_log_api_service.dart';
+import 'package:nutrify/utils/locale/app_strings.dart';
 
 class NotificationModal extends StatefulWidget {
   const NotificationModal({super.key});
@@ -93,10 +94,10 @@ class _NotificationModalState extends State<NotificationModal> {
                     child: const Icon(Icons.close, color: AppColors.navy, size: 20),
                   ),
                 ),
-                const Expanded(
+                Expanded(
                   child: Center(
                     child: Text(
-                      'Kotak Masuk',
+                      AppStrings.inbox,
                       style: TextStyle(
                         color: AppColors.navy,
                         fontSize: 20,
@@ -110,8 +111,8 @@ class _NotificationModalState extends State<NotificationModal> {
             ),
           ),
           const SizedBox(height: 8),
-          const Text(
-            'Tetap teratur dengan pengingat makan harian Anda.',
+          Text(
+            AppStrings.inboxSubtitle,
             style: TextStyle(
               color: AppColors.navy,
               fontSize: 11,
@@ -129,27 +130,27 @@ class _NotificationModalState extends State<NotificationModal> {
                         _buildMealItem(
                           logs: _todayLogs,
                           mealType: 'Dinner',
-                          title: 'Pengingat Makan Malam',
+                          title: AppStrings.dinnerReminder,
                           date: '${df.format(now)} · 18.00',
-                          defaultDesc: 'Tutup harimu dengan makan malam yang ringan',
+                          defaultDesc: AppStrings.dinnerDefault,
                           icon: Icons.nightlight_round,
                         ),
                       if (now.hour >= 12)
                         _buildMealItem(
                           logs: _todayLogs,
                           mealType: 'Lunch',
-                          title: 'Pengingat Makan Siang',
+                          title: AppStrings.lunchReminder,
                           date: '${df.format(now)} · 12.00',
-                          defaultDesc: 'Isi energi anda dengan makan siang bernutrisi',
+                          defaultDesc: AppStrings.lunchDefault,
                           icon: Icons.wb_sunny_rounded,
                         ),
                       if (now.hour >= 7)
                         _buildMealItem(
                           logs: _todayLogs,
                           mealType: 'Breakfast',
-                          title: 'Pengingat Makan Pagi',
+                          title: AppStrings.breakfastReminder,
                           date: '${df.format(now)} · 07.00',
-                          defaultDesc: 'Jangan lupa catat sarapan sehatmu hari ini!',
+                          defaultDesc: AppStrings.breakfastDefault,
                           icon: Icons.wb_twilight,
                         ),
                       
@@ -157,25 +158,25 @@ class _NotificationModalState extends State<NotificationModal> {
                       _buildMealItem(
                         logs: _yesterdayLogs,
                         mealType: 'Dinner',
-                        title: 'Pengingat Makan Malam',
+                        title: AppStrings.dinnerReminder,
                         date: '${df.format(yesterday)} · 18.00',
-                        defaultDesc: 'Tutup harimu dengan makan malam yang ringan',
+                        defaultDesc: AppStrings.dinnerDefault,
                         icon: Icons.nightlight_round,
                       ),
                       _buildMealItem(
                         logs: _yesterdayLogs,
                         mealType: 'Lunch',
-                        title: 'Pengingat Makan Siang',
+                        title: AppStrings.lunchReminder,
                         date: '${df.format(yesterday)} · 12.00',
-                        defaultDesc: 'Isi energi anda dengan makan siang bernutrisi',
+                        defaultDesc: AppStrings.lunchDefault,
                         icon: Icons.wb_sunny_rounded,
                       ),
                       _buildMealItem(
                         logs: _yesterdayLogs,
                         mealType: 'Breakfast',
-                        title: 'Pengingat Makan Pagi',
+                        title: AppStrings.breakfastReminder,
                         date: '${df.format(yesterday)} · 07.00',
-                        defaultDesc: 'Jangan lupa catat sarapan sehatmu hari ini!',
+                        defaultDesc: AppStrings.breakfastDefault,
                         icon: Icons.wb_twilight,
                       ),
                     ],
@@ -200,7 +201,7 @@ class _NotificationModalState extends State<NotificationModal> {
       title: title,
       date: date,
       description: menu.isNotEmpty 
-          ? 'Menu yang dijadwalkan: $menu' 
+          ? AppStrings.scheduledMenu(menu) 
           : defaultDesc,
     );
   }

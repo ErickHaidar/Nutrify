@@ -1,0 +1,17 @@
+{
+  "login_start": "Below are list of strings for login",
+  "login_et_user_email": "Masukkan email",
+  "login_et_user_password": "Masukkan password",
+  "login_btn_forgot_password": "Lupa Password?",
+  "login_btn_sign_in": "Masuk",
+  "login_error_fill_fields": "Harap isi semua field",
+  "login_end": "------------------------------------------------------------------------------------",
+
+  "home_start": "Below are list of strings for home",
+  "home_tv_posts": "Postingan",
+  "home_tv_error": "Kesalahan",
+  "home_tv_no_post_found": "Tidak ada postingan",
+  "home_tv_choose_language": "Pilih Bahasa",
+  "home_end": "-------------------------------------------------------------------------------------"
+
+}

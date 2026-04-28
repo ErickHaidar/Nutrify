@@ -4,6 +4,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:nutrify/constants/colors.dart';
 import 'package:nutrify/domain/entity/post/community_post.dart';
+import 'package:nutrify/utils/locale/app_strings.dart';
 
 class AddPostScreen extends StatefulWidget {
   const AddPostScreen({super.key});
@@ -31,7 +32,7 @@ class _AddPostScreenState extends State<AddPostScreen> {
   void _handleUpload() {
     if (_descController.text.trim().isEmpty && _selectedImage == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Tambahkan foto atau deskripsi terlebih dahulu')),
+        SnackBar(content: Text(AppStrings.addPhotoOrDescFirst)),
       );
       return;
     }
@@ -46,7 +47,7 @@ class _AddPostScreenState extends State<AddPostScreen> {
         id: DateTime.now().millisecondsSinceEpoch.toString(),
         authorName: 'Erick Haidar', // Mock current user
         authorAvatarUrl: '', // Mock avatar
-        timeAgo: 'Baru saja',
+        timeAgo: AppStrings.justNow,
         content: _descController.text.trim(),
         localImageFile: _selectedImage,
         likes: 0,
@@ -78,7 +79,7 @@ class _AddPostScreenState extends State<AddPostScreen> {
           onPressed: () => Navigator.pop(context),
         ),
         title: Text(
-          'Tambah Postingan Baru',
+          AppStrings.addNewPost,
           style: GoogleFonts.montserrat(
             color: AppColors.navy,
             fontWeight: FontWeight.bold,
@@ -121,7 +122,7 @@ class _AddPostScreenState extends State<AddPostScreen> {
                             ),
                             const SizedBox(height: 12),
                             Text(
-                              'Tambahkan Foto atau Gambar',
+                              AppStrings.addPhotoOrImage,
                               style: TextStyle(
                                 color: AppColors.navy.withOpacity(0.6),
                                 fontWeight: FontWeight.w600,
@@ -135,8 +136,8 @@ class _AddPostScreenState extends State<AddPostScreen> {
               const SizedBox(height: 30),
               
               // Description Label
-              const Text(
-                'Deskripsi',
+              Text(
+                AppStrings.description,
                 style: TextStyle(
                   color: AppColors.navy,
                   fontWeight: FontWeight.bold,
@@ -157,7 +158,7 @@ class _AddPostScreenState extends State<AddPostScreen> {
                   minLines: 3,
                   style: const TextStyle(color: AppColors.navy),
                   decoration: InputDecoration(
-                    hintText: 'Tulis deskripsi...',
+                    hintText: AppStrings.writeDescription,
                     hintStyle: TextStyle(
                       color: AppColors.navy.withOpacity(0.4),
                     ),
@@ -195,8 +196,8 @@ class _AddPostScreenState extends State<AddPostScreen> {
                               color: Colors.white,
                             ),
                           )
-                        : const Text(
-                            'Unggah',
+                        : Text(
+                            AppStrings.upload,
                             style: TextStyle(
                               fontSize: 16,
                               fontWeight: FontWeight.bold,

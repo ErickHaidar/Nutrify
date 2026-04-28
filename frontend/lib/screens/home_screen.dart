@@ -5,6 +5,7 @@ import 'add_meal_screen.dart';
 import 'body_data_goals_screen.dart';
 import 'tracking_kalori_screen.dart';
 import 'package:nutrify/constants/colors.dart';
+import 'package:nutrify/utils/locale/app_strings.dart';
 import '../services/food_log_api_service.dart';
 import '../services/profile_api_service.dart';
 import '../widgets/notification_modal.dart';
@@ -98,9 +99,7 @@ class HomeScreenState extends State<HomeScreen> {
 
   String _getFormattedDate() {
     final now = DateTime.now();
-    final months = [
-      'Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember',
-    ];
+    final months = AppStrings.monthNames;
     return "${now.day.toString().padLeft(2, '0')} ${months[now.month - 1]} ${now.year}";
   }
 
@@ -229,8 +228,8 @@ class HomeScreenState extends State<HomeScreen> {
                               size: 20,
                             ),
                           ),
-                          const Text(
-                            'Tracking Kalori Harian',
+                          Text(
+                            AppStrings.dailyCalorieTracking,
                             style: TextStyle(
                               color: AppColors.navy,
                               fontSize: 14,
@@ -241,7 +240,7 @@ class HomeScreenState extends State<HomeScreen> {
                       ),
                       const SizedBox(height: 20),
                       Text(
-                        '${_formatCalories(totalCalories)} KAL',
+                        '${_formatCalories(totalCalories)} ${AppStrings.cal}',
                         style: const TextStyle(
                           fontSize: 36,
                           fontWeight: FontWeight.w900,
@@ -267,7 +266,7 @@ class HomeScreenState extends State<HomeScreen> {
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           Text(
-                            '${(targetCalories > 0 ? (totalCalories / targetCalories * 100).toInt() : 0)}% dari target',
+                            AppStrings.percentOfTarget(targetCalories > 0 ? (totalCalories / targetCalories * 100).toInt() : 0),
                             style: TextStyle(
                               color: AppColors.navy.withOpacity(0.8),
                               fontSize: 13,
@@ -293,8 +292,8 @@ class HomeScreenState extends State<HomeScreen> {
                               padding: const EdgeInsets.symmetric(
                                   horizontal: 20, vertical: 12),
                             ),
-                            child: const Text(
-                              'Rincian',
+                            child: Text(
+                              AppStrings.details,
                               style: TextStyle(
                                 fontWeight: FontWeight.bold,
                               ),
@@ -341,7 +340,7 @@ class HomeScreenState extends State<HomeScreen> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              'Target Kalori Harian',
+                              AppStrings.dailyCalorieTarget,
                               style: TextStyle(
                                 color: AppColors.navy.withOpacity(0.7),
                                 fontSize: 13,
@@ -377,32 +376,32 @@ class HomeScreenState extends State<HomeScreen> {
                   childAspectRatio: 1.1,
                   children: [
                     MealTile(
-                      title: 'Makan Pagi',
+                      title: AppStrings.breakfast,
                       imagePath: Assets.iconPagi,
                       color: AppColors.peach,
                       calories: caloriesByType['Makan Pagi'] ?? 0,
-                      onTap: () => _navigateToAddMeal('Makan Pagi'),
+                      onTap: () => _navigateToAddMeal(AppStrings.breakfast),
                     ),
                     MealTile(
-                      title: 'Makan Siang',
+                      title: AppStrings.lunch,
                       imagePath: Assets.iconSiang,
                       color: AppColors.peach,
                       calories: caloriesByType['Makan Siang'] ?? 0,
-                      onTap: () => _navigateToAddMeal('Makan Siang'),
+                      onTap: () => _navigateToAddMeal(AppStrings.lunch),
                     ),
                     MealTile(
-                      title: 'Makan Malam',
+                      title: AppStrings.dinner,
                       imagePath: Assets.iconMalam,
                       color: AppColors.peach,
                       calories: caloriesByType['Makan Malam'] ?? 0,
-                      onTap: () => _navigateToAddMeal('Makan Malam'),
+                      onTap: () => _navigateToAddMeal(AppStrings.dinner),
                     ),
                     MealTile(
-                      title: 'Cemilan',
+                      title: AppStrings.snack,
                       imagePath: Assets.iconCemilan,
                       color: AppColors.peach,
                       calories: caloriesByType['Cemilan'] ?? 0,
-                      onTap: () => _navigateToAddMeal('Cemilan'),
+                      onTap: () => _navigateToAddMeal(AppStrings.snack),
                     ),
                   ],
                 ),
@@ -445,9 +444,9 @@ class HomeScreenState extends State<HomeScreen> {
                 ),
               ),
               const SizedBox(width: 15),
-              const Expanded(
+              Expanded(
                 child: Text(
-                  'Halo! Perjalanan sehatmu baru dimulai.',
+                  AppStrings.helloJourneyStarts,
                   style: TextStyle(
                     color: AppColors.navy,
                     fontSize: 16,
@@ -458,8 +457,8 @@ class HomeScreenState extends State<HomeScreen> {
             ],
           ),
           const SizedBox(height: 12),
-          const Text(
-            'Lengkapi data profilmu sekarang untuk mendapatkan target nutrisi yang presisi dan personal.',
+          Text(
+            AppStrings.completeProfileDesc,
             style: TextStyle(
               color: AppColors.navy,
               fontSize: 13,
@@ -491,8 +490,8 @@ class HomeScreenState extends State<HomeScreen> {
                   borderRadius: BorderRadius.circular(12),
                 ),
               ),
-              child: const Text(
-                'Lengkapi Profil Sekarang',
+              child: Text(
+                AppStrings.completeProfileNow,
                 style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
               ),
             ),

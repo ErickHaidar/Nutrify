@@ -10,6 +10,7 @@ import 'package:flutter/services.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:nutrify/utils/locale/app_strings.dart';
 
 Future<void> main() async {
   await runZonedGuarded(() async {
@@ -56,7 +57,10 @@ Future<void> main() async {
         await getIt<NotificationService>().scheduleMealReminders();
       }
 
-      // Step 4: Running MyApp...
+      // Step 4: Initialize localization strings
+      AppStrings.init();
+
+      // Step 5: Running MyApp...
       runApp(MyApp()); // Hapus 'const' jika constructor MyApp tidak mendukungnya
 
     } catch (e) {

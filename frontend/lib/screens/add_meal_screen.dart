@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:nutrify/constants/colors.dart';
+import 'package:nutrify/utils/locale/app_strings.dart';
 import 'package:nutrify/services/food_api_service.dart';
 import 'package:nutrify/services/food_log_api_service.dart';
 import 'package:nutrify/utils/meal_type_mapper.dart';
@@ -359,7 +360,7 @@ _isSearching = false;
         backgroundColor: Colors.transparent,
         elevation: 0,
         title: Text(
-          'Tambah $_currentMealType',
+          AppStrings.addMealTitle(_currentMealType),
           style: GoogleFonts.montserrat(
             fontWeight: FontWeight.bold,
             color: AppColors.navy,
@@ -396,7 +397,7 @@ _isSearching = false;
                 onChanged: _onSearchChanged,
                 style: const TextStyle(color: AppColors.navy),
                 decoration: InputDecoration(
-                  hintText: 'Cari makanan...',
+                  hintText: AppStrings.searchFood,
                   hintStyle: const TextStyle(color: Colors.black38),
                   prefixIcon: const Icon(Icons.search, color: AppColors.navy),
                   suffixIcon: _isSearching
@@ -422,8 +423,8 @@ _isSearching = false;
                 ? Center(
                     child: Text(
                       _searchController.text.isEmpty
-                          ? 'Belum ada makanan yang ditambahkan'
-                          : 'Tidak ada hasil ditemukan',
+                          ? AppStrings.noFoodAdded
+                          : AppStrings.noResultsFound,
                       style: TextStyle(
                         color: AppColors.navy.withOpacity(0.5),
                         fontSize: 14,
@@ -551,7 +552,7 @@ _isSearching = false;
                     actions: [
                       TextButton(
                         onPressed: () => Navigator.pop(ctx, false),
-                        child: Text('Batal',
+                        child: Text(AppStrings.cancel,
                             style: TextStyle(color: AppColors.navy.withOpacity(0.5))),
                       ),
                       TextButton(

@@ -4,6 +4,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import '../constants/colors.dart';
 import '../services/food_log_api_service.dart';
+import 'package:nutrify/utils/locale/app_strings.dart';
 import '../services/profile_api_service.dart';
 import '../widgets/nutrify_calendar_picker.dart';
 import 'food_detail_screen.dart';
@@ -110,7 +111,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
                         ],
                       ),
                       Text(
-                        'History Nutrisi',
+                        AppStrings.nutritionHistory,
                         style: TextStyle(
                           color: AppColors.navy,
                           fontSize: 12,
@@ -150,7 +151,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
                               children: [
                                 Expanded(
                                   child: _buildSummaryCard(
-                                    'Target Kalori',
+                                    AppStrings.targetCalorie,
                                     _formatNumber(_targetCalories),
                                     'kkal',
                                   ),
@@ -158,7 +159,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
                                 const SizedBox(width: 15),
                                 Expanded(
                                   child: _buildSummaryCard(
-                                    'Kalori Harian',
+                                    AppStrings.dailyCalorie,
                                     _formatNumber(_summary.totalCaloriesInt),
                                     'kkal',
                                   ),
@@ -169,16 +170,16 @@ class _HistoryScreenState extends State<HistoryScreen> {
 
                             // Meal Categories
                             _buildMealSection(
-                                'Makan Pagi', 'Breakfast', Assets.iconPagi),
+                                AppStrings.breakfast, 'Breakfast', Assets.iconPagi),
                             const SizedBox(height: 15),
                             _buildMealSection(
-                                'Makan Siang', 'Lunch', Assets.iconSiang),
+                                AppStrings.lunch, 'Lunch', Assets.iconSiang),
                             const SizedBox(height: 15),
                             _buildMealSection(
-                                'Makan Malam', 'Dinner', Assets.iconMalam),
+                                AppStrings.dinner, 'Dinner', Assets.iconMalam),
                             const SizedBox(height: 15),
                             _buildMealSection(
-                                'Cemilan', 'Snack', Assets.iconCemilan),
+                                AppStrings.snack, 'Snack', Assets.iconCemilan),
 
                             if (_logs.isEmpty)
                               Padding(
@@ -188,8 +189,8 @@ class _HistoryScreenState extends State<HistoryScreen> {
                                     const Icon(Icons.restaurant_menu,
                                         color: Colors.white24, size: 48),
                                     const SizedBox(height: 12),
-                                    const Text(
-                                      'Belum ada catatan makanan untuk hari ini',
+                                    Text(
+                                      AppStrings.noFoodRecordsToday,
                                       style: TextStyle(
                                           color: Colors.white38, fontSize: 14),
                                     ),

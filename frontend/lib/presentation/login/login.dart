@@ -8,6 +8,7 @@ import 'package:nutrify/data/sharedpref/constants/preferences.dart';
 import 'package:nutrify/presentation/login/store/login_store.dart';
 import 'package:nutrify/utils/device/device_utils.dart';
 import 'package:nutrify/utils/locale/app_localization.dart';
+import 'package:nutrify/utils/locale/app_strings.dart';
 import 'package:nutrify/utils/routes/routes.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
@@ -182,7 +183,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
   Widget _buildSubtitle() {
     return Text(
-      'Track your calories. Transform your life.',
+      AppStrings.loginSubtitle,
       textAlign: TextAlign.center,
       style: GoogleFonts.montserrat(
         fontSize: 14,
@@ -215,7 +216,7 @@ color: Colors.white,
                 },
                 style: TextStyle(color: Colors.black87),
                 decoration: InputDecoration(
-                  hintText: 'Masukkan Email Anda',
+                  hintText: AppStrings.enterEmail,
                   hintStyle: TextStyle(color: Colors.grey[500]),
                   prefixIcon: Icon(
                     Icons.email_outlined,
@@ -275,7 +276,7 @@ color: Colors.white,
                   },
                   style: TextStyle(color: Colors.black87),
                   decoration: InputDecoration(
-                    hintText: 'Masukkan password',
+                    hintText: AppStrings.enterPassword,
                     hintStyle: TextStyle(color: Colors.grey[500]),
                     prefixIcon: Icon(
                       Icons.lock_outline,
@@ -328,7 +329,7 @@ color: Colors.white,
       child: TextButton(
         onPressed: () => _showForgotPasswordDialog(),
         child: Text(
-          'Forgot Password?',
+          AppStrings.forgotPassword,
           style: TextStyle(
             color: NutrifyTheme.accentOrange,
             fontWeight: FontWeight.normal,
@@ -350,7 +351,7 @@ color: Colors.white,
               _passwordController.text,
             );
           } else {
-            _showErrorMessage('Please fill in all fields');
+            _showErrorMessage(AppStrings.fillAllFields);
           }
         },
         style: ElevatedButton.styleFrom(
@@ -395,7 +396,7 @@ color: Colors.white,
     void _comingSoon() {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: const Text('Segera hadir 🚀'),
+          content: Text(AppStrings.comingSoon),
           backgroundColor: NutrifyTheme.darkCard,
           behavior: SnackBarBehavior.floating,
           shape: RoundedRectangleBorder(
@@ -414,7 +415,7 @@ color: Colors.white,
               try {
                 await _userStore.signInWithGoogle();
               } catch (e) {
-                _showErrorMessage('Login Google gagal: $e');
+                _showErrorMessage('${AppStrings.googleLoginFailed}: $e');
               }
             },
             child: Container(
@@ -437,7 +438,7 @@ color: Colors.white,
                   Image.asset(Assets.iconGoogle, height: 24),
                   const SizedBox(width: 12),
                   Text(
-                    "Masuk dengan Google",
+                    "${AppStrings.signInWithGoogle}",
                     style: GoogleFonts.montserrat(
                       color: Colors.grey[700],
                       fontWeight: FontWeight.w600,
@@ -457,7 +458,7 @@ color: Colors.white,
     return Center(
       child: RichText(
         text: TextSpan(
-          text: "Don\u2019t have an account? ",
+          text: AppStrings.dontHaveAccount,
           style: TextStyle(color: NutrifyTheme.darkCard, fontSize: 14),
           children: [
             WidgetSpan(
@@ -465,7 +466,7 @@ color: Colors.white,
               child: GestureDetector(
                 onTap: () => _showSignUpModal(),
                 child: Text(
-                  'Sign Up',
+                  AppStrings.signUp,
                   style: TextStyle(
                     color: NutrifyTheme.accentOrange,
                     fontWeight: FontWeight.bold,
@@ -512,8 +513,8 @@ color: Colors.white,
       // Sheet is fully dismissed — safe to show flushbar in parent context
       if ((registered ?? false) && mounted) {
         FlushbarHelper.createSuccess(
-          message: 'Akun berhasil dibuat! Cek email Anda untuk konfirmasi.',
-          title: 'Berhasil!',
+          message: AppStrings.accountCreated,
+          title: AppStrings.success,
           duration: const Duration(seconds: 4),
         ).show(context);
       }
@@ -551,7 +552,7 @@ color: Colors.white,
               ),
               const SizedBox(width: 12),
               Text(
-                'Login Gagal',
+                AppStrings.loginFailed,
                 style: GoogleFonts.montserrat(
                   color: NutrifyTheme.darkCard,
                   fontWeight: FontWeight.bold,
@@ -572,7 +573,7 @@ color: Colors.white,
                   backgroundColor: NutrifyTheme.darkCard,
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(25)),
                 ),
-                child: const Text('Tutup', style: TextStyle(color: Colors.white)),
+                child: Text(AppStrings.close, style: const TextStyle(color: Colors.white)),
               ),
             ),
           ],
@@ -642,7 +643,7 @@ class _ForgotPasswordDialogContentState
           mainAxisSize: MainAxisSize.min,
           children: [
             Text(
-              'Reset Password',
+              AppStrings.resetPassword,
               style: GoogleFonts.montserrat(
                 color: NutrifyTheme.darkCard,
                 fontWeight: FontWeight.bold,
@@ -651,7 +652,7 @@ class _ForgotPasswordDialogContentState
             ),
             const SizedBox(height: 16),
             Text(
-              'Masukkan email Anda. Kami akan kirim link reset password.',
+              AppStrings.resetPasswordDesc,
               style: TextStyle(color: NutrifyTheme.darkCard.withOpacity(0.8), fontSize: 13),
             ),
             const SizedBox(height: 16),
@@ -683,7 +684,7 @@ class _ForgotPasswordDialogContentState
                   padding: const EdgeInsets.only(right: 8.0),
                   child: TextButton(
                     onPressed: () => Navigator.pop(context),
-                    child: const Text('Batal', style: TextStyle(color: NutrifyTheme.darkCard, fontWeight: FontWeight.w600)),
+                    child: Text(AppStrings.cancel, style: const TextStyle(color: NutrifyTheme.darkCard, fontWeight: FontWeight.w600)),
                   ),
                 ),
                 ElevatedButton(
@@ -705,7 +706,7 @@ class _ForgotPasswordDialogContentState
                               // Error handling inside dialog
                               FlushbarHelper.createError(
                                 message: _parseError(e),
-                                title: 'Kesalahan',
+                                title: AppStrings.error,
                               ).show(context);
                             }
                           }
@@ -726,8 +727,8 @@ class _ForgotPasswordDialogContentState
                             color: Colors.white,
                           ),
                         )
-                      : const Text(
-                          'Kirim',
+                      : Text(
+                          AppStrings.send,
                           style: TextStyle(
                             color: Colors.white,
                             fontWeight: FontWeight.bold,
@@ -902,7 +903,7 @@ class _SignUpModalContentState extends State<_SignUpModalContent> {
                         ),
                       ),
                       Text(
-                        'Buat Akun Baru',
+                        AppStrings.createNewAccount,
                         style: GoogleFonts.montserrat(
                           fontSize: 16,
                           fontWeight: FontWeight.w600,
@@ -910,10 +911,10 @@ class _SignUpModalContentState extends State<_SignUpModalContent> {
                         ),
                       ),
                       const SizedBox(height: 24),
-                      const Align(
+                      Align(
                         alignment: Alignment.centerLeft,
                         child: Text(
-                          'NAMA LENGKAP',
+                          AppStrings.fullName,
                           style: TextStyle(
                             color: NutrifyTheme.darkCard,
                             fontSize: 12,
@@ -924,15 +925,15 @@ class _SignUpModalContentState extends State<_SignUpModalContent> {
                       const SizedBox(height: 8),
                       _buildRegisterTextField(
                         controller: nameCtrl,
-                        hint: 'Nama lengkap',
+                        hint: AppStrings.fullNameHint,
                         icon: Icons.person_outline,
                         hasError: errorMsg != null && (errorMsg!.contains('Nama') || errorMsg!.contains('Semua')),
                       ),
                       const SizedBox(height: 14),
-                      const Align(
+                      Align(
                         alignment: Alignment.centerLeft,
                         child: Text(
-                          'EMAIL',
+                          AppStrings.emailLabel,
                           style: TextStyle(
                             color: NutrifyTheme.darkCard,
                             fontSize: 12,
@@ -949,10 +950,10 @@ class _SignUpModalContentState extends State<_SignUpModalContent> {
                         hasError: errorMsg != null && (errorMsg!.contains('Email') || errorMsg!.contains('Semua')),
                       ),
                       const SizedBox(height: 14),
-                      const Align(
+                      Align(
                         alignment: Alignment.centerLeft,
                         child: Text(
-                          'KATA SANDI',
+                          AppStrings.passwordLabel,
                           style: TextStyle(
                             color: NutrifyTheme.darkCard,
                             fontSize: 12,
@@ -974,7 +975,7 @@ class _SignUpModalContentState extends State<_SignUpModalContent> {
                           obscureText: !passVisible,
                           style: const TextStyle(color: Colors.black87),
                           decoration: InputDecoration(
-                            hintText: 'Password (min. 6 karakter)',
+                            hintText: AppStrings.passwordHint,
                             hintStyle: TextStyle(color: Colors.grey[500]),
                             prefixIcon: Icon(Icons.lock_outline, color: Colors.grey[500]),
                             suffixIcon: GestureDetector(
@@ -1020,22 +1021,19 @@ class _SignUpModalContentState extends State<_SignUpModalContent> {
                                       email.isEmpty ||
                                       pass.isEmpty) {
                                     setState(
-                                      () => errorMsg =
-                                          'Semua field harus diisi',
+                                      () => errorMsg = AppStrings.allFieldsRequired,
                                     );
                                     return;
                                   }
                                   if (!email.toLowerCase().endsWith('@gmail.com')) {
                                     setState(
-                                      () => errorMsg =
-                                          'Hanya akun @gmail.com yang diperbolehkan',
+                                      () => errorMsg = AppStrings.onlyGmail,
                                     );
                                     return;
                                   }
                                   if (pass.length < 6) {
                                     setState(
-                                      () => errorMsg =
-                                          'Password minimal 6 karakter',
+                                      () => errorMsg = AppStrings.passwordMinLength,
                                     );
                                     return;
                                   }
@@ -1091,7 +1089,7 @@ class _SignUpModalContentState extends State<_SignUpModalContent> {
                       TextButton(
                         onPressed: () => Navigator.pop(context),
                         child: Text(
-                          'Sudah punya akun? Masuk',
+                          AppStrings.alreadyHaveAccount,
                           style: TextStyle(
                             color: NutrifyTheme.darkCard.withOpacity(0.7),
                           ),
@@ -1142,28 +1140,28 @@ class _SignUpModalContentState extends State<_SignUpModalContent> {
       final msg = e.message.toLowerCase();
       if (msg.contains('invalid login credentials') ||
           msg.contains('invalid_credentials')) {
-        return 'Email atau password salah';
+        return AppStrings.wrongCredentials;
       }
       if (msg.contains('email not confirmed')) {
-        return 'Cek email Anda untuk konfirmasi akun terlebih dahulu';
+        return AppStrings.confirmEmailFirst;
       }
       if (msg.contains('user already registered') ||
           msg.contains('already registered')) {
-        return 'Email sudah terdaftar, silakan login';
+        return AppStrings.emailAlreadyRegistered;
       }
       if (msg.contains('password should be at least') ||
           msg.contains('weak_password')) {
-        return 'Password minimal 6 karakter';
+        return AppStrings.passwordMinLength;
       }
       if (msg.contains('unable to validate email')) {
-        return 'Format email tidak valid';
+        return AppStrings.invalidEmail;
       }
       if (msg.contains('rate limit')) {
-        return 'Terlalu banyak percobaan. Tunggu sebentar.';
+        return AppStrings.tooManyAttempts;
       }
-      return e.message.isNotEmpty ? e.message : 'Terjadi kesalahan autentikasi';
+      return e.message.isNotEmpty ? e.message : AppStrings.authError;
     }
-    return 'Terjadi kesalahan. Silakan coba lagi.';
+    return AppStrings.generalError;
   }
 }
 class _CheckEmailModalContent extends StatelessWidget {
@@ -1198,7 +1196,7 @@ class _CheckEmailModalContent extends StatelessWidget {
                 ),
                 const SizedBox(height: 24),
                 Text(
-                  "Cek Email Anda!",
+                  AppStrings.checkYourEmail,
                   textAlign: TextAlign.center,
                   style: GoogleFonts.montserrat(
                     fontSize: 20,
@@ -1208,7 +1206,7 @@ class _CheckEmailModalContent extends StatelessWidget {
                 ),
                 const SizedBox(height: 12),
                 Text(
-                  "Klik link verifikasi yang telah kami kirimkan ke email anda",
+                  AppStrings.clickVerificationLink,
                   textAlign: TextAlign.center,
                   style: GoogleFonts.montserrat(
                     fontSize: 14,
@@ -1232,13 +1230,13 @@ class _CheckEmailModalContent extends StatelessWidget {
                           onTap: () {
                             _userStore.forgotPassword(email);
                             FlushbarHelper.createSuccess(
-                              message: 'Email verifikasi telah dikirim ulang',
-                              title: 'Berhasil',
+                              message: AppStrings.emailResent,
+                              title: AppStrings.success,
                               duration: const Duration(seconds: 3),
                             ).show(context);
                           },
                           child: Text(
-                            "Kirim Ulang",
+                              AppStrings.resend,
                             style: GoogleFonts.montserrat(
                               fontWeight: FontWeight.bold,
                               color: NutrifyTheme.darkCard,

@@ -5,14 +5,17 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:nutrify/di/service_locator.dart';
 import 'package:nutrify/presentation/login/store/login_store.dart';
+import 'package:nutrify/presentation/home/store/language/language_store.dart';
 import 'package:nutrify/utils/routes/routes.dart';
 import 'package:nutrify/constants/assets.dart';
+import 'package:nutrify/utils/locale/app_strings.dart';
 import 'edit_profile_screen.dart';
 import 'change_goal_screen.dart';
 import '../services/profile_api_service.dart';
 import '../services/notification_service.dart';
 import '../constants/colors.dart';
 import 'package:nutrify/presentation/login/store/login_store.dart';
+import 'main_navigation_screen.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -54,7 +57,7 @@ class ProfileScreenState extends State<ProfileScreen> {
 
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Notifikasi pengingat makan diaktifkan')),
+            SnackBar(content: Text(AppStrings.notifEnabled)),
           );
         }
       } else {
@@ -63,7 +66,7 @@ class ProfileScreenState extends State<ProfileScreen> {
         await prefs.setBool('notifications_enabled', false);
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Izin notifikasi ditolak. Silakan aktifkan di pengaturan sistem.')),
+            SnackBar(content: Text(AppStrings.notifDenied)),
           );
         }
       }
@@ -73,7 +76,7 @@ class ProfileScreenState extends State<ProfileScreen> {
       await notificationService.cancelAllNotifications();
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Notifikasi pengingat makan dinonaktifkan')),
+          SnackBar(content: Text(AppStrings.notifDisabled)),
         );
       }
     }
@@ -91,6 +94,109 @@ class ProfileScreenState extends State<ProfileScreen> {
     } catch (_) {
       if (mounted) setState(() => _isLoading = false);
     }
+  }
+
+  void _showLanguagePicker() {
+    final languageStore = getIt<LanguageStore>();
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: AppColors.cream,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (ctx) => SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 24),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Container(
+                width: 40,
+                height: 4,
+                decoration: BoxDecoration(
+                  color: AppColors.navy.withOpacity(0.3),
+                  borderRadius: BorderRadius.circular(2),
+                ),
+              ),
+              const SizedBox(height: 20),
+              Text(
+                AppStrings.chooseLanguage,
+                style: const TextStyle(
+                  color: AppColors.navy,
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              const SizedBox(height: 20),
+              _buildLanguageOption(
+                ctx,
+                languageStore,
+                flag: '🇮🇩',
+                label: 'Bahasa Indonesia',
+                locale: 'id',
+              ),
+              const SizedBox(height: 12),
+              _buildLanguageOption(
+                ctx,
+                languageStore,
+                flag: '🇺🇸',
+                label: 'English',
+                locale: 'en',
+              ),
+              const SizedBox(height: 16),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildLanguageOption(
+    BuildContext ctx,
+    LanguageStore languageStore, {
+    required String flag,
+    required String label,
+    required String locale,
+  }) {
+    final isSelected = AppStrings.currentLocale == locale;
+    return GestureDetector(
+      onTap: () {
+        languageStore.changeLanguage(locale);
+        Navigator.pop(ctx);
+        // Rebuild the entire app to reflect language change
+        Navigator.of(context).pushNamedAndRemoveUntil(
+          Routes.home,
+          (route) => false,
+        );
+      },
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+        decoration: BoxDecoration(
+          color: isSelected ? AppColors.peach : NutrifyTheme.lightCard,
+          borderRadius: BorderRadius.circular(16),
+          border: isSelected
+              ? Border.all(color: AppColors.navy, width: 2)
+              : null,
+        ),
+        child: Row(
+          children: [
+            Text(flag, style: const TextStyle(fontSize: 24)),
+            const SizedBox(width: 16),
+            Text(
+              label,
+              style: TextStyle(
+                color: AppColors.navy,
+                fontSize: 16,
+                fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+              ),
+            ),
+            const Spacer(),
+            if (isSelected)
+              const Icon(Icons.check_circle, color: AppColors.navy),
+          ],
+        ),
+      ),
+    );
   }
 
   @override
@@ -220,18 +326,18 @@ class ProfileScreenState extends State<ProfileScreen> {
                 crossAxisSpacing: 12,
                 children: [
                   _buildInfoBox(
-                    'Height',
+                    AppStrings.height,
                     _profile != null ? '${_profile!.height} cm' : '-',
                   ),
                   _buildInfoBox(
-                    'Weight',
+                    AppStrings.weight,
                     _profile != null ? '${_profile!.weight} kg' : '-',
                   ),
                   _buildInfoBox(
-                    'Age',
-                    _profile != null ? '${_profile!.age} Years' : '-',
+                    AppStrings.age,
+                    _profile != null ? '${_profile!.age} ${AppStrings.years}' : '-',
                   ),
-                  _buildInfoBox('Gender', _profile?.genderDisplay ?? '-'),
+                  _buildInfoBox(AppStrings.gender, _profile?.genderDisplay ?? '-'),
                   _buildInfoBox(
                     'BMI',
                     _profile != null
@@ -239,7 +345,7 @@ class ProfileScreenState extends State<ProfileScreen> {
                         : '-',
                   ),
                   _buildInfoBox(
-                    'Target',
+                    AppStrings.target,
                     _profile != null ? '${_profile!.targetCalories} kcal' : '-',
                   ),
                 ],
@@ -248,9 +354,9 @@ class ProfileScreenState extends State<ProfileScreen> {
               const SizedBox(height: 30),
 
               // 4. General Setting
-              const Text(
-                'Pengaturan Umum',
-                style: TextStyle(
+              Text(
+                AppStrings.generalSettings,
+                style: const TextStyle(
                   color: AppColors.navy,
                   fontSize: 16,
                   fontWeight: FontWeight.bold,
@@ -260,7 +366,7 @@ class ProfileScreenState extends State<ProfileScreen> {
               _buildMenuButton(
                 context,
                 icon: Icons.person_rounded,
-                label: 'Edit Profil',
+                label: AppStrings.editProfile,
                 onPressed: () async {
                   final result = await Navigator.push(
                     context,
@@ -280,9 +386,9 @@ class ProfileScreenState extends State<ProfileScreen> {
               const SizedBox(height: 30),
 
               // 5. Preferences
-              const Text(
-                'Preferensi',
-                style: TextStyle(
+              Text(
+                AppStrings.preferences,
+                style: const TextStyle(
                   color: AppColors.navy,
                   fontSize: 16,
                   fontWeight: FontWeight.bold,
@@ -292,7 +398,7 @@ class ProfileScreenState extends State<ProfileScreen> {
               _buildMenuButton(
                 context,
                 icon: Icons.notifications_rounded,
-                label: 'Notifikasi',
+                label: AppStrings.notification,
                 onPressed: () => _toggleNotifications(!_notificationsEnabled),
                 trailing: Switch.adaptive(
                   value: _notificationsEnabled,
@@ -303,8 +409,23 @@ class ProfileScreenState extends State<ProfileScreen> {
               const SizedBox(height: 12),
               _buildMenuButton(
                 context,
+                icon: Icons.language_rounded,
+                label: AppStrings.language,
+                onPressed: _showLanguagePicker,
+                trailing: Text(
+                  AppStrings.isId ? '🇮🇩 ID' : '🇺🇸 EN',
+                  style: const TextStyle(
+                    color: AppColors.navy,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 14,
+                  ),
+                ),
+              ),
+              const SizedBox(height: 12),
+              _buildMenuButton(
+                context,
                 icon: Icons.logout_rounded,
-                label: 'Keluar',
+                label: AppStrings.logout,
                 onPressed: () async {
                   await getIt<UserStore>().logout();
                   if (context.mounted) {

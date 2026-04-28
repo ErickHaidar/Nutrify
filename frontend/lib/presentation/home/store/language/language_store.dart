@@ -1,6 +1,7 @@
 import 'package:nutrify/core/stores/error/error_store.dart';
 import 'package:nutrify/domain/entity/language/Language.dart';
 import 'package:nutrify/domain/repository/setting/setting_repository.dart';
+import 'package:nutrify/utils/locale/app_strings.dart';
 import 'package:mobx/mobx.dart';
 
 part 'language_store.g.dart';
@@ -18,9 +19,8 @@ abstract class _LanguageStore with Store {
 
   // supported languages
   List<Language> supportedLanguages = [
+    Language(code: 'ID', locale: 'id', language: 'Bahasa Indonesia'),
     Language(code: 'US', locale: 'en', language: 'English'),
-    Language(code: 'DK', locale: 'da', language: 'Danish'),
-    Language(code: 'ES', locale: 'es', language: 'España'),
   ];
 
   // constructor:---------------------------------------------------------------
@@ -30,7 +30,7 @@ abstract class _LanguageStore with Store {
 
   // store variables:-----------------------------------------------------------
   @observable
-  String _locale = "en";
+  String _locale = "id";
 
   @computed
   String get locale => _locale;
@@ -39,6 +39,7 @@ abstract class _LanguageStore with Store {
   @action
   void changeLanguage(String value) {
     _locale = value;
+    AppStrings.setLocale(value);
     _repository.changeLanguage(value).then((_) {
       // write additional logic here
     });
@@ -48,12 +49,10 @@ abstract class _LanguageStore with Store {
   String getCode() {
     var code;
 
-    if (_locale == 'en') {
+    if (_locale == 'id') {
+      code = "ID";
+    } else if (_locale == 'en') {
       code = "US";
-    } else if (_locale == 'da') {
-      code = "DK";
-    } else if (_locale == 'es') {
-      code = "ES";
     }
 
     return code;
@@ -71,7 +70,10 @@ abstract class _LanguageStore with Store {
     // getting current language from shared preference
     if (_repository.currentLanguage != null) {
       _locale = _repository.currentLanguage!;
+    } else {
+      _locale = 'id'; // Default to Indonesian
     }
+    AppStrings.setLocale(_locale);
   }
 
   // dispose:-------------------------------------------------------------------

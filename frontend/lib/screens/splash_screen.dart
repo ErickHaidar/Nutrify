@@ -6,6 +6,7 @@ import 'package:nutrify/constants/colors.dart';
 import 'package:nutrify/constants/assets.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:nutrify/utils/locale/app_strings.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class SplashScreen extends StatefulWidget {
@@ -78,7 +79,7 @@ class _SplashScreenState extends State<SplashScreen> {
             ),
             const SizedBox(height: 8),
             Text(
-              'Track your calories. Transform your life.',
+              AppStrings.splashSubtitle,
               style: TextStyle(
                 color: Colors.white.withOpacity(0.7),
                 fontSize: 14,

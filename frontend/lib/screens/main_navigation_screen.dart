@@ -4,6 +4,7 @@ import 'profile_screen.dart';
 import 'history_screen.dart';
 import 'komunitas_screen.dart';
 import 'package:nutrify/constants/colors.dart';
+import 'package:nutrify/utils/locale/app_strings.dart';
 
 class MainNavigationScreen extends StatefulWidget {
   const MainNavigationScreen({super.key});
@@ -61,22 +62,22 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
         currentIndex: _selectedIndex,
         onTap: _onItemTapped,
         type: BottomNavigationBarType.fixed,
-        items: const [
+        items: [
           BottomNavigationBarItem(
-            icon: Icon(Icons.restaurant),
-            label: 'Kalori',
+            icon: const Icon(Icons.restaurant),
+            label: AppStrings.navCalorie,
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.history),
-            label: 'Riwayat',
+            icon: const Icon(Icons.history),
+            label: AppStrings.navHistory,
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.forum),
-            label: 'Komunitas',
+            icon: const Icon(Icons.forum),
+            label: AppStrings.navCommunity,
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.person),
-            label: 'Profil',
+            icon: const Icon(Icons.person),
+            label: AppStrings.navProfile,
           ),
         ],
       ),

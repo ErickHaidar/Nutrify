@@ -3,6 +3,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:nutrify/constants/colors.dart';
 import 'package:nutrify/domain/entity/post/community_post.dart';
 import 'package:nutrify/screens/add_post_screen.dart';
+import 'package:nutrify/utils/locale/app_strings.dart';
 
 class KomunitasScreen extends StatefulWidget {
   const KomunitasScreen({super.key});
@@ -149,9 +150,9 @@ class _KomunitasScreenState extends State<KomunitasScreen> with SingleTickerProv
                 labelStyle: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
                 unselectedLabelStyle: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
                 dividerColor: Colors.transparent,
-                tabs: const [
-                  Tab(text: 'Untuk Anda'),
-                  Tab(text: 'Diikuti'),
+                tabs: [
+                  Tab(text: AppStrings.forYou),
+                  Tab(text: AppStrings.following),
                 ],
               ),
             ),
@@ -166,7 +167,7 @@ class _KomunitasScreenState extends State<KomunitasScreen> with SingleTickerProv
           
           // Diikuti Feed
           followingPosts.isEmpty
-              ? _buildEmptyState('Belum ada postingan dari akun yang Anda ikuti.')
+              ? _buildEmptyState(AppStrings.noFollowingPosts)
               : _buildFeed(followingPosts),
         ],
       ),
@@ -263,7 +264,7 @@ class _KomunitasScreenState extends State<KomunitasScreen> with SingleTickerProv
                     borderRadius: BorderRadius.circular(16),
                   ),
                   child: Text(
-                    post.isFollowed ? 'Diikuti' : 'Ikuti',
+                    post.isFollowed ? AppStrings.following : AppStrings.follow,
                     style: TextStyle(
                       color: post.isFollowed ? Colors.white : AppColors.navy,
                       fontWeight: FontWeight.bold,
@@ -317,7 +318,7 @@ class _KomunitasScreenState extends State<KomunitasScreen> with SingleTickerProv
                     ),
                     const SizedBox(width: 6),
                     Text(
-                      'Suka ${_formatCount(post.likes)}',
+                      AppStrings.likes(_formatCount(post.likes)),
                       style: TextStyle(
                         color: AppColors.navy.withOpacity(0.8),
                         fontWeight: FontWeight.w600,
@@ -340,7 +341,7 @@ class _KomunitasScreenState extends State<KomunitasScreen> with SingleTickerProv
                     ),
                     const SizedBox(width: 6),
                     Text(
-                      'Komentar ${_formatCount(post.comments)}',
+                      AppStrings.comments(_formatCount(post.comments)),
                       style: TextStyle(
                         color: AppColors.navy.withOpacity(0.8),
                         fontWeight: FontWeight.w600,
