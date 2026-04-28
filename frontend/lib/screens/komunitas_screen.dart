@@ -226,7 +226,7 @@ class _KomunitasScreenState extends State<KomunitasScreen> with SingleTickerProv
                 radius: 20,
                 backgroundColor: AppColors.peach,
                 child: Text(
-                  post.authorName[0].toUpperCase(),
+                  post.authorName.isNotEmpty ? post.authorName[0].toUpperCase() : '-',
                   style: const TextStyle(color: AppColors.navy, fontWeight: FontWeight.bold),
                 ),
               ),

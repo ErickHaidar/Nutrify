@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../services/profile_api_service.dart';
 import 'package:nutrify/constants/colors.dart';
+import 'package:nutrify/utils/locale/app_strings.dart';
 
 class ChangeGoalScreen extends StatefulWidget {
   const ChangeGoalScreen({super.key});
@@ -34,30 +35,30 @@ class _ChangeGoalScreenState extends State<ChangeGoalScreen> {
 
   // ── Mapping between display and API values ────────────────────────────────
 
-  static const _activityDisplayToApi = {
-    'Lightly Active': 'light',
-    'Moderately Active': 'moderate',
-    'Highly Active': 'active',
+  static Map<String, String> get _activityDisplayToApi => {
+    AppStrings.lightlyActive: 'light',
+    AppStrings.moderatelyActive: 'moderate',
+    AppStrings.highlyActive: 'active',
   };
 
-  static const _activityApiToDisplay = {
-    'sedentary': 'Lightly Active',
-    'light': 'Lightly Active',
-    'moderate': 'Moderately Active',
-    'active': 'Highly Active',
-    'very_active': 'Highly Active',
+  static Map<String, String> get _activityApiToDisplay => {
+    'sedentary': AppStrings.lightlyActive,
+    'light': AppStrings.lightlyActive,
+    'moderate': AppStrings.moderatelyActive,
+    'active': AppStrings.highlyActive,
+    'very_active': AppStrings.highlyActive,
   };
 
-  static const _goalDisplayToApi = {
-    'Cutting': 'cutting',
-    'Maintain': 'maintenance',
-    'Bulking': 'bulking',
+  static Map<String, String> get _goalDisplayToApi => {
+    AppStrings.cutting: 'cutting',
+    AppStrings.maintain: 'maintenance',
+    AppStrings.bulking: 'bulking',
   };
 
-  static const _goalApiToDisplay = {
-    'cutting': 'Cutting',
-    'maintenance': 'Maintain',
-    'bulking': 'Bulking',
+  static Map<String, String> get _goalApiToDisplay => {
+    'cutting': AppStrings.cutting,
+    'maintenance': AppStrings.maintain,
+    'bulking': AppStrings.bulking,
   };
 
   String get _selectedActivityDisplay =>
@@ -108,7 +109,7 @@ class _ChangeGoalScreenState extends State<ChangeGoalScreen> {
       if (mounted) {
         setState(() => _isSaving = false);
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Gagal menyimpan: $e')),
+          SnackBar(content: Text('${AppStrings.failedToSaveTitle}: $e')),
         );
       }
     }
@@ -133,7 +134,7 @@ class _ChangeGoalScreenState extends State<ChangeGoalScreen> {
           onPressed: () => Navigator.pop(context),
         ),
         title: Text(
-          'Ubah Target',
+          AppStrings.changeTarget,
           style: GoogleFonts.montserrat(
               fontWeight: FontWeight.bold, color: AppColors.navy),
         ),
@@ -151,7 +152,7 @@ class _ChangeGoalScreenState extends State<ChangeGoalScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              "Apa fokus kamu?",
+              AppStrings.whatIsYourFocus,
               style: GoogleFonts.montserrat(
                 fontSize: 24,
                 fontWeight: FontWeight.bold,
@@ -159,20 +160,20 @@ class _ChangeGoalScreenState extends State<ChangeGoalScreen> {
               ),
             ),
             const SizedBox(height: 8),
-            const Text(
-              'pilih target utama untuk perjalanan kebugaranmu.',
-              style: TextStyle(color: AppColors.navy, fontSize: 13),
+            Text(
+              AppStrings.chooseFocusDesc,
+              style: const TextStyle(color: AppColors.navy, fontSize: 13),
             ),
             const SizedBox(height: 30),
-            _buildActivityTile('Lightly Active', '1-3 hari olahraga/minggu',
+            _buildActivityTile(AppStrings.lightlyActive, AppStrings.lightlyActiveSub,
                 Icons.directions_walk),
-            _buildActivityTile('Moderately Active',
-                '3-5 hari olahraga/minggu', Icons.fitness_center),
+            _buildActivityTile(AppStrings.moderatelyActive,
+                AppStrings.moderatelyActiveSub, Icons.fitness_center),
             _buildActivityTile(
-                'Highly Active', '6-7 hari olahraga intensif', Icons.bolt),
+                AppStrings.highlyActive, AppStrings.highlyActiveSub, Icons.bolt),
             const SizedBox(height: 35),
-            const Text('Target Utama',
-                style: TextStyle(
+            Text(AppStrings.mainTarget,
+                style: const TextStyle(
                     color: AppColors.navy,
                     fontWeight: FontWeight.bold,
                     fontSize: 16)),
@@ -180,9 +181,9 @@ class _ChangeGoalScreenState extends State<ChangeGoalScreen> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
-                _buildGoalButton('Cutting', 'Lose Fat', Icons.trending_down),
-                _buildGoalButton('Maintain', 'Stay Fit', Icons.balance),
-                _buildGoalButton('Bulking', 'Gain Muscle', Icons.trending_up),
+                _buildGoalButton(AppStrings.cutting, AppStrings.loseFat, Icons.trending_down),
+                _buildGoalButton(AppStrings.maintain, AppStrings.stayFit, Icons.balance),
+                _buildGoalButton(AppStrings.bulking, AppStrings.gainMuscle, Icons.trending_up),
               ],
             ),
             const SizedBox(height: 50),
@@ -205,9 +206,9 @@ class _ChangeGoalScreenState extends State<ChangeGoalScreen> {
                           color: Colors.white,
                         ),
                       )
-                    : const Text(
-                        'Konfirmasi Perubahan',
-                        style: TextStyle(
+                    : Text(
+                        AppStrings.confirmChanges,
+                        style: const TextStyle(
                             color: Colors.white,
                             fontWeight: FontWeight.bold,
                             fontSize: 16),

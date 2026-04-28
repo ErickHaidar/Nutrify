@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:nutrify/constants/colors.dart';
+import 'package:nutrify/utils/locale/app_strings.dart';
 
 enum _SelectionMode { day, month, year }
 
@@ -27,13 +28,9 @@ class _NutrifyCalendarPickerState extends State<NutrifyCalendarPicker> {
   _SelectionMode _mode = _SelectionMode.year; // Always start from Year
   late int _startYear;
 
-  static const _monthNames = [
-    'Januari', 'Februari', 'Maret', 'April',
-    'Mei', 'Juni', 'Juli', 'Agustus',
-    'September', 'Oktober', 'November', 'Desember'
-  ];
+  static List<String> get _monthNames => AppStrings.monthNames;
 
-  static const _dayLabels = ['MIN', 'SEN', 'SEL', 'RAB', 'KAM', 'JUM', 'SAB'];
+  static List<String> get _dayLabels => AppStrings.dayLabels;
 
   @override
   void initState() {
@@ -76,11 +73,11 @@ class _NutrifyCalendarPickerState extends State<NutrifyCalendarPicker> {
   String get _modeLabel {
     switch (_mode) {
       case _SelectionMode.year:
-        return 'PILIH TAHUN';
+        return AppStrings.selectYear;
       case _SelectionMode.month:
-        return 'PILIH BULAN';
+        return AppStrings.selectMonth;
       case _SelectionMode.day:
-        return 'PILIH HARI';
+        return AppStrings.selectDay;
     }
   }
 
@@ -197,9 +194,9 @@ class _NutrifyCalendarPickerState extends State<NutrifyCalendarPicker> {
                   padding: const EdgeInsets.symmetric(vertical: 16),
                   elevation: 0,
                 ),
-                child: const Text(
-                  'Pilih',
-                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                child: Text(
+                  AppStrings.ok,
+                  style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
                 ),
               ),
             ),

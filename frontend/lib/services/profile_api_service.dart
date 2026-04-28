@@ -72,7 +72,7 @@ class ProfileApiService {
       }
       final email = sb.Supabase.instance.client.auth.currentUser?.email ?? '';
       _cache = ApiProfileData(
-        name: data['user'] as String? ?? '',
+        name: (data['user'] as String? ?? '').isEmpty ? (email.split('@')[0]) : data['user'] as String,
         email: email,
         age: (profile['age'] as num?)?.toInt() ?? 0,
         weight: (profile['weight'] as num?)?.toInt() ?? 0,
@@ -86,9 +86,31 @@ class ProfileApiService {
       );
       _cacheTime = DateTime.now();
       return _cache;
-    } on Exception catch (e) {
-      // In Dio, status 404 will throw a DioException.
-      // We return null instead of throwing, signifying "no profile found".
+    } catch (e) {
+      // Return a basic profile with the user's email if the backend profile is not found.
+      final user = sb.Supabase.instance.client.auth.currentUser;
+      if (user != null) {
+        final email = user.email ?? '';
+        final name = user.userMetadata?['full_name'] as String? ?? 
+                     user.userMetadata?['name'] as String? ?? 
+                     (user.email?.split('@')[0] ?? '-');
+        
+        _cache = ApiProfileData(
+          name: name,
+          email: email,
+          age: 0,
+          weight: 0,
+          height: 0,
+          gender: 'male',
+          goal: 'maintenance',
+          activityLevel: 'sedentary',
+          bmi: 0,
+          bmiStatus: '-',
+          targetCalories: 0,
+        );
+        _cacheTime = DateTime.now();
+        return _cache;
+      }
       _cache = null;
       _cacheTime = null;
       return null;

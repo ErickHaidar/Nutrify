@@ -16,8 +16,8 @@ class ProfileData {
   final String? photoPath;
 
   ProfileData({
-    this.name = 'Zayn Malik',
-    this.email = 'Zaynmalik@nutrify.app',
+    this.name = '', // Default to empty, caller should handle fallback
+    this.email = '',
     this.height = '175',
     this.weight = '70',
     this.targetWeight = '70',
@@ -46,8 +46,8 @@ class ProfileData {
       };
 
   factory ProfileData.fromJson(Map<String, dynamic> json) => ProfileData(
-        name: json['name'] ?? 'Zayn Malik',
-        email: json['email'] ?? 'Zaynmalik@nutrify.app',
+        name: json['name'] ?? '',
+        email: json['email'] ?? '',
         height: json['height'] ?? '175',
         weight: json['weight'] ?? '70',
         targetWeight: json['targetWeight'] ?? '70',

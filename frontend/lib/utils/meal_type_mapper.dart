@@ -1,18 +1,18 @@
-// lib/utils/meal_type_mapper.dart
+import 'package:nutrify/utils/locale/app_strings.dart';
 
 class MealTypeMapper {
-  static const Map<String, String> _displayToApi = {
-    'Makan Pagi': 'Breakfast',
-    'Makan Siang': 'Lunch',
-    'Makan Malam': 'Dinner',
-    'Cemilan': 'Snack',
+  static Map<String, String> get _displayToApi => {
+    AppStrings.breakfast: 'Breakfast',
+    AppStrings.lunch: 'Lunch',
+    AppStrings.dinner: 'Dinner',
+    AppStrings.snack: 'Snack',
   };
 
-  static const Map<String, String> _apiToDisplay = {
-    'Breakfast': 'Makan Pagi',
-    'Lunch': 'Makan Siang',
-    'Dinner': 'Makan Malam',
-    'Snack': 'Cemilan',
+  static Map<String, String> get _apiToDisplay => {
+    'Breakfast': AppStrings.breakfast,
+    'Lunch': AppStrings.lunch,
+    'Dinner': AppStrings.dinner,
+    'Snack': AppStrings.snack,
   };
 
   /// Converts Indonesian display name to English API value.

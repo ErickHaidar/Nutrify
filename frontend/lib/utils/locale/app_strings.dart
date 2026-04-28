@@ -1,4 +1,3 @@
-import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:nutrify/di/service_locator.dart';
 
@@ -192,8 +191,10 @@ class AppStrings {
   static String get calories => _t('Kalori', 'Calories');
   static String get totalFat => _t('Lemak Total', 'Total Fat');
   static String get carbs => _t('Karbo', 'Carbs');
+  static String get gram => _t('Gram(g)', 'Gram(g)');
   static String get piece => _t('Buah', 'Piece');
   static String get serving => _t('Porsi', 'Serving');
+  static String get failedToSaveTitle => _t('Gagal menyimpan', 'Failed to save');
 
   // ─── Profile Screen ──────────────────────────────────────────────────────
   static String get generalSettings => _t('Pengaturan Umum', 'General Settings');
@@ -325,6 +326,14 @@ class AppStrings {
   static List<String> get monthNamesShort => isId
       ? ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des']
       : ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+
+  // ─── Calendar / Date Picker ──────────────────────────────────────────────
+  static String get selectYear => _t('PILIH TAHUN', 'SELECT YEAR');
+  static String get selectMonth => _t('PILIH BULAN', 'SELECT MONTH');
+  static String get selectDay => _t('PILIH HARI', 'SELECT DAY');
+  static List<String> get dayLabels => isId
+      ? ['MIN', 'SEN', 'SEL', 'RAB', 'KAM', 'JUM', 'SAB']
+      : ['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT'];
 
   // ─── Language picker ─────────────────────────────────────────────────────
   static String get chooseLanguage => _t('Pilih Bahasa', 'Choose Language');

@@ -4,6 +4,7 @@ import 'package:google_fonts/google_fonts.dart';
 import '../services/profile_api_service.dart';
 import '../widgets/nutrify_calendar_picker.dart';
 import 'package:nutrify/constants/colors.dart';
+import 'package:nutrify/utils/locale/app_strings.dart';
 
 class BodyDataGoalsScreen extends StatefulWidget {
   const BodyDataGoalsScreen({super.key});
@@ -28,13 +29,13 @@ class _BodyDataGoalsScreenState extends State<BodyDataGoalsScreen> {
 
   // ── Mapping between display and API values ────────────────────────────────
 
-  static const _genderApiToDisplay = {
-    'male': 'Laki-Laki',
-    'female': 'Perempuan',
+  static Map<String, String> get _genderApiToDisplay => {
+    'male': AppStrings.male,
+    'female': AppStrings.female,
   };
 
   String get _genderDisplay =>
-      _genderApiToDisplay[_selectedGender] ?? 'Laki-Laki';
+      _genderApiToDisplay[_selectedGender] ?? AppStrings.male;
 
   @override
   void initState() {
@@ -77,7 +78,7 @@ class _BodyDataGoalsScreenState extends State<BodyDataGoalsScreen> {
 
     if (age == 0 || weight == 0 || height == 0) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Isi semua field terlebih dahulu')),
+        SnackBar(content: Text(AppStrings.fillAllFieldsFirst)),
       );
       return;
     }
@@ -97,7 +98,7 @@ class _BodyDataGoalsScreenState extends State<BodyDataGoalsScreen> {
       if (mounted) {
         setState(() => _isSaving = false);
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Gagal menyimpan: $e')),
+          SnackBar(content: Text('${AppStrings.failedToSaveTitle}: $e')),
         );
       }
     }
@@ -157,7 +158,7 @@ class _BodyDataGoalsScreenState extends State<BodyDataGoalsScreen> {
           onPressed: () => Navigator.pop(context),
         ),
         title: Text(
-          'Body Data & Goals',
+          AppStrings.bodyDataGoals,
           style: GoogleFonts.montserrat(
               fontWeight: FontWeight.bold, color: AppColors.navy),
         ),
@@ -168,12 +169,12 @@ class _BodyDataGoalsScreenState extends State<BodyDataGoalsScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            _buildSectionHeader('Informasi Personal'),
+            _buildSectionHeader(AppStrings.personalInfo),
             const SizedBox(height: 20),
             Row(
               children: [
                 Expanded(
-                    child: _buildInputField('Tinggi Badan (cm)', _heightController)),
+                    child: _buildInputField(AppStrings.heightBodyCm, _heightController)),
                 const SizedBox(width: 16),
                 Expanded(
                   child: GestureDetector(
@@ -189,7 +190,7 @@ class _BodyDataGoalsScreenState extends State<BodyDataGoalsScreen> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        const Text('Tanggal Lahir', style: TextStyle(color: AppColors.navy, fontSize: 12, fontWeight: FontWeight.bold)),
+                        Text(AppStrings.birthDateLabel, style: const TextStyle(color: AppColors.navy, fontSize: 12, fontWeight: FontWeight.bold)),
                         const SizedBox(height: 8),
                         Container(
                           height: 50,
@@ -202,8 +203,8 @@ class _BodyDataGoalsScreenState extends State<BodyDataGoalsScreen> {
                           ),
                           child: Text(
                             _birthDate != null
-                              ? '${_birthDate!.day.toString().padLeft(2,'0')} ${['Jan','Feb','Mar','Apr','Mei','Jun','Jul','Agu','Sep','Okt','Nov','Des'][_birthDate!.month-1]} ${_birthDate!.year}'
-                              : 'Pilih tanggal',
+                              ? '${_birthDate!.day.toString().padLeft(2,'0')} ${AppStrings.monthNamesShort[_birthDate!.month-1]} ${_birthDate!.year}'
+                              : AppStrings.selectDate,
                             style: TextStyle(color: _birthDate != null ? AppColors.navy : AppColors.navy.withOpacity(0.4)),
                           ),
                         ),
@@ -218,12 +219,12 @@ class _BodyDataGoalsScreenState extends State<BodyDataGoalsScreen> {
               children: [
                 Expanded(
                     child: _buildInputField(
-                        'Berat Badan (kg)', _weightController)),
+                        AppStrings.weightBodyKg, _weightController)),
               ],
             ),
             const SizedBox(height: 16),
-            const Text('Jenis Kelamin',
-                style: TextStyle(
+            Text(AppStrings.genderLabel,
+                style: const TextStyle(
                     color: AppColors.navy,
                     fontSize: 13,
                     fontWeight: FontWeight.bold)),
@@ -232,45 +233,45 @@ class _BodyDataGoalsScreenState extends State<BodyDataGoalsScreen> {
               children: [
                 Expanded(
                     child: _buildChoiceButton(
-                        'Laki-Laki',
-                        _genderDisplay == 'Laki-Laki',
+                        AppStrings.male,
+                        _selectedGender == 'male',
                         () => setState(
                             () => _selectedGender = 'male'))),
                 const SizedBox(width: 12),
                 Expanded(
                     child: _buildChoiceButton(
-                        'Perempuan',
-                        _genderDisplay == 'Perempuan',
+                        AppStrings.female,
+                        _selectedGender == 'female',
                         () => setState(
                             () => _selectedGender = 'female'))),
               ],
             ),
             const SizedBox(height: 35),
-            _buildSectionHeader('Aktivitas Harian'),
+            _buildSectionHeader(AppStrings.dailyActivity),
             const SizedBox(height: 15),
-            _buildActivityTile('Lightly Active', '1-3 hari olahraga/minggu',
+            _buildActivityTile(AppStrings.lightlyActive, AppStrings.lightlyActiveSub,
                 Icons.directions_walk, 'light'),
-            _buildActivityTile('Moderately Active',
-                '3-5 hari olahraga/minggu', Icons.fitness_center, 'moderate'),
+            _buildActivityTile(AppStrings.moderatelyActive,
+                AppStrings.moderatelyActiveSub, Icons.fitness_center, 'moderate'),
             _buildActivityTile(
-                'Highly Active', '6-7 hari olahraga intensif', Icons.bolt,
+                AppStrings.highlyActive, AppStrings.highlyActiveSub, Icons.bolt,
                 'active'),
             const SizedBox(height: 35),
-            _buildSectionHeader('Target Utama'),
+            _buildSectionHeader(AppStrings.mainTarget),
             const SizedBox(height: 15),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
                 _buildGoalButton(
-                    'Cutting', 'Lose Fat', Icons.trending_down, 'cutting'),
+                    AppStrings.cutting, AppStrings.loseFat, Icons.trending_down, 'cutting'),
                 _buildGoalButton(
-                    'Maintain', 'Stay Fit', Icons.balance, 'maintenance'),
+                    AppStrings.maintain, AppStrings.stayFit, Icons.balance, 'maintenance'),
                 _buildGoalButton(
-                    'Bulking', 'Gain Muscle', Icons.trending_up, 'bulking'),
+                    AppStrings.bulking, AppStrings.gainMuscle, Icons.trending_up, 'bulking'),
               ],
             ),
             const SizedBox(height: 35),
-            _buildSectionHeader('Estimasi Target Kalori'),
+            _buildSectionHeader(AppStrings.estimatedTarget),
             const SizedBox(height: 15),
             _buildCaloriePreview(),
             const SizedBox(height: 35),
@@ -294,8 +295,8 @@ class _BodyDataGoalsScreenState extends State<BodyDataGoalsScreen> {
                           color: Colors.white,
                         ),
                       )
-                    : const Text('Simpan Profil',
-                        style: TextStyle(
+                    : Text(AppStrings.saveProfile,
+                        style: const TextStyle(
                             color: Colors.white,
                             fontWeight: FontWeight.bold,
                             fontSize: 16)),
@@ -453,9 +454,9 @@ class _BodyDataGoalsScreenState extends State<BodyDataGoalsScreen> {
       ),
       child: Column(
         children: [
-          const Text(
-            'Estimasi Target Kalori Harian',
-            style: TextStyle(color: AppColors.navy, fontSize: 13),
+          Text(
+            AppStrings.estimatedDailyTarget,
+            style: const TextStyle(color: AppColors.navy, fontSize: 13),
           ),
           const SizedBox(height: 8),
           Text(

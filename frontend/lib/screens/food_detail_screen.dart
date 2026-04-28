@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:nutrify/constants/colors.dart';
 import 'package:nutrify/utils/meal_type_mapper.dart';
+import 'package:nutrify/utils/locale/app_strings.dart';
 import 'package:nutrify/services/food_api_service.dart';
 import 'package:nutrify/services/food_log_api_service.dart';
 import 'package:nutrify/di/service_locator.dart';
@@ -33,7 +34,7 @@ class _FoodDetailScreenState extends State<FoodDetailScreen> {
   final _amountController = TextEditingController();
   final _foodLogApi = FoodLogApiService();
   
-  String _selectedUnit = 'Gram(g)'; // 'Gram(g)', 'Buah', 'Porsi'
+  String _selectedUnit = AppStrings.gram; // Use AppStrings for units
   bool _isSaving = false;
 
   late String _foodName;
@@ -67,7 +68,7 @@ class _FoodDetailScreenState extends State<FoodDetailScreen> {
       _baseFat = f.fat;
       
       _amountController.text = '100';
-      _selectedUnit = 'Gram(g)';
+      _selectedUnit = AppStrings.gram;
     }
   }
 
@@ -80,7 +81,7 @@ class _FoodDetailScreenState extends State<FoodDetailScreen> {
   double get _currentAmount => double.tryParse(_amountController.text) ?? 0;
 
   double get _multiplier {
-    if (_selectedUnit == 'Gram(g)') {
+    if (_selectedUnit == AppStrings.gram) {
       return _currentAmount / 100.0;
     }
     return _currentAmount; // For Buah or Porsi
@@ -130,7 +131,7 @@ class _FoodDetailScreenState extends State<FoodDetailScreen> {
       if (mounted) {
         setState(() => _isSaving = false);
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Gagal menyimpan: $e')),
+          SnackBar(content: Text('${AppStrings.failedToSaveTitle}: $e')),
         );
       }
     }
@@ -198,11 +199,11 @@ class _FoodDetailScreenState extends State<FoodDetailScreen> {
                   // Unit Selection
                   Row(
                     children: [
-                      Expanded(child: _buildUnitButton('Gram(g)')),
+                      Expanded(child: _buildUnitButton(AppStrings.gram)),
                       const SizedBox(width: 8),
-                      Expanded(child: _buildUnitButton('Buah')),
+                      Expanded(child: _buildUnitButton(AppStrings.piece)),
                       const SizedBox(width: 8),
-                      Expanded(child: _buildUnitButton('Porsi')),
+                      Expanded(child: _buildUnitButton(AppStrings.serving)),
                     ],
                   ),
                 ],
@@ -220,7 +221,7 @@ class _FoodDetailScreenState extends State<FoodDetailScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'Informasi Gizi',
+                    AppStrings.nutritionInfo,
                     style: GoogleFonts.montserrat(
                       color: AppColors.navy,
                       fontWeight: FontWeight.bold,
@@ -228,11 +229,11 @@ class _FoodDetailScreenState extends State<FoodDetailScreen> {
                     ),
                   ),
                   const SizedBox(height: 20),
-                  _buildNutritionRow('Ukuran', '${_currentAmount.toStringAsFixed(0)} $_selectedUnit'),
-                  _buildNutritionRow('Kalori', '${(_baseCalories * _multiplier).toStringAsFixed(0)} kkal'),
-                  _buildNutritionRow('Protein', '${(_baseProtein * _multiplier).toStringAsFixed(2)}g'),
-                  _buildNutritionRow('Karbo', '${(_baseCarbos * _multiplier).toStringAsFixed(2)}g'),
-                  _buildNutritionRow('Lemak Total', '${(_baseFat * _multiplier).toStringAsFixed(2)}g'),
+                  _buildNutritionRow(AppStrings.size, '${_currentAmount.toStringAsFixed(0)} $_selectedUnit'),
+                  _buildNutritionRow(AppStrings.calories, '${(_baseCalories * _multiplier).toStringAsFixed(0)} kkal'),
+                  _buildNutritionRow(AppStrings.protein, '${(_baseProtein * _multiplier).toStringAsFixed(2)}g'),
+                  _buildNutritionRow(AppStrings.carbs, '${(_baseCarbos * _multiplier).toStringAsFixed(2)}g'),
+                  _buildNutritionRow(AppStrings.totalFat, '${(_baseFat * _multiplier).toStringAsFixed(2)}g'),
                 ],
               ),
             ),
@@ -257,7 +258,7 @@ class _FoodDetailScreenState extends State<FoodDetailScreen> {
                         child: CircularProgressIndicator(strokeWidth: 2),
                       )
                     : Text(
-                        widget.logEntry != null ? 'Edit' : 'Simpan',
+                        widget.logEntry != null ? AppStrings.edit : AppStrings.tutSaveTitle,
                         style: GoogleFonts.montserrat(fontWeight: FontWeight.bold),
                       ),
               ),

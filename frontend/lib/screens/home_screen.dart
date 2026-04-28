@@ -28,11 +28,13 @@ class HomeScreenState extends State<HomeScreen> {
   double totalCarbs = 0;
   double totalFat = 0;
   Map<String, int> caloriesByType = {
-    'Makan Pagi': 0,
-    'Makan Siang': 0,
-    'Makan Malam': 0,
-    'Cemilan': 0,
+    AppStrings.breakfast: 0,
+    AppStrings.lunch: 0,
+    AppStrings.dinner: 0,
+    AppStrings.snack: 0,
   };
+
+  Offset? _notificationTapStart;
 
   @override
   void initState() {
@@ -69,10 +71,10 @@ class HomeScreenState extends State<HomeScreen> {
                 ? summary.targetCalories
                 : (profile?.targetCalories ?? 0);
             caloriesByType = {
-              'Makan Pagi': summary.caloriesForMeal('Breakfast'),
-              'Makan Siang': summary.caloriesForMeal('Lunch'),
-              'Makan Malam': summary.caloriesForMeal('Dinner'),
-              'Cemilan': summary.caloriesForMeal('Snack'),
+              AppStrings.breakfast: summary.caloriesForMeal('Breakfast'),
+              AppStrings.lunch: summary.caloriesForMeal('Lunch'),
+              AppStrings.dinner: summary.caloriesForMeal('Dinner'),
+              AppStrings.snack: summary.caloriesForMeal('Snack'),
             };
           } else if (profile != null) {
             targetCalories = profile.targetCalories;
@@ -176,7 +178,24 @@ class HomeScreenState extends State<HomeScreen> {
                       ],
                     ),
                     GestureDetector(
-                      onTap: _showNotifications,
+                      onTapDown: (details) {
+                        _notificationTapStart = details.globalPosition;
+                      },
+                      onTapUp: (details) {
+                        final start = _notificationTapStart;
+                        if (start != null) {
+                          final dx = (details.globalPosition.dx - start.dx).abs();
+                          final dy = (details.globalPosition.dy - start.dy).abs();
+                          const double deadzone = 8.0; // logical pixels
+                          if (dx <= deadzone && dy <= deadzone) {
+                            _showNotifications();
+                          }
+                        }
+                        _notificationTapStart = null;
+                      },
+                      onTapCancel: () {
+                        _notificationTapStart = null;
+                      },
                       child: CircleAvatar(
                         backgroundColor: AppColors.navy.withOpacity(0.1),
                         child: const Icon(Icons.notifications, color: AppColors.navy),
@@ -379,28 +398,28 @@ class HomeScreenState extends State<HomeScreen> {
                       title: AppStrings.breakfast,
                       imagePath: Assets.iconPagi,
                       color: AppColors.peach,
-                      calories: caloriesByType['Makan Pagi'] ?? 0,
+                      calories: caloriesByType[AppStrings.breakfast] ?? 0,
                       onTap: () => _navigateToAddMeal(AppStrings.breakfast),
                     ),
                     MealTile(
                       title: AppStrings.lunch,
                       imagePath: Assets.iconSiang,
                       color: AppColors.peach,
-                      calories: caloriesByType['Makan Siang'] ?? 0,
+                      calories: caloriesByType[AppStrings.lunch] ?? 0,
                       onTap: () => _navigateToAddMeal(AppStrings.lunch),
                     ),
                     MealTile(
                       title: AppStrings.dinner,
                       imagePath: Assets.iconMalam,
                       color: AppColors.peach,
-                      calories: caloriesByType['Makan Malam'] ?? 0,
+                      calories: caloriesByType[AppStrings.dinner] ?? 0,
                       onTap: () => _navigateToAddMeal(AppStrings.dinner),
                     ),
                     MealTile(
                       title: AppStrings.snack,
                       imagePath: Assets.iconCemilan,
                       color: AppColors.peach,
-                      calories: caloriesByType['Cemilan'] ?? 0,
+                      calories: caloriesByType[AppStrings.snack] ?? 0,
                       onTap: () => _navigateToAddMeal(AppStrings.snack),
                     ),
                   ],

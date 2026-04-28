@@ -10,12 +10,9 @@ import 'package:nutrify/utils/routes/routes.dart';
 import 'package:nutrify/constants/assets.dart';
 import 'package:nutrify/utils/locale/app_strings.dart';
 import 'edit_profile_screen.dart';
-import 'change_goal_screen.dart';
 import '../services/profile_api_service.dart';
 import '../services/notification_service.dart';
 import '../constants/colors.dart';
-import 'package:nutrify/presentation/login/store/login_store.dart';
-import 'main_navigation_screen.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -296,7 +293,7 @@ class ProfileScreenState extends State<ProfileScreen> {
                     ),
                     const SizedBox(height: 12),
                     Text(
-                      _profile?.name ?? 'Zayn Malik',
+                      _profile?.name ?? '-',
                       style: const TextStyle(
                         fontSize: 22,
                         fontWeight: FontWeight.bold,
@@ -304,7 +301,7 @@ class ProfileScreenState extends State<ProfileScreen> {
                       ),
                     ),
                     Text(
-                      _profile?.email ?? 'Zaynmalik@nutrify.app',
+                      _profile?.email ?? '',
                       style: TextStyle(
                         color: AppColors.navy.withOpacity(0.6),
                         fontSize: 13,

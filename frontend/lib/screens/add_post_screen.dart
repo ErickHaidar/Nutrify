@@ -3,7 +3,10 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:nutrify/constants/colors.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:nutrify/di/service_locator.dart';
 import 'package:nutrify/domain/entity/post/community_post.dart';
+import 'package:nutrify/services/profile_api_service.dart';
 import 'package:nutrify/utils/locale/app_strings.dart';
 
 class AddPostScreen extends StatefulWidget {
@@ -29,7 +32,7 @@ class _AddPostScreenState extends State<AddPostScreen> {
     }
   }
 
-  void _handleUpload() {
+  void _handleUpload() async {
     if (_descController.text.trim().isEmpty && _selectedImage == null) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text(AppStrings.addPhotoOrDescFirst)),
@@ -41,12 +44,27 @@ class _AddPostScreenState extends State<AddPostScreen> {
       _isUploading = true;
     });
 
+    // Get actual user profile data from API
+    final profileApiService = ProfileApiService();
+    final userProfile = await profileApiService.getProfile(forceRefresh: true);
+    final profileImagePath = getIt<SharedPreferences>().getString('profile_image');
+
+    if (userProfile == null) {
+      if (mounted) {
+        setState(() => _isUploading = false);
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Gagal mengambil data profil')),
+        );
+      }
+      return;
+    }
+
     // Simulate upload delay
     Future.delayed(const Duration(milliseconds: 800), () {
       final newPost = CommunityPost(
         id: DateTime.now().millisecondsSinceEpoch.toString(),
-        authorName: 'Erick Haidar', // Mock current user
-        authorAvatarUrl: '', // Mock avatar
+        authorName: userProfile.name,
+        authorAvatarUrl: profileImagePath ?? '',
         timeAgo: AppStrings.justNow,
         content: _descController.text.trim(),
         localImageFile: _selectedImage,
@@ -57,7 +75,12 @@ class _AddPostScreenState extends State<AddPostScreen> {
         tabCategory: 'Untuk Anda', // Show in both realistically, but default For You
       );
 
-      Navigator.pop(context, newPost);
+      if (mounted) {
+        setState(() {
+          _isUploading = false;
+        });
+        Navigator.pop(context, newPost);
+      }
     });
   }
 
