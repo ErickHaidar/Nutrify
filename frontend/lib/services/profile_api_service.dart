@@ -1,3 +1,5 @@
+import 'dart:io';
+import 'package:dio/dio.dart';
 import 'package:nutrify/core/data/network/dio/dio_client.dart';
 import 'package:nutrify/data/network/constants/endpoints.dart';
 import 'package:nutrify/di/service_locator.dart';
@@ -122,6 +124,18 @@ class ProfileApiService {
     _cache = null;
     _cacheTime = null;
     _ongoingFetch = null;
+  }
+
+  Future<void> uploadProfilePhoto(File image) async {
+    final fileName = image.path.split('/').last;
+    final formData = FormData.fromMap({
+      'photo': await MultipartFile.fromFile(image.path, filename: fileName),
+    });
+
+    await _dio.dio.put(
+      Endpoints.profilePhoto,
+      data: formData,
+    );
   }
 
   Future<void> saveProfile({

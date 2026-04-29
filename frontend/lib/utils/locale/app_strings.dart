@@ -339,4 +339,6 @@ class AppStrings {
   static String get chooseLanguage => _t('Pilih Bahasa', 'Choose Language');
   static String get indonesian => _t('Bahasa Indonesia', 'Indonesian');
   static String get english => _t('Bahasa Inggris', 'English');
+  static String get imagePreview => _t('Preview Gambar', 'Image Preview');
+  static String get usePhoto => _t('Gunakan Foto', 'Use Photo');
 }

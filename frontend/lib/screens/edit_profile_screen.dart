@@ -8,8 +8,8 @@ import '../utils/age_calculator.dart';
 import '../widgets/nutrify_calendar_picker.dart';
 import '../constants/colors.dart';
 import 'package:nutrify/utils/locale/app_strings.dart';
+import 'image_preview_screen.dart';
 
-import '../constants/colors.dart';
 import '../../di/service_locator.dart';
 
 class EditProfileScreen extends StatefulWidget {
@@ -20,7 +20,7 @@ class EditProfileScreen extends StatefulWidget {
 }
 
 class _EditProfileScreenState extends State<EditProfileScreen> {
-  final _profileApiService = ProfileApiService();
+  final _profileApiService = getIt<ProfileApiService>();
   final _heightController = TextEditingController();
   final _weightController = TextEditingController();
   final _ageController = TextEditingController();
@@ -30,6 +30,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   String _activityLevel = 'sedentary';
   bool _isLoading = true;
   bool _isSaving = false;
+  bool _isPhotoChanged = false;
+  bool _isPickingImage = false;
 
   // Initial State Tracking
   String? _initialHeight;
@@ -51,7 +53,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   }
 
   XFile? _profileImage;
-  final ImagePicker _picker = ImagePicker();
+  final ImagePicker _picker = getIt<ImagePicker>();
 
   @override
   void initState() {
@@ -126,6 +128,12 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         goal: _goal,
         activityLevel: _activityLevel,
       );
+
+      if (_profileImage != null && kIsWeb == false && _isPhotoChanged) {
+        await _profileApiService.uploadProfilePhoto(File(_profileImage!.path));
+        _isPhotoChanged = false;
+      }
+
       if (mounted) {
         setState(() => _isSaving = false);
         _showSuccessDialog();
@@ -141,19 +149,36 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   }
 
   Future<void> _pickImage(ImageSource source) async {
+    if (_isPickingImage) return;
+    setState(() => _isPickingImage = true);
+
     try {
       final pickedFile = await _picker.pickImage(source: source);
-      if (pickedFile != null) {
-        setState(() {
-          _profileImage = pickedFile;
-        });
-        await getIt<SharedPreferences>().setString('profile_image', pickedFile.path);
+      if (pickedFile != null && mounted) {
+        final String? finalImagePath = await Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => ImagePreviewScreen(imagePath: pickedFile.path),
+          ),
+        );
+
+        if (finalImagePath != null && mounted) {
+          setState(() {
+            _profileImage = XFile(finalImagePath);
+            _isPhotoChanged = true;
+          });
+          await getIt<SharedPreferences>().setString('profile_image', finalImagePath);
+        }
       }
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('${AppStrings.failedToPickImage}: $e')),
         );
+      }
+    } finally {
+      if (mounted) {
+        setState(() => _isPickingImage = false);
       }
     }
   }

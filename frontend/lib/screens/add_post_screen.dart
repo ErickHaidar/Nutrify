@@ -8,6 +8,7 @@ import 'package:nutrify/di/service_locator.dart';
 import 'package:nutrify/domain/entity/post/community_post.dart';
 import 'package:nutrify/services/profile_api_service.dart';
 import 'package:nutrify/utils/locale/app_strings.dart';
+import 'package:nutrify/screens/image_preview_screen.dart';
 
 class AddPostScreen extends StatefulWidget {
   const AddPostScreen({super.key});
@@ -20,15 +21,42 @@ class _AddPostScreenState extends State<AddPostScreen> {
   final TextEditingController _descController = TextEditingController();
   File? _selectedImage;
   bool _isUploading = false;
+  bool _isPickingImage = false;
+
+  final ImagePicker _picker = getIt<ImagePicker>();
+  final ProfileApiService _profileApiService = getIt<ProfileApiService>();
 
   Future<void> _pickImage() async {
-    final ImagePicker picker = ImagePicker();
-    final XFile? image = await picker.pickImage(source: ImageSource.gallery);
-    
-    if (image != null) {
-      setState(() {
-        _selectedImage = File(image.path);
-      });
+    if (_isPickingImage) return;
+    setState(() => _isPickingImage = true);
+
+    try {
+      final XFile? image = await _picker.pickImage(source: ImageSource.gallery);
+      
+      if (image != null && mounted) {
+        final String? finalImagePath = await Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => ImagePreviewScreen(imagePath: image.path),
+          ),
+        );
+
+        if (finalImagePath != null && mounted) {
+          setState(() {
+            _selectedImage = File(finalImagePath);
+          });
+        }
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('${AppStrings.failedToPickImage}: $e')),
+        );
+      }
+    } finally {
+      if (mounted) {
+        setState(() => _isPickingImage = false);
+      }
     }
   }
 
@@ -45,8 +73,7 @@ class _AddPostScreenState extends State<AddPostScreen> {
     });
 
     // Get actual user profile data from API
-    final profileApiService = ProfileApiService();
-    final userProfile = await profileApiService.getProfile(forceRefresh: true);
+    final userProfile = await _profileApiService.getProfile(forceRefresh: true);
     final profileImagePath = getIt<SharedPreferences>().getString('profile_image');
 
     if (userProfile == null) {

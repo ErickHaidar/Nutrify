@@ -18,6 +18,7 @@ class Endpoints {
 
   // ── API Endpoints (path relatif terhadap baseUrl) ─────────────────────────
   static const String profile = 'profile';
+  static const String profilePhoto = 'profile/photo';
   static const String storeProfile = 'profile/store';
   static const String foods = 'foods';
   static const String foodLogs = 'food-logs';

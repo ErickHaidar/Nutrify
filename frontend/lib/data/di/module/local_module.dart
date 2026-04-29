@@ -8,6 +8,8 @@ import 'package:nutrify/data/sharedpref/shared_preference_helper.dart';
 import 'package:flutter/foundation.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:image_cropper/image_cropper.dart';
+import 'package:image_picker/image_picker.dart';
 
 import '../../../di/service_locator.dart';
 
@@ -35,5 +37,9 @@ class LocalModule {
 
     // data sources:------------------------------------------------------------
     getIt.registerSingleton(PostDataSource(sembastClient));
+
+    // image:-------------------------------------------------------------------
+    getIt.registerSingleton<ImagePicker>(ImagePicker());
+    getIt.registerSingleton<ImageCropper>(ImageCropper());
   }
 }
