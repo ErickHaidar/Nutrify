@@ -52,6 +52,30 @@ class UserRepositoryImpl extends UserRepository {
     );
   }
 
+  // Verify Email OTP:----------------------------------------------------------
+  @override
+  Future<void> verifyEmail(String email, String token) async {
+    final response = await sb.Supabase.instance.client.auth.verifyOTP(
+      email: email,
+      token: token,
+      type: sb.OTPType.signup,
+    );
+    final jwt = response.session?.accessToken;
+    if (jwt != null) {
+      await _sharedPrefsHelper.saveAuthToken(jwt);
+      await _sharedPrefsHelper.saveIsLoggedIn(true);
+    }
+  }
+
+  // Resend OTP:----------------------------------------------------------------
+  @override
+  Future<void> resendOtp(String email) async {
+    await sb.Supabase.instance.client.auth.resend(
+      type: sb.OTPType.signup,
+      email: email,
+    );
+  }
+
   auth.GoogleSignIn? _googleSignIn;
 
   auth.GoogleSignIn _getGoogleSignIn() {

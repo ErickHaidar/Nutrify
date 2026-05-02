@@ -4,6 +4,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:nutrify/constants/colors.dart';
 import 'package:nutrify/utils/locale/app_strings.dart';
 import 'package:nutrify/services/food_api_service.dart';
+import 'package:nutrify/services/favorite_api_service.dart';
 import 'package:nutrify/services/food_log_api_service.dart';
 import 'package:nutrify/utils/meal_type_mapper.dart';
 import 'food_detail_screen.dart';
@@ -24,15 +25,20 @@ class AddMealScreen extends StatefulWidget {
 class _AddMealScreenState extends State<AddMealScreen> {
   final _searchController = TextEditingController();
   final _foodApi = FoodApiService();
+  final _favApi = FavoriteApiService();
   final _foodLogApi = FoodLogApiService();
   late String _currentMealType;
   Map<int, int> _initialLoggedIds = {}; // foodId -> logId at start
   Map<int, DraftSelection> _draftSelections = {}; // foodId -> draft info
   bool _isSavingBatch = false;
+  String _selectedCategory = ''; // empty = all categories
 
   List<FoodItem> _results = [];
   List<FoodLogEntry> _allLogsForMeal = []; // Add this to cache full entries
   bool _isSearching = false;
+  String _filterMode = 'all'; // 'all', 'favorites', 'recommendations'
+  Set<int> _favoriteIds = {};
+  bool _isLoadingFavorites = false;
   Timer? _debounce;
   bool _isDirty = false; // Flag to indicate if something changed
 
@@ -41,6 +47,46 @@ class _AddMealScreenState extends State<AddMealScreen> {
     super.initState();
     _currentMealType = widget.mealType;
     _loadMealLogs();
+    _loadFavoriteIds();
+  }
+
+  Future<void> _loadFavoriteIds() async {
+    try {
+      final favs = await _favApi.getFavorites();
+      if (mounted) {
+        setState(() {
+          _favoriteIds = favs.map((f) => f.id).toSet();
+        });
+      }
+    } catch (_) {}
+  }
+
+  Future<void> _toggleFavorite(int foodId) async {
+    final wasFav = _favoriteIds.contains(foodId);
+    setState(() {
+      if (wasFav) {
+        _favoriteIds.remove(foodId);
+      } else {
+        _favoriteIds.add(foodId);
+      }
+    });
+    try {
+      if (wasFav) {
+        await _favApi.removeFavorite(foodId);
+      } else {
+        await _favApi.addFavorite(foodId);
+      }
+    } catch (_) {
+      if (mounted) {
+        setState(() {
+          if (wasFav) {
+            _favoriteIds.add(foodId);
+          } else {
+            _favoriteIds.remove(foodId);
+          }
+        });
+      }
+    }
   }
 
   Future<void> _loadMealLogs() async {
@@ -169,25 +215,96 @@ class _AddMealScreenState extends State<AddMealScreen> {
     );
   }
 
-Future<void> _search(String query) async {
-setState(() => _isSearching = true);
-try {
-final r = await _foodApi.searchFoods(query);
-if (mounted) {
-setState(() {
-_results = r;
-_isSearching = false;
-});
-}
-} catch (_) {
-if (mounted) {
-setState(() {
-_results = [];
-_isSearching = false;
-});
-}
-}
-}
+  Future<void> _search(String query) async {
+    setState(() => _isSearching = true);
+    try {
+      List<FoodItem> results;
+      if (_filterMode == 'favorites') {
+        results = await _favApi.getFavorites();
+        if (query.isNotEmpty) {
+          results = results.where((f) => f.name.toLowerCase().contains(query.toLowerCase())).toList();
+        }
+      } else if (_filterMode == 'recommendations') {
+        results = await _favApi.getRecommendations();
+        if (query.isNotEmpty) {
+          results = results.where((f) => f.name.toLowerCase().contains(query.toLowerCase())).toList();
+        }
+      } else {
+        results = await _foodApi.searchFoods(query);
+      }
+      if (mounted) {
+        setState(() {
+          _results = results;
+          _isSearching = false;
+        });
+      }
+    } catch (_) {
+      if (mounted) {
+        setState(() {
+          _results = [];
+          _isSearching = false;
+        });
+      }
+    }
+  }
+
+  void _setFilter(String mode) {
+    setState(() {
+      _filterMode = mode;
+      _isSearching = false;
+      _results = [];
+    });
+    if (mode == 'favorites') {
+      _loadFavoritesList();
+    } else if (mode == 'recommendations') {
+      _loadRecommendationsList();
+    } else {
+      if (_searchController.text.isNotEmpty) {
+        _search(_searchController.text.trim());
+      } else {
+        _loadMealLogs();
+      }
+    }
+  }
+
+  Future<void> _loadFavoritesList() async {
+    setState(() => _isSearching = true);
+    try {
+      final favs = await _favApi.getFavorites();
+      if (mounted) {
+        setState(() {
+          _results = favs;
+          _isSearching = false;
+        });
+      }
+    } catch (_) {
+      if (mounted) setState(() { _results = []; _isSearching = false; });
+    }
+  }
+
+  Future<void> _loadRecommendationsList() async {
+    setState(() => _isSearching = true);
+    try {
+      final recs = await _favApi.getRecommendations();
+      if (mounted) {
+        setState(() {
+          _results = recs;
+          _isSearching = false;
+        });
+      }
+    } catch (_) {
+      if (mounted) setState(() { _results = []; _isSearching = false; });
+    }
+  }
+
+  static const _categories = [
+    {'name': 'Nasi', 'icon': Icons.rice_bowl},
+    {'name': 'Roti', 'icon': Icons.bakery_dining},
+    {'name': 'Daging', 'icon': Icons.set_meal},
+    {'name': 'Buah', 'icon': Icons.apple},
+    {'name': 'Sayuran', 'icon': Icons.grass},
+    {'name': 'Minuman', 'icon': Icons.local_drink},
+  ];
 
   void _showTutorialDialog() {
     showDialog(
@@ -417,6 +534,74 @@ _isSearching = false;
             ),
           ),
 
+          // Category row
+          Padding(
+            padding: const EdgeInsets.fromLTRB(24, 8, 8, 0),
+            child: SizedBox(
+              height: 70,
+              child: ListView.separated(
+                scrollDirection: Axis.horizontal,
+                itemCount: _categories.length,
+                separatorBuilder: (_, __) => const SizedBox(width: 12),
+                itemBuilder: (_, i) {
+                  final cat = _categories[i];
+                  final isSelected = _selectedCategory == cat["name"];
+                  return GestureDetector(
+                    onTap: () {
+                      setState(() {
+                        _selectedCategory = isSelected ? "" : cat["name"] as String;
+                      });
+                      if (_searchController.text.isNotEmpty) {
+                        _search(_searchController.text.trim());
+                      }
+                    },
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Container(
+                          width: 44,
+                          height: 44,
+                          decoration: BoxDecoration(
+                            color: isSelected ? AppColors.navy : AppColors.peach,
+                            shape: BoxShape.circle,
+                          ),
+                          child: Icon(
+                            cat["icon"] as IconData,
+                            color: isSelected ? Colors.white : AppColors.navy,
+                            size: 22,
+                          ),
+                        ),
+                        const SizedBox(height: 4),
+                        Text(
+                          cat["name"] as String,
+                          style: TextStyle(
+                            color: AppColors.navy,
+                            fontSize: 11,
+                            fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+                          ),
+                        ),
+                      ],
+                    ),
+                  );
+                },
+              ),
+            ),
+          ),
+
+          // Filter chips: Semua | Favorit | Rekomendasi
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 8),
+            child: Row(
+              children: [
+                _buildFilterChip('Semua', 'all'),
+                const SizedBox(width: 8),
+                _buildFilterChip('Favorit', 'favorites'),
+                const SizedBox(width: 8),
+                _buildFilterChip('Rekomendasi', 'recommendations'),
+              ],
+            ),
+          ),
+
           // Results list
           Expanded(
             child: (_results.isEmpty && !_isSearching)
@@ -454,6 +639,42 @@ _isSearching = false;
                   backgroundColor: AppColors.navy,
                   child: const Icon(Icons.check, color: Colors.white),
                 )),
+    );
+  }
+
+  Widget _buildFilterChip(String label, String mode) {
+    final isActive = _filterMode == mode;
+    return GestureDetector(
+      onTap: () => _setFilter(mode),
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
+        decoration: BoxDecoration(
+          color: isActive ? AppColors.navy : Colors.white,
+          borderRadius: BorderRadius.circular(20),
+          border: Border.all(color: AppColors.navy.withOpacity(0.3)),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            if (mode == 'favorites') ...[
+              Icon(Icons.favorite, size: 14, color: isActive ? Colors.white : Colors.red),
+              const SizedBox(width: 4),
+            ],
+            if (mode == 'recommendations') ...[
+              Icon(Icons.star, size: 14, color: isActive ? Colors.white : AppColors.amber),
+              const SizedBox(width: 4),
+            ],
+            Text(
+              label,
+              style: GoogleFonts.inter(
+                fontSize: 12,
+                fontWeight: FontWeight.w500,
+                color: isActive ? Colors.white : AppColors.navy,
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 
@@ -516,6 +737,16 @@ _isSearching = false;
                   ),
                 ],
               ),
+            ),
+            IconButton(
+              icon: Icon(
+                _favoriteIds.contains(food.id) ? Icons.favorite : Icons.favorite_border,
+                color: _favoriteIds.contains(food.id) ? Colors.red : AppColors.navy.withOpacity(0.4),
+                size: 20,
+              ),
+              onPressed: () => _toggleFavorite(food.id),
+              padding: EdgeInsets.zero,
+              constraints: const BoxConstraints(),
             ),
             Transform.scale(
               scale: 0.9,

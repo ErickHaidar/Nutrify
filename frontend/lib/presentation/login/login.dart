@@ -16,6 +16,7 @@ import 'package:mobx/mobx.dart' as mobx;
 import 'package:google_fonts/google_fonts.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:supabase_flutter/supabase_flutter.dart' as sb;
+import 'package:nutrify/screens/otp_verification_screen.dart';
 
 import '../../di/service_locator.dart';
 
@@ -362,7 +363,7 @@ color: Colors.white,
           elevation: 5,
         ),
         child: Text(
-          'Login',
+          'Masuk',
           style: TextStyle(
             color: Colors.white,
             fontSize: 20,
@@ -380,7 +381,7 @@ color: Colors.white,
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16.0),
           child: Text(
-            'OR',
+            'ATAU',
             style: TextStyle(
               color: NutrifyTheme.accentOrange,
               fontWeight: FontWeight.bold,
@@ -1048,7 +1049,13 @@ class _SignUpModalContentState extends State<_SignUpModalContent> {
                                       pass,
                                     );
                                     if (mounted) {
-                                      Navigator.pop(context, true);
+                                      Navigator.pop(context); // Close signup modal
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (_) => OtpVerificationScreen(email: email),
+                                        ),
+                                      );
                                     }
                                   } catch (e) {
                                     setState(() {
@@ -1076,7 +1083,7 @@ class _SignUpModalContentState extends State<_SignUpModalContent> {
                                   ),
                                 )
                               : const Text(
-                                  'Sign Up',
+                                  'Daftar',
                                   style: TextStyle(
                                     color: Colors.white,
                                     fontSize: 18,

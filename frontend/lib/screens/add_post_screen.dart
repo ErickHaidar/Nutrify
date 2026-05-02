@@ -3,12 +3,10 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:nutrify/constants/colors.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:nutrify/di/service_locator.dart';
-import 'package:nutrify/domain/entity/post/community_post.dart';
-import 'package:nutrify/services/profile_api_service.dart';
 import 'package:nutrify/utils/locale/app_strings.dart';
 import 'package:nutrify/screens/image_preview_screen.dart';
+import 'package:nutrify/services/community_post_api_service.dart';
 
 class AddPostScreen extends StatefulWidget {
   const AddPostScreen({super.key});
@@ -24,7 +22,7 @@ class _AddPostScreenState extends State<AddPostScreen> {
   bool _isPickingImage = false;
 
   final ImagePicker _picker = getIt<ImagePicker>();
-  final ProfileApiService _profileApiService = getIt<ProfileApiService>();
+  final CommunityPostApiService _api = CommunityPostApiService();
 
   Future<void> _pickImage() async {
     if (_isPickingImage) return;
@@ -68,47 +66,25 @@ class _AddPostScreenState extends State<AddPostScreen> {
       return;
     }
 
-    setState(() {
-      _isUploading = true;
-    });
+    setState(() => _isUploading = true);
 
-    // Get actual user profile data from API
-    final userProfile = await _profileApiService.getProfile(forceRefresh: true);
-    final profileImagePath = getIt<SharedPreferences>().getString('profile_image');
-
-    if (userProfile == null) {
-      if (mounted) {
-        setState(() => _isUploading = false);
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Gagal mengambil data profil')),
-        );
-      }
-      return;
-    }
-
-    // Simulate upload delay
-    Future.delayed(const Duration(milliseconds: 800), () {
-      final newPost = CommunityPost(
-        id: DateTime.now().millisecondsSinceEpoch.toString(),
-        authorName: userProfile.name,
-        authorAvatarUrl: profileImagePath ?? '',
-        timeAgo: AppStrings.justNow,
+    try {
+      final newPost = await _api.createPost(
         content: _descController.text.trim(),
-        localImageFile: _selectedImage,
-        likes: 0,
-        comments: 0,
-        isLiked: false,
-        isFollowed: true,
-        tabCategory: 'Untuk Anda', // Show in both realistically, but default For You
+        imageFile: _selectedImage,
       );
-
       if (mounted) {
-        setState(() {
-          _isUploading = false;
-        });
         Navigator.pop(context, newPost);
       }
-    });
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('${AppStrings.uploadFailed}: $e')),
+        );
+      }
+    } finally {
+      if (mounted) setState(() => _isUploading = false);
+    }
   }
 
   @override

@@ -4,6 +4,7 @@ import 'package:nutrify/constants/assets.dart';
 import 'add_meal_screen.dart';
 import 'body_data_goals_screen.dart';
 import 'tracking_kalori_screen.dart';
+import 'help_screen.dart';
 import 'package:nutrify/constants/colors.dart';
 import 'package:nutrify/utils/locale/app_strings.dart';
 import '../services/food_log_api_service.dart';
@@ -199,6 +200,16 @@ class HomeScreenState extends State<HomeScreen> {
                       child: CircleAvatar(
                         backgroundColor: AppColors.navy.withOpacity(0.1),
                         child: const Icon(Icons.notifications, color: AppColors.navy),
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    GestureDetector(
+                      onTap: () {
+                        Navigator.push(context, MaterialPageRoute(builder: (_) => const HelpScreen()));
+                      },
+                      child: CircleAvatar(
+                        backgroundColor: AppColors.navy.withOpacity(0.1),
+                        child: const Icon(Icons.help_outline, color: AppColors.navy),
                       ),
                     ),
                   ],

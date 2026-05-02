@@ -48,6 +48,17 @@ class _MyAppState extends State<MyApp> {
             Routes.login,
             (route) => false,
           );
+        } else if (data.event == AuthChangeEvent.signedIn) {
+          // User confirmed email or signed in from OTP verification
+          final newToken = data.session?.accessToken;
+          if (newToken != null) {
+            _prefs.saveAuthToken(newToken);
+          }
+          _prefs.saveIsLoggedIn(true);
+          MyApp.navigatorKey.currentState?.pushNamedAndRemoveUntil(
+            Routes.home,
+            (route) => false,
+          );
         } else if (data.event == AuthChangeEvent.tokenRefreshed) {
           // Supabase auto-refresh token — simpan token baru ke SharedPrefs
           // supaya Dio AuthInterceptor selalu gunakan token terbaru

@@ -15,6 +15,10 @@ abstract class UserRepository {
 
   Future<void> forgotPassword(String email);
 
+  Future<void> verifyEmail(String email, String token);
+
+  Future<void> resendOtp(String email);
+
   Future<void> signInWithGoogle();
 
   Future<void> logout();

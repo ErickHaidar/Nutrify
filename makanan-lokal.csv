@@ -1,0 +1,202 @@
+name,serving_size,energy_kcal,protein_g,carbohydrate_g,fat_g,sugar_g,sodium_mg,fiber_g
+Rendang,"1 porsi (150g)",375,28.5,4.2,29.1,1.5,580,0.8
+Gudeg Jogja,"1 porsi (200g)",320,12.4,42.8,13.2,18.5,420,3.2
+Soto Betawi,"1 mangkuk (350ml)",385,22.1,14.6,28.3,3.2,680,1.1
+Nasi Goreng Kampung,"1 porsi (250g)",398,10.2,52.4,16.8,4.1,720,1.5
+Mie Goreng Jawa,"1 porsi (200g)",365,11.8,48.2,14.5,3.8,650,1.8
+Sate Ayam Madura,"10 tusuk (150g)",310,32.5,8.4,16.2,5.6,520,0.6
+Rawon Surabaya,"1 mangkuk (300ml)",285,24.8,10.2,17.5,2.1,490,1.3
+Bakso Urat,"1 mangkuk (250ml)",275,18.5,22.1,12.8,1.8,620,0.9
+Gado-gado Jakarta,"1 porsi (200g)",298,14.2,24.5,17.8,6.2,480,4.5
+Pecel Lele,"1 porsi (200g)",342,22.8,18.4,20.5,1.2,380,1.2
+Ayam Geprek,"1 porsi (150g)",365,28.5,12.8,23.1,2.4,550,0.7
+Nasi Uduk Betawi,"1 porsi (200g)",338,6.2,48.5,13.2,1.8,380,0.8
+Ketoprak Jakarta,"1 porsi (200g)",312,15.8,28.4,16.2,8.5,460,3.8
+Lontong Sayur,"1 porsi (250g)",245,8.4,38.2,8.5,4.2,350,2.5
+Bubur Ayam,"1 mangkuk (300g)",298,12.5,42.8,8.5,2.8,480,1.2
+Nasi Padang (rendang + nasi putih),"1 porsi (250g)",485,22.4,55.8,20.5,3.5,750,1.8
+Pempek Palembang,"1 porsi (150g)",285,15.2,28.4,13.8,1.5,580,0.5
+Tekwan,"1 mangkuk (250ml)",215,14.8,18.2,9.5,1.2,450,0.8
+Model (empek-empek model),"1 porsi (150g)",265,13.5,25.8,12.4,1.8,520,0.6
+Laksa Betawi,"1 mangkuk (350ml)",345,18.2,28.5,18.2,3.5,520,2.1
+Soto Lamongan,"1 mangkuk (350ml)",298,22.5,12.8,18.5,2.1,550,1.0
+Soto Medan,"1 mangkuk (350ml)",325,24.8,10.5,22.1,1.8,580,0.9
+Sop Buntut,"1 mangkuk (350ml)",385,28.5,8.2,28.5,1.5,620,0.7
+Tongseng Kambing,"1 porsi (200g)",352,26.5,12.8,23.2,4.5,580,1.2
+Gulai Ikan Patin,"1 porsi (150g)",248,18.5,6.8,17.2,1.2,380,0.5
+Gulai Ayam Padang,"1 porsi (150g)",325,24.2,5.8,24.5,1.5,520,0.6
+Dendeng Balado,"1 porsi (100g)",285,32.8,4.2,16.5,2.1,620,0.4
+Ayam Pop Padang,"1 porsi (150g)",265,28.5,2.8,16.2,0.8,420,0.3
+Ikan Bakar Jimbaran,"1 ekor (200g)",245,38.5,2.1,10.8,1.2,350,0.5
+Plecing Kangkung Lombok,"1 porsi (150g)",125,5.8,12.4,5.2,4.5,280,4.2
+Tumis Kangkung,"1 porsi (100g)",95,3.5,8.2,5.8,2.8,320,3.5
+Sayur Asem,"1 mangkuk (200ml)",85,3.2,14.5,2.1,5.8,280,2.8
+Sayur Lodeh,"1 mangkuk (200ml)",145,5.8,12.8,8.5,3.2,350,2.5
+Tahu Gejrot Cirebon,"1 porsi (150g)",185,12.5,15.8,8.2,8.5,480,1.2
+Tahu Gimbal Semarang,"1 porsi (150g)",225,14.8,18.5,10.2,3.8,520,1.5
+Lumpia Semarang goreng,"2 buah (100g)",215,8.5,22.4,10.5,3.2,420,1.8
+Lumpia Semarang basah,"2 buah (100g)",165,7.2,18.5,6.8,2.8,350,1.5
+Wingko Babat,"1 potong (80g)",285,4.2,38.5,13.8,22.5,180,1.2
+Mendol Malang,"3 buah (90g)",185,10.8,14.2,9.5,2.1,380,1.8
+Bakwan Malang,"1 mangkuk (250ml)",245,14.5,20.8,12.2,2.5,520,1.5
+Cwie Mie Malang,"1 porsi (200g)",325,15.2,42.5,10.8,3.2,580,2.1
+Rawon Nguling,"1 mangkuk (300ml)",268,22.5,9.8,16.8,1.8,460,1.2
+Sate Kelinci Klaten,"5 tusuk (100g)",185,28.5,2.1,7.5,3.2,380,0.4
+Sate Kambing,"5 tusuk (100g)",248,30.2,3.5,13.8,4.5,420,0.5
+Sate Maranggi Purwakarta,"5 tusuk (100g)",228,28.8,2.8,12.5,3.8,450,0.5
+Nasi Kuning,"1 porsi (200g)",318,8.5,45.2,12.5,3.5,420,1.0
+Nasi Liwet Solo,"1 porsi (250g)",345,10.2,50.8,13.5,4.2,480,1.5
+Nasi Bakar Ayam,"1 porsi (200g)",312,15.8,38.5,14.2,3.8,520,1.8
+Nasi Timbel,"1 porsi (200g)",298,8.8,44.2,11.5,2.5,380,1.2
+Sego Abang (Nasi Merah Cirebon),"1 porsi (200g)",285,7.5,42.8,10.2,2.1,350,2.5
+Burasa (Makassar),"1 buah (150g)",298,5.8,48.5,10.2,1.8,420,1.0
+Lapa-lapa (Bulukumba),"1 buah (150g)",275,5.2,46.8,8.5,1.5,380,1.2
+Bakpia Pathok Jogja,"4 buah (100g)",325,5.8,48.2,12.5,28.5,220,1.0
+Onde-onde,"2 buah (80g)",285,4.5,40.8,12.2,22.5,180,1.2
+Lemper,"2 buah (100g)",245,5.2,35.8,10.5,8.5,250,1.0
+Kue Lapis,"2 potong (80g)",265,3.2,38.5,13.8,25.2,150,0.8
+Kue Bolu Kukus,"1 buah (80g)",228,4.5,35.2,9.5,22.8,160,0.5
+Kue Nagasari,"1 buah (80g)",175,2.8,32.5,5.8,18.5,120,1.5
+Kue Klepon,"3 buah (80g)",215,3.5,38.2,6.8,25.5,85,1.2
+Kue Serabi,"2 buah (80g)",198,3.8,28.5,8.2,12.5,180,0.8
+Kue Pukis,"2 buah (80g)",235,4.2,30.8,11.5,18.2,150,0.6
+Kue Arem-arem,"2 buah (100g)",185,4.8,28.5,7.2,5.8,280,1.8
+Pastel Goreng,"2 buah (100g)",258,6.8,24.5,14.8,2.5,380,1.5
+Risoles,"2 buah (100g)",248,6.5,22.8,14.2,3.2,350,1.2
+Pisang Goreng,"2 buah (100g)",225,2.5,35.8,10.2,18.5,95,2.5
+Pisang Goreng Keju Coklat,"2 buah (120g)",285,5.2,38.5,14.8,22.8,150,2.2
+Cireng (aci goreng),"5 buah (100g)",195,3.8,32.5,7.5,1.8,350,0.8
+Cireng Isi (bandung),"5 buah (100g)",225,6.5,30.8,10.2,2.5,420,1.2
+Cilok,"10 butir (100g)",175,4.2,32.8,4.5,3.5,380,0.8
+Cimol,"8 butir (100g)",195,3.8,35.2,5.8,2.8,350,0.6
+Batagor Bandung,"1 porsi (150g)",278,15.5,22.8,15.2,3.5,480,1.2
+Siomay Bandung,"1 porsi (150g)",248,16.8,18.5,13.5,2.8,450,1.5
+Baso Tahu,"1 porsi (100g)",185,12.2,12.8,9.8,1.5,420,0.8
+Kerak Telor Betawi,"1 porsi (100g)",215,12.5,18.2,9.8,1.2,380,1.0
+Asinan Betawi,"1 porsi (150g)",125,4.5,18.8,3.8,8.5,520,2.8
+Rujak Cingur,"1 porsi (150g)",198,10.5,22.4,8.5,8.2,480,3.5
+Rujak Jakarta,"1 porsi (150g)",148,2.8,28.5,4.2,18.5,350,3.8
+Es Teh Manis,"1 gelas (250ml)",85,0.2,21.5,0.0,21.0,5,0.0
+Es Jeruk Manis,"1 gelas (250ml)",95,0.5,24.2,0.2,23.5,5,0.2
+Wedang Jahe,"1 gelas (200ml)",65,0.2,16.2,0.0,15.8,8,0.0
+Wedang Ronde,"1 mangkuk (250ml)",185,3.2,38.5,2.8,28.5,25,1.2
+Bajigur,"1 gelas (250ml)",195,2.8,32.5,6.5,28.2,45,0.8
+Bandrek,"1 gelas (250ml)",168,2.2,28.8,4.5,25.5,35,0.5
+Es Cendol,"1 gelas (250ml)",215,1.8,42.5,5.2,38.8,55,0.5
+Es Cendol Hijau,"1 gelas (250ml)",205,1.5,40.8,4.8,36.5,50,0.8
+Es Dawet,"1 gelas (250ml)",198,1.5,38.5,4.5,35.2,48,0.5
+Es Campur,"1 gelas (250ml)",175,1.2,42.8,1.5,38.5,25,1.2
+Es Kelapa Muda,"1 gelas (300ml)",95,0.8,22.5,0.5,20.2,15,0.5
+Es Kopyor,"1 gelas (250ml)",165,1.5,38.2,3.2,34.5,30,0.5
+Bir Pletok Betawi,"1 gelas (250ml)",85,0.5,20.8,0.2,18.5,12,0.2
+Kopi Tubruk,"1 gelas (100ml)",45,0.5,8.2,0.0,5.8,2,0.0
+Kopi Susu Gula Aren,"1 gelas (250ml)",155,3.5,25.8,4.2,22.5,45,0.2
+Susu Jahe,"1 gelas (250ml)",145,4.8,22.5,4.5,20.2,55,0.2
+Teh Tarik,"1 gelas (250ml)",125,2.5,22.8,3.5,20.5,40,0.0
+Sekoteng,"1 mangkuk (250ml)",158,2.2,35.5,1.8,30.2,22,1.0
+Kolak (pisang + santan),"1 mangkuk (200ml)",195,2.8,32.5,6.8,28.5,35,1.5
+Es Teler,"1 porsi (200g)",285,3.5,48.2,10.5,38.8,55,1.8
+Pisang Ijo,"1 porsi (150g)",215,2.8,38.5,7.2,28.5,40,1.2
+Dadar Gulung,"2 buah (80g)",195,3.5,30.2,8.5,18.5,120,0.8
+Putu Ayu,"2 buah (80g)",185,3.2,28.5,7.8,15.8,110,1.0
+Kue Lapis Legit,"1 potong (50g)",225,3.5,28.8,11.2,18.5,125,0.5
+Nastar,"3 buah (45g)",185,2.8,25.5,8.5,18.2,85,0.3
+Kastengel,"5 keping (30g)",165,3.2,15.8,10.5,2.5,180,0.2
+Semprong,"3 buah (30g)",145,2.5,18.5,7.2,10.2,75,0.2
+Sosis Solo,"1 potong (80g)",175,5.5,15.8,9.8,5.5,280,0.5
+Perkedel Kentang,"2 buah (80g)",165,3.5,15.2,9.5,1.2,320,1.5
+Perkedel Jagung,"2 buah (80g)",155,3.2,18.5,7.8,2.5,280,1.8
+Tempe Mendoan,"3 iris (90g)",185,10.2,12.5,12.5,1.8,280,1.2
+Tempe Goreng,"3 potong (90g)",175,12.8,8.2,11.8,1.2,250,1.5
+Tahu Goreng,"3 potong (90g)",165,10.5,5.8,12.2,0.8,220,0.8
+Tahu Crispy,"3 potong (90g)",195,11.2,8.5,14.8,1.5,380,0.8
+Jagung Bakar,"1 bonggol (150g)",185,4.8,35.5,5.2,12.5,280,4.5
+Ubi Cilembu Bakar,"1 buah (150g)",198,2.2,45.8,0.5,28.5,25,3.5
+Singkong Goreng,"3 potong (100g)",195,1.8,38.5,7.2,3.5,180,1.8
+Singkong Rebus,"1 potong (100g)",145,1.5,34.2,0.5,3.2,15,1.5
+Pisang Rebus,"1 buah (100g)",125,1.2,32.5,0.2,18.5,5,2.2
+Kentang Goreng,"1 porsi (100g)",285,3.5,32.8,16.5,0.8,420,2.5
+Keripik Singkong,"1 bungkus (50g)",245,2.2,30.5,14.8,1.5,350,1.8
+Keripik Tempe,"1 bungkus (50g)",225,10.8,18.5,13.5,2.2,320,2.2
+Emping Goreng,"1 bungkus (50g)",235,6.5,25.8,12.2,1.8,280,1.5
+Rempeyek Kacang,"1 bungkus (50g)",255,7.2,18.5,18.2,1.5,380,1.0
+Kerupuk Kulit,"5 lembar (25g)",125,5.8,12.2,5.8,0.5,350,0.0
+Indomie Goreng,"1 bungkus (80g)",395,7.5,52.8,17.5,3.8,820,1.8
+Indomie Rebus,"1 bungkus (75g)",365,7.2,48.5,15.2,2.5,780,1.5
+Mie Instan Kuah (biasa),"1 mangkuk (250ml)",315,6.8,42.5,13.8,2.2,750,1.2
+Roti Bakar Coklat,"1 porsi (80g)",285,6.2,42.5,11.8,18.5,250,1.2
+Roti Bakar Keju,"1 porsi (80g)",305,10.5,38.8,15.2,12.8,350,0.8
+Martabak Manis,"1 potong (100g)",345,6.5,48.2,15.8,32.5,280,1.2
+Martabak Telur,"1 potong (100g)",298,14.8,22.5,18.5,2.8,520,1.0
+Nasi Kebuli,"1 porsi (200g)",358,12.2,48.5,14.8,3.5,450,1.0
+Nasi Biryani,"1 porsi (200g)",342,11.8,46.8,13.5,3.2,420,1.2
+Kari Ayam,"1 porsi (150g)",278,22.5,8.5,18.2,3.2,480,1.0
+Kari Kambing,"1 porsi (150g)",325,25.8,6.2,23.5,2.8,520,0.8
+Gulai Kambing,"1 porsi (150g)",318,24.5,5.8,22.8,2.5,500,0.7
+Sop Kambing,"1 mangkuk (350ml)",312,28.5,8.5,19.8,2.2,550,0.8
+Tongseng Ayam,"1 porsi (200g)",318,24.2,12.5,21.5,3.8,540,1.2
+Semur Daging,"1 porsi (100g)",185,18.5,8.2,10.8,5.5,420,0.5
+Empal Gentong Cirebon,"1 mangkuk (250ml)",328,22.8,10.5,22.5,3.2,580,1.0
+Kupat Tahu Magelang,"1 porsi (200g)",268,14.2,32.5,11.8,5.2,450,2.5
+Sate Kerang,"10 tusuk (100g)",145,18.5,5.2,4.8,2.8,380,0.2
+Sate Usus,"10 tusuk (80g)",165,12.8,4.5,10.2,2.5,320,0.2
+Sate Telur Puyuh,"10 tusuk (80g)",148,11.2,3.8,8.5,2.2,280,0.2
+Kerak Telor (spesial),"1 porsi (120g)",258,15.2,22.8,12.5,1.5,420,1.2
+Es Krim Cone,"1 buah (80g)",175,2.8,22.5,8.5,20.2,65,0.2
+Puding Coklat,"1 cup (100g)",145,3.5,24.8,4.5,22.5,85,0.2
+Puding Mangga,"1 cup (100g)",118,2.2,25.5,1.5,24.2,55,0.5
+Pisang Coklat,"1 buah (100g)",228,3.5,35.2,10.5,22.8,75,2.2
+Kentang Q (keju),"1 porsi (100g)",265,4.8,28.5,15.2,2.5,420,2.0
+Pisang Coklat Keju,"1 buah (120g)",285,5.5,38.8,13.8,25.2,120,2.5
+Banana Split,"1 porsi (150g)",325,4.8,48.5,15.5,35.8,85,2.0
+Pancake (maple syrup),"1 porsi (80g)",225,4.5,32.8,8.5,18.2,180,0.8
+Waffle (madu),"1 porsi (80g)",248,4.2,35.5,10.8,20.5,165,0.8
+Soto Banjar,"1 mangkuk (350ml)",282,20.5,11.2,17.8,2.5,520,1.0
+Soto Banjar (dengan perkedel),"1 mangkuk (400ml)",325,22.8,18.5,19.5,2.8,580,1.2
+Sate Banjar,"5 tusuk (100g)",185,22.5,5.2,9.8,3.5,380,0.5
+Nasi Kuning Banjar,"1 porsi (200g)",335,10.2,46.8,13.2,3.8,450,1.5
+Ketupat Kandangan,"1 porsi (200g)",298,15.8,32.5,13.5,4.2,480,1.8
+Pais Ikan (pepes ikan Sunda),"1 porsi (100g)",148,18.5,2.5,7.2,0.8,320,0.5
+Nasi Tutug Oncom,"1 porsi (200g)",285,9.8,42.5,8.5,2.2,380,2.5
+Karedok,"1 porsi (150g)",148,6.8,14.5,8.2,5.2,350,4.2
+Lotek,"1 porsi (150g)",165,7.2,16.8,9.5,5.8,380,3.8
+Asem-asem (tahu tempe),"1 porsi (150g)",145,10.2,8.5,8.2,3.5,280,1.5
+Tumis Tauge,"1 porsi (100g)",105,5.8,8.2,5.5,2.5,250,1.8
+Capcay Goreng,"1 porsi (150g)",178,8.5,14.2,10.2,3.8,450,2.5
+Capcay Kuah,"1 mangkuk (250ml)",125,6.8,10.5,5.8,3.2,380,2.8
+Fu Yung Hai,"1 porsi (100g)",185,12.5,8.2,12.2,3.5,420,0.8
+Mie Ayam,"1 porsi (200g)",345,15.8,45.2,12.5,3.2,680,1.5
+Mie Ayam Bakso,"1 porsi (250g)",398,20.5,48.8,16.2,3.5,750,1.8
+Kwetiau Goreng,"1 porsi (200g)",358,12.8,46.5,14.8,3.2,620,1.5
+Kwetiau Siram,"1 porsi (200g)",325,14.5,40.2,13.5,2.8,550,1.2
+Bihun Goreng,"1 porsi (200g)",312,8.5,48.2,10.5,2.5,580,1.2
+Mie Yamin,"1 porsi (200g)",368,14.2,52.8,11.8,8.5,720,1.5
+Nasi Goreng Seafood,"1 porsi (250g)",385,18.5,48.2,15.5,3.8,650,1.8
+Nasi Goreng Kambing,"1 porsi (250g)",428,22.8,45.5,18.8,3.2,680,1.5
+Nasi Goreng Telur,"1 porsi (250g)",378,14.5,50.2,15.8,3.5,720,1.5
+Ayam Penyet,"1 porsi (150g)",348,28.8,8.5,23.5,2.2,520,0.8
+Lele Penyet,"1 porsi (150g)",325,22.5,8.2,22.8,1.5,480,0.8
+Tahu Tempe Penyet,"1 porsi (150g)",285,18.5,10.8,18.2,1.8,420,1.5
+Ikan Nila Goreng,"1 ekor (150g)",248,28.5,5.2,13.5,0.5,350,0.5
+Ikan Mujair Goreng,"1 ekor (150g)",235,26.8,4.8,12.2,0.5,320,0.5
+Udang Goreng Tepung,"5 ekor (100g)",245,15.5,18.2,13.2,1.5,420,0.5
+Cumi Goreng Tepung,"5 potong (100g)",235,14.8,16.5,12.8,1.2,380,0.5
+Sup Ayam,"1 mangkuk (250ml)",185,18.5,5.8,10.2,2.2,350,0.5
+Sup Sayur,"1 mangkuk (250ml)",95,3.5,12.8,3.2,4.2,280,2.8
+Sup Tomat,"1 mangkuk (250ml)",108,4.2,10.5,4.8,5.5,320,1.8
+Sup Jagung,"1 mangkuk (250ml)",145,5.2,18.5,5.5,6.2,350,2.2
+Es Blewah,"1 gelas (250ml)",68,0.5,17.2,0.2,15.8,8,0.5
+Es Melon,"1 gelas (250ml)",78,0.5,19.5,0.2,18.2,8,0.5
+Es Timun Suri,"1 gelas (250ml)",72,0.2,18.2,0.1,16.5,5,0.3
+Jus Alpukat,"1 gelas (250ml)",195,2.5,18.5,12.8,14.5,8,3.5
+Jus Mangga,"1 gelas (250ml)",125,1.2,30.5,0.5,28.8,5,1.8
+Jus Jambu,"1 gelas (250ml)",105,1.5,25.2,0.5,22.5,8,3.5
+Jus Jeruk,"1 gelas (250ml)",95,1.2,22.8,0.2,20.5,5,0.5
+Jus Wortel,"1 gelas (250ml)",85,1.5,19.8,0.2,15.2,45,2.8
+Jus Tomat,"1 gelas (250ml)",65,1.5,13.5,0.2,10.8,12,1.5
+Smoothie Bowl (mix buah),"1 mangkuk (200g)",215,4.2,38.5,5.8,28.5,25,4.5
+Es Kacang Merah,"1 gelas (250ml)",145,3.5,28.5,2.2,22.8,35,2.5
+Es Cincau,"1 gelas (250ml)",125,0.8,30.2,1.5,26.5,18,0.8
+Rolade Ayam,"1 potong (80g)",148,12.8,5.2,8.5,1.2,280,0.5
+Sambal Goreng Kentang,"1 porsi (100g)",148,5.2,12.8,9.8,2.5,420,1.5
+Tumis Teri Medan,"1 porsi (80g)",155,12.5,4.8,9.8,1.2,580,0.3

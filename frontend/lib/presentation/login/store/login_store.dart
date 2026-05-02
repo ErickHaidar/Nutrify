@@ -162,6 +162,21 @@ abstract class _UserStore with Store {
     }
   }
 
+  // Verify Email OTP:----------------------------------------------------------
+  @action
+  Future<void> verifyEmail(String email, String token) async {
+    await _userRepository.verifyEmail(email, token);
+    await _saveLoginStatusUseCase.call(params: true);
+    isLoggedIn = true;
+    success = true;
+  }
+
+  // Resend OTP:----------------------------------------------------------------
+  @action
+  Future<void> resendOtp(String email) async {
+    await _userRepository.resendOtp(email);
+  }
+
   // Logout:-------------------------------------------------------------------
   @action
   Future<void> logout() async {

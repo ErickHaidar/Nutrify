@@ -1,0 +1,55 @@
+# UI/UX design files
+sprint 2 ui ux/
+
+# Dart / Flutter
+frontend/.dart_tool/
+frontend/.packages
+frontend/.pub-cache/
+frontend/.pub/
+frontend/build/
+frontend/.flutter-plugins
+frontend/.flutter-plugins-dependencies
+frontend/**/*.g.dart
+frontend/**/*.freezed.dart
+
+# Android
+frontend/android/.gradle/
+frontend/android/app/debug/
+frontend/android/app/profile/
+frontend/android/app/release/
+frontend/android/build/
+frontend/android/local.properties
+
+# iOS
+frontend/ios/Pods/
+frontend/ios/.symlinks/
+frontend/ios/Flutter/Flutter.framework/
+frontend/ios/Flutter/Flutter.podspec
+
+# IDE
+.idea/
+.vscode/
+*.iml
+*.swp
+*.swo
+
+# OS files
+.DS_Store
+Thumbs.db
+Desktop.ini
+
+# Environment
+.env
+.env.*
+!.env.example
+
+# Node (if any)
+node_modules/
+
+# Vendor (Laravel)
+backend/vendor/
+backend/storage/
+backend/bootstrap/cache/
+
+# Claude Code
+.claude/
