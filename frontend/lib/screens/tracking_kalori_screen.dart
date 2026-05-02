@@ -2,10 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:nutrify/constants/colors.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'dart:math' as math;
+import 'package:nutrify/widgets/skeletons/tracking_skeleton.dart';
+import 'package:nutrify/widgets/skeletons/home_skeleton.dart';
 import 'package:nutrify/utils/locale/app_strings.dart';
 import '../services/food_log_api_service.dart';
 import '../services/profile_api_service.dart';
-
 class TrackingKaloriScreen extends StatefulWidget {
   const TrackingKaloriScreen({super.key});
 
@@ -63,23 +64,6 @@ class _TrackingKaloriScreenState extends State<TrackingKaloriScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final remaining = math.max(0, _targetCalories - _totalCalories);
-    final progress = _targetCalories > 0
-        ? (_totalCalories / _targetCalories).clamp(0.0, 1.0)
-        : 0.0;
-
-    // Macro targets from calorie goal (standard distribution)
-    final int targetCarbs = ((_targetCalories * 0.5) / 4).round();
-    final int targetProtein = ((_targetCalories * 0.2) / 4).round();
-    final int targetFat = ((_targetCalories * 0.3) / 9).round();
-
-    if (_isLoading) {
-      return const Scaffold(
-      backgroundColor: NutrifyTheme.background,
-        body: Center(child: CircularProgressIndicator()),
-      );
-    }
-
     return Scaffold(
       backgroundColor: NutrifyTheme.background,
       appBar: AppBar(
@@ -102,153 +86,167 @@ class _TrackingKaloriScreenState extends State<TrackingKaloriScreen> {
         onRefresh: _loadData,
         color: AppColors.navy,
         backgroundColor: NutrifyTheme.lightCard,
-        child: SingleChildScrollView(
-          physics: const AlwaysScrollableScrollPhysics(),
-          padding: const EdgeInsets.fromLTRB(20, 12, 20, 32),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // ── Circular Progress ────────────────────────────────────────
-              Center(
-                child: Stack(
-                  alignment: Alignment.center,
+        child: AnimatedSwitcher(
+          duration: const Duration(milliseconds: 300),
+          transitionBuilder: (child, animation) =>
+              FadeTransition(opacity: animation, child: child),
+          child: _isLoading
+              ? const TrackingScreenSkeleton(key: ValueKey('skeleton'))
+              : _buildTrackingContent(key: const ValueKey('content')),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildTrackingContent({Key? key}) {
+    final progress = _targetCalories > 0
+        ? (_totalCalories / _targetCalories).clamp(0.0, 1.0)
+        : 0.0;
+    final remaining = math.max(0, _targetCalories - _totalCalories);
+    final int targetCarbs = ((_targetCalories * 0.5) / 4).round();
+    final int targetProtein = ((_targetCalories * 0.2) / 4).round();
+    final int targetFat = ((_targetCalories * 0.3) / 9).round();
+
+    return SingleChildScrollView(
+      key: key,
+      physics: const AlwaysScrollableScrollPhysics(),
+      padding: const EdgeInsets.fromLTRB(20, 12, 20, 32),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // ── Circular Progress ────────────────────────────────────────
+          Center(
+            child: Stack(
+              alignment: Alignment.center,
+              children: [
+                AnimatedCircularProgress(
+                  progress: progress,
+                  gradient: SweepGradient(
+                    colors: [
+                      const Color(0xFFFFDDBE),
+                      progress >= 1.0
+                          ? Colors.redAccent
+                          : const Color(0xFFFF5722),
+                      progress >= 1.0
+                          ? Colors.redAccent
+                          : const Color(0xFFFF5722),
+                    ],
+                    stops: const [0.0, 0.5, 1.0],
+                    startAngle: -math.pi / 2,
+                    endAngle: 3 * math.pi / 2,
+                  ),
+                  backgroundColor: AppColors.amber.withOpacity(0.3),
+                  strokeWidth: 14,
+                ),
+                Column(
+                  mainAxisSize: MainAxisSize.min,
                   children: [
-                    CustomPaint(
-                      size: const Size(200, 200),
-                      painter: GradientCircularPainter(
-                        progress: progress,
-                        gradient: SweepGradient(
-                          colors: [
-                            const Color(0xFFFFDDBE),
-                            progress >= 1.0
-                                ? Colors.redAccent
-                                : const Color(0xFFFF5722),
-                            progress >= 1.0
-                                ? Colors.redAccent
-                                : const Color(0xFFFF5722),
-                          ],
-                          stops: const [0.0, 0.5, 1.0],
-                          startAngle: -math.pi / 2,
-                          endAngle: 3 * math.pi / 2,
-                        ),
-                        backgroundColor:
-                            AppColors.amber.withOpacity(0.3),
-                        strokeWidth: 14,
+                    Text(
+                      AppStrings.totalCalories,
+                      style: GoogleFonts.montserrat(
+                        color: AppColors.navy.withOpacity(0.7),
+                        fontSize: 13,
+                        fontWeight: FontWeight.w500,
                       ),
                     ),
-                    Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Text(
-                          AppStrings.totalCalories,
-                          style: GoogleFonts.montserrat(
-                            color: AppColors.navy.withOpacity(0.7),
-                            fontSize: 13,
-                            fontWeight: FontWeight.w500,
-                          ),
-                        ),
-                        const SizedBox(height: 6),
-                        Text(
-                          _formatCalories(_totalCalories),
-                          style: GoogleFonts.montserrat(
-                            color: AppColors.navy,
-                            fontSize: 42,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        Text(
-                          'kkal',
-                          style: GoogleFonts.montserrat(
-                            color: AppColors.navy.withOpacity(0.7),
-                            fontSize: 16,
-                          ),
-                        ),
-                      ],
+                    const SizedBox(height: 6),
+                    Text(
+                      _formatCalories(_totalCalories),
+                      style: GoogleFonts.montserrat(
+                        color: AppColors.navy,
+                        fontSize: 42,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    Text(
+                      'kkal',
+                      style: GoogleFonts.montserrat(
+                        color: AppColors.navy.withOpacity(0.7),
+                        fontSize: 16,
+                      ),
                     ),
                   ],
                 ),
-              ),
-              const SizedBox(height: 20),
+              ],
+            ),
+          ),
+          const SizedBox(height: 20),
 
-              // ── Sisa & Target ────────────────────────────────────────────
-              Row(
-                children: [
-                  Expanded(
-                    child: _buildStatCard(
-                      label: AppStrings.remaining,
-                      value: '${_formatCalories(remaining)} kkal',
-                      icon: Icons.local_fire_department_rounded,
-                      iconColor: remaining == 0
-                          ? Colors.redAccent
-                          : AppColors.navy,
-                    ),
-                  ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: _buildStatCard(
-                      label: AppStrings.dailyCalorieTarget,
-                      value: '${_formatCalories(_targetCalories)} kkal',
-                      icon: Icons.flag_rounded,
-                      iconColor: AppColors.navy,
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 24),
-
-              // ── Makronutrien ─────────────────────────────────────────────
-              Text(
-                AppStrings.macronutrients,
-                style: GoogleFonts.montserrat(
-                  color: AppColors.navy,
-                  fontWeight: FontWeight.bold,
-                  fontSize: 16,
+          // ── Sisa & Target ────────────────────────────────────────────
+          Row(
+            children: [
+              Expanded(
+                child: _buildStatCard(
+                  label: AppStrings.remaining,
+                  value: '${_formatCalories(remaining)} kkal',
+                  icon: Icons.local_fire_department_rounded,
+                  iconColor: remaining == 0 ? Colors.redAccent : AppColors.navy,
                 ),
               ),
-              const SizedBox(height: 12),
-              _buildMacroBar(
-                label: AppStrings.carbohydrates,
-                icon: Icons.grain_rounded,
-                color: AppColors.navy,
-                current: _totalCarbohydrates,
-                target: targetCarbs.toDouble(),
-                unit: 'g',
-              ),
-              const SizedBox(height: 10),
-              _buildMacroBar(
-                label: AppStrings.protein,
-                icon: Icons.fitness_center_rounded,
-                color: AppColors.navy,
-                current: _totalProtein,
-                target: targetProtein.toDouble(),
-                unit: 'g',
-              ),
-              const SizedBox(height: 10),
-              _buildMacroBar(
-                label: AppStrings.fat,
-                icon: Icons.water_drop_rounded,
-                color: AppColors.navy,
-                current: _totalFat,
-                target: targetFat.toDouble(),
-                unit: 'g',
-              ),
-              const SizedBox(height: 24),
-
-              // ── Per Waktu Makan ──────────────────────────────────────────
-              Text(
-                AppStrings.historyPerMealTime,
-                style: GoogleFonts.montserrat(
-                  color: AppColors.navy,
-                  fontWeight: FontWeight.bold,
-                  fontSize: 16,
+              const SizedBox(width: 12),
+              Expanded(
+                child: _buildStatCard(
+                  label: AppStrings.dailyCalorieTarget,
+                  value: '${_formatCalories(_targetCalories)} kkal',
+                  icon: Icons.flag_rounded,
+                  iconColor: AppColors.navy,
                 ),
               ),
-              const SizedBox(height: 12),
-              ..._buildMealRows(),
-              const SizedBox(height: 8),
             ],
           ),
-        ),
+          const SizedBox(height: 24),
+
+          // ── Makronutrien ─────────────────────────────────────────────
+          Text(
+            AppStrings.macronutrients,
+            style: GoogleFonts.montserrat(
+              color: AppColors.navy,
+              fontWeight: FontWeight.bold,
+              fontSize: 16,
+            ),
+          ),
+          const SizedBox(height: 12),
+          _buildMacroBar(
+            label: AppStrings.carbohydrates,
+            icon: Icons.grain_rounded,
+            color: AppColors.navy,
+            current: _totalCarbohydrates,
+            target: targetCarbs.toDouble(),
+            unit: 'g',
+          ),
+          const SizedBox(height: 10),
+          _buildMacroBar(
+            label: AppStrings.protein,
+            icon: Icons.fitness_center_rounded,
+            color: AppColors.navy,
+            current: _totalProtein,
+            target: targetProtein.toDouble(),
+            unit: 'g',
+          ),
+          const SizedBox(height: 10),
+          _buildMacroBar(
+            label: AppStrings.fat,
+            icon: Icons.water_drop_rounded,
+            color: AppColors.navy,
+            current: _totalFat,
+            target: targetFat.toDouble(),
+            unit: 'g',
+          ),
+          const SizedBox(height: 24),
+
+          // ── Per Waktu Makan ──────────────────────────────────────────
+          Text(
+            AppStrings.historyPerMealTime,
+            style: GoogleFonts.montserrat(
+              color: AppColors.navy,
+              fontWeight: FontWeight.bold,
+              fontSize: 16,
+            ),
+          ),
+          const SizedBox(height: 12),
+          ..._buildMealRows(),
+          const SizedBox(height: 8),
+        ],
       ),
     );
   }
@@ -346,13 +344,11 @@ class _TrackingKaloriScreenState extends State<TrackingKaloriScreen> {
           const SizedBox(height: 8),
           ClipRRect(
             borderRadius: BorderRadius.circular(8),
-            child: LinearProgressIndicator(
+            child: AnimatedProgressBar(
               value: ratio,
-              minHeight: 8,
               backgroundColor: AppColors.navy.withOpacity(0.1),
-              valueColor: AlwaysStoppedAnimation<Color>(
-                over ? Colors.redAccent : color,
-              ),
+              valueColor: over ? Colors.redAccent : color,
+              minHeight: 8,
             ),
           ),
         ],
@@ -440,53 +436,3 @@ class _TrackingKaloriScreenState extends State<TrackingKaloriScreen> {
     }).toList();
   }
 }
-
-class GradientCircularPainter extends CustomPainter {
-  final double progress;
-  final SweepGradient gradient;
-  final Color backgroundColor;
-  final double strokeWidth;
-
-  GradientCircularPainter({
-    required this.progress,
-    required this.gradient,
-    required this.backgroundColor,
-    required this.strokeWidth,
-  });
-
-  @override
-  void paint(Canvas canvas, Size size) {
-    final center = Offset(size.width / 2, size.height / 2);
-    final radius = math.min(size.width / 2, size.height / 2) - strokeWidth / 2;
-
-    final backgroundPaint = Paint()
-      ..color = backgroundColor
-      ..strokeWidth = strokeWidth
-      ..style = PaintingStyle.stroke;
-    canvas.drawCircle(center, radius, backgroundPaint);
-
-    if (progress <= 0) return;
-
-    final progressPaint = Paint()
-      ..shader = gradient.createShader(
-        Rect.fromCircle(center: center, radius: radius),
-      )
-      ..strokeWidth = strokeWidth
-      ..strokeCap = StrokeCap.round
-      ..style = PaintingStyle.stroke;
-
-    canvas.drawArc(
-      Rect.fromCircle(center: center, radius: radius),
-      -math.pi / 2,
-      2 * math.pi * progress,
-      false,
-      progressPaint,
-    );
-  }
-
-  @override
-  bool shouldRepaint(covariant GradientCircularPainter old) =>
-      old.progress != progress;
-}
-
-

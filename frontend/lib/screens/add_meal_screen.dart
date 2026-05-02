@@ -10,6 +10,8 @@ import 'food_detail_screen.dart';
 import 'package:nutrify/constants/assets.dart';
 import 'package:nutrify/di/service_locator.dart';
 import 'package:nutrify/services/notification_service.dart';
+import 'package:nutrify/widgets/skeletons/food_search_skeleton.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 
 class AddMealScreen extends StatefulWidget {
   final String mealType;
@@ -400,16 +402,7 @@ _isSearching = false;
                   hintText: AppStrings.searchFood,
                   hintStyle: const TextStyle(color: Colors.black38),
                   prefixIcon: const Icon(Icons.search, color: AppColors.navy),
-                  suffixIcon: _isSearching
-                      ? const Padding(
-                          padding: EdgeInsets.all(12),
-                          child: SizedBox(
-                            width: 20,
-                            height: 20,
-                            child: CircularProgressIndicator(strokeWidth: 2),
-                          ),
-                        )
-                      : null,
+                  suffixIcon: null,
                   border: InputBorder.none,
                   contentPadding: const EdgeInsets.symmetric(vertical: 15),
                 ),
@@ -419,23 +412,32 @@ _isSearching = false;
 
           // Results list
           Expanded(
-            child: (_results.isEmpty && !_isSearching)
-                ? Center(
-                    child: Text(
-                      _searchController.text.isEmpty
-                          ? AppStrings.noFoodAdded
-                          : AppStrings.noResultsFound,
-                      style: TextStyle(
-                        color: AppColors.navy.withOpacity(0.5),
-                        fontSize: 14,
-                      ),
-                    ),
-                  )
-                : ListView.builder(
-                    padding: const EdgeInsets.fromLTRB(24, 12, 24, 80),
-                    itemCount: _results.length,
-                    itemBuilder: (_, i) => _buildFoodTile(_results[i]),
-                  ),
+            child: AnimatedSwitcher(
+              duration: const Duration(milliseconds: 200),
+              child: _isSearching
+                  ? const FoodSearchSkeleton(key: ValueKey('skeleton'), itemCount: 6)
+                  : (_results.isEmpty
+                      ? Center(
+                          key: const ValueKey('empty'),
+                          child: Text(
+                            _searchController.text.isEmpty
+                                ? AppStrings.noFoodAdded
+                                : AppStrings.noResultsFound,
+                            style: TextStyle(
+                              color: AppColors.navy.withOpacity(0.5),
+                              fontSize: 14,
+                            ),
+                          ),
+                        )
+                      : ListView.builder(
+                          key: const ValueKey('results'),
+                          padding: const EdgeInsets.fromLTRB(24, 12, 24, 80),
+                          itemCount: _results.length,
+                          itemBuilder: (_, i) => _buildFoodTile(_results[i])
+                              .animate(delay: (30 * i).ms)
+                              .fadeIn(duration: 200.ms),
+                        )),
+            ),
           ),
         ],
       ),
@@ -565,12 +567,40 @@ _isSearching = false;
                 );
 
                 if (confirm == true) {
-                  await _foodLogApi.deleteLog(logId!);
-                  _isDirty = true;
-                  await getIt<NotificationService>().scheduleMealReminders();
-                  _loadMealLogs();
+                  // Snapshot for rollback
+                  final snapshotLogs = List<FoodLogEntry>.from(_allLogsForMeal);
+                  final snapshotResults = List<FoodItem>.from(_results);
+                  final snapshotDraft = Map<int, DraftSelection>.from(_draftSelections);
+                  final snapshotInitial = Map<int, int>.from(_initialLoggedIds);
+
+                  // Optimistic update: remove immediately from UI
+                  setState(() {
+                    _allLogsForMeal.removeWhere((l) => l.id == logId);
+                    _results.removeWhere((r) => r.id == food.id);
+                    _draftSelections.remove(food.id);
+                    _initialLoggedIds.remove(food.id);
+                  });
+
+                  try {
+                    await _foodLogApi.deleteLog(logId!);
+                    _isDirty = true;
+                    await getIt<NotificationService>().scheduleMealReminders();
+                  } catch (e) {
+                    // Rollback on failure
+                    if (mounted) {
+                      setState(() {
+                        _allLogsForMeal = snapshotLogs;
+                        _results = snapshotResults;
+                        _draftSelections = snapshotDraft;
+                        _initialLoggedIds = snapshotInitial;
+                      });
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(content: Text('Gagal menghapus makanan. Coba lagi.')),
+                      );
+                    }
+                  }
                 }
-              }
+                }
             },
           ),
         // Always show checkbox for batch selection

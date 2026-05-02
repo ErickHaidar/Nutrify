@@ -1,7 +1,6 @@
 // lib/screens/history_screen.dart
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:intl/intl.dart';
 import '../constants/colors.dart';
 import '../services/food_log_api_service.dart';
 import 'package:nutrify/utils/locale/app_strings.dart';
@@ -9,7 +8,8 @@ import '../services/profile_api_service.dart';
 import '../widgets/nutrify_calendar_picker.dart';
 import 'food_detail_screen.dart';
 import '../constants/assets.dart';
-import '../widgets/nutrify_calendar_picker.dart';
+import 'package:flutter_animate/flutter_animate.dart';
+import 'package:nutrify/widgets/skeletons/history_skeleton.dart';
 
 class HistoryScreen extends StatefulWidget {
   const HistoryScreen({super.key});
@@ -135,72 +135,88 @@ class _HistoryScreenState extends State<HistoryScreen> {
             
             // Content Section
             Expanded(
-              child: _isLoading
-                  ? const Center(child: CircularProgressIndicator())
-                  : RefreshIndicator(
-                      onRefresh: _loadData,
-                      color: NutrifyTheme.accentOrange,
-                      backgroundColor: AppColors.cream,
-                      child: SingleChildScrollView(
-                        physics: const AlwaysScrollableScrollPhysics(),
-                        padding: const EdgeInsets.all(20),
-                        child: Column(
-                          children: [
-                            // Summary Cards
-                            Row(
-                              children: [
-                                Expanded(
-                                  child: _buildSummaryCard(
-                                    AppStrings.targetCalorie,
-                                    _formatNumber(_targetCalories),
-                                    'kkal',
-                                  ),
-                                ),
-                                const SizedBox(width: 15),
-                                Expanded(
-                                  child: _buildSummaryCard(
-                                    AppStrings.dailyCalorie,
-                                    _formatNumber(_summary.totalCaloriesInt),
-                                    'kkal',
-                                  ),
-                                ),
-                              ],
-                            ),
-                            const SizedBox(height: 25),
-
-                            // Meal Categories
-                            _buildMealSection(
-                                AppStrings.breakfast, 'Breakfast', Assets.iconPagi),
-                            const SizedBox(height: 15),
-                            _buildMealSection(
-                                AppStrings.lunch, 'Lunch', Assets.iconSiang),
-                            const SizedBox(height: 15),
-                            _buildMealSection(
-                                AppStrings.dinner, 'Dinner', Assets.iconMalam),
-                            const SizedBox(height: 15),
-                            _buildMealSection(
-                                AppStrings.snack, 'Snack', Assets.iconCemilan),
-
-                            if (_logs.isEmpty)
-                              Padding(
-                                padding: const EdgeInsets.only(top: 40),
-                                child: Column(
-                                  children: [
-                                    const Icon(Icons.restaurant_menu,
-                                        color: Colors.white24, size: 48),
-                                    const SizedBox(height: 12),
-                                    Text(
-                                      AppStrings.noFoodRecordsToday,
-                                      style: TextStyle(
-                                          color: Colors.white38, fontSize: 14),
+              child: AnimatedSwitcher(
+                duration: const Duration(milliseconds: 300),
+                transitionBuilder: (child, animation) =>
+                    FadeTransition(opacity: animation, child: child),
+                child: _isLoading
+                    ? const HistoryScreenSkeleton(key: ValueKey('skeleton'))
+                    : RefreshIndicator(
+                        key: const ValueKey('content'),
+                        onRefresh: _loadData,
+                        color: NutrifyTheme.accentOrange,
+                        backgroundColor: AppColors.cream,
+                        child: SingleChildScrollView(
+                          physics: const AlwaysScrollableScrollPhysics(),
+                          padding: const EdgeInsets.all(20),
+                          child: Column(
+                            children: [
+                              // Summary Cards
+                              Row(
+                                children: [
+                                  Expanded(
+                                    child: _buildSummaryCard(
+                                      AppStrings.targetCalorie,
+                                      _formatNumber(_targetCalories),
+                                      'kkal',
                                     ),
-                                  ],
-                                ),
+                                  ),
+                                  const SizedBox(width: 15),
+                                  Expanded(
+                                    child: _buildSummaryCard(
+                                      AppStrings.dailyCalorie,
+                                      _formatNumber(_summary.totalCaloriesInt),
+                                      'kkal',
+                                    ),
+                                  ),
+                                ],
                               ),
-                          ],
+                              const SizedBox(height: 25),
+                              // Meal Categories with stagger
+                              _buildMealSection(AppStrings.breakfast, 'Breakfast',
+                                      Assets.iconPagi)
+                                  .animate(delay: 0.ms)
+                                  .fadeIn(duration: 300.ms)
+                                  .slideY(begin: 0.05, end: 0),
+                              const SizedBox(height: 15),
+                              _buildMealSection(AppStrings.lunch, 'Lunch',
+                                      Assets.iconSiang)
+                                  .animate(delay: 60.ms)
+                                  .fadeIn(duration: 300.ms)
+                                  .slideY(begin: 0.05, end: 0),
+                              const SizedBox(height: 15),
+                              _buildMealSection(AppStrings.dinner, 'Dinner',
+                                      Assets.iconMalam)
+                                  .animate(delay: 120.ms)
+                                  .fadeIn(duration: 300.ms)
+                                  .slideY(begin: 0.05, end: 0),
+                              const SizedBox(height: 15),
+                              _buildMealSection(AppStrings.snack, 'Snack',
+                                      Assets.iconCemilan)
+                                  .animate(delay: 180.ms)
+                                  .fadeIn(duration: 300.ms)
+                                  .slideY(begin: 0.05, end: 0),
+                              if (_logs.isEmpty)
+                                Padding(
+                                  padding: const EdgeInsets.only(top: 40),
+                                  child: Column(
+                                    children: [
+                                      const Icon(Icons.restaurant_menu,
+                                          color: Colors.white24, size: 48),
+                                      const SizedBox(height: 12),
+                                      Text(
+                                        AppStrings.noFoodRecordsToday,
+                                        style: TextStyle(
+                                            color: Colors.white38, fontSize: 14),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                            ],
+                          ),
                         ),
                       ),
-                    ),
+              ),
             ),
           ],
         ),

@@ -1,6 +1,9 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:nutrify/constants/assets.dart';
+import 'package:nutrify/widgets/skeletons/home_skeleton.dart';
 import 'add_meal_screen.dart';
 import 'body_data_goals_screen.dart';
 import 'tracking_kalori_screen.dart';
@@ -9,7 +12,6 @@ import 'package:nutrify/utils/locale/app_strings.dart';
 import '../services/food_log_api_service.dart';
 import '../services/profile_api_service.dart';
 import '../widgets/notification_modal.dart';
-
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
 
@@ -21,6 +23,8 @@ class HomeScreenState extends State<HomeScreen> {
   int totalCalories = 0;
   int targetCalories = 0;
   bool _isLoadingData = false;
+  bool _showTip = false;
+  Timer? _tipTimer;
   final FoodLogApiService _foodLogApi = FoodLogApiService();
   final ProfileApiService _profileApi = ProfileApiService();
   ApiProfileData? _profile;
@@ -42,9 +46,26 @@ class HomeScreenState extends State<HomeScreen> {
     loadDailyData();
   }
 
+  @override
+  void dispose() {
+    _tipTimer?.cancel();
+    super.dispose();
+  }
+
   void loadDailyData({bool forceRefresh = false}) async {
     if (_isLoadingData) return;
-    _isLoadingData = true;
+
+    _showTip = false;
+    _tipTimer?.cancel();
+    _tipTimer = Timer(const Duration(seconds: 1), () {
+      if (mounted && _isLoadingData) {
+        setState(() => _showTip = true);
+      }
+    });
+
+    setState(() {
+      _isLoadingData = true;
+    });
     final now = DateTime.now();
 
     try {
@@ -82,6 +103,7 @@ class HomeScreenState extends State<HomeScreen> {
         });
       }
     } finally {
+      _tipTimer?.cancel();
       if (mounted) {
         setState(() {
           _isLoadingData = false;
@@ -136,299 +158,304 @@ class HomeScreenState extends State<HomeScreen> {
           onRefresh: () async => loadDailyData(),
           color: AppColors.amber,
           backgroundColor: AppColors.navy,
-          child: SingleChildScrollView(
-            physics: const AlwaysScrollableScrollPhysics(),
-            padding: const EdgeInsets.symmetric(horizontal: 20),
+          child: AnimatedSwitcher(
+            duration: const Duration(milliseconds: 300),
+            transitionBuilder: (child, animation) => FadeTransition(opacity: animation, child: child),
+            child: _isLoadingData
+                ? HomeScreenSkeleton(key: const ValueKey('skeleton'), showTip: _showTip)
+                : _buildContent(key: const ValueKey('content')),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildContent({Key? key}) {
+    return SingleChildScrollView(
+      key: key,
+      physics: const AlwaysScrollableScrollPhysics(),
+      padding: const EdgeInsets.symmetric(horizontal: 20),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const SizedBox(height: 20),
+          // Header
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      Image.asset(
+                        Assets.nutrifyLogo,
+                        height: 40,
+                        width: 40,
+                      ),
+                      const SizedBox(width: 8),
+                      Text(
+                        'Nutrify',
+                        style: GoogleFonts.inter(
+                          fontSize: 30,
+                          fontWeight: FontWeight.w900,
+                          color: const Color(0xFFFFB26B),
+                        ),
+                      ),
+                    ],
+                  ),
+                  Text(
+                    _getFormattedDate(),
+                    style: TextStyle(
+                      color: AppColors.navy.withOpacity(0.6),
+                      fontSize: 12,
+                    ),
+                  ),
+                ],
+              ),
+              GestureDetector(
+                onTapDown: (details) {
+                  _notificationTapStart = details.globalPosition;
+                },
+                onTapUp: (details) {
+                  final start = _notificationTapStart;
+                  if (start != null) {
+                    final dx = (details.globalPosition.dx - start.dx).abs();
+                    final dy = (details.globalPosition.dy - start.dy).abs();
+                    const double deadzone = 8.0; // logical pixels
+                    if (dx <= deadzone && dy <= deadzone) {
+                      _showNotifications();
+                    }
+                  }
+                  _notificationTapStart = null;
+                },
+                onTapCancel: () {
+                  _notificationTapStart = null;
+                },
+                child: CircleAvatar(
+                  backgroundColor: AppColors.navy.withOpacity(0.1),
+                  child: const Icon(Icons.notifications, color: AppColors.navy),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 25),
+
+          // Card/banner
+          if (_profile == null || _profile!.age == 0 || _profile!.weight == 0 || _profile!.height == 0)
+            _buildCompleteProfileBanner(),
+
+          // Tracking Kalori Harian Card
+          Container(
+            width: double.infinity,
+            padding: const EdgeInsets.all(25),
+            decoration: BoxDecoration(
+              color: NutrifyTheme.lightCard,
+              borderRadius: BorderRadius.circular(30),
+              image: const DecorationImage(
+                image: AssetImage(Assets.makananRegister),
+                fit: BoxFit.cover,
+                opacity: 0.15,
+              ),
+              boxShadow: [
+                BoxShadow(
+                  color: NutrifyTheme.lightCard.withOpacity(0.4),
+                  blurRadius: 20,
+                  offset: const Offset(0, 10),
+                ),
+              ],
+            ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const SizedBox(height: 20),
-                // Header
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Row(
-                          children: [
-                            Image.asset(
-                              Assets.nutrifyLogo,
-                              height: 40,
-                              width: 40,
-                            ),
-                            const SizedBox(width: 8),
-                            Text(
-                              'Nutrify',
-                              style: GoogleFonts.inter(
-                                fontSize: 30,
-                                fontWeight: FontWeight.w900,
-                                color: const Color(0xFFFFB26B),
-                              ),
-                            ),
-                          ],
-                        ),
-                        Text(
-                          _getFormattedDate(),
-                          style: TextStyle(
-                            color: AppColors.navy.withOpacity(0.6),
-                            fontSize: 12,
-                          ),
-                        ),
-                      ],
+                    Container(
+                      padding: const EdgeInsets.all(8),
+                      decoration: BoxDecoration(
+                        color: AppColors.navy.withOpacity(0.1),
+                        shape: BoxShape.circle,
+                      ),
+                      child: const Icon(
+                        Icons.restaurant,
+                        color: AppColors.navy,
+                        size: 20,
+                      ),
                     ),
-                    GestureDetector(
-                      onTapDown: (details) {
-                        _notificationTapStart = details.globalPosition;
-                      },
-                      onTapUp: (details) {
-                        final start = _notificationTapStart;
-                        if (start != null) {
-                          final dx = (details.globalPosition.dx - start.dx).abs();
-                          final dy = (details.globalPosition.dy - start.dy).abs();
-                          const double deadzone = 8.0; // logical pixels
-                          if (dx <= deadzone && dy <= deadzone) {
-                            _showNotifications();
-                          }
-                        }
-                        _notificationTapStart = null;
-                      },
-                      onTapCancel: () {
-                        _notificationTapStart = null;
-                      },
-                      child: CircleAvatar(
-                        backgroundColor: AppColors.navy.withOpacity(0.1),
-                        child: const Icon(Icons.notifications, color: AppColors.navy),
+                    Text(
+                      AppStrings.dailyCalorieTracking,
+                      style: TextStyle(
+                        color: AppColors.navy,
+                        fontSize: 14,
+                        fontWeight: FontWeight.bold,
                       ),
                     ),
                   ],
+                ),
+                const SizedBox(height: 20),
+                Text(
+                  '${_formatCalories(totalCalories)} ${AppStrings.cal}',
+                  style: const TextStyle(
+                    fontSize: 36,
+                    fontWeight: FontWeight.w900,
+                    color: AppColors.navy,
+                    letterSpacing: 1.2,
+                  ),
+                ),
+                const SizedBox(height: 20),
+                AnimatedProgressBar(
+                  value: targetCalories > 0 ? (totalCalories / targetCalories).clamp(0.0, 1.0) : 0,
+                  backgroundColor: AppColors.navy.withOpacity(0.1),
+                  valueColor: AppColors.navy,
+                  minHeight: 10,
                 ),
                 const SizedBox(height: 25),
-
-                // Card/banner
-                if (_profile == null || _profile!.age == 0 || _profile!.weight == 0 || _profile!.height == 0)
-                  _buildCompleteProfileBanner(),
-
-                // Tracking Kalori Harian Card
-                Container(
-                  width: double.infinity,
-                  padding: const EdgeInsets.all(25),
-                  decoration: BoxDecoration(
-                    color: NutrifyTheme.lightCard,
-                    borderRadius: BorderRadius.circular(30),
-                    image: const DecorationImage(
-                      image: AssetImage(Assets.makananRegister),
-                      fit: BoxFit.cover,
-                      opacity: 0.15,
-                    ),
-                    boxShadow: [
-                      BoxShadow(
-                        color: NutrifyTheme.lightCard.withOpacity(0.4),
-                        blurRadius: 20,
-                        offset: const Offset(0, 10),
-                      ),
-                    ],
-                  ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Container(
-                            padding: const EdgeInsets.all(8),
-                            decoration: BoxDecoration(
-                              color: AppColors.navy.withOpacity(0.1),
-                              shape: BoxShape.circle,
-                            ),
-                            child: const Icon(
-                              Icons.restaurant,
-                              color: AppColors.navy,
-                              size: 20,
-                            ),
-                          ),
-                          Text(
-                            AppStrings.dailyCalorieTracking,
-                            style: TextStyle(
-                              color: AppColors.navy,
-                              fontSize: 14,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 20),
-                      Text(
-                        '${_formatCalories(totalCalories)} ${AppStrings.cal}',
-                        style: const TextStyle(
-                          fontSize: 36,
-                          fontWeight: FontWeight.w900,
-                          color: AppColors.navy,
-                          letterSpacing: 1.2,
-                        ),
-                      ),
-                      const SizedBox(height: 20),
-                      ClipRRect(
-                        borderRadius: BorderRadius.circular(10),
-                        child: LinearProgressIndicator(
-                          value: targetCalories > 0
-                              ? (totalCalories / targetCalories).clamp(0.0, 1.0)
-                              : 0,
-                          backgroundColor: AppColors.navy.withOpacity(0.1),
-                          valueColor: const AlwaysStoppedAnimation<Color>(
-                              AppColors.navy),
-                          minHeight: 10,
-                        ),
-                      ),
-                      const SizedBox(height: 25),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text(
-                            AppStrings.percentOfTarget(targetCalories > 0 ? (totalCalories / targetCalories * 100).toInt() : 0),
-                            style: TextStyle(
-                              color: AppColors.navy.withOpacity(0.8),
-                              fontSize: 13,
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
-                          ElevatedButton(
-                            onPressed: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => const TrackingKaloriScreen(),
-                                ),
-                              );
-                            },
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: AppColors.navy,
-                              foregroundColor: Colors.white,
-                              elevation: 0,
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(15),
-                              ),
-                              padding: const EdgeInsets.symmetric(
-                                  horizontal: 20, vertical: 12),
-                            ),
-                            child: Text(
-                              AppStrings.details,
-                              style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
-                ),
-                const SizedBox(height: 20),
-
-                // Target Kalori Card
-                InkWell(
-                  onTap: () async {
-                    final result = await Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => const BodyDataGoalsScreen(),
-                      ),
-                    );
-                    if (result == true) {
-                      loadDailyData(forceRefresh: true);
-                    }
-                  },
-                  borderRadius: BorderRadius.circular(25),
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 18),
-                    decoration: BoxDecoration(
-                      color: NutrifyTheme.lightCard,
-                      borderRadius: BorderRadius.circular(25),
-                      boxShadow: [
-                        BoxShadow(
-                          color: NutrifyTheme.lightCard.withOpacity(0.4),
-                          blurRadius: 15,
-                          offset: const Offset(0, 8),
-                        ),
-                      ],
-                    ),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              AppStrings.dailyCalorieTarget,
-                              style: TextStyle(
-                                color: AppColors.navy.withOpacity(0.7),
-                                fontSize: 13,
-                                fontWeight: FontWeight.w500,
-                              ),
-                            ),
-                            const SizedBox(height: 6),
-                            Text(
-                              '${_formatCalories(targetCalories)} kCal',
-                              style: const TextStyle(
-                                color: AppColors.navy,
-                                fontWeight: FontWeight.bold,
-                                fontSize: 18,
-                              ),
-                            ),
-                          ],
-                        ),
-                        const Icon(Icons.chevron_right, color: AppColors.navy),
-                      ],
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 10),
-                const Divider(color: Colors.black12, height: 40),
-
-                // Grid Makan
-                GridView.count(
-                  shrinkWrap: true,
-                  physics: const NeverScrollableScrollPhysics(),
-                  crossAxisCount: 2,
-                  crossAxisSpacing: 15,
-                  mainAxisSpacing: 15,
-                  childAspectRatio: 1.1,
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    MealTile(
-                      title: AppStrings.breakfast,
-                      imagePath: Assets.iconPagi,
-                      color: AppColors.peach,
-                      calories: caloriesByType[AppStrings.breakfast] ?? 0,
-                      onTap: () => _navigateToAddMeal(AppStrings.breakfast),
+                    Text(
+                      AppStrings.percentOfTarget(targetCalories > 0 ? (totalCalories / targetCalories * 100).toInt() : 0),
+                      style: TextStyle(
+                        color: AppColors.navy.withOpacity(0.8),
+                        fontSize: 13,
+                        fontWeight: FontWeight.w600,
+                      ),
                     ),
-                    MealTile(
-                      title: AppStrings.lunch,
-                      imagePath: Assets.iconSiang,
-                      color: AppColors.peach,
-                      calories: caloriesByType[AppStrings.lunch] ?? 0,
-                      onTap: () => _navigateToAddMeal(AppStrings.lunch),
-                    ),
-                    MealTile(
-                      title: AppStrings.dinner,
-                      imagePath: Assets.iconMalam,
-                      color: AppColors.peach,
-                      calories: caloriesByType[AppStrings.dinner] ?? 0,
-                      onTap: () => _navigateToAddMeal(AppStrings.dinner),
-                    ),
-                    MealTile(
-                      title: AppStrings.snack,
-                      imagePath: Assets.iconCemilan,
-                      color: AppColors.peach,
-                      calories: caloriesByType[AppStrings.snack] ?? 0,
-                      onTap: () => _navigateToAddMeal(AppStrings.snack),
+                    ElevatedButton(
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const TrackingKaloriScreen(),
+                          ),
+                        );
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: AppColors.navy,
+                        foregroundColor: Colors.white,
+                        elevation: 0,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(15),
+                        ),
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 20, vertical: 12),
+                      ),
+                      child: Text(
+                        AppStrings.details,
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
                     ),
                   ],
                 ),
-                const SizedBox(height: 20),
               ],
             ),
           ),
-        ),
+          const SizedBox(height: 20),
+
+          // Target Kalori Card
+          InkWell(
+            onTap: () async {
+              final result = await Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const BodyDataGoalsScreen(),
+                ),
+              );
+              if (result == true) {
+                loadDailyData(forceRefresh: true);
+              }
+            },
+            borderRadius: BorderRadius.circular(25),
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 18),
+              decoration: BoxDecoration(
+                color: NutrifyTheme.lightCard,
+                borderRadius: BorderRadius.circular(25),
+                boxShadow: [
+                  BoxShadow(
+                    color: NutrifyTheme.lightCard.withOpacity(0.4),
+                    blurRadius: 15,
+                    offset: const Offset(0, 8),
+                  ),
+                ],
+              ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        AppStrings.dailyCalorieTarget,
+                        style: TextStyle(
+                          color: AppColors.navy.withOpacity(0.7),
+                          fontSize: 13,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                      const SizedBox(height: 6),
+                      Text(
+                        '${_formatCalories(targetCalories)} kCal',
+                        style: const TextStyle(
+                          color: AppColors.navy,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 18,
+                        ),
+                      ),
+                    ],
+                  ),
+                  const Icon(Icons.chevron_right, color: AppColors.navy),
+                ],
+              ),
+            ),
+          ),
+          const SizedBox(height: 10),
+          const Divider(color: Colors.black12, height: 40),
+
+          // Grid Makan
+          GridView.count(
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
+            crossAxisCount: 2,
+            crossAxisSpacing: 15,
+            mainAxisSpacing: 15,
+            childAspectRatio: 1.1,
+            children: [
+              MealTile(
+                title: AppStrings.breakfast,
+                imagePath: Assets.iconPagi,
+                color: AppColors.peach,
+                calories: caloriesByType[AppStrings.breakfast] ?? 0,
+                onTap: () => _navigateToAddMeal(AppStrings.breakfast),
+              ).animate().fadeIn(duration: 300.ms).slideY(begin: 0.1, end: 0),
+              MealTile(
+                title: AppStrings.lunch,
+                imagePath: Assets.iconSiang,
+                color: AppColors.peach,
+                calories: caloriesByType[AppStrings.lunch] ?? 0,
+                onTap: () => _navigateToAddMeal(AppStrings.lunch),
+              ).animate(delay: 50.ms).fadeIn(duration: 300.ms).slideY(begin: 0.1, end: 0),
+              MealTile(
+                title: AppStrings.dinner,
+                imagePath: Assets.iconMalam,
+                color: AppColors.peach,
+                calories: caloriesByType[AppStrings.dinner] ?? 0,
+                onTap: () => _navigateToAddMeal(AppStrings.dinner),
+              ).animate(delay: 100.ms).fadeIn(duration: 300.ms).slideY(begin: 0.1, end: 0),
+              MealTile(
+                title: AppStrings.snack,
+                imagePath: Assets.iconCemilan,
+                color: AppColors.peach,
+                calories: caloriesByType[AppStrings.snack] ?? 0,
+                onTap: () => _navigateToAddMeal(AppStrings.snack),
+              ).animate(delay: 150.ms).fadeIn(duration: 300.ms).slideY(begin: 0.1, end: 0),
+            ],
+          ),
+          const SizedBox(height: 20),
+        ],
       ),
     );
   }
@@ -521,7 +548,6 @@ class HomeScreenState extends State<HomeScreen> {
   }
 }
 
-// Komponen Kecil untuk Kotak Makan
 class MealTile extends StatelessWidget {
   final String title;
   final String imagePath;
