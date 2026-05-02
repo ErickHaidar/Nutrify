@@ -33,6 +33,15 @@ class _SplashScreenState extends State<SplashScreen> {
     final userStore = getIt<UserStore>();
 
     if (session != null) {
+      // Check jika email belum dikonfirmasi → sign out & redirect ke login
+      final user = supabase.auth.currentUser;
+      if (user != null && user.emailConfirmedAt == null) {
+        await supabase.auth.signOut();
+        if (!mounted) return;
+        Navigator.of(context).pushReplacementNamed(Routes.login);
+        return;
+      }
+
       // Valid session — ensure local state is synced
       await getIt<SharedPreferenceHelper>().saveAuthToken(session.accessToken);
       await getIt<SharedPreferenceHelper>().saveIsLoggedIn(true);

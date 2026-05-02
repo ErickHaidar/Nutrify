@@ -5,7 +5,7 @@ import '../constants/colors.dart';
 import '../services/food_log_api_service.dart';
 import 'package:nutrify/utils/locale/app_strings.dart';
 import '../services/profile_api_service.dart';
-import '../widgets/nutrify_calendar_picker.dart';
+import '../widgets/nutrify_calendar_picker.dart' show showNutrifyDatePicker, SelectionMode;
 import 'food_detail_screen.dart';
 import '../constants/assets.dart';
 import 'package:flutter_animate/flutter_animate.dart';
@@ -15,10 +15,10 @@ class HistoryScreen extends StatefulWidget {
   const HistoryScreen({super.key});
 
   @override
-  State<HistoryScreen> createState() => _HistoryScreenState();
+  State<HistoryScreen> createState() => HistoryScreenState();
 }
 
-class _HistoryScreenState extends State<HistoryScreen> {
+class HistoryScreenState extends State<HistoryScreen> with WidgetsBindingObserver {
   final _foodLogApi = FoodLogApiService();
   final _profileApi = ProfileApiService();
 
@@ -32,8 +32,24 @@ class _HistoryScreenState extends State<HistoryScreen> {
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
     _loadData();
   }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) {
+      _loadData();
+    }
+  }
+
+  void refreshData() => _loadData();
 
   Future<void> _loadData() async {
     setState(() => _isLoading = true);
@@ -68,6 +84,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
       initialDate: _selectedDate,
       firstDate: DateTime(2020),
       lastDate: DateTime.now(),
+      startMode: SelectionMode.day,
     );
     if (date != null && mounted) {
       _onDateChanged(date);

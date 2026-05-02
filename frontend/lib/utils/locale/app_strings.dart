@@ -50,9 +50,9 @@ class AppStrings {
 
   // ─── Login ───────────────────────────────────────────────────────────────
   static String get loginSubtitle =>
-      _t('Lacak kalorimu. Ubah hidupmu.', 'Track your calories. Transform your life.');
+      _t('Pantau kalori Anda. Pantau hidup Anda.', 'Track your calories. Transform your life.');
   static String get enterEmail => _t('Masukkan Email Anda', 'Enter your email');
-  static String get enterPassword => _t('Masukkan password', 'Enter password');
+  static String get enterPassword => _t('Masukkan Kata Sandi', 'Enter password');
   static String get forgotPassword => _t('Lupa Password?', 'Forgot Password?');
   static String get login => _t('Masuk', 'Login');
   static String get loginFailed => _t('Login Gagal', 'Login Failed');
@@ -65,10 +65,10 @@ class AppStrings {
   // ─── Sign Up ─────────────────────────────────────────────────────────────
   static String get createNewAccount => _t('Buat Akun Baru', 'Create New Account');
   static String get fullName => _t('NAMA LENGKAP', 'FULL NAME');
-  static String get fullNameHint => _t('Nama lengkap', 'Full name');
+  static String get fullNameHint => _t('Masukkan Nama Anda', 'Enter your name');
   static String get emailLabel => _t('EMAIL', 'EMAIL');
-  static String get passwordLabel => _t('KATA SANDI', 'PASSWORD');
-  static String get passwordHint => _t('Password (min. 6 karakter)', 'Password (min. 6 characters)');
+  static String get passwordLabel => _t('KATA SANDI (6 KARAKTER)', 'PASSWORD (6 CHARACTERS)');
+  static String get passwordHint => _t('Masukkan kata sandi Anda', 'Enter your password');
   static String get allFieldsRequired => _t('Semua field harus diisi', 'All fields are required');
   static String get onlyGmail => _t('Hanya akun @gmail.com yang diperbolehkan', 'Only @gmail.com accounts are allowed');
   static String get passwordMinLength => _t('Password minimal 6 karakter', 'Password must be at least 6 characters');
@@ -155,7 +155,7 @@ class AppStrings {
 
   // ─── Add Meal Screen ─────────────────────────────────────────────────────
   static String addMealTitle(String mealType) => _t('Tambah $mealType', 'Add $mealType');
-  static String get searchFood => _t('Cari makanan...', 'Search food...');
+  static String get searchFood => _t('Cari Makanan atau Minuman', 'Search food or drink');
   static String get noFoodAdded => _t('Belum ada makanan yang ditambahkan', 'No food added yet');
   static String get noResultsFound => _t('Tidak ada hasil ditemukan', 'No results found');
   static String get deleteFoodTitle => _t('Hapus Makanan', 'Delete Food');
@@ -298,6 +298,26 @@ class AppStrings {
   static String get upload => _t('Unggah', 'Upload');
   static String get addPhotoOrDescFirst =>
       _t('Tambahkan foto atau deskripsi terlebih dahulu', 'Add a photo or description first');
+  static String get uploadFailed =>
+      _t('Gagal mengunggah postingan', 'Failed to upload post');
+
+  // ─── OTP Verification ──────────────────────────────────────────────────
+  static String get otpTitle =>
+      _t('Verifikasi Email', 'Email Verification');
+  static String otpSubtitle(String email) =>
+      _t('Kami telah mengirim kode 6 digit ke\n$email', 'We sent a 6-digit code to\n$email');
+  static String get verify => _t('Verifikasi', 'Verify');
+  static String get otpInvalid =>
+      _t('Kode OTP salah, silakan coba lagi', 'Invalid OTP code, please try again');
+  static String get otpExpired =>
+      _t('Kode OTP sudah kedaluwarsa, kirim ulang', 'OTP code expired, please resend');
+  static String get otpVerificationFailed =>
+      _t('Verifikasi gagal, silakan coba lagi', 'Verification failed, please try again');
+  static String get otpResent =>
+      _t('Kode OTP telah dikirim ulang', 'OTP code has been resent');
+  static String resendIn(int seconds) =>
+      _t('Kirim ulang dalam $seconds detik', 'Resend in $seconds seconds');
+  static String get resendOtp => _t('Kirim Ulang Kode', 'Resend Code');
 
   // ─── Notification Modal ──────────────────────────────────────────────────
   static String get inbox => _t('Kotak Masuk', 'Inbox');
@@ -341,4 +361,38 @@ class AppStrings {
   static String get english => _t('Bahasa Inggris', 'English');
   static String get imagePreview => _t('Preview Gambar', 'Image Preview');
   static String get usePhoto => _t('Gunakan Foto', 'Use Photo');
+
+  // ─── Help Screen ──────────────────────────────────────────────────────────
+  static String get helpTitle => _t('Bantuan', 'Help');
+  static String get aboutNutrify => _t('Tentang Nutrify', 'About Nutrify');
+  static String get aboutNutrifyDesc =>
+      _t('Nutrify adalah aplikasi pencatatan kalori harian yang membantu Anda melacak asupan makanan dan mencapai target nutrisi pribadi, baik untuk cutting, maintenance, maupun bulking.',
+         'Nutrify is a daily calorie tracking app that helps you monitor food intake and achieve personal nutrition goals, whether for cutting, maintenance, or bulking.');
+  static String get howToTrack => _t('Cara Melacak Kalori', 'How to Track Calories');
+  static String get stepSearchTitle => _t('Cari Makanan', 'Search Food');
+  static String get stepSearchDesc =>
+      _t('Ketik nama makanan di kolom pencarian pada halaman Tambah Makanan.', 'Type the food name in the search field on the Add Meal page.');
+  static String get stepSelectTitle => _t('Pilih & Atur Porsi', 'Select & Set Portion');
+  static String get stepSelectDesc =>
+      _t('Pilih makanan dari hasil pencarian, lalu atur jumlah porsi sesuai yang Anda konsumsi.', 'Select a food from search results, then adjust the serving size to match what you consumed.');
+  static String get stepSaveTitle => _t('Simpan Catatan', 'Save Record');
+  static String get stepSaveDesc =>
+      _t('Tekan tombol simpan untuk mencatat kalori ke riwayat harian Anda.', 'Tap the save button to log the calories to your daily history.');
+  static String get howToSetGoals => _t('Cara Mengatur Target', 'How to Set Goals');
+  static String get goalGuideDesc =>
+      _t('Buka halaman Profil → Edit Profil, lalu pilih target yang sesuai:', 'Go to Profile → Edit Profile, then choose your target:');
+  static String get cuttingDesc => _t('Defisit 500 kkal/hari untuk menurunkan berat badan', '500 kcal/day deficit to lose weight');
+  static String get maintainDesc => _t('Pertahankan kalori harian sesuai kebutuhan tubuh', 'Maintain daily calories according to body needs');
+  static String get bulkingDesc => _t('Surplus 500 kkal/hari untuk menambah massa otot', '500 kcal/day surplus to gain muscle mass');
+  static String get faq => _t('Pertanyaan Umum', 'FAQ');
+  static String get faqQ1 => _t('Bagaimana cara mengubah target kalori?', 'How to change calorie target?');
+  static String get faqA1 => _t('Buka Profil → Edit Profil → pilih tujuan (Cutting/Maintenance/Bulking). Target kalori akan dihitung otomatis.', 'Go to Profile → Edit Profile → select goal (Cutting/Maintenance/Bulking). Calorie target is calculated automatically.');
+  static String get faqQ2 => _t('Apakah data makanan akurat?', 'Is the food data accurate?');
+  static String get faqA2 => _t('Data nutrisi bersumber dari dataset resmi BPOM Indonesia dengan 1.800+ item makanan lokal.', 'Nutrition data is sourced from the official Indonesian BPOM dataset with 1,800+ local food items.');
+  static String get faqQ3 => _t('Bagaimana cara mengubah bahasa?', 'How to change the language?');
+  static String get faqA3 => _t('Buka Profil → Bahasa → pilih Bahasa Indonesia atau English.', 'Go to Profile → Language → select Indonesian or English.');
+  static String get faqQ4 => _t('Apakah bisa menggunakan tanpa login?', 'Can I use it without logging in?');
+  static String get faqA4 => _t('Tidak, Anda perlu membuat akun agar data kalori tersimpan dan bisa diakses di perangkat mana pun.', 'No, you need to create an account so calorie data is saved and accessible from any device.');
+  static String get faqQ5 => _t('Bagaimana formula perhitungan kalori?', 'How is the calorie calculation formula?');
+  static String get faqA5 => _t('Nutrify menggunakan formula Mifflin-St Jeor untuk menghitung BMR, dikalikan dengan faktor aktivitas (TDEE), lalu disesuaikan dengan target Anda.', 'Nutrify uses the Mifflin-St Jeor formula to calculate BMR, multiplied by activity factor (TDEE), then adjusted to your target.');
 }

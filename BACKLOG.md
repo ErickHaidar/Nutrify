@@ -2,7 +2,7 @@
 
 > Semua item backlog dikelola di sini. Setiap item memiliki ID unik, role penanggung jawab, status, dan keterangan.
 > Referensi Sprint 1 berasal dari `sprint_1.csv`.
-> Terakhir diperbarui: 6 Maret 2026 (sesi 4)
+> Terakhir diperbarui: 2 Mei 2026 (Sprint 2 Backend — Ibnu)
 
 ---
 
@@ -97,6 +97,63 @@
 
 ---
 
+## SPRINT 2 — Backlog Items (Backend — Ibnu)
+
+> Sprint Goal: **Memperbaiki inkonsistensi UI/UX & bug autentikasi, memperluas dataset makanan, menambah fitur Rekomendasi/Favorit makanan, serta fitur Komunitas.**
+
+| Sprint ID | Internal ID | Backlog Item | Status | Endpoint / Lokasi | Catatan |
+|---|---|---|---|---|---|
+| S2-09 | BE-S2-01 | Deduplikasi dataset makanan (hapus duplikat) | ✅ Done | `app/Console/Commands/DeduplicateFoods.php` | Artisan command `food:deduplicate`, case-insensitive matching |
+| S2-09 | BE-S2-02 | Perluasan dataset: 201 makanan lokal Indonesia | ✅ Done | `makanan-lokal.csv`, `database/seeders/LocalFoodSeeder.php` | CSV baru 201 item (khas daerah, jajanan, minuman, snack). Seeder dengan unique check |
+| S2-10 | BE-S2-03 | API Rekomendasi makanan berdasarkan riwayat konsumsi | ✅ Done | `GET /api/food/recommendations?limit=` | Query `food_logs` group by `food_id`, order by COUNT DESC |
+| S2-10 | BE-S2-04 | API Favorit makanan (CRUD) | ✅ Done | `POST/GET/DELETE /api/food/favorites` | Tabel `user_favorites` dengan unique constraint. FavoriteController |
+| S2-20 | BE-S2-05 | API Komunitas: Posts, Likes, Comments | ✅ Done | `GET/POST/DELETE /api/posts`, `POST /api/posts/{id}/like`, `GET/POST /api/posts/{id}/comments` | 3 tabel baru (posts, post_likes, comments). PostController dengan toggle like, image upload, authorization |
+
+---
+
+## SPRINT 2 — Backlog Items (Backend — Adit)
+
+| Sprint ID | Internal ID | Backlog Item | Status | Catatan |
+|---|---|---|---|---|
+| S2-05 | BE-S2-06 | Verifikasi Email OTP (send-otp, verify-otp) | ❌ Not Started | Endpoint OTP belum dibuat |
+| S2-13 | BE-S2-07 | API upload foto profil (PUT /profile/photo) | ❌ Not Started | Belum ada endpoint & storage logic |
+| S2-17 | BE-S2-08 | Validasi batas wajar input (tinggi, berat, umur) | ❌ Not Started | Validasi hanya `required`, tanpa min/max |
+| S2-23 | BE-S2-09 | Backend notifikasi (edge function/socket) | ❌ Not Started | Belum ada notification API |
+
+---
+
+## SPRINT 2 — Backlog Items (Frontend)
+
+| Sprint ID | Internal ID | Backlog Item | Status | Lokasi | Catatan |
+|---|---|---|---|---|---|
+| S2-02 | FE-S2-01 | Implementasi tombol Google Sign-In | ✅ Done | `presentation/login/login.dart` | Tombol dengan icon G + "Masuk dengan Google" |
+| S2-04 | FE-S2-02 | Konsistensi bahasa Indonesia | ✅ Done | `utils/locale/app_strings.dart` | Sistem lokalitas terpusat |
+| S2-06 | FE-S2-03 | Halaman OTP Verification | ❌ Not Started | — | Menunggu backend OTP (Adit) |
+| S2-08 | FE-S2-04 | Home: hapus profil + Help Information | ❌ Not Started | `screens/home_screen.dart` | Profil sudah dihapus dari Home, tapi halaman Help Information belum dibuat |
+| S2-12 | FE-S2-05 | Rekomendasi & Favorit UI di pencarian makanan | ❌ Not Started | — | `add_meal_screen.dart` hanya search biasa. Backend API sudah READY. Perlu integrasi |
+| S2-14 | FE-S2-06 | Ganti foto profil | ✅ Done | `screens/edit_profile_screen.dart` | Image picker + preview + upload |
+| S2-16 | FE-S2-07 | Dropdown aktivitas + Edit Profile goal | ✅ Done | `screens/edit_profile_screen.dart` | Activity tile + goal selection |
+| S2-19 | FE-S2-08 | Komunitas frontend | ⚠️ Mock Data | `screens/komunitas_screen.dart` | UI lengkap TAPI pakai hardcoded dummy data (line 27-53). Backend API sudah READY. Perlu integrasi |
+| S2-22 | FE-S2-09 | Notifikasi frontend | ✅ Done | `services/notification_service.dart` | FCM + local notifications |
+| S2-25 | FE-S2-10 | UI/UX warna baru | ✅ Done | `constants/colors.dart` | Skema cream/peach/navy |
+
+---
+
+## SPRINT 2 — Backlog Items (UI/UX)
+
+| Sprint ID | Internal ID | Backlog Item | Status | Catatan |
+|---|---|---|---|---|
+| S2-01 | UX-S2-01 | Redesign tombol Google Sign-In | ✅ Done | Desain diimplementasi di frontend |
+| S2-03 | UX-S2-02 | Audit konsistensi bahasa | ✅ Done | Semua teks UI konsisten Bahasa Indonesia |
+| S2-07 | UX-S2-03 | Redesign Home (hapus profil + Help Info) | ✅ Done | Profil dihapus dari Home |
+| S2-11 | UX-S2-04 | UI Rekomendasi & Favorit | ✅ Done | Desain di Figma sudah jadi |
+| S2-15 | UX-S2-05 | Change Goal dihapus, pindah ke Edit Profile | ✅ Done | Goal selection ada di Edit Profile |
+| S2-18 | UX-S2-06 | Desain fitur komunitas | ✅ Done | UI komunitas sudah diimplementasi |
+| S2-21 | UX-S2-07 | Desain fitur notifikasi | ✅ Done | Notifikasi sudah terintegrasi |
+| S2-24 | UX-S2-08 | Ubah color combination (base putih) | ✅ Done | Skema warna baru diterapkan |
+
+---
+
 ## BACKLOG POST-SPRINT 1 (Future Sprint)
 
 | ID | Role | Backlog Item | Prioritas |
@@ -117,21 +174,32 @@
 ## Dependensi Antar Item
 
 ```
-[SEMUA BE SELESAI] ✅
+[SPRINT 1 — SEMUA BE SELESAI] ✅
 
-FE-05 (Supabase email login)
-  └─► FE-12 (JWT Interceptor Dio)
-        ├─► FE-04 (Dashboard real-time dari API)
-        ├─► FE-13 (Integrasi Profile API)
-        ├─► FE-14 (Kirim food log ke API)
-        └─► FE-15 (Tampil daftar makanan dari API)
-FE-05 → FE-06 (Register) → FE-07 (Splash) → FE-08 (Onboarding)
-FE-09 (Google OAuth) → FE-10 (Apple Sign In)  ← post-sprint
-  └─► FE-12 (JWT Interceptor untuk Dio)
-        └─► FE-13 (Integrasi Profile API)
-        └─► FE-14 (Integrasi Food Log API)
-        └─► FE-04 (Dashboard real-time)
+[SPRINT 2 — UI/UX SELESAI] ✅ 8/8 DONE
 
-BE-07 (API Summary Harian)
-  └─► FE-04 (Dashboard real-time)
+[SPRINT 2 — BACKEND IBNU SELESAI] ✅ 3/3 DONE
+BE-S2-01 (Deduplikasi dataset) ✅
+BE-S2-02 (Perluasan 201 makanan lokal) ✅
+BE-S2-03 (API Rekomendasi) ✅ → FE-S2-05 (Rekomendasi & Favorit UI) ❌ — backend READY
+BE-S2-04 (API Favorit CRUD) ✅ → FE-S2-05 (Rekomendasi & Favorit UI) ❌ — backend READY
+BE-S2-05 (API Komunitas) ✅ → FE-S2-08 (Komunitas frontend) ⚠️ MOCK — backend READY, perlu integrasi
+
+[SPRINT 2 — FRONTEND] 5/10 DONE, 2 PARTIAL/MOCK, 3 NOT DONE
+FE-S2-01 (Google Sign-In) ✅
+FE-S2-02 (Konsistensi bahasa) ✅
+FE-S2-03 (OTP Screen) ❌ ← BLOCKED by BE-S2-06 (Adit)
+FE-S2-04 (Help Info page) ❌ ← Tidak diblokir, belum dikerjakan
+FE-S2-05 (Favorit & Rekomendasi UI) ❌ ← Backend READY, frontend perlu slicing + integrasi
+FE-S2-06 (Ganti foto profil) ✅
+FE-S2-07 (Dropdown + Edit Profile goal) ✅
+FE-S2-08 (Komunitas) ⚠️ MOCK ← Backend READY, perlu ganti mock → API call
+FE-S2-09 (Notifikasi) ✅
+FE-S2-10 (UI/UX warna baru) ✅
+
+[SPRINT 2 — BACKEND ADIT BELUM SELESAI] ❌ 0/4 DONE
+BE-S2-06 (OTP API) ❌ → memblokir FE-S2-03 (Halaman OTP)
+BE-S2-07 (Upload foto profil API) ❌
+BE-S2-08 (Validasi input) ❌
+BE-S2-09 (Notifikasi backend) ❌
 ```

@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Food extends Model
 {
@@ -29,4 +30,14 @@ class Food extends Model
         'sodium'        => 'float',
         'fiber'         => 'float',
     ];
+
+    public function favorites(): HasMany
+    {
+        return $this->hasMany(UserFavorite::class);
+    }
+
+    public function foodLogs(): HasMany
+    {
+        return $this->hasMany(FoodLog::class);
+    }
 }

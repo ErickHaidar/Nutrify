@@ -7,6 +7,7 @@ import 'package:nutrify/widgets/skeletons/home_skeleton.dart';
 import 'add_meal_screen.dart';
 import 'body_data_goals_screen.dart';
 import 'tracking_kalori_screen.dart';
+import 'help_screen.dart';
 import 'package:nutrify/constants/colors.dart';
 import 'package:nutrify/utils/locale/app_strings.dart';
 import '../services/food_log_api_service.dart';
@@ -158,88 +159,74 @@ class HomeScreenState extends State<HomeScreen> {
           onRefresh: () async => loadDailyData(),
           color: AppColors.amber,
           backgroundColor: AppColors.navy,
-          child: AnimatedSwitcher(
-            duration: const Duration(milliseconds: 300),
-            transitionBuilder: (child, animation) => FadeTransition(opacity: animation, child: child),
-            child: _isLoadingData
-                ? HomeScreenSkeleton(key: const ValueKey('skeleton'), showTip: _showTip)
-                : _buildContent(key: const ValueKey('content')),
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildContent({Key? key}) {
-    return SingleChildScrollView(
-      key: key,
-      physics: const AlwaysScrollableScrollPhysics(),
-      padding: const EdgeInsets.symmetric(horizontal: 20),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const SizedBox(height: 20),
-          // Header
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    children: [
-                      Image.asset(
-                        Assets.nutrifyLogo,
-                        height: 40,
-                        width: 40,
-                      ),
-                      const SizedBox(width: 8),
-                      Text(
-                        'Nutrify',
-                        style: GoogleFonts.inter(
-                          fontSize: 30,
-                          fontWeight: FontWeight.w900,
-                          color: const Color(0xFFFFB26B),
+          child: SingleChildScrollView(
+            physics: const AlwaysScrollableScrollPhysics(),
+            padding: const EdgeInsets.symmetric(horizontal: 20),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const SizedBox(height: 20),
+                // Header
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          children: [
+                            Image.asset(
+                              Assets.nutrifyLogo,
+                              height: 40,
+                              width: 40,
+                            ),
+                            const SizedBox(width: 8),
+                            Text(
+                              'Nutrify',
+                              style: GoogleFonts.inter(
+                                fontSize: 30,
+                                fontWeight: FontWeight.w900,
+                                color: const Color(0xFFFFB26B),
+                              ),
+                            ),
+                          ],
                         ),
-                      ),
-                    ],
-                  ),
-                  Text(
-                    _getFormattedDate(),
-                    style: TextStyle(
-                      color: AppColors.navy.withOpacity(0.6),
-                      fontSize: 12,
+                        Text(
+                          _getFormattedDate(),
+                          style: TextStyle(
+                            color: AppColors.navy.withOpacity(0.6),
+                            fontSize: 12,
+                          ),
+                        ),
+                      ],
                     ),
-                  ),
-                ],
-              ),
-              GestureDetector(
-                onTapDown: (details) {
-                  _notificationTapStart = details.globalPosition;
-                },
-                onTapUp: (details) {
-                  final start = _notificationTapStart;
-                  if (start != null) {
-                    final dx = (details.globalPosition.dx - start.dx).abs();
-                    final dy = (details.globalPosition.dy - start.dy).abs();
-                    const double deadzone = 8.0; // logical pixels
-                    if (dx <= deadzone && dy <= deadzone) {
-                      _showNotifications();
-                    }
-                  }
-                  _notificationTapStart = null;
-                },
-                onTapCancel: () {
-                  _notificationTapStart = null;
-                },
-                child: CircleAvatar(
-                  backgroundColor: AppColors.navy.withOpacity(0.1),
-                  child: const Icon(Icons.notifications, color: AppColors.navy),
+                    GestureDetector(
+                      onTapDown: (details) {
+                        _notificationTapStart = details.globalPosition;
+                      },
+                      onTapUp: (details) {
+                        final start = _notificationTapStart;
+                        if (start != null) {
+                          final dx = (details.globalPosition.dx - start.dx).abs();
+                          final dy = (details.globalPosition.dy - start.dy).abs();
+                          const double deadzone = 8.0; // logical pixels
+                          if (dx <= deadzone && dy <= deadzone) {
+                            _showNotifications();
+                          }
+                        }
+                        _notificationTapStart = null;
+                      },
+                      onTapCancel: () {
+                        _notificationTapStart = null;
+                      },
+                      child: CircleAvatar(
+                        backgroundColor: AppColors.navy.withOpacity(0.1),
+                        child: const Icon(Icons.notifications, color: AppColors.navy),
+                      ),
+                    ),
+                  ],
                 ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 25),
+                const SizedBox(height: 25),
 
           // Card/banner
           if (_profile == null || _profile!.age == 0 || _profile!.weight == 0 || _profile!.height == 0)
@@ -456,6 +443,9 @@ class HomeScreenState extends State<HomeScreen> {
           ),
           const SizedBox(height: 20),
         ],
+      ),
+    ),
+        ),
       ),
     );
   }

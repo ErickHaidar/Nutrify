@@ -5,6 +5,48 @@
 
 ---
 
+## [0.8.0] — 2 Mei 2026
+
+### Added — Backend (Sprint 2 — Ibnu)
+
+**Tugas 1 (ID 9): Deduplikasi & Perluasan Dataset Makanan**
+- **Artisan command `food:deduplicate`**: Command untuk mendeteksi dan menghapus makanan duplikat berdasarkan nama (case-insensitive), menyimpan entry pertama. Menampilkan preview sebelum hapus dengan konfirmasi interaktif (`app/Console/Commands/DeduplicateFoods.php`)
+- **`makanan-lokal.csv`**: File CSV baru berisi **201 data makanan lokal Indonesia** — mencakup makanan khas daerah (rendang, gudeg, soto betawi, rawon, pempek, bakso, dll), jajanan pasar (bakpia, onde-onde, lemper, klepon, dll), minuman tradisional (es teh manis, wedang jahe, bajigur, es cendol, dll), snack (cireng, cilok, batagor, kerak telor, dll), dan jus/minuman segar
+- **`LocalFoodSeeder`**: Seeder baru yang membaca `makanan-lokal.csv` dengan **unique check** — mengecek duplikat (case-insensitive) sebelum insert, melewati yang sudah ada (`database/seeders/LocalFoodSeeder.php`)
+
+**Tugas 2 (ID 10): API Rekomendasi & Favorit Makanan**
+- **Migration `create_user_favorites_table`**: Tabel baru `user_favorites` dengan kolom `user_id` (FK), `food_id` (FK), unique constraint `(user_id, food_id)` untuk mencegah duplikat favorit (`database/migrations/2026_05_02_000001_create_user_favorites_table.php`)
+- **Model `UserFavorite`**: Model baru dengan relasi `belongsTo` ke User dan Food (`app/Models/UserFavorite.php`)
+- **`FavoriteController`**: Controller baru dengan 3 endpoint (`app/Http/Controllers/Api/FavoriteController.php`):
+  - `GET /api/food/favorites` — List favorit user (paginated 20, eager load data food)
+  - `POST /api/food/favorites` — Tambah favorit (validasi food_id, cek duplikat → 409)
+  - `DELETE /api/food/favorites/{food_id}` — Hapus favorit (cek ownership → 404)
+- **`FoodController@recommendations`**: Endpoint baru `GET /api/food/recommendations?limit=10` — rekomendasi berdasarkan makanan paling sering dikonsumsi user (query `food_logs` group by `food_id` order by count DESC). Return empty array jika user belum punya riwayat
+- **Update relasi model**: `User` → `favorites()`, `foodLogs()`, `posts()`, `postLikes()`, `comments()`; `Food` → `favorites()`, `foodLogs()`
+
+**Tugas 3 (ID 20): Backend & API Fitur Komunitas**
+- **Migration `create_posts_table`**: Tabel `posts` dengan `user_id` (FK), `content` (text), `image_url` (string nullable), timestamps (`database/migrations/2026_05_02_000002_create_posts_table.php`)
+- **Migration `create_post_likes_table`**: Tabel `post_likes` dengan `user_id` (FK), `post_id` (FK), unique constraint `(user_id, post_id)` (`database/migrations/2026_05_02_000003_create_post_likes_table.php`)
+- **Migration `create_comments_table`**: Tabel `comments` dengan `user_id` (FK), `post_id` (FK), `content` (text), timestamps (`database/migrations/2026_05_02_000004_create_comments_table.php`)
+- **Model `Post`**: Relasi `belongsTo(User)`, `hasMany(PostLike)`, `hasMany(Comment)` (`app/Models/Post.php`)
+- **Model `PostLike`**: Relasi `belongsTo(User)`, `belongsTo(Post)` (`app/Models/PostLike.php`)
+- **Model `Comment`**: Relasi `belongsTo(User)`, `belongsTo(Post)` (`app/Models/Comment.php`)
+- **`PostController`**: Controller lengkap dengan 7 endpoint (`app/Http/Controllers/Api/PostController.php`):
+  - `GET /api/posts` — Feed post (paginated 15, eager load user/likes/comments, append `is_liked`/`likes_count`/`comments_count`)
+  - `POST /api/posts` — Buat post baru (content max 1000 karakter, image opsional JPG/PNG max 2MB, simpan ke `storage/app/public/posts/`)
+  - `DELETE /api/posts/{id}` — Hapus post (authorization: hanya pemilik, auto-hapus gambar dari storage)
+  - `POST /api/posts/{id}/like` — Toggle like (like → unlike atau sebaliknya, return status + count)
+  - `GET /api/posts/{id}/comments` — List komentar post (paginated 20, eager load user)
+  - `POST /api/posts/{id}/comments` — Tambah komentar (content max 500 karakter)
+
+### Changed — Backend
+- **`routes/api.php`**: Ditambahkan route group untuk favorites (3 endpoint), food recommendations (1 endpoint), dan community posts (6 endpoint). Semua tetap dalam middleware `supabase.auth`
+- **`FoodController`**: Ditambahkan method `recommendations()` untuk rekomendasi makanan
+- **Model `User`**: Ditambahkan relasi `favorites()`, `foodLogs()`, `posts()`, `postLikes()`, `comments()`
+- **Model `Food`**: Ditambahkan relasi `favorites()`, `foodLogs()`
+
+---
+
 ## [0.7.0] — 6 Maret 2026
 
 ### Fixed — Backend

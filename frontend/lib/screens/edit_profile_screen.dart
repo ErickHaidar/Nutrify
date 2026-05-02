@@ -24,6 +24,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   final _heightController = TextEditingController();
   final _weightController = TextEditingController();
   final _ageController = TextEditingController();
+  final _targetWeightController = TextEditingController();
 
   String _gender = 'male';
   String _goal = 'maintenance';
@@ -37,11 +38,13 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   String? _initialHeight;
   String? _initialWeight;
   String? _initialAge;
+  String? _initialTargetWeight;
   String? _initialGender;
   String? _initialGoal;
   String? _initialActivityLevel;
 
   DateTime? _birthDate;
+  DateTime? _initialBirthDate;
 
   bool get _hasChanges {
     return _heightController.text != _initialHeight ||
@@ -49,7 +52,11 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         _ageController.text != _initialAge ||
         _gender != _initialGender ||
         _goal != _initialGoal ||
-        _activityLevel != _initialActivityLevel;
+        _activityLevel != _initialActivityLevel ||
+        (_birthDate != null && _initialBirthDate != null && _birthDate != _initialBirthDate) ||
+        (_birthDate != null && _initialBirthDate == null) ||
+        _targetWeightController.text != _initialTargetWeight ||
+        _isPhotoChanged;
   }
 
   XFile? _profileImage;
@@ -66,6 +73,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     _heightController.addListener(() => setState(() {}));
     _weightController.addListener(() => setState(() {}));
     _ageController.addListener(() => setState(() {}));
+    _targetWeightController.addListener(() => setState(() {}));
   }
 
   @override
@@ -73,6 +81,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     _heightController.dispose();
     _weightController.dispose();
     _ageController.dispose();
+    _targetWeightController.dispose();
     super.dispose();
   }
 
@@ -88,11 +97,20 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
           _goal = profile.goal;
           _activityLevel = profile.activityLevel;
 
-          _birthDate = DateTime(DateTime.now().year - profile.age, 1, 1);
+          // Restore actual birthDate from SharedPreferences if available,
+          // otherwise estimate from age (Jan 1 estimate — less accurate)
+          final savedBirthDate = getIt<SharedPreferences>().getString('birth_date');
+          if (savedBirthDate != null) {
+            _birthDate = DateTime.tryParse(savedBirthDate);
+          }
+          _birthDate ??= DateTime(DateTime.now().year - profile.age, 1, 1);
+          _targetWeightController.text = profile.weight.toString();
 
           _initialHeight = _heightController.text;
+          _initialBirthDate = _birthDate;
           _initialWeight = _weightController.text;
           _initialAge = _ageController.text;
+          _initialTargetWeight = _targetWeightController.text;
           _initialGender = _gender;
           _initialGoal = _goal;
           _initialActivityLevel = _activityLevel;
@@ -129,14 +147,29 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         activityLevel: _activityLevel,
       );
 
+      bool photoUploadFailed = false;
       if (_profileImage != null && kIsWeb == false && _isPhotoChanged) {
-        await _profileApiService.uploadProfilePhoto(File(_profileImage!.path));
-        _isPhotoChanged = false;
+        try {
+          await _profileApiService.uploadProfilePhoto(File(_profileImage!.path));
+          _isPhotoChanged = false;
+        } catch (_) {
+          photoUploadFailed = true;
+        }
       }
 
       if (mounted) {
         setState(() => _isSaving = false);
-        _showSuccessDialog();
+        if (photoUploadFailed) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Profil tersimpan, tapi foto gagal diunggah. Fitur upload foto belum tersedia di server.'),
+              duration: Duration(seconds: 4),
+            ),
+          );
+          _isPhotoChanged = false;
+        } else {
+          _showSuccessDialog();
+        }
       }
     } catch (e) {
       if (mounted) {
@@ -184,17 +217,20 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   }
 
   Future<void> _showBirthDatePicker() async {
+    final now = DateTime.now();
+    final defaultBirthYear = now.year - 20;
     final picked = await showNutrifyDatePicker(
       context,
-      initialDate: _birthDate ?? DateTime(DateTime.now().year - 20, 1, 1),
-      firstDate: DateTime(1900),
-      lastDate: DateTime.now(),
+      initialDate: _birthDate ?? DateTime(defaultBirthYear, 1, 1),
+      firstDate: DateTime(now.year - 80),
+      lastDate: DateTime(now.year - 10),
     );
     if (picked != null) {
       setState(() {
         _birthDate = picked;
         _ageController.text = calculateAge(picked).toString();
       });
+      getIt<SharedPreferences>().setString('birth_date', picked.toIso8601String());
     }
   }
 
@@ -360,10 +396,11 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
               initialValue: _birthDateText(),
               onTap: _showBirthDatePicker,
             ),
-            CustomInputField(
+            ProfileInput(
+              controller: _targetWeightController,
               label: AppStrings.targetWeight,
-              initialValue: '80 Kg', // Placeholder or add logic
-              onTap: () {}, // Optional
+              icon: Icons.track_changes,
+              keyboardType: TextInputType.number,
             ),
 
             const SizedBox(height: 32),
