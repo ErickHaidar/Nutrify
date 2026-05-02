@@ -147,14 +147,29 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         activityLevel: _activityLevel,
       );
 
+      bool photoUploadFailed = false;
       if (_profileImage != null && kIsWeb == false && _isPhotoChanged) {
-        await _profileApiService.uploadProfilePhoto(File(_profileImage!.path));
-        _isPhotoChanged = false;
+        try {
+          await _profileApiService.uploadProfilePhoto(File(_profileImage!.path));
+          _isPhotoChanged = false;
+        } catch (_) {
+          photoUploadFailed = true;
+        }
       }
 
       if (mounted) {
         setState(() => _isSaving = false);
-        _showSuccessDialog();
+        if (photoUploadFailed) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Profil tersimpan, tapi foto gagal diunggah. Fitur upload foto belum tersedia di server.'),
+              duration: Duration(seconds: 4),
+            ),
+          );
+          _isPhotoChanged = false;
+        } else {
+          _showSuccessDialog();
+        }
       }
     } catch (e) {
       if (mounted) {
