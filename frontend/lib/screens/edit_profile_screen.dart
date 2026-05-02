@@ -55,7 +55,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         _activityLevel != _initialActivityLevel ||
         (_birthDate != null && _initialBirthDate != null && _birthDate != _initialBirthDate) ||
         (_birthDate != null && _initialBirthDate == null) ||
-        _targetWeightController.text != _initialTargetWeight;
+        _targetWeightController.text != _initialTargetWeight ||
+        _isPhotoChanged;
   }
 
   XFile? _profileImage;
@@ -96,7 +97,13 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
           _goal = profile.goal;
           _activityLevel = profile.activityLevel;
 
-          _birthDate = DateTime(DateTime.now().year - profile.age, 1, 1);
+          // Restore actual birthDate from SharedPreferences if available,
+          // otherwise estimate from age (Jan 1 estimate — less accurate)
+          final savedBirthDate = getIt<SharedPreferences>().getString('birth_date');
+          if (savedBirthDate != null) {
+            _birthDate = DateTime.tryParse(savedBirthDate);
+          }
+          _birthDate ??= DateTime(DateTime.now().year - profile.age, 1, 1);
           _targetWeightController.text = profile.weight.toString();
 
           _initialHeight = _heightController.text;
@@ -208,6 +215,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         _birthDate = picked;
         _ageController.text = calculateAge(picked).toString();
       });
+      getIt<SharedPreferences>().setString('birth_date', picked.toIso8601String());
     }
   }
 
