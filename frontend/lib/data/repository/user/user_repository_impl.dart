@@ -90,33 +90,23 @@ class UserRepositoryImpl extends UserRepository {
 
   @override
   Future<void> signInWithGoogle() async {
-    print('DEBUG GOOGLE STEP 1: Memulai proses signInWithGoogle');
     try {
-      // 1. Inisialisasi Google Sign In
       final auth.GoogleSignIn googleSignIn = _getGoogleSignIn();
-      print('DEBUG GOOGLE STEP 2: Inisialisasi GoogleSignIn selesai');
-      
+
       final googleUser = await googleSignIn.signIn();
-      print('DEBUG GOOGLE STEP 3: Hasil signIn dialog: ${googleUser?.email}');
-      
+
       if (googleUser == null) {
-        print('DEBUG GOOGLE: User membatalkan login (googleUser is null)');
         return;
       }
 
-      print('DEBUG GOOGLE STEP 4: Mengambil data autentikasi...');
       final googleAuth = await googleUser.authentication;
       final accessToken = googleAuth.accessToken;
       final idToken = googleAuth.idToken;
-
-      print('DEBUG GOOGLE STEP 5: Token didapat. AccessToken: ${accessToken != null}, IdToken: ${idToken != null}');
 
       if (accessToken == null || idToken == null) {
         throw Exception('Google Sign In gagal: token tidak tersedia');
       }
 
-      // 2. Sign in ke Supabase dengan token Google
-      print('DEBUG GOOGLE STEP 6: Mengirim token ke Supabase...');
       final response = await sb.Supabase.instance.client.auth.signInWithIdToken(
         provider: sb.OAuthProvider.google,
         idToken: idToken,
@@ -127,10 +117,8 @@ class UserRepositoryImpl extends UserRepository {
       if (jwt != null) {
         await _sharedPrefsHelper.saveAuthToken(jwt);
         await _sharedPrefsHelper.saveIsLoggedIn(true);
-        print('DEBUG GOOGLE STEP 7: Berhasil masuk ke Supabase');
       }
     } catch (e) {
-      print('DEBUG GOOGLE ERROR DETAIL: $e');
       rethrow;
     }
   }

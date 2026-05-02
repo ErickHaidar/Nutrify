@@ -6,7 +6,12 @@ use App\Http\Controllers\Api\ProfileController;
 use App\Http\Controllers\Api\FoodController;
 use App\Http\Controllers\Api\FavoriteController;
 use App\Http\Controllers\Api\PostController;
+use App\Http\Controllers\Api\OtpController;
 use App\Http\Controllers\FoodLogController;
+
+// OTP Verification (public, no auth required)
+Route::post('/auth/send-otp', [OtpController::class, 'send']);
+Route::post('/auth/verify-otp', [OtpController::class, 'verify']);
 
 Route::middleware(['supabase.auth'])->group(function () {
 

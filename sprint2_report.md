@@ -11,8 +11,8 @@
 |------|-----------|------|---------|----------|------------|
 | **UI/UX** | 8 | 8 | 0 | 0 | **100%** |
 | **Frontend** | 10 | 10 | 0 | 0 | **100%** |
-| **Backend** | 7 | 3 | 0 | 4 | **43%** |
-| **TOTAL** | 25 | 21 | 0 | 4 | **84%** |
+| **Backend** | 7 | 4 | 0 | 3 | **57%** |
+| **TOTAL** | 25 | 22 | 0 | 3 | **88%** |
 
 ---
 
@@ -125,9 +125,48 @@
 
 ## C. Backend (Eksekutor: Ibnu, Adit)
 
-> **Status: 3/7 DONE (43%)**
+> **Status: 4/7 DONE (57%)**
 
-### ✅ DONE — Ibnu (3 task)
+### ✅ DONE — Ibnu (4 task)
+
+#### Task 0 (ID 5): Backend Verifikasi Email OTP
+
+**File yang dibuat:**
+
+| File | Aksi | Deskripsi |
+|------|------|-----------|
+| `database/migrations/2026_05_02_000005_create_otps_table.php` | **BARU** | Tabel `otps`: `email`, `code` (hashed), `expires_at`, `verified_at` |
+| `app/Models/Otp.php` | **BARU** | Model dengan helper `isExpired()`, `isVerified()` |
+| `app/Http/Controllers/Api/OtpController.php` | **BARU** | Controller: `send()` dan `verify()` dengan rate limiting |
+| `app/Mail/OtpMail.php` | **BARU** | Mailable class untuk OTP email |
+| `resources/views/emails/otp.blade.php` | **BARU** | Email template Nutrify-themed |
+
+**File yang diubah:**
+
+| File | Perubahan |
+|------|-----------|
+| `routes/api.php` | +2 public route: `POST /api/auth/send-otp`, `POST /api/auth/verify-otp` |
+
+**Endpoint API:**
+
+| Method | Endpoint | Deskripsi | Detail |
+|--------|----------|-----------|--------|
+| `POST` | `/api/auth/send-otp` | Kirim OTP ke email | Rate limit 1/menit, OTP 6 digit, expiry 5 menit, hashed storage |
+| `POST` | `/api/auth/verify-otp` | Verifikasi OTP | Rate limit 5/menit, return `{verified: true}` |
+
+**Frontend OTP Enhancement:**
+
+| File | Perubahan |
+|------|-----------|
+| `presentation/my_app.dart` | Fix OTP bypass: `signedIn` handler sekarang cek `emailConfirmedAt` — skip auto-navigate jika email belum diverifikasi |
+| `screens/otp_verification_screen.dart` | Fix back button: tambah `PopScope` + dialog konfirmasi, sign out dari Supabase jika user keluar tanpa verifikasi |
+| `screens/splash_screen.dart` | Fix session recovery: jika session ada tapi `emailConfirmedAt == null`, sign out & redirect ke login |
+| `core/data/network/dio/interceptors/auth_interceptor.dart` | Enhancement: handle 401 response → auto sign out jika session expired |
+| `data/repository/user/user_repository_impl.dart` | Cleanup: hapus debug print statements dari Google Sign-In flow |
+
+**Catatan:** Frontend tetap menggunakan Supabase built-in OTP (`verifyOTP()`, `resend()`) karena sudah terintegrasi sempurna. Backend OTP endpoints tersedia sebagai alternatif/fallback.
+
+---
 
 #### Task 1 (ID 9): Deduplikasi & Perluasan Dataset Makanan
 
@@ -203,11 +242,10 @@
 
 ---
 
-### ❌ NOT DONE — Adit (4 task)
+### ❌ NOT DONE — Adit (3 task)
 
 | ID | Backlog Item | Status | Detail yang Belum Ada |
 |----|-------------|--------|----------------------|
-| 5 | Verifikasi Email OTP (`/auth/send-otp`, `/auth/verify-otp`) | ❌ NOT DONE | Tidak ada endpoint OTP, tidak ada tabel otp, tidak ada logic generate/verify 6-digit code |
 | 13 | API upload foto profil (`PUT /profile/photo`) | ❌ NOT DONE | Tidak ada endpoint upload, tidak ada kolom `photo_url` di tabel profiles, tidak ada storage logic |
 | 17 | Validasi batas wajar input (tinggi, berat, umur) | ❌ NOT DONE | Validasi hanya `required|integer/numeric`, tanpa min/max bounds |
 | 23 | Backend notifikasi (edge function/socket) | ❌ NOT DONE | Tidak ada notification API, tidak ada tabel notifications, tidak ada trigger logic |
@@ -225,13 +263,13 @@
 ## Dependency Map — Apa yang Memblokir Apa
 
 ```
-BACKEND — ADIT (0/4) — MEMBLOKIR:
-├── ID 5  (OTP API) ───────────► Frontend ID 6 sudah DONE — pakai Supabase built-in verifyOTP()
+BACKEND — ADIT (0/3) — MEMBLOKIR:
 ├── ID 13 (Upload foto profil) ─► Sudah tidak memblokir (frontend DONE via local storage)
 ├── ID 17 (Validasi input) ────► Tidak memblokir frontend langsung, tapi risiko data tidak valid
 └── ID 23 (Notifikasi backend) ► Frontend sudah pakai FCM + local notification, tapi tidak ada backend trigger
 
-BACKEND — IBNU (3/3) — SELESAI & TERINTEGRASI:
+BACKEND — IBNU (4/4) — SELESAI & TERINTEGRASI:
+├── ID 5  (OTP API) ───────────► Frontend ID 6 ✅ DONE — backend OTP tersedia, frontend pakai Supabase built-in
 ├── ID 10 (Favorit/Rekomendasi) ► Frontend ID 12 ✅ DONE — backend + frontend integrasi selesai
 └── ID 20 (Komunitas API) ──────► Frontend ID 19 ✅ DONE — mock data diganti API call
 
@@ -256,13 +294,15 @@ FRONTEND (10/10) — SELESAI:
 
 | Kategori | Jumlah |
 |----------|--------|
-| Migration baru | 4 |
-| Model baru | 4 (UserFavorite, Post, PostLike, Comment) |
-| Controller baru | 2 (FavoriteController, PostController) |
+| Migration baru | 5 |
+| Model baru | 5 (UserFavorite, Post, PostLike, Comment, Otp) |
+| Controller baru | 3 (FavoriteController, PostController, OtpController) |
 | Artisan Command | 1 (DeduplicateFoods) |
 | Seeder baru | 1 (LocalFoodSeeder) |
 | CSV data baru | 1 (makanan-lokal.csv — 201 item) |
-| **Total file baru** | **13** |
+| Mailable baru | 1 (OtpMail) |
+| Email template baru | 1 (emails/otp.blade.php) |
+| **Total file baru** | **18** |
 
 ### File yang Diubah
 
@@ -271,16 +311,17 @@ FRONTEND (10/10) — SELESAI:
 | `app/Models/User.php` | +5 relasi (favorites, foodLogs, posts, postLikes, comments) |
 | `app/Models/Food.php` | +2 relasi (favorites, foodLogs) |
 | `app/Http/Controllers/Api/FoodController.php` | +1 method (recommendations) |
-| `routes/api.php` | +10 route baru |
+| `routes/api.php` | +12 route baru |
 
 ### Endpoint Baru
 
 | Kategori | Jumlah Endpoint |
 |----------|----------------|
+| OTP | 2 (POST send, POST verify) |
 | Favorit | 3 (GET, POST, DELETE) |
 | Rekomendasi | 1 (GET) |
 | Komunitas | 6 (CRUD posts + like + comments) |
-| **Total** | **10** |
+| **Total** | **12** |
 
 ### Data Baru
 
@@ -296,7 +337,6 @@ FRONTEND (10/10) — SELESAI:
 ### 1. Backend — Urgent (satu-satunya blocker tersisa)
 - [ ] Validasi input (ID 17) → quick win, 15 menit kerjaan
 - [ ] Upload foto profil API (ID 13) → frontend sudah handle local
-- [ ] OTP API (ID 5) → frontend sudah pakai Supabase built-in, tapi tetap perlu buat fallback
 - [ ] Notification backend (ID 23)
 
 ### 2. Deploy Backend ke VPS

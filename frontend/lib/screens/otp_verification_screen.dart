@@ -6,6 +6,7 @@ import 'package:nutrify/di/service_locator.dart';
 import 'package:nutrify/presentation/login/store/login_store.dart';
 import 'package:nutrify/utils/locale/app_strings.dart';
 import 'package:nutrify/utils/routes/routes.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 class OtpVerificationScreen extends StatefulWidget {
   final String email;
@@ -148,18 +149,64 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
     super.dispose();
   }
 
+  Future<void> _handleBackPress() async {
+    final shouldLeave = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        backgroundColor: Colors.white,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+        title: Text(
+          'Konfirmasi',
+          style: GoogleFonts.montserrat(
+            fontWeight: FontWeight.bold,
+            color: AppColors.navy,
+          ),
+        ),
+        content: const Text(
+          'Verifikasi email belum selesai. Anda harus keluar dan mendaftar ulang jika kembali sekarang. Yakin ingin keluar?',
+          style: TextStyle(color: AppColors.navy),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, false),
+            child: Text('Batal', style: TextStyle(color: AppColors.navy)),
+          ),
+          ElevatedButton(
+            onPressed: () => Navigator.pop(ctx, true),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: AppColors.navy,
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+            ),
+            child: const Text('Keluar', style: TextStyle(color: Colors.white)),
+          ),
+        ],
+      ),
+    );
+    if (shouldLeave == true && mounted) {
+      try {
+        await Supabase.instance.client.auth.signOut();
+      } catch (_) {}
+      // my_app.dart signedOut handler will navigate to login
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: AppColors.cream,
-      appBar: AppBar(
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: AppColors.navy),
-          onPressed: () => Navigator.pop(context),
+    return PopScope(
+      canPop: false,
+      onPopInvokedWithResult: (didPop, result) {
+        if (!didPop) _handleBackPress();
+      },
+      child: Scaffold(
+        backgroundColor: AppColors.cream,
+        appBar: AppBar(
+          backgroundColor: Colors.transparent,
+          elevation: 0,
+          leading: IconButton(
+            icon: const Icon(Icons.arrow_back, color: AppColors.navy),
+            onPressed: _handleBackPress,
+          ),
         ),
-      ),
       body: SafeArea(
         child: SingleChildScrollView(
           padding: const EdgeInsets.symmetric(horizontal: 32),
@@ -275,6 +322,7 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
             ],
           ),
         ),
+      ),
       ),
     );
   }

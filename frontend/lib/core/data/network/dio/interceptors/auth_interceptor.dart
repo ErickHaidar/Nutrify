@@ -1,5 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 class AuthInterceptor extends Interceptor {
   final AsyncValueGetter<String?> accessToken;
@@ -19,5 +20,20 @@ class AuthInterceptor extends Interceptor {
     }
 
     super.onRequest(options, handler);
+  }
+
+  @override
+  void onError(DioException err, ErrorInterceptorHandler handler) {
+    if (err.response?.statusCode == 401) {
+      // Session expired or invalid — sign out user
+      _handleSessionExpired();
+    }
+    super.onError(err, handler);
+  }
+
+  void _handleSessionExpired() {
+    try {
+      Supabase.instance.client.auth.signOut();
+    } catch (_) {}
   }
 }

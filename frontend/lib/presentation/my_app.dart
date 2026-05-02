@@ -49,7 +49,12 @@ class _MyAppState extends State<MyApp> {
             (route) => false,
           );
         } else if (data.event == AuthChangeEvent.signedIn) {
-          // User confirmed email or signed in from OTP verification
+          final user = data.session?.user;
+          // Skip auto-navigate jika email belum dikonfirmasi (registration + OTP flow).
+          // login.dart akan navigate ke OTP screen untuk verifikasi.
+          if (user != null && user.emailConfirmedAt == null) {
+            return;
+          }
           final newToken = data.session?.accessToken;
           if (newToken != null) {
             _prefs.saveAuthToken(newToken);
