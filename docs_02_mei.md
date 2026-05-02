@@ -277,16 +277,7 @@ onPressed: () {
 |------|---------|-------|------------|
 | UI/UX | 8 | 8 | 100% |
 | Backend (Ibnu) | 3 | 3 | 100% |
-| Backend (Adit) | 0 | 4 | 0% |
-| Frontend | 5 | 10 | 50% |
-
-### Status setelah hari ini (akhir 2 Mei):
-
-| Role | Selesai | Total | Persentase |
-|------|---------|-------|------------|
-| UI/UX | 8 | 8 | 100% |
-| Backend (Ibnu) | 3 | 3 | 100% |
-| Backend (Adit) | 1 | 4 | 25% (OTP diambil alih Ibnu) |
+| Backend (Adit) | 1 | 4 | 25% |
 | Frontend | 10 | 10 | 100% |
 
 ### Item yang berubah status hari ini:
@@ -305,7 +296,7 @@ onPressed: () {
 | — | Community notification | — | ✅ Fixed | Terhubung ke NotificationModal |
 | — | Push notification | — | ✅ Enhanced | Timezone fix, auto-schedule on login |
 
-### Backlog Adit — Tetap Belum Selesai:
+### Backlog Adit:
 
 | ID | Backlog Item | Status |
 |----|-------------|--------|
