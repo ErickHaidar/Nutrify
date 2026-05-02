@@ -49,13 +49,14 @@ Perubahan yang perlu di-deploy:
 
 | Perubahan | Detail |
 |-----------|--------|
-| 4 migration baru | Tabel `user_favorites`, `posts`, `post_likes`, `comments` |
-| 4 model baru | UserFavorite, Post, PostLike, Comment |
-| 2 controller baru | FavoriteController, PostController |
+| 5 migration baru | Tabel `user_favorites`, `posts`, `post_likes`, `comments`, `otps` |
+| 5 model baru | UserFavorite, Post, PostLike, Comment, Otp |
+| 3 controller baru | FavoriteController, PostController, OtpController |
 | 1 command baru | `food:deduplicate` |
 | 1 seeder baru | LocalFoodSeeder + makanan-lokal.csv (201 item) |
+| 1 mailable baru | OtpMail (email template OTP) |
 | Model diubah | User.php, Food.php (tambah relasi) |
-| Routes diubah | +10 endpoint baru |
+| Routes diubah | +12 endpoint baru (termasuk OTP) |
 | FoodController diubah | Tambah `recommendations()` |
 
 ---
@@ -358,6 +359,14 @@ curl -s https://nutrify-app.my.id/api/posts
 ```
 Harus return **401 Unauthorized**.
 
+### Cek endpoint baru — OTP (PUBLIC, tanpa auth)
+```bash
+curl -s -X POST https://nutrify-app.my.id/api/auth/send-otp \
+  -H "Content-Type: application/json" \
+  -d '{"email":"test@gmail.com"}'
+```
+Harus return `{"message":"Kode OTP berhasil dikirim ke test@gmail.com"}` (jika mail configured) atau `200 OK`.
+
 ### Cek jumlah makanan di database
 ```bash
 cd /var/www/nutrify-app/backend
@@ -373,6 +382,7 @@ php artisan tinker --execute="
   echo 'posts: ' . (Schema::hasTable('posts') ? 'OK' : 'MISSING') . PHP_EOL;
   echo 'post_likes: ' . (Schema::hasTable('post_likes') ? 'OK' : 'MISSING') . PHP_EOL;
   echo 'comments: ' . (Schema::hasTable('comments') ? 'OK' : 'MISSING') . PHP_EOL;
+  echo 'otps: ' . (Schema::hasTable('otps') ? 'OK' : 'MISSING') . PHP_EOL;
 "
 ```
 
@@ -429,13 +439,21 @@ git checkout <commit-hash-yang-dicatat-di-step-3>
 Salin-tempel blok ini setiap kali mau update:
 
 ```bash
-# ===== QUICK UPDATE SPRINT 2 =====
+# ===== QUICK UPDATE SPRINT 2 (termasuk OTP fix) =====
 
 # --- Di komputer lokal (Git Bash) ---
-scp "C:\Users\Ibnu Habib\Documents\pddl\baru\Nutrify\makanan-lokal.csv" root@103.253.212.55:/var/www/nutrify-app/
-scp -r "C:\Users\Ibnu Habib\Documents\pdbl\baru\Nutrify\backend\app" root@103.253.212.55:/var/www/nutrify-app/backend/
-scp -r "C:\Users\Ibnu Habib\Documents\pdbl\baru\Nutrify\backend\database" root@103.253.212.55:/var/www/nutrify-app/backend/
-scp "C:\Users\Ibnu Habib\Documents\pdbl\baru\Nutrify\backend\routes\api.php" root@103.253.212.55:/var/www/nutrify-app/backend/routes/
+LOCAL="C:\Users\Ibnu Habib\Documents\pdbl\baru\Nutrify"
+VPS=root@103.253.212.55:/var/www/nutrify-app
+
+# Upload backend (app/, database/, routes/, resources/)
+scp "$LOCAL\makanan-lokal.csv" $VPS/
+scp -r "$LOCAL\backend\app" $VPS/backend/
+scp -r "$LOCAL\backend\database" $VPS/backend/
+scp "$LOCAL\backend\routes\api.php" $VPS/backend/routes/
+scp -r "$LOCAL\backend\resources\views" $VPS/backend/resources/
+
+# Upload dokumentasi
+scp "$LOCAL\sprint2_report.md" $VPS/
 
 # --- Di VPS (SSH) ---
 ssh root@103.253.212.55
@@ -449,7 +467,10 @@ sudo chown -R www-data:www-data /var/www/nutrify-app
 sudo chmod -R 775 /var/www/nutrify-app/backend/storage
 php artisan config:cache && php artisan route:cache
 sudo systemctl restart php8.2-fpm && sudo systemctl reload nginx
+
+# Verifikasi
 curl -s https://nutrify-app.my.id/api/foods?search=rendang | head -c 100
+curl -s -X POST https://nutrify-app.my.id/api/auth/send-otp -H "Content-Type: application/json" -d '{"email":"test@gmail.com"}' | head -c 200
 ```
 
 ---
