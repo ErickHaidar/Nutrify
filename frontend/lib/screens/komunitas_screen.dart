@@ -6,6 +6,7 @@ import 'package:nutrify/screens/add_post_screen.dart';
 import 'package:nutrify/services/community_post_api_service.dart';
 import 'package:nutrify/utils/locale/app_strings.dart';
 import 'package:nutrify/widgets/notification_modal.dart';
+import 'package:intl/intl.dart';
 
 class KomunitasScreen extends StatefulWidget {
   const KomunitasScreen({super.key});
@@ -101,103 +102,12 @@ class _KomunitasScreenState extends State<KomunitasScreen> with SingleTickerProv
       context: context,
       backgroundColor: Colors.transparent,
       isScrollControlled: true,
-      builder: (sheetCtx) => StatefulBuilder(
-        builder: (ctx, setSheetState) {
-          return Container(
-            constraints: BoxConstraints(maxHeight: MediaQuery.of(ctx).size.height * 0.7),
-            decoration: const BoxDecoration(color: Colors.white, borderRadius: BorderRadius.vertical(top: Radius.circular(24))),
-            child: Column(
-              children: [
-                Padding(
-                  padding: const EdgeInsets.all(16),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      const Text('Komentar', style: TextStyle(color: AppColors.navy, fontSize: 18, fontWeight: FontWeight.bold)),
-                      GestureDetector(onTap: () => Navigator.pop(ctx), child: const Icon(Icons.close, color: AppColors.navy)),
-                    ],
-                  ),
-                ),
-                const Divider(height: 1),
-                Expanded(
-                  child: FutureBuilder<List<CommentItem>>(
-                    future: _api.getComments(int.parse(post.id)),
-                    builder: (context, snapshot) {
-                      if (snapshot.connectionState == ConnectionState.waiting) {
-                        return const Center(child: CircularProgressIndicator(color: AppColors.navy));
-                      }
-                      final comments = snapshot.data ?? [];
-                      if (comments.isEmpty) {
-                        return Center(child: Text('Belum ada komentar', style: TextStyle(color: AppColors.navy.withOpacity(0.5), fontSize: 14)));
-                      }
-                      return ListView.separated(
-                        padding: const EdgeInsets.all(16),
-                        itemCount: comments.length,
-                        separatorBuilder: (_, __) => const SizedBox(height: 12),
-                        itemBuilder: (_, i) {
-                          final c = comments[i];
-                          return Row(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              CircleAvatar(radius: 16, backgroundColor: AppColors.peach,
-                                child: Text(c.userName.isNotEmpty ? c.userName[0].toUpperCase() : '?',
-                                  style: const TextStyle(color: AppColors.navy, fontWeight: FontWeight.bold, fontSize: 12))),
-                              const SizedBox(width: 10),
-                              Expanded(child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(c.userName, style: const TextStyle(color: AppColors.navy, fontWeight: FontWeight.bold, fontSize: 13)),
-                                  const SizedBox(height: 2),
-                                  Text(c.content, style: TextStyle(color: AppColors.navy.withOpacity(0.8), fontSize: 13, height: 1.4)),
-                                ],
-                              )),
-                            ],
-                          );
-                        },
-                      );
-                    },
-                  ),
-                ),
-                const Divider(height: 1),
-                SafeArea(
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                    child: Row(
-                      children: [
-                        Expanded(
-                          child: TextField(
-                            controller: commentCtrl,
-                            decoration: InputDecoration(
-                              hintText: 'Tulis komentar...',
-                              hintStyle: TextStyle(color: AppColors.navy.withOpacity(0.4)),
-                              filled: true,
-                              fillColor: const Color(0xFFF5F0EB),
-                              contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                              border: OutlineInputBorder(borderRadius: BorderRadius.circular(24), borderSide: BorderSide.none),
-                            ),
-                            style: const TextStyle(color: AppColors.navy, fontSize: 14),
-                          ),
-                        ),
-                        const SizedBox(width: 8),
-                        IconButton(
-                          onPressed: () async {
-                            final text = commentCtrl.text.trim();
-                            if (text.isEmpty) return;
-                            try {
-                              await _api.addComment(int.parse(post.id), text);
-                              commentCtrl.clear();
-                              if (mounted) setState(() => post.comments++);
-                            } catch (_) {}
-                          },
-                          icon: const Icon(Icons.send, color: AppColors.navy),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          );
+      builder: (sheetCtx) => _CommentSheet(
+        post: post,
+        api: _api,
+        commentCtrl: commentCtrl,
+        onCommentAdded: () {
+          if (mounted) setState(() => post.comments++);
         },
       ),
     );
@@ -420,6 +330,249 @@ class _KomunitasScreenState extends State<KomunitasScreen> with SingleTickerProv
                 ),
               ),
             ],
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _CommentSheet extends StatefulWidget {
+  final CommunityPost post;
+  final CommunityPostApiService api;
+  final TextEditingController commentCtrl;
+  final VoidCallback onCommentAdded;
+
+  const _CommentSheet({
+    required this.post,
+    required this.api,
+    required this.commentCtrl,
+    required this.onCommentAdded,
+  });
+
+  @override
+  State<_CommentSheet> createState() => _CommentSheetState();
+}
+
+class _CommentSheetState extends State<_CommentSheet> {
+  List<CommentItem> _comments = [];
+  bool _isLoading = true;
+  bool _isSending = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchComments();
+  }
+
+  Future<void> _fetchComments() async {
+    try {
+      final comments = await widget.api.getComments(int.parse(widget.post.id));
+      if (mounted) {
+        setState(() {
+          _comments = comments;
+          _isLoading = false;
+        });
+      }
+    } catch (_) {
+      if (mounted) setState(() => _isLoading = false);
+    }
+  }
+
+  Future<void> _sendComment() async {
+    final text = widget.commentCtrl.text.trim();
+    if (text.isEmpty || _isSending) return;
+
+    setState(() => _isSending = true);
+
+    try {
+      final newComment = await widget.api.addComment(int.parse(widget.post.id), text);
+      widget.commentCtrl.clear();
+      if (mounted) {
+        setState(() {
+          _comments.add(newComment);
+          _isSending = false;
+        });
+        widget.onCommentAdded();
+      }
+    } catch (_) {
+      if (mounted) setState(() => _isSending = false);
+    }
+  }
+
+  String _formatTime(DateTime dt) {
+    final now = DateTime.now();
+    final diff = now.difference(dt);
+    if (diff.inMinutes < 1) return 'Baru saja';
+    if (diff.inMinutes < 60) return '${diff.inMinutes} menit lalu';
+    if (diff.inHours < 24) return '${diff.inHours} jam lalu';
+    return DateFormat('dd MMM yyyy, HH:mm').format(dt);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      decoration: const BoxDecoration(
+        color: AppColors.cream,
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+      ),
+      constraints: BoxConstraints(maxHeight: MediaQuery.of(context).size.height * 0.75),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          // Handle bar
+          Padding(
+            padding: const EdgeInsets.only(top: 12, bottom: 4),
+            child: Container(
+              width: 40, height: 4,
+              decoration: BoxDecoration(
+                color: AppColors.navy.withOpacity(0.2),
+                borderRadius: BorderRadius.circular(2),
+              ),
+            ),
+          ),
+          // Header
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+            child: Row(
+              children: [
+                Text(
+                  AppStrings.comments(_comments.length.toString()),
+                  style: const TextStyle(
+                    color: AppColors.navy,
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                const Spacer(),
+                GestureDetector(
+                  onTap: () => Navigator.pop(context),
+                  child: CircleAvatar(
+                    radius: 16,
+                    backgroundColor: AppColors.navy.withOpacity(0.1),
+                    child: const Icon(Icons.close, size: 18, color: AppColors.navy),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          const Divider(height: 1, color: Colors.black12),
+          // Comment list
+          Expanded(
+            child: _isLoading
+                ? const Center(child: CircularProgressIndicator(color: AppColors.navy))
+                : _comments.isEmpty
+                    ? Center(
+                        child: Text(
+                          'Belum ada komentar',
+                          style: TextStyle(color: AppColors.navy.withOpacity(0.5), fontSize: 14),
+                        ),
+                      )
+                    : ListView.separated(
+                        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                        itemCount: _comments.length,
+                        separatorBuilder: (_, __) => const SizedBox(height: 12),
+                        itemBuilder: (context, index) {
+                          final c = _comments[index];
+                          return Row(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              CircleAvatar(
+                                radius: 18,
+                                backgroundColor: AppColors.peach,
+                                child: Text(
+                                  c.userName.isNotEmpty ? c.userName[0].toUpperCase() : '-',
+                                  style: const TextStyle(color: AppColors.navy, fontWeight: FontWeight.bold, fontSize: 14),
+                                ),
+                              ),
+                              const SizedBox(width: 10),
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      c.userName,
+                                      style: const TextStyle(
+                                        color: AppColors.navy,
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 13,
+                                      ),
+                                    ),
+                                    const SizedBox(height: 2),
+                                    Text(
+                                      c.content,
+                                      style: TextStyle(
+                                        color: AppColors.navy.withOpacity(0.8),
+                                        fontSize: 13,
+                                        height: 1.4,
+                                      ),
+                                    ),
+                                    const SizedBox(height: 4),
+                                    Text(
+                                      _formatTime(c.createdAt),
+                                      style: TextStyle(
+                                        color: AppColors.navy.withOpacity(0.4),
+                                        fontSize: 11,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          );
+                        },
+                      ),
+          ),
+          const Divider(height: 1, color: Colors.black12),
+          // Input field
+          SafeArea(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: TextField(
+                      controller: widget.commentCtrl,
+                      enabled: !_isSending,
+                      decoration: InputDecoration(
+                        hintText: 'Tulis komentar...',
+                        hintStyle: TextStyle(color: AppColors.navy.withOpacity(0.4)),
+                        filled: true,
+                        fillColor: Colors.white,
+                        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(24),
+                          borderSide: BorderSide.none,
+                        ),
+                        enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(24),
+                          borderSide: BorderSide(color: AppColors.navy.withOpacity(0.1)),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(24),
+                          borderSide: BorderSide(color: AppColors.navy.withOpacity(0.3)),
+                        ),
+                      ),
+                      onSubmitted: (_) => _sendComment(),
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  CircleAvatar(
+                    radius: 22,
+                    backgroundColor: AppColors.navy,
+                    child: _isSending
+                        ? const SizedBox(
+                            width: 18, height: 18,
+                            child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
+                          )
+                        : IconButton(
+                            icon: const Icon(Icons.send, color: Colors.white, size: 20),
+                            onPressed: _sendComment,
+                          ),
+                  ),
+                ],
+              ),
+            ),
           ),
         ],
       ),
