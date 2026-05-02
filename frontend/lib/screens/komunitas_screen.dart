@@ -5,6 +5,7 @@ import 'package:nutrify/domain/entity/post/community_post.dart';
 import 'package:nutrify/screens/add_post_screen.dart';
 import 'package:nutrify/services/community_post_api_service.dart';
 import 'package:nutrify/utils/locale/app_strings.dart';
+import 'package:nutrify/widgets/notification_modal.dart';
 
 class KomunitasScreen extends StatefulWidget {
   const KomunitasScreen({super.key});
@@ -93,6 +94,115 @@ class _KomunitasScreenState extends State<KomunitasScreen> with SingleTickerProv
     });
   }
 
+  void _showComments(CommunityPost post) {
+    final commentCtrl = TextEditingController();
+
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.transparent,
+      isScrollControlled: true,
+      builder: (sheetCtx) => StatefulBuilder(
+        builder: (ctx, setSheetState) {
+          return Container(
+            constraints: BoxConstraints(maxHeight: MediaQuery.of(ctx).size.height * 0.7),
+            decoration: const BoxDecoration(color: Colors.white, borderRadius: BorderRadius.vertical(top: Radius.circular(24))),
+            child: Column(
+              children: [
+                Padding(
+                  padding: const EdgeInsets.all(16),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      const Text('Komentar', style: TextStyle(color: AppColors.navy, fontSize: 18, fontWeight: FontWeight.bold)),
+                      GestureDetector(onTap: () => Navigator.pop(ctx), child: const Icon(Icons.close, color: AppColors.navy)),
+                    ],
+                  ),
+                ),
+                const Divider(height: 1),
+                Expanded(
+                  child: FutureBuilder<List<CommentItem>>(
+                    future: _api.getComments(int.parse(post.id)),
+                    builder: (context, snapshot) {
+                      if (snapshot.connectionState == ConnectionState.waiting) {
+                        return const Center(child: CircularProgressIndicator(color: AppColors.navy));
+                      }
+                      final comments = snapshot.data ?? [];
+                      if (comments.isEmpty) {
+                        return Center(child: Text('Belum ada komentar', style: TextStyle(color: AppColors.navy.withOpacity(0.5), fontSize: 14)));
+                      }
+                      return ListView.separated(
+                        padding: const EdgeInsets.all(16),
+                        itemCount: comments.length,
+                        separatorBuilder: (_, __) => const SizedBox(height: 12),
+                        itemBuilder: (_, i) {
+                          final c = comments[i];
+                          return Row(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              CircleAvatar(radius: 16, backgroundColor: AppColors.peach,
+                                child: Text(c.userName.isNotEmpty ? c.userName[0].toUpperCase() : '?',
+                                  style: const TextStyle(color: AppColors.navy, fontWeight: FontWeight.bold, fontSize: 12))),
+                              const SizedBox(width: 10),
+                              Expanded(child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(c.userName, style: const TextStyle(color: AppColors.navy, fontWeight: FontWeight.bold, fontSize: 13)),
+                                  const SizedBox(height: 2),
+                                  Text(c.content, style: TextStyle(color: AppColors.navy.withOpacity(0.8), fontSize: 13, height: 1.4)),
+                                ],
+                              )),
+                            ],
+                          );
+                        },
+                      );
+                    },
+                  ),
+                ),
+                const Divider(height: 1),
+                SafeArea(
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                    child: Row(
+                      children: [
+                        Expanded(
+                          child: TextField(
+                            controller: commentCtrl,
+                            decoration: InputDecoration(
+                              hintText: 'Tulis komentar...',
+                              hintStyle: TextStyle(color: AppColors.navy.withOpacity(0.4)),
+                              filled: true,
+                              fillColor: const Color(0xFFF5F0EB),
+                              contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                              border: OutlineInputBorder(borderRadius: BorderRadius.circular(24), borderSide: BorderSide.none),
+                            ),
+                            style: const TextStyle(color: AppColors.navy, fontSize: 14),
+                          ),
+                        ),
+                        const SizedBox(width: 8),
+                        IconButton(
+                          onPressed: () async {
+                            final text = commentCtrl.text.trim();
+                            if (text.isEmpty) return;
+                            try {
+                              await _api.addComment(int.parse(post.id), text);
+                              commentCtrl.clear();
+                              if (mounted) setState(() => post.comments++);
+                            } catch (_) {}
+                          },
+                          icon: const Icon(Icons.send, color: AppColors.navy),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          );
+        },
+      ),
+    );
+  }
+
   String _formatCount(int count) {
     if (count >= 1000000) {
       return '${(count / 1000000).toStringAsFixed(1)}M';
@@ -126,7 +236,14 @@ class _KomunitasScreenState extends State<KomunitasScreen> with SingleTickerProv
           ),
           IconButton(
             icon: const Icon(Icons.notifications, color: Color(0xFF49426E), size: 28),
-            onPressed: () {},
+            onPressed: () {
+              showModalBottomSheet(
+                context: context,
+                backgroundColor: Colors.transparent,
+                isScrollControlled: true,
+                builder: (context) => const NotificationModal(),
+              );
+            },
           ),
           const SizedBox(width: 8),
         ],
@@ -239,20 +356,21 @@ class _KomunitasScreenState extends State<KomunitasScreen> with SingleTickerProv
                   ],
                 ),
               ),
-              GestureDetector(
-                onTap: () => _toggleFollow(post.id),
-                child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
-                  decoration: BoxDecoration(
-                    color: post.isFollowed ? AppColors.navy : AppColors.amber,
-                    borderRadius: BorderRadius.circular(16),
-                  ),
-                  child: Text(
-                    post.isFollowed ? AppStrings.following : AppStrings.follow,
-                    style: TextStyle(color: post.isFollowed ? Colors.white : AppColors.navy, fontWeight: FontWeight.bold, fontSize: 12),
+              if (!post.isOwnPost)
+                GestureDetector(
+                  onTap: () => _toggleFollow(post.id),
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+                    decoration: BoxDecoration(
+                      color: post.isFollowed ? AppColors.navy : AppColors.amber,
+                      borderRadius: BorderRadius.circular(16),
+                    ),
+                    child: Text(
+                      post.isFollowed ? AppStrings.following : AppStrings.follow,
+                      style: TextStyle(color: post.isFollowed ? Colors.white : AppColors.navy, fontWeight: FontWeight.bold, fontSize: 12),
+                    ),
                   ),
                 ),
-              ),
             ],
           ),
           const SizedBox(height: 16),
@@ -292,7 +410,7 @@ class _KomunitasScreenState extends State<KomunitasScreen> with SingleTickerProv
               ),
               const SizedBox(width: 24),
               GestureDetector(
-                onTap: () {},
+                onTap: () => _showComments(post),
                 child: Row(
                   children: [
                     Icon(Icons.chat_bubble_outline, color: AppColors.navy.withOpacity(0.6), size: 20),

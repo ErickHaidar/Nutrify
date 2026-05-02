@@ -13,8 +13,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-
-import '../di/service_locator.dart';
+import 'package:nutrify/di/service_locator.dart';
+import 'package:nutrify/services/notification_service.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class MyApp extends StatefulWidget {
   static final GlobalKey<NavigatorState> navigatorKey =
@@ -38,7 +39,7 @@ class _MyAppState extends State<MyApp> {
     try {
       _authSubscription = Supabase.instance.client.auth.onAuthStateChange.listen((
         data,
-      ) {
+      ) async {
         if (data.event == AuthChangeEvent.signedOut) {
           // Session habis atau user di-sign-out dari luar
           _userStore.clearSession();
@@ -60,6 +61,12 @@ class _MyAppState extends State<MyApp> {
             _prefs.saveAuthToken(newToken);
           }
           _prefs.saveIsLoggedIn(true);
+          try {
+            final notifEnabled = await getIt<SharedPreferences>().getBool('notifications_enabled') ?? true;
+            if (notifEnabled) {
+              getIt<NotificationService>().scheduleMealReminders();
+            }
+          } catch (_) {}
           MyApp.navigatorKey.currentState?.pushNamedAndRemoveUntil(
             Routes.home,
             (route) => false,

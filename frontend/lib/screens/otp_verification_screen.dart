@@ -20,7 +20,7 @@ class OtpVerificationScreen extends StatefulWidget {
 
 class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
   final _userStore = getIt<UserStore>();
-  static const int _otpLength = 8;
+  static const int _otpLength = 6;
   final List<TextEditingController> _controllers = List.generate(
     _otpLength,
     (_) => TextEditingController(),
@@ -350,8 +350,8 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: List.generate(_otpLength, (index) {
         return SizedBox(
-          width: 38,
-          height: 52,
+          width: 48,
+          height: 56,
           child: TextField(
             controller: _controllers[index],
             focusNode: _focusNodes[index],
@@ -362,7 +362,7 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
               LengthLimitingTextInputFormatter(index == 0 ? _otpLength : 1),
             ],
             style: GoogleFonts.montserrat(
-              fontSize: 18,
+              fontSize: 22,
               fontWeight: FontWeight.bold,
               color: AppColors.navy,
             ),

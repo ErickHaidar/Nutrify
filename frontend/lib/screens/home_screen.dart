@@ -178,39 +178,28 @@ class HomeScreenState extends State<HomeScreen> {
                         ),
                       ],
                     ),
-                    GestureDetector(
-                      onTapDown: (details) {
-                        _notificationTapStart = details.globalPosition;
-                      },
-                      onTapUp: (details) {
-                        final start = _notificationTapStart;
-                        if (start != null) {
-                          final dx = (details.globalPosition.dx - start.dx).abs();
-                          final dy = (details.globalPosition.dy - start.dy).abs();
-                          const double deadzone = 8.0; // logical pixels
-                          if (dx <= deadzone && dy <= deadzone) {
-                            _showNotifications();
-                          }
-                        }
-                        _notificationTapStart = null;
-                      },
-                      onTapCancel: () {
-                        _notificationTapStart = null;
-                      },
-                      child: CircleAvatar(
-                        backgroundColor: AppColors.navy.withOpacity(0.1),
-                        child: const Icon(Icons.notifications, color: AppColors.navy),
-                      ),
-                    ),
-                    const SizedBox(width: 8),
-                    GestureDetector(
-                      onTap: () {
-                        Navigator.push(context, MaterialPageRoute(builder: (_) => const HelpScreen()));
-                      },
-                      child: CircleAvatar(
-                        backgroundColor: AppColors.navy.withOpacity(0.1),
-                        child: const Icon(Icons.help_outline, color: AppColors.navy),
-                      ),
+
+                    Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        GestureDetector(
+                          onTap: () {
+                            Navigator.push(context, MaterialPageRoute(builder: (_) => const HelpScreen()));
+                          },
+                          child: CircleAvatar(
+                            backgroundColor: AppColors.navy.withOpacity(0.1),
+                            child: const Icon(Icons.help_outline, color: AppColors.navy),
+                          ),
+                        ),
+                        const SizedBox(width: 8),
+                        GestureDetector(
+                          onTap: _showNotifications,
+                          child: CircleAvatar(
+                            backgroundColor: AppColors.navy.withOpacity(0.1),
+                            child: const Icon(Icons.notifications, color: AppColors.navy),
+                          ),
+                        ),
+                      ],
                     ),
                   ],
                 ),

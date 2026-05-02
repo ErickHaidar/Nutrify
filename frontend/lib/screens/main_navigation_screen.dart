@@ -20,17 +20,19 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
     setState(() {
       _selectedIndex = index;
     });
-    // If switching to Home tab, trigger a refresh
     if (index == 0) {
       _homeKey.currentState?.loadDailyData();
     }
-    // If switching to Profil tab, trigger a refresh
+    if (index == 1) {
+      _historyKey.currentState?.refreshData();
+    }
     if (index == 3) {
       _profileKey.currentState?.loadProfile();
     }
   }
 
   final GlobalKey<HomeScreenState> _homeKey = GlobalKey<HomeScreenState>();
+  final GlobalKey<HistoryScreenState> _historyKey = GlobalKey<HistoryScreenState>();
   final GlobalKey<ProfileScreenState> _profileKey =
       GlobalKey<ProfileScreenState>();
 
@@ -41,7 +43,7 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
     super.initState();
     _pages = [
       HomeScreen(key: _homeKey),
-      const HistoryScreen(),
+      HistoryScreen(key: _historyKey),
       KomunitasScreen(),
       ProfileScreen(key: _profileKey),
     ];

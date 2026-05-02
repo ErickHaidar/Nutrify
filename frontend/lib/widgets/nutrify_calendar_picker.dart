@@ -2,13 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:nutrify/constants/colors.dart';
 import 'package:nutrify/utils/locale/app_strings.dart';
 
-enum _SelectionMode { day, month, year }
+enum SelectionMode { day, month, year }
 
 class NutrifyCalendarPicker extends StatefulWidget {
   final DateTime initialDate;
   final DateTime firstDate;
   final DateTime lastDate;
   final ValueChanged<DateTime> onDateSelected;
+  final SelectionMode startMode;
 
   const NutrifyCalendarPicker({
     super.key,
@@ -16,6 +17,7 @@ class NutrifyCalendarPicker extends StatefulWidget {
     required this.firstDate,
     required this.lastDate,
     required this.onDateSelected,
+    this.startMode = SelectionMode.year,
   });
 
   @override
@@ -25,7 +27,7 @@ class NutrifyCalendarPicker extends StatefulWidget {
 class _NutrifyCalendarPickerState extends State<NutrifyCalendarPicker> {
   late DateTime _displayedMonth;
   DateTime? _selectedDate;
-  _SelectionMode _mode = _SelectionMode.year; // Always start from Year
+  SelectionMode _mode = SelectionMode.year; // Default, overridden in initState
   late int _startYear;
 
   static List<String> get _monthNames => AppStrings.monthNames;
@@ -37,14 +39,15 @@ class _NutrifyCalendarPickerState extends State<NutrifyCalendarPicker> {
     super.initState();
     _displayedMonth = DateTime(widget.initialDate.year, widget.initialDate.month);
     _selectedDate = widget.initialDate;
+    _mode = widget.startMode;
     _startYear = (_displayedMonth.year ~/ 12) * 12;
   }
 
   void _previous() {
     setState(() {
-      if (_mode == _SelectionMode.day) {
+      if (_mode == SelectionMode.day) {
         _displayedMonth = DateTime(_displayedMonth.year, _displayedMonth.month - 1);
-      } else if (_mode == _SelectionMode.year) {
+      } else if (_mode == SelectionMode.year) {
         _startYear -= 12;
       }
     });
@@ -52,18 +55,18 @@ class _NutrifyCalendarPickerState extends State<NutrifyCalendarPicker> {
 
   void _next() {
     setState(() {
-      if (_mode == _SelectionMode.day) {
+      if (_mode == SelectionMode.day) {
         _displayedMonth = DateTime(_displayedMonth.year, _displayedMonth.month + 1);
-      } else if (_mode == _SelectionMode.year) {
+      } else if (_mode == SelectionMode.year) {
         _startYear += 12;
       }
     });
   }
 
   String get _headerLabel {
-    if (_mode == _SelectionMode.day) {
+    if (_mode == SelectionMode.day) {
       return '${_monthNames[_displayedMonth.month - 1]} ${_displayedMonth.year}';
-    } else if (_mode == _SelectionMode.month) {
+    } else if (_mode == SelectionMode.month) {
       return '${_displayedMonth.year}';
     } else {
       return '$_startYear \u2013 ${_startYear + 11}';
@@ -72,11 +75,11 @@ class _NutrifyCalendarPickerState extends State<NutrifyCalendarPicker> {
 
   String get _modeLabel {
     switch (_mode) {
-      case _SelectionMode.year:
+      case SelectionMode.year:
         return AppStrings.selectYear;
-      case _SelectionMode.month:
+      case SelectionMode.month:
         return AppStrings.selectMonth;
-      case _SelectionMode.day:
+      case SelectionMode.day:
         return AppStrings.selectDay;
     }
   }
@@ -117,10 +120,10 @@ class _NutrifyCalendarPickerState extends State<NutrifyCalendarPicker> {
                 GestureDetector(
                   onTap: () {
                     setState(() {
-                      if (_mode == _SelectionMode.day) {
-                        _mode = _SelectionMode.month;
-                      } else if (_mode == _SelectionMode.month) {
-                        _mode = _SelectionMode.year;
+                      if (_mode == SelectionMode.day) {
+                        _mode = SelectionMode.month;
+                      } else if (_mode == SelectionMode.month) {
+                        _mode = SelectionMode.year;
                       }
                     });
                   },
@@ -135,7 +138,7 @@ class _NutrifyCalendarPickerState extends State<NutrifyCalendarPicker> {
                           fontWeight: FontWeight.bold,
                         ),
                       ),
-                      if (_mode != _SelectionMode.year) ...[
+                      if (_mode != SelectionMode.year) ...[
                         const SizedBox(width: 4),
                         Icon(
                           Icons.keyboard_arrow_down_rounded,
@@ -149,12 +152,12 @@ class _NutrifyCalendarPickerState extends State<NutrifyCalendarPicker> {
                 Row(
                   children: [
                     _NavButton(
-                      onTap: _mode == _SelectionMode.month ? null : _previous,
+                      onTap: _mode == SelectionMode.month ? null : _previous,
                       icon: Icons.chevron_left,
                     ),
                     const SizedBox(width: 4),
                     _NavButton(
-                      onTap: _mode == _SelectionMode.month ? null : _next,
+                      onTap: _mode == SelectionMode.month ? null : _next,
                       icon: Icons.chevron_right,
                     ),
                   ],
@@ -164,11 +167,11 @@ class _NutrifyCalendarPickerState extends State<NutrifyCalendarPicker> {
             const SizedBox(height: 16),
 
             // Content grid
-            if (_mode == _SelectionMode.day) ...[
+            if (_mode == SelectionMode.day) ...[
               _buildWeekdayHeader(),
               const SizedBox(height: 4),
               _buildDateGrid(),
-            ] else if (_mode == _SelectionMode.month) ...[
+            ] else if (_mode == SelectionMode.month) ...[
               _buildMonthGrid(),
             ] else ...[
               _buildYearGrid(),
@@ -180,7 +183,7 @@ class _NutrifyCalendarPickerState extends State<NutrifyCalendarPicker> {
             SizedBox(
               width: double.infinity,
               child: ElevatedButton(
-                onPressed: (_selectedDate != null && _mode == _SelectionMode.day)
+                onPressed: (_selectedDate != null && _mode == SelectionMode.day)
                     ? () => Navigator.pop(context, _selectedDate)
                     : null,
                 style: ElevatedButton.styleFrom(
@@ -309,7 +312,7 @@ class _NutrifyCalendarPickerState extends State<NutrifyCalendarPicker> {
         return GestureDetector(
           onTap: () => setState(() {
             _displayedMonth = DateTime(_displayedMonth.year, index + 1);
-            _mode = _SelectionMode.day;
+            _mode = SelectionMode.day;
           }),
           child: Container(
             margin: const EdgeInsets.all(4),
@@ -353,7 +356,7 @@ class _NutrifyCalendarPickerState extends State<NutrifyCalendarPicker> {
               ? null
               : () => setState(() {
                     _displayedMonth = DateTime(year, _displayedMonth.month);
-                    _mode = _SelectionMode.month;
+                    _mode = SelectionMode.month;
                   }),
           child: Container(
             margin: const EdgeInsets.all(4),
@@ -423,6 +426,7 @@ Future<DateTime?> showNutrifyDatePicker(
   DateTime? initialDate,
   DateTime? firstDate,
   DateTime? lastDate,
+  SelectionMode startMode = SelectionMode.year,
 }) {
   return showDialog<DateTime>(
     context: context,
@@ -431,6 +435,7 @@ Future<DateTime?> showNutrifyDatePicker(
       initialDate: initialDate ?? DateTime.now(),
       firstDate: firstDate ?? DateTime(1900),
       lastDate: lastDate ?? DateTime.now(),
+      startMode: startMode,
       onDateSelected: (date) {},
     ),
   );

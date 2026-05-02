@@ -37,6 +37,7 @@ class NotificationService {
   Future<void> init() async {
     // 0. Initialize Timezones
     tz.initializeTimeZones();
+    tz.setLocalLocation(tz.getLocation('Asia/Jakarta'));
     
     // 1. Initialize Local Notifications (Always works)
     const AndroidInitializationSettings initializationSettingsAndroid =

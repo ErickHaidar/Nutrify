@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:supabase_flutter/supabase_flutter.dart' as sb;
 
 class CommunityPost {
   final String id;
@@ -14,6 +15,12 @@ class CommunityPost {
   bool isLiked;
   bool isFollowed;
   final String tabCategory;
+
+  bool get isOwnPost {
+    final currentUserId = sb.Supabase.instance.client.auth.currentUser?.id;
+    if (currentUserId == null) return false;
+    return currentUserId == authorId.toString();
+  }
 
   CommunityPost({
     required this.id,
