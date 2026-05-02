@@ -1,6 +1,6 @@
 # NUTRIFY — Backend Progress Sprint 2
 
-> **Dibuat oleh:** Ibnu Habib (Backend & Frontend Developer)
+> **Dibuat oleh:** Ibnu Habib (Backend Developer)
 > **Tanggal:** 2 Mei 2026
 > **Untuk:** Backend Developer
 > **Sprint:** Sprint 2
@@ -30,7 +30,7 @@
 
 ## 2. Tabel Task — Sudah vs Belum Dikerjakan
 
-### ✅ SUDAH DIKERJAKAN (oleh Ibnu)
+### ✅ SUDAH DIKERJAKAN
 
 | ID | Task | File | Status |
 |----|------|------|--------|
