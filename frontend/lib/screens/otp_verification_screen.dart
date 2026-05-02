@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:nutrify/constants/colors.dart';
 import 'package:nutrify/di/service_locator.dart';
@@ -19,11 +20,12 @@ class OtpVerificationScreen extends StatefulWidget {
 
 class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
   final _userStore = getIt<UserStore>();
+  static const int _otpLength = 8;
   final List<TextEditingController> _controllers = List.generate(
-    6,
+    _otpLength,
     (_) => TextEditingController(),
   );
-  final List<FocusNode> _focusNodes = List.generate(6, (_) => FocusNode());
+  final List<FocusNode> _focusNodes = List.generate(_otpLength, (_) => FocusNode());
 
   bool _isVerifying = false;
   bool _isResending = false;
@@ -55,16 +57,32 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
 
   void _onChanged(String value, int index) {
     setState(() => _errorMessage = null);
-    if (value.length == 1 && index < 5) {
+
+    // Handle paste: if user pastes full OTP into one field, distribute to all fields
+    if (value.length > 1) {
+      final digits = value.replaceAll(RegExp(r'[^0-9]'), '');
+      if (digits.length >= _otpLength) {
+        for (int i = 0; i < _otpLength; i++) {
+          _controllers[i].text = digits[i];
+        }
+        _focusNodes[_otpLength - 1].requestFocus();
+        if (_otp.length == _otpLength) {
+          _verifyOtp();
+        }
+        return;
+      }
+    }
+
+    if (value.length == 1 && index < _otpLength - 1) {
       _focusNodes[index + 1].requestFocus();
     }
-    if (_otp.length == 6) {
+    if (_otp.length == _otpLength) {
       _verifyOtp();
     }
   }
 
   Future<void> _verifyOtp() async {
-    if (_otp.length < 6) return;
+    if (_otp.length < _otpLength) return;
     setState(() {
       _isVerifying = true;
       _errorMessage = null;
@@ -330,18 +348,21 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
   Widget _buildOtpInputs() {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: List.generate(6, (index) {
+      children: List.generate(_otpLength, (index) {
         return SizedBox(
-          width: 48,
-          height: 56,
+          width: 38,
+          height: 52,
           child: TextField(
             controller: _controllers[index],
             focusNode: _focusNodes[index],
             textAlign: TextAlign.center,
             keyboardType: TextInputType.number,
-            maxLength: 1,
+            inputFormatters: [
+              FilteringTextInputFormatter.digitsOnly,
+              LengthLimitingTextInputFormatter(index == 0 ? _otpLength : 1),
+            ],
             style: GoogleFonts.montserrat(
-              fontSize: 22,
+              fontSize: 18,
               fontWeight: FontWeight.bold,
               color: AppColors.navy,
             ),

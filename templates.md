@@ -28,7 +28,7 @@ Verifikasi Email Anda — Nutrify 🌱
           <!-- Header -->
           <tr>
             <td align="center" style="background:linear-gradient(135deg,#4A446F,#6B6594);padding:40px 30px 30px;">
-              <img src="https://cdn.snbtku.it.com/nutrify_logo-removebg-preview.png" alt="Nutrify" style="height:56px;margin-bottom:10px;" />
+              <img src="https://nutrify-app.my.id/logo.png" alt="Nutrify" style="height:56px;margin-bottom:10px;" />
               <p style="margin:0;color:rgba(255,255,255,0.85);font-size:14px;">Pantau kalori Anda. Pantau hidup Anda.</p>
             </td>
           </tr>
@@ -115,7 +115,7 @@ Anda Diundang ke Nutrify! 🎉
           <!-- Header -->
           <tr>
             <td align="center" style="background:linear-gradient(135deg,#4A446F,#6B6594);padding:40px 30px 30px;">
-              <img src="https://cdn.snbtku.it.com/nutrify_logo-removebg-preview.png" alt="Nutrify" style="height:56px;margin-bottom:10px;" />
+              <img src="https://nutrify-app.my.id/logo.png" alt="Nutrify" style="height:56px;margin-bottom:10px;" />
               <p style="margin:0;color:rgba(255,255,255,0.85);font-size:14px;">Pantau kalori Anda. Pantau hidup Anda.</p>
             </td>
           </tr>
@@ -206,7 +206,7 @@ Tautan Login Nutrify Anda 🔗
           <!-- Header -->
           <tr>
             <td align="center" style="background:linear-gradient(135deg,#4A446F,#6B6594);padding:40px 30px 30px;">
-              <img src="https://cdn.snbtku.it.com/nutrify_logo-removebg-preview.png" alt="Nutrify" style="height:56px;margin-bottom:10px;" />
+              <img src="https://nutrify-app.my.id/logo.png" alt="Nutrify" style="height:56px;margin-bottom:10px;" />
               <p style="margin:0;color:rgba(255,255,255,0.85);font-size:14px;">Pantau kalori Anda. Pantau hidup Anda.</p>
             </td>
           </tr>
@@ -278,7 +278,7 @@ Konfirmasi Perubahan Email — Nutrify 📧
           <!-- Header -->
           <tr>
             <td align="center" style="background:linear-gradient(135deg,#4A446F,#6B6594);padding:40px 30px 30px;">
-              <img src="https://cdn.snbtku.it.com/nutrify_logo-removebg-preview.png" alt="Nutrify" style="height:56px;margin-bottom:10px;" />
+              <img src="https://nutrify-app.my.id/logo.png" alt="Nutrify" style="height:56px;margin-bottom:10px;" />
               <p style="margin:0;color:rgba(255,255,255,0.85);font-size:14px;">Pantau kalori Anda. Pantau hidup Anda.</p>
             </td>
           </tr>
@@ -375,7 +375,7 @@ Atur Ulang Password Nutrify Anda 🔐
           <!-- Header -->
           <tr>
             <td align="center" style="background:linear-gradient(135deg,#4A446F,#6B6594);padding:40px 30px 30px;">
-              <img src="https://cdn.snbtku.it.com/nutrify_logo-removebg-preview.png" alt="Nutrify" style="height:56px;margin-bottom:10px;" />
+              <img src="https://nutrify-app.my.id/logo.png" alt="Nutrify" style="height:56px;margin-bottom:10px;" />
               <p style="margin:0;color:rgba(255,255,255,0.85);font-size:14px;">Pantau kalori Anda. Pantau hidup Anda.</p>
             </td>
           </tr>
@@ -458,7 +458,7 @@ Kode Konfirmasi — Nutrify 🔐
           <!-- Header -->
           <tr>
             <td align="center" style="background:linear-gradient(135deg,#4A446F,#6B6594);padding:40px 30px 30px;">
-              <img src="https://cdn.snbtku.it.com/nutrify_logo-removebg-preview.png" alt="Nutrify" style="height:56px;margin-bottom:10px;" />
+              <img src="https://nutrify-app.my.id/logo.png" alt="Nutrify" style="height:56px;margin-bottom:10px;" />
               <p style="margin:0;color:rgba(255,255,255,0.85);font-size:14px;">Pantau kalori Anda. Pantau hidup Anda.</p>
             </td>
           </tr>
