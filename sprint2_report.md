@@ -11,8 +11,7 @@
 |------|-----------|------|---------|----------|------------|
 | **UI/UX** | 8 | 8 | 0 | 0 | **100%** |
 | **Frontend** | 10 | 10 | 0 | 0 | **100%** |
-| **Backend (Ibnu)** | 3 | 3 | 0 | 0 | **100%** |
-| **Backend (Adit)** | 4 | 0 | 0 | 4 | **0%** |
+| **Backend** | 7 | 3 | 0 | 4 | **43%** |
 | **TOTAL** | 25 | 21 | 0 | 4 | **84%** |
 
 ---
@@ -44,10 +43,9 @@
 
 ---
 
-## B. Frontend (Eksekutor: Hamas, Rizqi, Farid, **Ibnu**)
+## B. Frontend (Eksekutor: Hamas, Rizqi, Farid)
 
 > **Status: 10/10 DONE (100%)**
-> **Semua task frontend termasuk yang dikerjakan Ibnu sudah selesai**
 
 ### ✅ DONE (10 task)
 
@@ -55,18 +53,18 @@
 |----|-------------|-----------|--------|---------------------|
 | 2 | Implementasi tombol Google Sign-In | Hamas | `presentation/login/login.dart:410-454` | Tombol putih, icon G, "Masuk dengan Google", panggil `_userStore.signInWithGoogle()` |
 | 4 | Perbaikan teks & konsistensi bahasa | Rizqi | `utils/locale/app_strings.dart` | Sistem lokalitas terpusat, Bahasa Indonesia sebagai default, support English |
-| 6 | Halaman OTP Verification | **Ibnu** | `screens/otp_verification_screen.dart` | 6 input box auto-focus, countdown timer 60s, tombol resend, verify via Supabase `verifyOTP()`. Termasuk update: `UserRepository`, `UserRepositoryImpl`, `UserStore`, `login.dart` (navigate to OTP after signUp), `routes.dart`, `my_app.dart` (auth state handler) |
-| 8 | Help Info Page | **Ibnu** | `screens/help_screen.dart` | Halaman bantuan dengan About, cara tracking kalori, cara set goals, FAQ ExpansionTiles. Tombol help di home header. |
-| 12 | Slicing Rekomendasi & Favorit di pencarian makanan | **Ibnu** | `screens/add_meal_screen.dart`, `services/favorite_api_service.dart` | Filter chips (Semua/Favorit/Rekomendasi), ikon heart toggle favorit, integrasi API `GET/POST/DELETE /api/food/favorites` dan `GET /api/food/recommendations`, kategori makanan (Nasi/Roti/Daging/Buah/Sayuran/Minuman), tutorial overlay "Panduan Menambah Makanan" |
+| 6 | Halaman OTP Verification | Farid | `screens/otp_verification_screen.dart` | 6 input box auto-focus, countdown timer 60s, tombol resend, verify via Supabase `verifyOTP()`. Termasuk update: `UserRepository`, `UserRepositoryImpl`, `UserStore`, `login.dart` (navigate to OTP after signUp), `routes.dart`, `my_app.dart` (auth state handler) |
+| 8 | Help Info Page | Rizqi | `screens/help_screen.dart` | Halaman bantuan dengan About, cara tracking kalori, cara set goals, FAQ ExpansionTiles. Tombol help di home header. |
+| 12 | Slicing Rekomendasi & Favorit di pencarian makanan | Hamas | `screens/add_meal_screen.dart`, `services/favorite_api_service.dart` | Filter chips (Semua/Favorit/Rekomendasi), ikon heart toggle favorit, integrasi API `GET/POST/DELETE /api/food/favorites` dan `GET /api/food/recommendations`, kategori makanan (Nasi/Roti/Daging/Buah/Sayuran/Minuman), tutorial overlay "Panduan Menambah Makanan" |
 | 14 | Implementasi ganti foto profil | Rizqi | `screens/edit_profile_screen.dart:151-184` | Image picker galeri/kamera, preview sebelum upload, upload via API |
 | 16 | Dropdown aktivitas konsisten & Edit Profile + goal | Farid | `screens/edit_profile_screen.dart`, `widgets/activity_tile.dart` | ActivitySelectionTile reusable, goal selection (Cutting/Maintenance/Bulking) di Edit Profile |
-| 19 | Implementasi & integrasi API fitur komunitas | Rizqi + **Ibnu** | `screens/komunitas_screen.dart`, `screens/add_post_screen.dart`, `services/community_post_api_service.dart`, `domain/entity/post/community_post.dart` | UI lengkap: post feed, like, comment, follow tabs. **Sudah terhubung ke API** via `CommunityPostApiService`: GET/POST/DELETE `/api/posts`, POST like, GET/POST comments. Add post screen pakai real API upload. |
+| 19 | Implementasi & integrasi API fitur komunitas | Rizqi | `screens/komunitas_screen.dart`, `screens/add_post_screen.dart`, `services/community_post_api_service.dart`, `domain/entity/post/community_post.dart` | UI lengkap: post feed, like, comment, follow tabs. **Sudah terhubung ke API** via `CommunityPostApiService`: GET/POST/DELETE `/api/posts`, POST like, GET/POST comments. Add post screen pakai real API upload. |
 | 22 | Implementasi fitur notifikasi | Farid | `services/notification_service.dart` | FCM push notification + local meal reminders (sarapan 07:00, siang 12:00, malam 18:00), permission handling |
-| 25 | Implementasi UI/UX dan warna baru + Redesign sesuai desain UI/UX | Farid + **Ibnu** | `constants/colors.dart`, `presentation/login/login.dart`, `screens/add_meal_screen.dart` | Skema baru: cream `#FAF1E8`, peach `#FFD1A6`, navy `#322E53`, amber `#F1C28E`. Redesign pixel-perfect: Login (Masuk, ATAU), Sign Up (Daftar), Forgot Password, Add Meal (kategori row, checkbox, search placeholder), Komunitas (Suka/Komentar format, Diikuti tab), Add Post, Tutorial overlay. |
+| 25 | Implementasi UI/UX dan warna baru + Redesign sesuai desain UI/UX | Farid | `constants/colors.dart`, `presentation/login/login.dart`, `screens/add_meal_screen.dart` | Skema baru: cream `#FAF1E8`, peach `#FFD1A6`, navy `#322E53`, amber `#F1C28E`. Redesign pixel-perfect: Login (Masuk, ATAU), Sign Up (Daftar), Forgot Password, Add Meal (kategori row, checkbox, search placeholder), Komunitas (Suka/Komentar format, Diikuti tab), Add Post, Tutorial overlay. |
 
 ---
 
-### Frontend — Detail Implementasi Ibnu (Sprint 2)
+### Frontend — Detail Implementasi
 
 #### ID 6: OTP Verification Page
 **File yang dibuat:**
@@ -125,11 +123,13 @@
 
 ---
 
-## C. Backend — Ibnu
+## C. Backend (Eksekutor: Ibnu, Adit)
 
-> **Status: 3/3 DONE (100%)**
+> **Status: 3/7 DONE (43%)**
 
-### Task 1 (ID 9): Deduplikasi & Perluasan Dataset Makanan
+### ✅ DONE — Ibnu (3 task)
+
+#### Task 1 (ID 9): Deduplikasi & Perluasan Dataset Makanan
 
 **File yang dibuat:**
 
@@ -151,7 +151,7 @@
 
 ---
 
-### Task 2 (ID 10): API Rekomendasi & Favorit
+#### Task 2 (ID 10): API Rekomendasi & Favorit
 
 **File yang dibuat/diubah:**
 
@@ -176,7 +176,7 @@
 
 ---
 
-### Task 3 (ID 20): Backend & API Fitur Komunitas
+#### Task 3 (ID 20): Backend & API Fitur Komunitas
 
 **File yang dibuat:**
 
@@ -203,10 +203,7 @@
 
 ---
 
-## D. Backend — Adit
-
-> **Status: 0/4 DONE (0%)**
-> **Semua task belum dimulai**
+### ❌ NOT DONE — Adit (4 task)
 
 | ID | Backlog Item | Status | Detail yang Belum Ada |
 |----|-------------|--------|----------------------|
@@ -217,7 +214,7 @@
 
 ---
 
-## E. QA
+## D. QA
 
 | ID | Backlog Item | Status | Catatan |
 |----|-------------|--------|---------|
@@ -228,28 +225,34 @@
 ## Dependency Map — Apa yang Memblokir Apa
 
 ```
-BACKEND ADIT (0/4) — MEMBLOKIR:
+BACKEND — ADIT (0/4) — MEMBLOKIR:
 ├── ID 5  (OTP API) ───────────► Frontend ID 6 sudah DONE — pakai Supabase built-in verifyOTP()
 ├── ID 13 (Upload foto profil) ─► Sudah tidak memblokir (frontend DONE via local storage)
 ├── ID 17 (Validasi input) ────► Tidak memblokir frontend langsung, tapi risiko data tidak valid
 └── ID 23 (Notifikasi backend) ► Frontend sudah pakai FCM + local notification, tapi tidak ada backend trigger
 
-BACKEND IBNU (3/3) — SELESAI & TERINTEGRASI:
+BACKEND — IBNU (3/3) — SELESAI & TERINTEGRASI:
 ├── ID 10 (Favorit/Rekomendasi) ► Frontend ID 12 ✅ DONE — backend + frontend integrasi selesai
 └── ID 20 (Komunitas API) ──────► Frontend ID 19 ✅ DONE — mock data diganti API call
 
-FRONTEND IBNU (4/4) — SELESAI:
+FRONTEND (10/10) — SELESAI:
+├── ID 2  (Google Sign-In) ──────► ✅ DONE
+├── ID 4  (Konsistensi bahasa) ───► ✅ DONE
+├── ID 6  (OTP Verification) ────► ✅ DONE — otp_verification_screen.dart + Supabase verifyOTP
 ├── ID 8  (Help Info Page) ──────► ✅ DONE — help_screen.dart + tutorial overlay
 ├── ID 12 (Favorit/Rekomendasi) ─► ✅ DONE — favorite_api_service.dart + add_meal_screen.dart
+├── ID 14 (Ganti foto profil) ───► ✅ DONE
+├── ID 16 (Dropdown aktivitas) ──► ✅ DONE
 ├── ID 19 (Komunitas API) ───────► ✅ DONE — community_post_api_service.dart + komunitas_screen.dart
-└── ID 6  (OTP Verification) ────► ✅ DONE — otp_verification_screen.dart + Supabase verifyOTP
+├── ID 22 (Notifikasi) ──────────► ✅ DONE
+└── ID 25 (UI/UX & warna baru) ──► ✅ DONE
 ```
 
 ---
 
 ## Statistik Implementasi
 
-### File yang Dibuat (Sprint 2 Backend — Ibnu)
+### File yang Dibuat (Sprint 2 Backend)
 
 | Kategori | Jumlah |
 |----------|--------|
@@ -290,10 +293,10 @@ FRONTEND IBNU (4/4) — SELESAI:
 
 ## Langkah Selanjutnya (Prioritas)
 
-### 1. Backend Adit — Urgent (satu-satunya blocker tersisa)
+### 1. Backend — Urgent (satu-satunya blocker tersisa)
 - [ ] Validasi input (ID 17) → quick win, 15 menit kerjaan
 - [ ] Upload foto profil API (ID 13) → frontend sudah handle local
-- [ ] OTP API (ID 5) → frontend sudah pakai Supabase built-in, tapi Adit tetap perlu buat fallback
+- [ ] OTP API (ID 5) → frontend sudah pakai Supabase built-in, tapi tetap perlu buat fallback
 - [ ] Notification backend (ID 23)
 
 ### 2. Deploy Backend ke VPS
@@ -306,7 +309,7 @@ FRONTEND IBNU (4/4) — SELESAI:
 - [ ] Testing menyeluruh semua fitur Sprint 2 (ID 25)
 - [ ] Verifikasi pixel-perfect sesuai desain UI/UX di semua screen
 
-### 4. Frontend UI/UX Redesign — Sudah selesai oleh Ibnu
+### 4. Frontend UI/UX Redesign — Sudah selesai
 - [x] Login screen: "Masuk", "ATAU", placeholder Indonesia
 - [x] Sign Up: "Daftar", label Indonesia, error styling
 - [x] Add Meal: kategori row, checkbox, search placeholder "Cari Makanan atau Minuman"
