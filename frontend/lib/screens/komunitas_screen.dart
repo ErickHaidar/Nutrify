@@ -3,6 +3,8 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:nutrify/constants/colors.dart';
 import 'package:nutrify/domain/entity/post/community_post.dart';
 import 'package:nutrify/screens/add_post_screen.dart';
+import 'package:nutrify/screens/post_detail_screen.dart';
+import 'package:nutrify/screens/user_profile_screen.dart';
 import 'package:nutrify/services/community_post_api_service.dart';
 import 'package:nutrify/utils/locale/app_strings.dart';
 import 'package:nutrify/widgets/notification_modal.dart';
@@ -245,25 +247,32 @@ class _KomunitasScreenState extends State<KomunitasScreen> with SingleTickerProv
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          // Author row
           Row(
             children: [
-              CircleAvatar(
-                radius: 20,
-                backgroundColor: AppColors.peach,
-                child: Text(
-                  post.authorName.isNotEmpty ? post.authorName[0].toUpperCase() : '-',
-                  style: const TextStyle(color: AppColors.navy, fontWeight: FontWeight.bold),
+              GestureDetector(
+                onTap: () => _navigateToUserProfile(post),
+                child: CircleAvatar(
+                  radius: 20,
+                  backgroundColor: AppColors.peach,
+                  child: Text(
+                    post.authorName.isNotEmpty ? post.authorName[0].toUpperCase() : '-',
+                    style: const TextStyle(color: AppColors.navy, fontWeight: FontWeight.bold),
+                  ),
                 ),
               ),
               const SizedBox(width: 12),
               Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(post.authorName, style: const TextStyle(color: AppColors.navy, fontWeight: FontWeight.bold, fontSize: 15)),
-                    const SizedBox(height: 2),
-                    Text(post.timeAgo, style: TextStyle(color: AppColors.navy.withOpacity(0.5), fontSize: 12)),
-                  ],
+                child: GestureDetector(
+                  onTap: () => _navigateToUserProfile(post),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(post.authorName, style: const TextStyle(color: AppColors.navy, fontWeight: FontWeight.bold, fontSize: 15)),
+                      const SizedBox(height: 2),
+                      Text(post.timeAgo, style: TextStyle(color: AppColors.navy.withOpacity(0.5), fontSize: 12)),
+                    ],
+                  ),
                 ),
               ),
               if (!post.isOwnPost)
@@ -283,29 +292,39 @@ class _KomunitasScreenState extends State<KomunitasScreen> with SingleTickerProv
                 ),
             ],
           ),
-          const SizedBox(height: 16),
-          Text(post.content, style: const TextStyle(color: AppColors.navy, fontSize: 14, height: 1.5)),
-          if (post.imagePath != null && post.imagePath!.isNotEmpty) ...[
-            const SizedBox(height: 16),
-            ClipRRect(
-              borderRadius: BorderRadius.circular(16),
-              child: Image.network(
-                post.imagePath!.startsWith('http') ? post.imagePath! : 'https://nutrify-app.my.id${post.imagePath!}',
-                width: double.infinity,
-                height: 200,
-                fit: BoxFit.cover,
-                errorBuilder: (_, __, ___) => const SizedBox.shrink(),
-              ),
+          const SizedBox(height: 12),
+
+          // Post content (tappable → post detail)
+          GestureDetector(
+            onTap: () => _navigateToPostDetail(post),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(post.content, style: const TextStyle(color: AppColors.navy, fontSize: 14, height: 1.5)),
+                if (post.imagePath != null && post.imagePath!.isNotEmpty) ...[
+                  const SizedBox(height: 12),
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(16),
+                    child: Image.network(
+                      post.imagePath!.startsWith('http') ? post.imagePath! : 'https://nutrify-app.my.id${post.imagePath!}',
+                      width: double.infinity,
+                      height: 200,
+                      fit: BoxFit.cover,
+                      errorBuilder: (_, __, ___) => const SizedBox.shrink(),
+                    ),
+                  ),
+                ],
+                if (post.localImageFile != null) ...[
+                  const SizedBox(height: 12),
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(16),
+                    child: Image.file(post.localImageFile!, width: double.infinity, height: 200, fit: BoxFit.cover),
+                  ),
+                ],
+              ],
             ),
-          ],
-          if (post.localImageFile != null) ...[
-            const SizedBox(height: 16),
-            ClipRRect(
-              borderRadius: BorderRadius.circular(16),
-              child: Image.file(post.localImageFile!, width: double.infinity, height: 200, fit: BoxFit.cover),
-            ),
-          ],
-          const SizedBox(height: 16),
+          ),
+          const SizedBox(height: 12),
           Row(
             children: [
               GestureDetector(
@@ -332,6 +351,29 @@ class _KomunitasScreenState extends State<KomunitasScreen> with SingleTickerProv
             ],
           ),
         ],
+      ),
+    );
+  }
+
+  void _navigateToPostDetail(CommunityPost post) async {
+    await Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => PostDetailScreen(post: post, api: _api),
+      ),
+    );
+    if (mounted) setState(() {});
+  }
+
+  void _navigateToUserProfile(CommunityPost post) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => UserProfileScreen(
+          userId: post.authorId,
+          userName: post.authorName,
+          api: _api,
+        ),
       ),
     );
   }
