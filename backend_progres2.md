@@ -1,8 +1,8 @@
-# NUTRIFY — Backend Progress Sprint 2 (Adit's Tasks)
+# NUTRIFY — Backend Progress Sprint 2
 
 > **Dibuat oleh:** Ibnu Habib (Backend & Frontend Developer)
 > **Tanggal:** 2 Mei 2026
-> **Untuk:** Adit (Backend Developer)
+> **Untuk:** Backend Developer
 > **Sprint:** Sprint 2
 
 ---
@@ -12,7 +12,7 @@
 1. [Ringkasan Status Backend Sprint 2](#1-ringkasan-status-backend-sprint-2)
 2. [Tabel Task — Sudah vs Belum Dikerjakan](#2-tabel-task--sudah-vs-belum-dikerjakan)
 3. [Detail Komponen & Status per Task](#3-detail-komponen--status-per-task)
-4. [AI Agent Prompt untuk Adit](#4-ai-agent-prompt-untuk-adit)
+4. [AI Agent Prompt](#4-ai-agent-prompt)
 
 ---
 
@@ -22,10 +22,9 @@
 
 | Status | Jumlah | Task ID |
 |--------|--------|---------|
-| ✅ Done | 6 task | BE-S2-01 s/d BE-S2-06 (dikerjakan Ibnu) |
-| ❌ Not Started | 3 task | BE-S2-07, BE-S2-08, BE-S2-09 (jobdesk Adit) |
+| ✅ Done | 6 task | BE-S2-01 s/d BE-S2-06 |
+| ❌ Not Started | 3 task | BE-S2-07, BE-S2-08, BE-S2-09 |
 
-### Progress Adit: 0% (0 dari 3 task selesai)
 
 ---
 
@@ -42,7 +41,7 @@
 | BE-S2-05 | API Food Favorites | `FavoriteController.php`, `UserFavorite.php` | ✅ Done |
 | BE-S2-06 | Backend OTP (send + verify) | `OtpController.php`, `Otp.php`, `OtpMail.php` | ✅ Done |
 
-### ❌ BELUM DIKERJAKAN (jobdesk Adit)
+### ❌ BELUM DIKERJAKAN
 
 | ID | Task | Deskripsi | Frontend Siap? | Status |
 |----|------|-----------|----------------|--------|
@@ -83,7 +82,7 @@ Future<void> uploadProfilePhoto(File image) async {
 | Update Profile model `$fillable` | ❌ | Tambah `'photo'` |
 | Update `ProfileController@show` response | ❌ | Include `photo_url` di response JSON |
 
-**Catatan untuk Adit:**
+**Catatan:**
 - Frontend mengirim sebagai `multipart/form-data` dengan key `photo`
 - Method: `PUT` (bukan POST)
 - Accept: jpg, jpeg, png, webp
@@ -228,8 +227,7 @@ notifications:
 
 ---
 
-## 4. AI Agent Prompt untuk Adit
-
+## 4. AI Agent Prompt
 Copy-paste prompt di bawah ke AI agent (Claude Code / Cursor / dll) untuk memudahkan implementasi. Satu prompt per task.
 
 ---
@@ -547,4 +545,4 @@ backend/
 
 ---
 
-*Dokumen ini dibuat pada 2 Mei 2026 oleh Ibnu Habib sebagai panduan untuk Adit (Backend Developer).*
+*Dokumen ini dibuat pada 2 Mei 2026 oleh Ibnu Habib sebagai panduan Backend Developer.*
