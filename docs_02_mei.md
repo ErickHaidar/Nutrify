@@ -276,8 +276,7 @@ onPressed: () {
 | Role | Selesai | Total | Persentase |
 |------|---------|-------|------------|
 | UI/UX | 8 | 8 | 100% |
-| Backend (Ibnu) | 3 | 3 | 100% |
-| Backend (Adit) | 1 | 4 | 25% |
+| Backend (Ibnu) | 4 | 7 | 57% |
 | Frontend | 10 | 10 | 100% |
 
 ### Item yang berubah status hari ini:
