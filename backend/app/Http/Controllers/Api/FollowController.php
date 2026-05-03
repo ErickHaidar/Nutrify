@@ -104,7 +104,7 @@ class FollowController extends Controller
             $avatarUrl = url('storage/' . $user->profile->photo);
         }
 
-        $posts = $user->posts->map(function ($post) use ($currentUserId) {
+        $posts = $user->posts->map(function ($post) use ($currentUserId, $avatarUrl) {
             $post->loadCount(['likes', 'comments']);
             $isLiked = $post->likes->contains('user_id', $currentUserId);
             $isFollowed = Follow::where('follower_id', $currentUserId)
