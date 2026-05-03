@@ -52,7 +52,7 @@ class FCMService
                     'title' => $title,
                     'body' => $body,
                 ],
-                'data' => $data,
+                'data' => array_map('strval', array_filter($data, fn($v) => $v !== null)),
             ],
         ];
 
