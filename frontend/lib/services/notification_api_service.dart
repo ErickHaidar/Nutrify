@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:nutrify/core/data/network/dio/dio_client.dart';
 import 'package:nutrify/data/network/constants/endpoints.dart';
@@ -11,7 +12,16 @@ class NotificationApiService {
       Endpoints.notifications,
       queryParameters: {'page': page, 'per_page': 20},
     );
-    final items = (res.data['data'] as List?) ?? [];
+    debugPrint('[NotificationAPI] response: ${res.data}');
+    final raw = res.data['data'];
+    final List<dynamic> items;
+    if (raw is List) {
+      items = raw;
+    } else if (raw is Map && raw['data'] is List) {
+      items = raw['data'] as List;
+    } else {
+      items = [];
+    }
     return items.map((e) => NotificationItem.fromJson(e as Map<String, dynamic>)).toList();
   }
 
@@ -64,7 +74,7 @@ class NotificationItem {
       actorId: (json['actor_id'] as num?)?.toInt(),
       actorName: actor?['name'] as String?,
       postId: (json['post_id'] as num?)?.toInt(),
-      data: json['data'] as Map<String, dynamic>?,
+      data: json['data'] is Map<String, dynamic> ? json['data'] : null,
       createdAt: json['created_at'] != null
           ? DateTime.parse(json['created_at'] as String).toLocal()
           : DateTime.now(),

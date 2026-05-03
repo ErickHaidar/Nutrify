@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:nutrify/constants/colors.dart';
-import 'package:nutrify/constants/assets.dart';
 import 'package:nutrify/domain/entity/post/community_post.dart';
 import 'package:nutrify/screens/add_post_screen.dart';
 import 'package:nutrify/screens/full_screen_image_screen.dart';
@@ -211,19 +209,26 @@ class KomunitasScreenState extends State<KomunitasScreen> with SingleTickerProvi
       appBar: AppBar(
         backgroundColor: AppColors.cream,
         elevation: 0,
-        title: Row(
-          children: [
-            Image.asset(Assets.nutrifyLogo, height: 36, width: 36),
-            const SizedBox(width: 8),
-            Text(
-              'Nutrify',
-              style: GoogleFonts.inter(
-                color: const Color(0xFFFFB26B),
-                fontWeight: FontWeight.w900,
-                fontSize: 30,
-              ),
+        title: GestureDetector(
+          onTap: _navigateToAddPost,
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 7),
+            decoration: BoxDecoration(
+              color: AppColors.navy,
+              borderRadius: BorderRadius.circular(20),
             ),
-          ],
+            child: const Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(Icons.add, color: Colors.white, size: 18),
+                SizedBox(width: 4),
+                Text(
+                  'Posting',
+                  style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 13),
+                ),
+              ],
+            ),
+          ),
         ),
         actions: [
           IconButton(
@@ -261,7 +266,7 @@ class KomunitasScreenState extends State<KomunitasScreen> with SingleTickerProvi
               children: [
                 Container(
                   padding: const EdgeInsets.all(8),
-                  margin: const EdgeInsets.only(right: 4),
+                  margin: const EdgeInsets.only(right: 12),
                   decoration: BoxDecoration(
                     color: AppColors.navy.withValues(alpha: 0.08),
                     borderRadius: BorderRadius.circular(10),
@@ -270,7 +275,7 @@ class KomunitasScreenState extends State<KomunitasScreen> with SingleTickerProvi
                 ),
                 if (_chatUnreadCount > 0)
                   Positioned(
-                    right: 0,
+                    right: 4,
                     top: 0,
                     child: Container(
                       padding: const EdgeInsets.all(3),
@@ -284,28 +289,6 @@ class KomunitasScreenState extends State<KomunitasScreen> with SingleTickerProvi
                     ),
                   ),
               ],
-            ),
-          ),
-          GestureDetector(
-            onTap: _navigateToAddPost,
-            child: Container(
-              margin: const EdgeInsets.only(right: 8),
-              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 7),
-              decoration: BoxDecoration(
-                color: AppColors.navy,
-                borderRadius: BorderRadius.circular(20),
-              ),
-              child: const Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Icon(Icons.add, color: Colors.white, size: 18),
-                  SizedBox(width: 4),
-                  Text(
-                    'Posting',
-                    style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 13),
-                  ),
-                ],
-              ),
             ),
           ),
         ],

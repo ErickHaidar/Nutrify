@@ -43,11 +43,15 @@ class _NotificationModalState extends State<NotificationModal> {
 
       try {
         serverNotifs = await serverNotifsFuture;
-      } catch (_) {}
+      } catch (e) {
+        debugPrint('[NotificationModal] failed to load server notifs: $e');
+      }
 
       try {
         todayLogs = await todayLogsFuture;
-      } catch (_) {}
+      } catch (e) {
+        debugPrint('[NotificationModal] failed to load food logs: $e');
+      }
 
       if (!mounted) return;
 
