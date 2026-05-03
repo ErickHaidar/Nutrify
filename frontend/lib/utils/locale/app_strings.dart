@@ -289,6 +289,7 @@ class AppStrings {
   static String likes(String count) => _t('Suka $count', 'Like $count');
   static String comments(String count) => _t('Komentar $count', 'Comment $count');
   static String get justNow => _t('Baru saja', 'Just now');
+  static String get showMore => _t('lihat selengkapnya...', 'show more...');
 
   // ─── Add Post Screen ─────────────────────────────────────────────────────
   static String get addNewPost => _t('Tambah Postingan Baru', 'Add New Post');

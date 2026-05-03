@@ -337,7 +337,25 @@ class _KomunitasScreenState extends State<KomunitasScreen> with SingleTickerProv
             const SizedBox(height: 12),
 
             // Post content
-            Text(post.content, style: const TextStyle(color: AppColors.navy, fontSize: 14, height: 1.5)),
+            if (post.content.length > 200) ...[
+              Text(
+                '${post.content.substring(0, 200)}...',
+                style: const TextStyle(color: AppColors.navy, fontSize: 14, height: 1.5),
+              ),
+              GestureDetector(
+                onTap: () => _navigateToPostDetail(post),
+                child: Text(
+                  AppStrings.showMore,
+                  style: TextStyle(
+                    color: AppColors.navy.withOpacity(0.6),
+                    fontSize: 14,
+                    fontWeight: FontWeight.w600,
+                    fontStyle: FontStyle.italic,
+                  ),
+                ),
+              ),
+            ] else
+              Text(post.content, style: const TextStyle(color: AppColors.navy, fontSize: 14, height: 1.5)),
             if (post.imagePath != null && post.imagePath!.isNotEmpty) ...[
               const SizedBox(height: 12),
               GestureDetector(
