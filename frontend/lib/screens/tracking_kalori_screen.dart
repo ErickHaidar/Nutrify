@@ -24,6 +24,9 @@ class _TrackingKaloriScreenState extends State<TrackingKaloriScreen> {
   double _totalFat = 0;
   DailySummary? _summary;
   bool _isLoading = true;
+  int _targetProtein = 0;
+  int _targetCarbs = 0;
+  int _targetFat = 0;
 
   @override
   void initState() {
@@ -46,6 +49,11 @@ class _TrackingKaloriScreenState extends State<TrackingKaloriScreen> {
           _totalProtein = summary.totals.protein;
           _totalCarbohydrates = summary.totals.carbohydrates;
           _totalFat = summary.totals.fat;
+          if (profile?.macronutrients != null) {
+            _targetProtein = profile!.macronutrients!.protein.grams;
+            _targetCarbs = profile.macronutrients!.carbohydrates.grams;
+            _targetFat = profile.macronutrients!.fat.grams;
+          }
           _isLoading = false;
         });
       }
@@ -68,10 +76,10 @@ class _TrackingKaloriScreenState extends State<TrackingKaloriScreen> {
         ? (_totalCalories / _targetCalories).clamp(0.0, 1.0)
         : 0.0;
 
-    // Macro targets from calorie goal (standard distribution)
-    final int targetCarbs = ((_targetCalories * 0.5) / 4).round();
-    final int targetProtein = ((_targetCalories * 0.2) / 4).round();
-    final int targetFat = ((_targetCalories * 0.3) / 9).round();
+    // Macro targets from profile (goal-based: cutting/maintenance/bulking)
+    final int targetCarbs = _targetCarbs;
+    final int targetProtein = _targetProtein;
+    final int targetFat = _targetFat;
 
     if (_isLoading) {
       return const Scaffold(
