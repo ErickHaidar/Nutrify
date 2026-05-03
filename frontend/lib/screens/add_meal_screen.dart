@@ -363,7 +363,7 @@ class _AddMealScreenState extends State<AddMealScreen> {
                 ' : Ketik menu makanan atau minuman anda.',
                 null,
                 'assets/images/Gambar Search (1).png',
-                customImageWidth: 90,
+                customImageWidth: 110,
               ),
               _buildTutorialStep(
                 '2. ',
@@ -435,8 +435,8 @@ class _AddMealScreenState extends State<AddMealScreen> {
         children: [
           // Illustration Box - transparent background, fixed size to prevent overflow
           SizedBox(
-            width: 110,
-            height: 70,
+            width: 130,
+            height: 80,
             child: Container(
               decoration: BoxDecoration(
                 color: Colors.transparent,
@@ -446,8 +446,8 @@ class _AddMealScreenState extends State<AddMealScreen> {
                 borderRadius: BorderRadius.circular(16),
                 child: Image.asset(
                   imagePath,
-                  width: customImageWidth ?? 110,
-                  height: 70,
+                  width: customImageWidth ?? 130,
+                  height: 80,
                   fit: BoxFit.contain,
                 ),
               ),
@@ -585,7 +585,12 @@ class _AddMealScreenState extends State<AddMealScreen> {
                       } else if (_filterMode == 'recommendations') {
                         _loadRecommendationsList();
                       } else {
-                        _search(_searchController.text.trim());
+                        final query = _searchController.text.trim();
+                        if (query.isEmpty && _selectedCategory.isNotEmpty) {
+                          _search(_selectedCategory.toLowerCase());
+                        } else {
+                          _search(query);
+                        }
                       }
                     },
                     child: Column(
