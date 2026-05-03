@@ -53,6 +53,8 @@ Route::middleware(['supabase.auth'])->group(function () {
 
     // Follow System
     Route::post('/users/{id}/follow', [FollowController::class, 'toggleFollow']);
+    Route::post('/follow-requests/{id}/approve', [FollowController::class, 'approveFollow']);
+    Route::post('/follow-requests/{id}/reject', [FollowController::class, 'rejectFollow']);
     Route::get('/users/{id}/profile', [FollowController::class, 'userProfile']);
     Route::get('/users/search', [FollowController::class, 'searchUsers']);
     Route::put('/username', [FollowController::class, 'updateUsername']);

@@ -17,6 +17,7 @@ class CommunityPost {
   int comments;
   bool isLiked;
   bool isFollowed;
+  bool isRequested;
   final String tabCategory;
 
   bool get isOwnPost {
@@ -41,6 +42,7 @@ class CommunityPost {
     required this.comments,
     required this.isLiked,
     required this.isFollowed,
+    required this.isRequested,
     this.tabCategory = 'Untuk Anda',
   });
 
@@ -60,6 +62,7 @@ class CommunityPost {
       comments: json['comments_count'] as int? ?? 0,
       isLiked: json['is_liked'] as bool? ?? false,
       isFollowed: json['is_followed'] as bool? ?? false,
+      isRequested: json['is_requested'] as bool? ?? false,
       timeAgo: _formatTimeAgo(json['created_at'] as String?),
     );
   }

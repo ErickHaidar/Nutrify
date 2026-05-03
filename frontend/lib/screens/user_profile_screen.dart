@@ -23,6 +23,7 @@ class UserProfileScreen extends StatefulWidget {
 
 class _UserProfileScreenState extends State<UserProfileScreen> {
   bool _isFollowing = false;
+  bool _isRequested = false;
   bool _isLoading = true;
   bool _isFollowLoading = false;
   List<CommunityPost> _userPosts = [];
@@ -58,6 +59,7 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
 
         setState(() {
           _isFollowing = data['is_following'] as bool? ?? false;
+          _isRequested = data['is_requested'] as bool? ?? false;
           _followerCount = data['followers_count'] as int? ?? 0;
           _followingCount = data['followings_count'] as int? ?? 0;
           _username = data['username'] as String? ?? '';
@@ -82,6 +84,7 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
             _userPosts = userPosts;
             if (userPosts.isNotEmpty) {
               _isFollowing = userPosts.first.isFollowed;
+              _isRequested = userPosts.first.isRequested;
               _username = userPosts.first.authorUsername;
               _avatarUrl = userPosts.first.authorAvatarUrl;
             }
@@ -96,26 +99,19 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
 
   void _toggleFollow() async {
     if (_isFollowLoading) return;
-    setState(() {
-      _isFollowing = !_isFollowing;
-      _isFollowLoading = true;
-    });
+    setState(() => _isFollowLoading = true);
     try {
       final result = await widget.api.toggleFollow(widget.userId);
       if (mounted) {
         setState(() {
-          _isFollowing = result['followed'] as bool? ?? _isFollowing;
+          _isFollowing = result['followed'] as bool? ?? false;
+          _isRequested = result['requested'] as bool? ?? false;
           _followerCount = result['followers_count'] as int? ?? _followerCount;
           _isFollowLoading = false;
         });
       }
     } catch (_) {
-      if (mounted) {
-        setState(() {
-          _isFollowing = !_isFollowing;
-          _isFollowLoading = false;
-        });
-      }
+      if (mounted) setState(() => _isFollowLoading = false);
     }
   }
 
@@ -249,15 +245,19 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
               child: ElevatedButton(
                 onPressed: _isFollowLoading ? null : _toggleFollow,
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: _isFollowing ? AppColors.navy : AppColors.amber,
-                  foregroundColor: _isFollowing ? Colors.white : AppColors.navy,
+                  backgroundColor: _isFollowing
+                      ? AppColors.navy
+                      : _isRequested
+                          ? AppColors.navy.withValues(alpha: 0.5)
+                          : AppColors.amber,
+                  foregroundColor: _isFollowing || _isRequested ? Colors.white : AppColors.navy,
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
                   elevation: 0,
                 ),
                 child: _isFollowLoading
                     ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white))
                     : Text(
-                        _isFollowing ? 'Diikuti' : 'Ikuti',
+                        _isFollowing ? 'Diikuti' : _isRequested ? 'Diminta' : 'Ikuti',
                         style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
                       ),
               ),

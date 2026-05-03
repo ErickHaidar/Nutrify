@@ -116,18 +116,35 @@ class _KomunitasScreenState extends State<KomunitasScreen> with SingleTickerProv
     final post = _posts.firstWhere((p) => p.id == postId);
     final authorId = post.authorId;
     final wasFollowed = post.isFollowed;
+    final wasRequested = post.isRequested;
     setState(() {
       for (final p in _posts) {
-        if (p.authorId == authorId) p.isFollowed = !wasFollowed;
+        if (p.authorId == authorId) {
+          p.isFollowed = false;
+          p.isRequested = false;
+        }
       }
     });
     try {
-      await _api.toggleFollow(authorId);
+      final result = await _api.toggleFollow(authorId);
+      if (mounted) {
+        setState(() {
+          for (final p in _posts) {
+            if (p.authorId == authorId) {
+              p.isFollowed = result['followed'] as bool? ?? false;
+              p.isRequested = result['requested'] as bool? ?? false;
+            }
+          }
+        });
+      }
     } catch (_) {
       if (mounted) {
         setState(() {
           for (final p in _posts) {
-            if (p.authorId == authorId) p.isFollowed = wasFollowed;
+            if (p.authorId == authorId) {
+              p.isFollowed = wasFollowed;
+              p.isRequested = wasRequested;
+            }
           }
         });
       }
@@ -376,12 +393,24 @@ class _KomunitasScreenState extends State<KomunitasScreen> with SingleTickerProv
                     child: Container(
                       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
                       decoration: BoxDecoration(
-                        color: post.isFollowed ? AppColors.navy : AppColors.amber,
+                        color: post.isFollowed
+                            ? AppColors.navy
+                            : post.isRequested
+                                ? AppColors.navy.withOpacity(0.5)
+                                : AppColors.amber,
                         borderRadius: BorderRadius.circular(16),
                       ),
                       child: Text(
-                        post.isFollowed ? AppStrings.following : AppStrings.follow,
-                        style: TextStyle(color: post.isFollowed ? Colors.white : AppColors.navy, fontWeight: FontWeight.bold, fontSize: 12),
+                        post.isFollowed
+                            ? AppStrings.following
+                            : post.isRequested
+                                ? (AppStrings.isId ? 'Diminta' : 'Requested')
+                                : AppStrings.follow,
+                        style: TextStyle(
+                          color: post.isFollowed || post.isRequested ? Colors.white : AppColors.navy,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 12,
+                        ),
                       ),
                     ),
                   ),
@@ -504,11 +533,13 @@ class _KomunitasScreenState extends State<KomunitasScreen> with SingleTickerProv
     try {
       final data = await _api.getUserProfile(authorId);
       final isFollowing = data['is_following'] as bool? ?? false;
+      final isRequested = data['is_requested'] as bool? ?? false;
       if (mounted) {
         setState(() {
           for (final post in _posts) {
             if (post.authorId == authorId) {
               post.isFollowed = isFollowing;
+              post.isRequested = isRequested;
             }
           }
         });
@@ -652,6 +683,7 @@ class _UserSearchSheetState extends State<_UserSearchSheet> {
     final username = u['username'] as String? ?? '';
     final avatarUrl = u['avatar_url'] as String? ?? '';
     final isFollowing = u['is_following'] as bool? ?? false;
+    final isRequested = u['is_requested'] as bool? ?? false;
     final userId = u['id'] as int? ?? 0;
 
     return ListTile(
@@ -673,7 +705,8 @@ class _UserSearchSheetState extends State<_UserSearchSheet> {
             final result = await widget.api.toggleFollow(userId);
             if (mounted) {
               setState(() {
-                u['is_following'] = !(isFollowing);
+                u['is_following'] = result['followed'] as bool? ?? false;
+                u['is_requested'] = result['requested'] as bool? ?? false;
               });
             }
           } catch (_) {}
@@ -681,12 +714,16 @@ class _UserSearchSheetState extends State<_UserSearchSheet> {
         child: Container(
           padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 5),
           decoration: BoxDecoration(
-            color: isFollowing ? AppColors.navy : AppColors.amber,
+            color: isFollowing
+                ? AppColors.navy
+                : isRequested
+                    ? AppColors.navy.withValues(alpha: 0.5)
+                    : AppColors.amber,
             borderRadius: BorderRadius.circular(16),
           ),
           child: Text(
-            isFollowing ? 'Diikuti' : 'Ikuti',
-            style: TextStyle(color: isFollowing ? Colors.white : AppColors.navy, fontWeight: FontWeight.bold, fontSize: 12),
+            isFollowing ? 'Diikuti' : isRequested ? 'Diminta' : 'Ikuti',
+            style: TextStyle(color: isFollowing || isRequested ? Colors.white : AppColors.navy, fontWeight: FontWeight.bold, fontSize: 12),
           ),
         ),
       ),

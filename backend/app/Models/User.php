@@ -99,12 +99,12 @@ class User extends Authenticatable
 
     public function getFollowersCount(): int
     {
-        return $this->followers()->count();
+        return $this->followers()->where('status', 'accepted')->count();
     }
 
     public function getFollowingsCount(): int
     {
-        return $this->followings()->count();
+        return $this->followings()->where('status', 'accepted')->count();
     }
 
     public function getAvatarUrlAttribute(): ?string

@@ -80,6 +80,8 @@ class NotificationItem {
         return IconDataData(Icons.chat_bubble, const Color(0xFF64B5F6));
       case 'follow':
         return IconDataData(Icons.person_add, const Color(0xFF81C784));
+      case 'follow_request':
+        return IconDataData(Icons.person_add_disabled, Colors.orange);
       default:
         return IconDataData(Icons.notifications, Colors.orangeAccent);
     }

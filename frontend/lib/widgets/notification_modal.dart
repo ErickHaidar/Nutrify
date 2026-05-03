@@ -108,6 +108,7 @@ class _NotificationModalState extends State<NotificationModal> {
       case 'like': return Icons.favorite;
       case 'comment': return Icons.chat_bubble;
       case 'follow': return Icons.person_add;
+      case 'follow_request': return Icons.person_add_disabled;
       default: return Icons.notifications;
     }
   }
@@ -117,6 +118,7 @@ class _NotificationModalState extends State<NotificationModal> {
       case 'like': return Colors.red;
       case 'comment': return const Color(0xFF64B5F6);
       case 'follow': return const Color(0xFF81C784);
+      case 'follow_request': return Colors.orange;
       default: return Colors.orangeAccent;
     }
   }
@@ -276,8 +278,9 @@ class _NotificationModalState extends State<NotificationModal> {
 
   Widget _buildNotifTile(_UnifiedNotification notif) {
     final isMeal = notif.type == 'meal';
+    final isFollowRequest = notif.type == 'follow_request';
     return GestureDetector(
-      onTap: () => _onTap(notif),
+      onTap: isFollowRequest ? null : () => _onTap(notif),
       behavior: HitTestBehavior.opaque,
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
@@ -331,10 +334,60 @@ class _NotificationModalState extends State<NotificationModal> {
                     notif.subtitle,
                     style: TextStyle(color: AppColors.navy.withOpacity(0.4), fontSize: 11),
                   ),
+                  if (isFollowRequest) ...[
+                    const SizedBox(height: 10),
+                    Row(
+                      children: [
+                        GestureDetector(
+                          onTap: () => _handleFollowRequest(notif.actorId, true),
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+                            decoration: BoxDecoration(
+                              color: const Color(0xFF4CAF50),
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                const Icon(Icons.check, color: Colors.white, size: 14),
+                                const SizedBox(width: 4),
+                                Text(
+                                  AppStrings.isId ? 'Terima' : 'Accept',
+                                  style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 12),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: 10),
+                        GestureDetector(
+                          onTap: () => _handleFollowRequest(notif.actorId, false),
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+                            decoration: BoxDecoration(
+                              color: const Color(0xFFE53935),
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                const Icon(Icons.close, color: Colors.white, size: 14),
+                                const SizedBox(width: 4),
+                                Text(
+                                  AppStrings.isId ? 'Tolak' : 'Decline',
+                                  style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 12),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
                 ],
               ),
             ),
-            if (!notif.isRead && !isMeal)
+            if (!notif.isRead && !isMeal && !isFollowRequest)
               Container(
                 margin: const EdgeInsets.only(top: 4),
                 width: 8,
@@ -345,6 +398,19 @@ class _NotificationModalState extends State<NotificationModal> {
         ),
       ),
     );
+  }
+
+  Future<void> _handleFollowRequest(int? actorId, bool approve) async {
+    if (actorId == null) return;
+    try {
+      final api = CommunityPostApiService();
+      if (approve) {
+        await api.approveFollowRequest(actorId);
+      } else {
+        await api.rejectFollowRequest(actorId);
+      }
+      _loadData();
+    } catch (_) {}
   }
 }
 

@@ -35,63 +35,173 @@ class FollowController extends Controller
             ->where('following_id', $userId)
             ->first();
 
+        // Case A: Existing record — unfollow or cancel request
         if ($existing) {
+            $wasPending = $existing->status === 'pending';
             $existing->delete();
-            $followed = false;
 
-            // Hapus notifikasi follow yang belum dibaca
+            $notifType = $wasPending ? 'follow_request' : 'follow';
             Notification::where('user_id', $userId)
                 ->where('actor_id', $currentUserId)
-                ->where('type', 'follow')
+                ->where('type', $notifType)
                 ->whereNull('read_at')
                 ->delete();
-        } else {
-            Follow::create([
-                'follower_id' => $currentUserId,
-                'following_id' => $userId,
+
+            return response()->json([
+                'success'         => true,
+                'followed'        => false,
+                'requested'       => false,
+                'followers_count' => $targetUser->getFollowersCount(),
             ]);
-            $followed = true;
+        }
 
-            // TRIGGER NOTIFIKASI: Kirim ke user yang di-follow
-            $actor = User::find($currentUserId);
+        // No existing record — determine status by account type
+        $isPrivate = ($targetUser->account_type ?? 'public') === 'private';
+        $status = $isPrivate ? 'pending' : 'accepted';
 
-            // Update atau buat notifikasi (hindari duplikat)
+        Follow::create([
+            'follower_id'  => $currentUserId,
+            'following_id' => $userId,
+            'status'       => $status,
+        ]);
+
+        $actor = User::find($currentUserId);
+
+        if ($isPrivate) {
+            // Follow request for private account
             Notification::updateOrCreate(
                 [
-                    'user_id' => $userId,
+                    'user_id'  => $userId,
                     'actor_id' => $currentUserId,
-                    'type' => 'follow',
+                    'type'     => 'follow_request',
                 ],
                 [
-                    'title' => 'Pengikut Baru',
-                    'body' => "{$actor->name} mulai mengikuti Anda",
-                    'data' => [
+                    'title'   => 'Permintaan Ikuti',
+                    'body'    => "{$actor->name} ingin mengikuti Anda",
+                    'data'    => [
                         'actor_name' => $actor->name,
-                        'actor_id' => $actor->id,
+                        'actor_id'   => $actor->id,
                     ],
                     'read_at' => null,
                 ]
             );
 
-            // Kirim FCM push notification
             if (!empty($targetUser->fcm_token)) {
                 $notification = new PushNotification(
-                    'Pengikut Baru',
-                    "{$actor->name} mulai mengikuti Anda",
-                    'follow',
+                    'Permintaan Ikuti',
+                    "{$actor->name} ingin mengikuti Anda",
+                    'follow_request',
                     ['actor_id' => $currentUserId],
                     $actor,
                     null
                 );
-
                 $notification->send($targetUser);
             }
+
+            return response()->json([
+                'success'         => true,
+                'followed'        => false,
+                'requested'       => true,
+                'followers_count' => $targetUser->getFollowersCount(),
+            ]);
+        }
+
+        // Public account: instant follow
+        Notification::updateOrCreate(
+            [
+                'user_id'  => $userId,
+                'actor_id' => $currentUserId,
+                'type'     => 'follow',
+            ],
+            [
+                'title'   => 'Pengikut Baru',
+                'body'    => "{$actor->name} mulai mengikuti Anda",
+                'data'    => ['actor_name' => $actor->name, 'actor_id' => $actor->id],
+                'read_at' => null,
+            ]
+        );
+
+        if (!empty($targetUser->fcm_token)) {
+            $notification = new PushNotification(
+                'Pengikut Baru',
+                "{$actor->name} mulai mengikuti Anda",
+                'follow',
+                ['actor_id' => $currentUserId],
+                $actor,
+                null
+            );
+            $notification->send($targetUser);
         }
 
         return response()->json([
-            'success'       => true,
-            'followed'      => $followed,
+            'success'         => true,
+            'followed'        => true,
+            'requested'       => false,
             'followers_count' => $targetUser->getFollowersCount(),
+        ]);
+    }
+
+    public function approveFollow($userId)
+    {
+        $currentUserId = Auth::id();
+
+        $follow = Follow::where('follower_id', $userId)
+            ->where('following_id', $currentUserId)
+            ->where('status', 'pending')
+            ->first();
+
+        if (!$follow) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Permintaan tidak ditemukan.',
+            ], 404);
+        }
+
+        $follow->update(['status' => 'accepted']);
+
+        $actor = User::find($userId);
+        Notification::where('user_id', $currentUserId)
+            ->where('actor_id', $userId)
+            ->where('type', 'follow_request')
+            ->update([
+                'type'   => 'follow',
+                'title'  => 'Pengikut Baru',
+                'body'   => ($actor ? $actor->name : 'User') . ' mulai mengikuti Anda',
+                'read_at' => now(),
+            ]);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Permintaan berhasil disetujui.',
+        ]);
+    }
+
+    public function rejectFollow($userId)
+    {
+        $currentUserId = Auth::id();
+
+        $follow = Follow::where('follower_id', $userId)
+            ->where('following_id', $currentUserId)
+            ->where('status', 'pending')
+            ->first();
+
+        if (!$follow) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Permintaan tidak ditemukan.',
+            ], 404);
+        }
+
+        $follow->delete();
+
+        Notification::where('user_id', $currentUserId)
+            ->where('actor_id', $userId)
+            ->where('type', 'follow_request')
+            ->delete();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Permintaan ditolak.',
         ]);
     }
 
@@ -107,9 +217,11 @@ class FollowController extends Controller
         }
 
         $currentUserId = Auth::id();
-        $isFollowing = Follow::where('follower_id', $currentUserId)
+        $followRecord = Follow::where('follower_id', $currentUserId)
             ->where('following_id', $userId)
-            ->exists();
+            ->first();
+        $isFollowing = $followRecord && $followRecord->status === 'accepted';
+        $isRequested = $followRecord && $followRecord->status === 'pending';
 
         $avatarUrl = null;
         if ($user->profile && $user->profile->photo) {
@@ -121,9 +233,10 @@ class FollowController extends Controller
         $posts = $user->posts->map(function ($post) use ($currentUserId, $avatarUrl) {
             $post->loadCount(['likes', 'comments']);
             $isLiked = $post->likes->contains('user_id', $currentUserId);
-            $isFollowed = Follow::where('follower_id', $currentUserId)
+            $followRec = Follow::where('follower_id', $currentUserId)
                 ->where('following_id', $post->user_id)
-                ->exists();
+                ->first();
+            $isFollowed = $followRec && $followRec->status === 'accepted';
 
             return [
                 'id'             => $post->id,
@@ -154,6 +267,7 @@ class FollowController extends Controller
                 'account_type'    => $user->account_type ?? 'public',
                 'is_private'      => ($user->account_type ?? 'public') === 'private',
                 'is_following'    => $isFollowing,
+                'is_requested'    => $isRequested,
                 'followers_count' => $user->getFollowersCount(),
                 'followings_count' => $user->getFollowingsCount(),
                 'posts_count'     => $postsCount,
@@ -179,9 +293,11 @@ class FollowController extends Controller
             ->limit(20)
             ->get()
             ->map(function ($user) use ($currentUserId) {
-                $isFollowing = Follow::where('follower_id', $currentUserId)
+                $followRec = Follow::where('follower_id', $currentUserId)
                     ->where('following_id', $user->id)
-                    ->exists();
+                    ->first();
+                $isFollowing = $followRec && $followRec->status === 'accepted';
+                $isRequested = $followRec && $followRec->status === 'pending';
 
                 return [
                     'id'              => $user->id,
@@ -189,6 +305,7 @@ class FollowController extends Controller
                     'username'        => $user->username,
                     'avatar_url'      => $user->avatar_url,
                     'is_following'    => $isFollowing,
+                    'is_requested'    => $isRequested,
                     'followers_count' => $user->getFollowersCount(),
                 ];
             });
@@ -225,6 +342,13 @@ class FollowController extends Controller
         $user = User::find(Auth::id());
         $user->account_type = $request->account_type;
         $user->save();
+
+        // When switching to public, auto-accept all pending follow requests
+        if ($request->account_type === 'public') {
+            Follow::where('following_id', Auth::id())
+                ->where('status', 'pending')
+                ->update(['status' => 'accepted']);
+        }
 
         return response()->json([
             'success'      => true,

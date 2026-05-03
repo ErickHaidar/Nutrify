@@ -50,9 +50,20 @@ class CommunityPostApiService {
   Future<Map<String, dynamic>> toggleFollow(int userId) async {
     final res = await _dio.dio.post('users/$userId/follow');
     return {
-      'followed': res.data['followed'] as bool,
-      'followers_count': res.data['followers_count'] as int,
+      'followed': res.data['followed'] as bool? ?? false,
+      'requested': res.data['requested'] as bool? ?? false,
+      'followers_count': res.data['followers_count'] as int? ?? 0,
     };
+  }
+
+  Future<bool> approveFollowRequest(int requesterId) async {
+    final res = await _dio.dio.post('follow-requests/$requesterId/approve');
+    return res.data['success'] as bool? ?? false;
+  }
+
+  Future<bool> rejectFollowRequest(int requesterId) async {
+    final res = await _dio.dio.post('follow-requests/$requesterId/reject');
+    return res.data['success'] as bool? ?? false;
   }
 
   Future<Map<String, dynamic>> getUserProfile(int userId) async {

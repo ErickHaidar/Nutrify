@@ -22,6 +22,7 @@ class PostController extends Controller
 
         // Get IDs of users that the authenticated user follows
         $followingIds = Follow::where('follower_id', $userId)
+            ->where('status', 'accepted')
             ->pluck('following_id')
             ->toArray();
 
@@ -294,9 +295,11 @@ class PostController extends Controller
     private function formatPost($post, $userId)
     {
         $isLiked = $post->likes->contains('user_id', $userId);
-        $isFollowed = Follow::where('follower_id', $userId)
+        $followRecord = Follow::where('follower_id', $userId)
             ->where('following_id', $post->user_id)
-            ->exists();
+            ->first();
+        $isFollowed = $followRecord && $followRecord->status === 'accepted';
+        $isRequested = $followRecord && $followRecord->status === 'pending';
 
         $avatarUrl = null;
         if ($post->user->profile && $post->user->profile->photo) {
@@ -320,6 +323,7 @@ class PostController extends Controller
             ],
             'is_liked'       => $isLiked,
             'is_followed'    => $isFollowed,
+            'is_requested'   => $isRequested,
             'likes_count'    => $post->likes_count,
             'comments_count' => $post->comments_count,
         ];
