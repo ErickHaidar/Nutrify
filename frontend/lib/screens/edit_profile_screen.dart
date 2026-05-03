@@ -56,7 +56,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         (_birthDate != null && _initialBirthDate != null && _birthDate != _initialBirthDate) ||
         (_birthDate != null && _initialBirthDate == null) ||
         _targetWeightController.text != _initialTargetWeight ||
-        _isPhotoChanged;
+        _isPhotoChanged ||
+        _profileImage != null; // <--- Memastikan tombol tetap aktif ketika ada gambar dipilih
   }
 
   XFile? _profileImage;
@@ -104,7 +105,11 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
             _birthDate = DateTime.tryParse(savedBirthDate);
           }
           _birthDate ??= DateTime(DateTime.now().year - profile.age, 1, 1);
-          _targetWeightController.text = profile.weight.toString();
+
+          // Load target weight dari database jika ada
+          if (profile.targetWeight != null) {
+            _targetWeightController.text = profile.targetWeight.toString();
+          }
 
           _initialHeight = _heightController.text;
           _initialBirthDate = _birthDate;
@@ -130,14 +135,49 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     final height = int.tryParse(_heightController.text) ?? 0;
     final weight = int.tryParse(_weightController.text) ?? 0;
     final age = int.tryParse(_ageController.text) ?? 0;
+
+    // Validasi input
     if (height == 0 || weight == 0 || age == 0) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Isi semua kolom dengan benar')),
       );
       return;
     }
+
+    // Validasi batasan wajar
+    if (age < 13 || age > 100) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Usia harus antara 13-100 tahun')),
+      );
+      return;
+    }
+
+    if (weight < 25 || weight > 300) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Berat badan harus antara 25-300 kg')),
+      );
+      return;
+    }
+
+    if (height < 100 || height > 250) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Tinggi badan harus antara 100-250 cm')),
+      );
+      return;
+    }
+
     setState(() => _isSaving = true);
     try {
+      // Siapkan file foto jika ada dan berubah
+      File? photoFile;
+      if (_profileImage != null && kIsWeb == false && _isPhotoChanged) {
+        photoFile = File(_profileImage!.path);
+      }
+
+      // Ambil target weight dari input
+      final targetWeight = int.tryParse(_targetWeightController.text);
+
+      // Simpan profile dan foto dalam satu request
       await _profileApiService.saveProfile(
         age: age,
         weight: weight,
@@ -145,31 +185,18 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         gender: _gender,
         goal: _goal,
         activityLevel: _activityLevel,
+        targetWeight: targetWeight, // Kirim target weight!
+        photo: photoFile,
       );
 
-      bool photoUploadFailed = false;
-      if (_profileImage != null && kIsWeb == false && _isPhotoChanged) {
-        try {
-          await _profileApiService.uploadProfilePhoto(File(_profileImage!.path));
-          _isPhotoChanged = false;
-        } catch (_) {
-          photoUploadFailed = true;
-        }
+      // Reset flag photo changed setelah berhasil
+      if (_isPhotoChanged) {
+        _isPhotoChanged = false;
       }
 
       if (mounted) {
         setState(() => _isSaving = false);
-        if (photoUploadFailed) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('Profil tersimpan, tapi foto gagal diunggah. Fitur upload foto belum tersedia di server.'),
-              duration: Duration(seconds: 4),
-            ),
-          );
-          _isPhotoChanged = false;
-        } else {
-          _showSuccessDialog();
-        }
+        _showSuccessDialog();
       }
     } catch (e) {
       if (mounted) {
@@ -188,6 +215,25 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     try {
       final pickedFile = await _picker.pickImage(source: source);
       if (pickedFile != null && mounted) {
+        
+        final file = File(pickedFile.path);
+        final sizeInBytes = await file.length();
+        final sizeInMb = sizeInBytes / (1024 * 1024);
+
+        if (sizeInMb > 10.0) {
+          // Tambahkan pengecekan context.mounted di sini
+          if (!context.mounted) return;
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Ukuran foto terlalu besar. Maksimal 10 MB.'),
+              duration: Duration(seconds: 4),
+            ),
+          );
+          return;
+        }
+
+        // Tambahkan pengecekan context.mounted sebelum Navigator.push
+        if (!context.mounted) return;
         final String? finalImagePath = await Navigator.push(
           context,
           MaterialPageRoute(
@@ -378,6 +424,9 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                     label: AppStrings.heightCm,
                     icon: Icons.height,
                     keyboardType: TextInputType.number,
+                    hintText: '100-250 cm',
+                    maxLength: 3,
+                    isDecimal: false,
                   ),
                 ),
                 const SizedBox(width: 16),
@@ -387,6 +436,9 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                     label: AppStrings.weightKg,
                     icon: Icons.monitor_weight_outlined,
                     keyboardType: TextInputType.number,
+                    hintText: '25-300 kg',
+                    maxLength: 3,
+                    isDecimal: false,
                   ),
                 ),
               ],
@@ -401,6 +453,9 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
               label: AppStrings.targetWeight,
               icon: Icons.track_changes,
               keyboardType: TextInputType.number,
+              hintText: '25-300 kg',
+              maxLength: 3,
+              isDecimal: false,
             ),
 
             const SizedBox(height: 32),
@@ -863,6 +918,12 @@ class ProfileInput extends StatelessWidget {
   final String label;
   final IconData icon;
   final TextInputType keyboardType;
+  final String? hintText;
+  final int? maxLength;
+  final bool isDecimal;
+  final double? maxValue;
+  final double? minValue;
+  final String? fieldName;
 
   const ProfileInput({
     super.key,
@@ -870,6 +931,12 @@ class ProfileInput extends StatelessWidget {
     required this.label,
     required this.icon,
     this.keyboardType = TextInputType.text,
+    this.hintText,
+    this.maxLength,
+    this.isDecimal = false,
+    this.maxValue,
+    this.minValue,
+    this.fieldName,
   });
 
   @override
@@ -894,14 +961,40 @@ class ProfileInput extends StatelessWidget {
           child: TextField(
             controller: controller,
             keyboardType: keyboardType,
+            maxLength: maxLength,
             style: const TextStyle(color: AppColors.navy, fontSize: 15),
             decoration: InputDecoration(
               border: InputBorder.none,
+              hintText: hintText,
+              hintStyle: TextStyle(
+                color: AppColors.navy.withOpacity(0.4),
+                fontSize: 13,
+              ),
+              counterText: '', // Hide character counter
               contentPadding: const EdgeInsets.symmetric(
                 horizontal: 20,
                 vertical: 16,
               ),
             ),
+            onChanged: isDecimal ? (value) {
+              final number = double.tryParse(value);
+              final max = maxValue; // Fix type promotion issue
+              if (number != null && max != null && number > max) {
+                // Show error real-time jika melebihi batas
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text('$fieldName tidak boleh lebih dari $max'),
+                    duration: const Duration(seconds: 2),
+                  ),
+                );
+                // Hapus karakter terakhir
+                final newValue = value.substring(0, value.length - 1);
+                controller.value = TextEditingValue(
+                  text: newValue,
+                  selection: TextSelection.collapsed(offset: newValue.length),
+                );
+              }
+            } : null,
           ),
         ),
       ],

@@ -15,6 +15,7 @@ class ApiProfileData {
   final String goal; // 'cutting' | 'maintenance' | 'bulking'
   final String
   activityLevel; // 'sedentary'|'light'|'moderate'|'active'|'very_active'
+  final int? targetWeight; // Target berat badan
   final double bmi;
   final String bmiStatus;
   final int targetCalories;
@@ -28,6 +29,7 @@ class ApiProfileData {
     required this.gender,
     required this.goal,
     required this.activityLevel,
+    this.targetWeight,
     required this.bmi,
     required this.bmiStatus,
     required this.targetCalories,
@@ -82,6 +84,7 @@ class ProfileApiService {
         gender: profile['gender'] as String? ?? 'male',
         goal: profile['goal'] as String? ?? 'maintenance',
         activityLevel: profile['activity_level'] as String? ?? 'sedentary',
+        targetWeight: (profile['target_weight'] as num?)?.toInt(), // Nullable!
         bmi: (data['bmi'] as num?)?.toDouble() ?? 0,
         bmiStatus: data['bmi_status'] as String? ?? '',
         targetCalories: (data['target_calories'] as num?)?.toInt() ?? 0,
@@ -126,18 +129,17 @@ class ProfileApiService {
     _ongoingFetch = null;
   }
 
-  Future<void> uploadProfilePhoto(File image) async {
+Future<void> uploadProfilePhoto(File image) async {
     final fileName = image.path.split('/').last;
     final formData = FormData.fromMap({
       'photo': await MultipartFile.fromFile(image.path, filename: fileName),
     });
 
-    await _dio.dio.put(
+    await _dio.dio.post( 
       Endpoints.profilePhoto,
       data: formData,
     );
   }
-
   Future<void> saveProfile({
     required int age,
     required int weight,
@@ -145,18 +147,49 @@ class ProfileApiService {
     required String gender,
     required String goal,
     required String activityLevel,
+    int? targetWeight, // Target berat badan (opsional)
+    File? photo,
   }) async {
-    await _dio.dio.post(
-      Endpoints.storeProfile,
-      data: {
+    // Jika ada foto, gunakan multipart/form-data
+    if (photo != null) {
+      final fileName = photo.path.split('/').last;
+      final formData = FormData.fromMap({
         'age': age,
         'weight': weight,
         'height': height,
         'gender': gender,
         'goal': goal,
         'activity_level': activityLevel,
-      },
-    );
+        'target_weight': targetWeight, // Kirim target weight
+        'photo': await MultipartFile.fromFile(photo.path, filename: fileName),
+      });
+
+      await _dio.dio.post(
+        Endpoints.storeProfile,
+        data: formData,
+      );
+    } else {
+      // Jika tidak ada foto, gunakan JSON biasa
+      final data = {
+        'age': age,
+        'weight': weight,
+        'height': height,
+        'gender': gender,
+        'goal': goal,
+        'activity_level': activityLevel,
+      };
+
+      // Tambah target_weight jika ada
+      if (targetWeight != null) {
+        data['target_weight'] = targetWeight;
+      }
+
+      await _dio.dio.post(
+        Endpoints.storeProfile,
+        data: data,
+      );
+    }
+
     // Invalidate so next read reflects the saved changes.
     invalidateCache();
   }
