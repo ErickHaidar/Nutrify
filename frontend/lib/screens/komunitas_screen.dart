@@ -305,11 +305,11 @@ class KomunitasScreenState extends State<KomunitasScreen> with SingleTickerProvi
               child: TabBar(
                 controller: _tabController,
                 indicator: BoxDecoration(
-                  color: AppColors.navy,
+                  color: AppColors.amber,
                   borderRadius: BorderRadius.circular(22),
                 ),
                 indicatorSize: TabBarIndicatorSize.tab,
-                labelColor: Colors.white,
+                labelColor: AppColors.navy,
                 unselectedLabelColor: AppColors.navy.withOpacity(0.5),
                 labelStyle: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
                 unselectedLabelStyle: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
