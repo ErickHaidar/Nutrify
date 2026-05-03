@@ -24,6 +24,7 @@ class HistoryScreenState extends State<HistoryScreen> with WidgetsBindingObserve
 
   DateTime _selectedDate = DateTime.now();
   bool _isLoading = true;
+  bool _hasData = false;
 
   int _targetCalories = 0;
   DailySummary _summary = DailySummary.empty();
@@ -52,7 +53,7 @@ class HistoryScreenState extends State<HistoryScreen> with WidgetsBindingObserve
   void refreshData() => _loadData();
 
   Future<void> _loadData() async {
-    setState(() => _isLoading = true);
+    if (!_hasData) setState(() => _isLoading = true);
     try {
       final results = await Future.wait([
         _foodLogApi.getSummary(_selectedDate),
@@ -66,6 +67,7 @@ class HistoryScreenState extends State<HistoryScreen> with WidgetsBindingObserve
           final profile = results[2] as ApiProfileData?;
           _targetCalories = profile?.targetCalories ?? 0;
           _isLoading = false;
+          _hasData = true;
         });
       }
     } catch (_) {
@@ -74,7 +76,10 @@ class HistoryScreenState extends State<HistoryScreen> with WidgetsBindingObserve
   }
 
   void _onDateChanged(DateTime date) {
-    setState(() => _selectedDate = date);
+    setState(() {
+      _selectedDate = date;
+      _hasData = false; // reset agar skeleton muncul untuk tanggal baru
+    });
     _loadData();
   }
 

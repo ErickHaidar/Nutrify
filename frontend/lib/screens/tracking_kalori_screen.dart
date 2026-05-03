@@ -25,6 +25,7 @@ class _TrackingKaloriScreenState extends State<TrackingKaloriScreen> {
   double _totalFat = 0;
   DailySummary? _summary;
   bool _isLoading = true;
+  bool _hasData = false;
 
   @override
   void initState() {
@@ -33,6 +34,7 @@ class _TrackingKaloriScreenState extends State<TrackingKaloriScreen> {
   }
 
   Future<void> _loadData() async {
+    if (!_hasData) setState(() => _isLoading = true);
     final now = DateTime.now();
     try {
       final summary = await _foodLogApi.getSummary(now);
@@ -48,6 +50,7 @@ class _TrackingKaloriScreenState extends State<TrackingKaloriScreen> {
           _totalCarbohydrates = summary.totals.carbohydrates;
           _totalFat = summary.totals.fat;
           _isLoading = false;
+          _hasData = true;
         });
       }
     } catch (_) {
