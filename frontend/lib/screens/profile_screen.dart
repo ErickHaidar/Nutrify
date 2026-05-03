@@ -81,6 +81,10 @@ class ProfileScreenState extends State<ProfileScreen>
     _tabController.animateTo(1);
   }
 
+  void switchToUmumTab() {
+    _tabController.animateTo(0);
+  }
+
   Future<void> loadProfile() async {
     try {
       final profile = await _profileApiService.getProfile();

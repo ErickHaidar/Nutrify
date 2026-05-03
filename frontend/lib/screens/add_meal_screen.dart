@@ -239,6 +239,7 @@ class _AddMealScreenState extends State<AddMealScreen> {
       } else {
         results = await _foodApi.searchFoods(query);
       }
+      results = _applyCategoryFilter(results);
       if (mounted) {
         setState(() {
           _results = results;
@@ -277,7 +278,8 @@ class _AddMealScreenState extends State<AddMealScreen> {
   Future<void> _loadFavoritesList() async {
     setState(() => _isSearching = true);
     try {
-      final favs = await _favApi.getFavorites();
+      var favs = await _favApi.getFavorites();
+      favs = _applyCategoryFilter(favs);
       if (mounted) {
         setState(() {
           _results = favs;
@@ -292,7 +294,8 @@ class _AddMealScreenState extends State<AddMealScreen> {
   Future<void> _loadRecommendationsList() async {
     setState(() => _isSearching = true);
     try {
-      final recs = await _favApi.getRecommendations();
+      var recs = await _favApi.getRecommendations();
+      recs = _applyCategoryFilter(recs);
       if (mounted) {
         setState(() {
           _results = recs;
@@ -312,6 +315,25 @@ class _AddMealScreenState extends State<AddMealScreen> {
     {'name': 'Sayuran', 'icon': Icons.grass},
     {'name': 'Minuman', 'icon': Icons.local_drink},
   ];
+
+  static const _categoryKeywords = <String, List<String>>{
+    'Nasi': ['nasi', 'rice', 'bubur', 'lemang', 'lontong', 'ketupat'],
+    'Roti': ['roti', 'bread', 'donat', 'kue', 'biskuit', 'kerupuk', 'cracker', 'martabak', 'gado', 'siomay', 'bakwan', 'perkedel', 'tahu', 'tempe', 'oncom'],
+    'Daging': ['daging', 'ayam', 'ikan', 'udang', 'sapi', 'kambing', 'bebek', 'telur', 'telor', 'meat', 'chicken', 'fish', 'egg', 'bakso', 'sate', 'sosis', 'rendang', 'gulai', 'opor', 'semur', 'kornet', 'cumi', 'kerang', 'kepiting', 'lobster', 'ham'],
+    'Buah': ['buah', 'fruit', 'apel', 'jeruk', 'pisang', 'mangga', 'semangka', 'melon', 'pepaya', 'anggur', 'alpukat', 'durian', 'strawberry', 'leci', 'rambutan', 'nanas', 'salak', 'jambu', 'markisa', 'sirsak', 'kelapa'],
+    'Sayuran': ['sayur', 'vegetable', 'bayam', 'kangkung', 'wortel', 'brokoli', 'tomat', 'tomato', 'kol', 'sawi', 'terong', 'buncis', 'timun', 'selada', 'capcay', 'jagung', 'kentang', 'ubi', 'singkong', 'talas', 'labu', 'jamur', 'bawang'],
+    'Minuman': ['minum', 'drink', 'jus', 'juice', 'susu', 'milk', 'teh', 'tea', 'kopi', 'coffee', 'air', 'mineral', 'soda', 'yoghurt', 'es', 'smoothie', 'wedang', 'bandrek', 'bajigur', 'bir', 'coklat'],
+  };
+
+  List<FoodItem> _applyCategoryFilter(List<FoodItem> items) {
+    if (_selectedCategory.isEmpty) return items;
+    final keywords = _categoryKeywords[_selectedCategory] ?? [];
+    if (keywords.isEmpty) return items;
+    return items.where((f) {
+      final name = f.name.toLowerCase();
+      return keywords.any((kw) => name.contains(kw));
+    }).toList();
+  }
 
   void _showTutorialDialog() {
     showDialog(
@@ -349,7 +371,7 @@ class _AddMealScreenState extends State<AddMealScreen> {
                 ' : Centang kotak checklist di kanan.',
                 '(Menggunakan porsi template standar, tidak mengedit)',
                 'assets/images/Tambah Cepat (2).png',
-                customImageWidth: 95,
+                customImageWidth: 110,
               ),
               Padding(
                 padding: const EdgeInsets.symmetric(vertical: 4),
@@ -368,7 +390,7 @@ class _AddMealScreenState extends State<AddMealScreen> {
                 ' : Klik area tengah kotak makanan.',
                 '(Sesuaikan takaran porsi (gram/buah) sebelum simpan)',
                 'assets/images/Atur Manual (2).png',
-                customImageWidth: 95,
+                customImageWidth: 110,
               ),
               _buildTutorialStep(
                 '3. ',
@@ -376,7 +398,7 @@ class _AddMealScreenState extends State<AddMealScreen> {
                 ' : Ketuk tombol ceklish disebelah pojok kanan bawah untuk simpan.\\n(Untuk Mencatat Kalori Anda)',
                 null,
                 'assets/images/Simpan.png',
-                customImageWidth: 60,
+                customImageWidth: 80,
               ),
               const SizedBox(height: 24),
               SizedBox(
@@ -558,7 +580,11 @@ class _AddMealScreenState extends State<AddMealScreen> {
                       setState(() {
                         _selectedCategory = isSelected ? "" : cat["name"] as String;
                       });
-                      if (_searchController.text.isNotEmpty) {
+                      if (_filterMode == 'favorites') {
+                        _loadFavoritesList();
+                      } else if (_filterMode == 'recommendations') {
+                        _loadRecommendationsList();
+                      } else {
                         _search(_searchController.text.trim());
                       }
                     },
@@ -613,13 +639,36 @@ class _AddMealScreenState extends State<AddMealScreen> {
           Expanded(
             child: (_results.isEmpty && !_isSearching)
                 ? Center(
-                    child: Text(
-                      _searchController.text.isEmpty
-                          ? AppStrings.noFoodAdded
-                          : AppStrings.noResultsFound,
-                      style: TextStyle(
-                        color: AppColors.navy.withOpacity(0.5),
-                        fontSize: 14,
+                    child: Padding(
+                      padding: const EdgeInsets.all(32),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(
+                            _filterMode == 'recommendations'
+                                ? Icons.recommend_outlined
+                                : _filterMode == 'favorites'
+                                    ? Icons.favorite_border
+                                    : Icons.search_off,
+                            size: 48,
+                            color: AppColors.navy.withOpacity(0.2),
+                          ),
+                          const SizedBox(height: 12),
+                          Text(
+                            _filterMode == 'recommendations'
+                                ? 'Belum ada rekomendasi.\nMulai catat makanan Anda!'
+                                : _selectedCategory.isNotEmpty
+                                    ? 'Tidak ada makanan untuk kategori ini.'
+                                    : _searchController.text.isEmpty
+                                        ? AppStrings.noFoodAdded
+                                        : AppStrings.noResultsFound,
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                              color: AppColors.navy.withOpacity(0.5),
+                              fontSize: 14,
+                            ),
+                          ),
+                        ],
                       ),
                     ),
                   )
@@ -731,13 +780,41 @@ class _AddMealScreenState extends State<AddMealScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
-                    food.name,
-                    style: const TextStyle(
-                      color: AppColors.navy,
-                      fontWeight: FontWeight.w500,
-                    ),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: Text(
+                          food.name,
+                          style: const TextStyle(
+                            color: AppColors.navy,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                      ),
+                      if (_filterMode == 'recommendations')
+                        Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                          decoration: BoxDecoration(
+                            color: AppColors.navy.withOpacity(0.1),
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Icon(Icons.auto_awesome, size: 11, color: AppColors.navy.withOpacity(0.6)),
+                              const SizedBox(width: 3),
+                              Text('Sering dimakan',
+                                  style: TextStyle(
+                                    color: AppColors.navy.withOpacity(0.6),
+                                    fontSize: 9,
+                                    fontWeight: FontWeight.w600,
+                                  )),
+                            ],
+                          ),
+                        ),
+                    ],
                   ),
+                  const SizedBox(height: 2),
                   Text(
                     '${food.calories.toStringAsFixed(0)} kcal · ${food.servingSize}',
                     style: TextStyle(color: AppColors.navy.withOpacity(0.6), fontSize: 12),
