@@ -13,7 +13,9 @@ class Profile extends Model
     'height',
     'gender',
     'goal',
-    'activity_level'
+    'activity_level',
+    'target_weight',
+    'photo'
 ];
 
     public function user()

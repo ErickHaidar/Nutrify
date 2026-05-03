@@ -7,26 +7,50 @@ use App\Models\Profile;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Validator;
 
 class ProfileController extends Controller
 {
-    // Menyimpan atau Update data fisik User (ID 7)
+    // Menyimpan atau Update data fisik User
     public function store(Request $request)
     {
         $request->validate([
-            'age' => 'required|integer',
-            'weight' => 'required|numeric',
-            'height' => 'required|numeric',
+            'age' => 'required|integer|min:13|max:100',
+            'weight' => 'required|integer|min:25|max:300',
+            'height' => 'required|integer|min:100|max:250',
             'gender' => 'required|in:male,female',
             'activity_level' => 'required|in:sedentary,light,moderate,active,very_active',
             'goal' => 'required|in:cutting,maintenance,bulking',
+            'target_weight' => 'nullable|integer|min:25|max:300', // Target berat badan
+            'photo' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:10240', // Opsional: max 10MB
         ]);
 
-        // Simpan atau update berdasarkan user yang sedang login
+        // Ambil data profile tanpa photo
+        $profileData = $request->only(['age', 'weight', 'height', 'gender', 'activity_level', 'goal', 'target_weight']);
+
+        // Update atau buat profile
         $profile = Profile::updateOrCreate(
             ['user_id' => Auth::id()],
-            $request->all()
+            $profileData
         );
+
+        // Handle photo upload jika ada
+        if ($request->hasFile('photo')) {
+            // Hapus foto lama jika ada
+            if ($profile->photo) {
+                Storage::disk('public')->delete($profile->photo);
+            }
+
+            // Simpan foto baru
+            $file = $request->file('photo');
+            $extension = $file->getClientOriginalExtension();
+            $filename = Auth::id() . '_' . time() . '.' . $extension;
+            $path = $file->storeAs('profile-photos', $filename, 'public');
+
+            // Update database dengan path foto
+            $profile->update(['photo' => $path]);
+        }
 
         return response()->json([
             'message' => 'Profile updated successfully',
@@ -34,10 +58,63 @@ class ProfileController extends Controller
         ]);
     }
 
-    // Mengambil data profile & Kalkulasi BMI serta TDEE (ID 13)
+    // Upload dan update foto profil
+    public function photo(Request $request)
+    {
+        // Validasi file yang diunggah
+        $validator = Validator::make($request->all(), [
+            'photo' => 'required|image|mimes:jpg,jpeg,png,webp|max:10240', // Maksimal 10 MB
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'message' => 'Validation Error',
+                'errors' => $validator->errors()
+            ], 422);
+        }
+
+        // Cari atau buat profile baru jika belum ada
+        $profile = Profile::firstOrCreate(
+            ['user_id' => Auth::id()],
+            [
+                'age' => 0,
+                'weight' => 0,
+                'height' => 0,
+                'gender' => 'male',
+                'goal' => 'maintenance',
+                'activity_level' => 'sedentary',
+                'photo' => null,
+            ]
+        );
+
+        // Hapus foto lama jika ada
+        if ($profile->photo) {
+            Storage::disk('public')->delete($profile->photo);
+        }
+
+        // Simpan foto baru
+        $file = $request->file('photo');
+        $extension = $file->getClientOriginalExtension();
+        $filename = Auth::id() . '_' . time() . '.' . $extension;
+
+        $path = $file->storeAs('profile-photos', $filename, 'public');
+
+        // Update database
+        $profile->update([
+            'photo' => $path
+        ]);
+
+        return response()->json([
+            'message' => 'success',
+            'data' => [
+                'photo_url' => 'https://nutrify-app.my.id/storage/' . $path
+            ]
+        ], 200);
+    }
+
+    // Mengambil data profile & Kalkulasi BMI serta TDEE
     public function show()
     {
-        // Ambil data user yang sedang login beserta profilenya
         $user = User::with('profile')->find(Auth::id());
 
         if (!$user || !$user->profile) {
@@ -46,7 +123,7 @@ class ProfileController extends Controller
 
         $profile = $user->profile;
 
-        // 1. Kalkulasi BMI: weight / (height/100)^2
+        // 1. Kalkulasi BMI
         $heightInMeter = $profile->height / 100;
         $bmiScore = $profile->weight / ($heightInMeter * $heightInMeter);
 
@@ -67,7 +144,7 @@ class ProfileController extends Controller
         ];
         $tdee = $bmr * ($factors[$profile->activity_level] ?? 1.2);
 
-        // 4. Penyesuaian Target Kalori berdasarkan Goal
+        // 4. Penyesuaian Target Kalori
         $targetCalories = $tdee;
         if ($profile->goal == 'cutting') $targetCalories -= 500;
         if ($profile->goal == 'bulking') $targetCalories += 500;
@@ -75,7 +152,6 @@ class ProfileController extends Controller
         return response()->json([
             'status' => 'success',
             'user' => $user->name,
-            // Raw profile data for editing
             'profile' => [
                 'age' => $profile->age,
                 'weight' => $profile->weight,
@@ -83,12 +159,13 @@ class ProfileController extends Controller
                 'gender' => $profile->gender,
                 'goal' => $profile->goal,
                 'activity_level' => $profile->activity_level,
+                'target_weight' => $profile->target_weight,
+                'photo_url' => $profile->photo ? 'https://nutrify-app.my.id/storage/' . $profile->photo : null,
             ],
             'bmi' => round($bmiScore, 2),
             'bmi_status' => $this->getBmiStatus($bmiScore),
             'target_calories' => round($targetCalories),
             'maintenance_calories' => round($tdee),
-            // Legacy display fields
             'physical_data' => [
                 'age' => $profile->age,
                 'weight' => $profile->weight . ' kg',
