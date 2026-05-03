@@ -231,6 +231,46 @@ if ($liked && $post->user_id !== Auth::id()) {
 - ✅ Skip FCM push jika user tidak punya fcm_token
 - ✅ Firebase credentials dilindungi di `.gitignore`
 
+#### Sub-task D: FCM Token Management (Frontend Integration)
+
+| Komponen | Status | Detail |
+|----------|--------|--------|
+| Endpoint `POST /api/profile/fcm-token` | ✅ Done | Route & controller method added - dedicated endpoint untuk FCM token update tanpa validation profile fields |
+| Frontend NotificationService | ✅ Done | `registerPushNotifications()` mengirim token ke backend on app start & after login |
+| Fix FCM Data Type Conversion | ✅ Done | Convert all data values to string untuk FCM v1 API compliance |
+| End-to-End Testing | ✅ Done | Test notification berhasil dikirim dan diterima di device Android |
+
+**Bug Fixed - FCM Error 400:**
+- **Issue:** Firebase FCM v1 API mengharuskan semua nilai di `data` field berupa STRING, bukan integer
+- **Error Message:** `Invalid value at 'message.data[0].value' (TYPE_STRING), 428`
+- **Solution:** `array_map('strval', array_filter($data, fn($v) => $v !== null))` di `FCMService.php`
+- **Result:** Push notification berhasil dikirim ke device Android ✅
+- **Test Date:** 3 Mei 2026, 07:30 UTC
+
+**Implementation:**
+```php
+// FCMService.php - Line 55
+'data' => array_map('strval', array_filter($data, fn($v) => $v !== null)),
+```
+
+**Frontend Integration:**
+```dart
+// main.dart - Initialize on app startup
+await getIt<NotificationService>().init();
+await getIt<NotificationService>().registerPushNotifications();
+
+// login.dart - Re-register after login
+await getIt<NotificationService>().init();
+await getIt<NotificationService>().registerPushNotifications();
+```
+
+**Test Results:**
+- ✅ FCM token successfully generated on device
+- ✅ Token successfully sent to backend via `POST /api/profile/fcm-token`
+- ✅ Token successfully stored in database (`users.fcm_token`)
+- ✅ Test notification successfully sent from backend
+- ✅ Test notification successfully received on Android device
+
 ---
 
 ### 🚀 Deployment Verification — ✅ PRODUCTION READY
