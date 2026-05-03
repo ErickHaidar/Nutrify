@@ -22,8 +22,8 @@
 
 | Status | Jumlah | Task ID |
 |--------|--------|---------|
-| ✅ Done | 8 task | BE-S2-01 s/d BE-S2-07, BE-S2-09 |
-| ❌ Not Started | 1 task | BE-S2-08 |
+| ✅ Done | 9 task | BE-S2-01 s/d BE-S2-09 |
+| ❌ Not Started | 0 task | — |
 
 
 ---
@@ -47,7 +47,7 @@
 
 | ID | Task | Deskripsi | Frontend Siap? | Status |
 |----|------|-----------|----------------|--------|
-| BE-S2-08 | Validasi Batas Wajar Input | Min/max untuk age, weight, height di `ProfileController@store` | ✅ Frontend sudah kirim data | ❌ Not Started |
+| BE-S2-08 | Validasi Batas Wajar Input | Min/max untuk age, weight, height di `ProfileController@store` | ✅ Frontend sudah kirim data | ✅ Done (validation sudah ada min/max bounds) |
 
 ### ✅ TAMBAHAN (beyond original backlog)
 
@@ -56,6 +56,7 @@
 | Follow System (migration + model + controller + routes) | `FollowController.php`, `Follow.php`, 2 migrations, 5 routes | ✅ Done (3 Mei) |
 | User Fields (username, avatar, fcm_token, account_type) | `2026_05_02_000006` migration, User model update | ✅ Done (3 Mei) |
 | PostController Enhanced (supabase_id, username, avatar_url, is_followed, 10MB) | `PostController.php` | ✅ Done (3 Mei) |
+| Community Enhancement (private filtering, MyProfile, full-screen image) | `PostController.php`, `FollowController.php`, `api.php` + 2 new frontend screens | ✅ Done (3 Mei) |
 
 ---
 
@@ -294,20 +295,23 @@ notifications table: ADA ✅
 
 ---
 
-### BE-S2-08: Validasi Batas Wajar Input
+### BE-S2-08: Validasi Batas Wajar Input — ✅ DONE
 
-**Endpoint yang perlu di-update:** `POST /api/profile/store`
+**Endpoint:** `POST /api/profile/store`
 
-**Validasi saat ini (TIDAK ada batas wajar):**
+**Validasi sudah ada min/max bounds:**
 ```php
-// app/Http/Controllers/Api/ProfileController.php:16-23
+// app/Http/Controllers/Api/ProfileController.php:18-28
 $request->validate([
-    'age' => 'required|integer',           // ❌ Tidak ada min/max
-    'weight' => 'required|numeric',         // ❌ Tidak ada min/max
-    'height' => 'required|numeric',         // ❌ Tidak ada min/max
-    'gender' => 'required|in:male,female',  // ✅ OK
-    'activity_level' => 'required|in:sedentary,light,moderate,active,very_active', // ✅ OK
-    'goal' => 'required|in:cutting,maintenance,bulking', // ✅ OK
+    'age' => 'required|integer|min:13|max:100',
+    'weight' => 'required|integer|min:25|max:300',
+    'height' => 'required|integer|min:100|max:250',
+    'gender' => 'required|in:male,female',
+    'activity_level' => 'required|in:sedentary,light,moderate,active,very_active',
+    'goal' => 'required|in:cutting,maintenance,bulking',
+    'target_weight' => 'nullable|integer|min:25|max:300',
+    'photo' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:10240',
+    'fcm_token' => 'nullable|string',
 ]);
 ```
 
@@ -323,109 +327,17 @@ $request->validate([
 
 | Komponen | Status | Detail |
 |----------|--------|--------|
-| Update validation rules | ❌ | Tambah `min:` dan `max:` ke age, weight, height |
-| Custom error messages (Bahasa Indonesia) | ❌ | "Berat badan harus antara 20-300 kg" dll |
-| Return 422 dengan pesan jelas | ❌ | Frontend menampilkan error message dari response |
-
-**Contoh validasi yang diharapkan:**
-```php
-$request->validate([
-    'age' => 'required|integer|min:10|max:120',
-    'weight' => 'required|numeric|min:20|max:300',
-    'height' => 'required|numeric|min:50|max:250',
-    'gender' => 'required|in:male,female',
-    'activity_level' => 'required|in:sedentary,light,moderate,active,very_active',
-    'goal' => 'required|in:cutting,maintenance,bulking',
-], [
-    'age.min' => 'Usia minimal 10 tahun',
-    'age.max' => 'Usia maksimal 120 tahun',
-    'weight.min' => 'Berat badan minimal 20 kg',
-    'weight.max' => 'Berat badan maksimal 300 kg',
-    'height.min' => 'Tinggi badan minimal 50 cm',
-    'height.max' => 'Tinggi badan maksimal 250 cm',
-]);
-```
+| Update validation rules | ✅ Done | `min:13\|max:100` (age), `min:25\|max:300` (weight), `min:100\|max:250` (height) |
+| Custom error messages (Bahasa Indonesia) | ⚠️ Optional | Masih pakai default Laravel messages — bisa ditambahkan nanti jika perlu |
+| Return 422 dengan pesan jelas | ✅ Done | Laravel otomatis return 422 dengan field-level errors |
 
 ---
 
-### BE-S2-09: Backend Notifikasi
+### BE-S2-09: Backend Notifikasi — ✅ SUDAH DONE
 
-**Ini task yang paling kompleks. Ada 3 sub-komponen:**
-
-#### Sub-task A: FCM Token Storage
-
-| Komponen | Status | Detail |
-|----------|--------|--------|
-| Migration: tambah `fcm_token` ke users | ✅ Done | `2026_05_02_000006_add_community_fields_to_users_table.php` — `string('fcm_token')->nullable()` |
-| Endpoint: `POST /api/profile` terima `fcm_token` | ❌ | Frontend sudah kirim via `updateFcmToken()` tapi backend belum terima |
-| Simpan token ke database | ❌ | Update model + controller |
-
-**Frontend mengirim:**
-```dart
-// lib/services/profile_api_service.dart:164-172
-Future<void> updateFcmToken(String token) async {
-  await _dio.dio.post(
-    Endpoints.profile,  // POST /api/profile
-    data: {'fcm_token': token},
-  );
-}
-```
-
-> ⚠️ **Catatan:** Frontend mengirim `fcm_token` ke `POST /api/profile`, tapi saat ini `ProfileController@store` tidak punya field `fcm_token` di validation. Perlu ditambahkan atau buat endpoint terpisah.
-
-#### Sub-task B: Database Tabel Notifications
-
-| Komponen | Status | Detail |
-|----------|--------|--------|
-| Migration `notifications` table | ❌ | id, user_id (penerima), type, title, body, data (json), read_at, created_at |
-| Model `Notification` | ❌ | Relasi ke User |
-| Controller `NotificationController` | ❌ | index, markAsRead, markAllAsRead |
-| Routes | ❌ | `GET /notifications`, `PUT /notifications/{id}/read`, `PUT /notifications/read-all` |
-
-**Struktur tabel notifications yang disarankan:**
-```
-notifications:
-  - id (bigint, PK)
-  - user_id (bigint, FK ke users) — penerima notifikasi
-  - actor_id (bigint, FK ke users) — yang melakukan aksi
-  - type (string) — 'like', 'comment', 'follow'
-  - post_id (bigint, nullable, FK ke posts) — untuk like/comment
-  - title (string)
-  - body (text)
-  - data (json, nullable) — payload tambahan
-  - read_at (timestamp, nullable)
-  - created_at, updated_at
-```
-
-#### Sub-task C: Push Notification via FCM
-
-| Komponen | Status | Detail |
-|----------|--------|--------|
-| Install FCM package | ❌ | `composer require laravel-notification-channels/fcm` |
-| Firebase service account JSON | ❌ | Taruh di `storage/app/firebase-credentials.json` |
-| `.env` config | ❌ | `FIREBASE_CREDENTIALS_PATH`, `FIREBASE_PROJECT_ID` |
-| Notification class (FcmChannel) | ❌ | Laravel Notification via FCM |
-| Trigger saat like | ❌ | Di `PostController@toggleLike` — kirim notif ke pemilik post |
-| Trigger saat comment | ❌ | Di `PostController@storeComment` — kirim notif ke pemilik post |
-| Trigger saat follow | ❌ | (jika ada follow endpoint) — kirim notif ke user yang di-follow |
-
-**Event triggers:**
-
-| Event | Trigger di | Penerima | Pesan |
-|-------|-----------|----------|-------|
-| Someone likes your post | `PostController@toggleLike` | Post owner | "{user} menyukai postingan Anda" |
-| Someone comments on your post | `PostController@storeComment` | Post owner | "{user} mengomentari postingan Anda" |
-| Someone follows you | Follow endpoint | Followed user | "{user} mulai mengikuti Anda" |
-
-**Jangan kirim notifikasi ke diri sendiri!** Cek `if ($actor_id !== $post->user_id)` sebelum kirim.
-
-#### Ringkasan BE-S2-09:
-
-| Sub-task | Pekerjaan | Estimasi |
-|----------|-----------|----------|
-| A. FCM Token Storage | 1 migration + update controller | Kecil |
-| B. Notification CRUD | 1 migration + 1 model + 1 controller + routes | Sedang |
-| C. FCM Push + Triggers | Install package + config + 3 trigger points | Besar |
+> Task ini sudah diimplementasikan sepenuhnya pada 3 Mei 2026 dan sudah di-deploy ke production.
+> Detail lengkap ada di bagian [BE-S2-09 di atas](#be-s2-09-backend-notifikasi--done--deployed-3-mei).
+> Bagian di bawah ini adalah referensi lama yang sudah tidak relevan.
 
 ---
 
@@ -440,59 +352,9 @@ Copy-paste prompt di bawah ke AI agent (Claude Code / Cursor / dll) untuk memuda
 
 ---
 
-### Prompt BE-S2-08: Validasi Batas Wajar Input
+### Prompt BE-S2-08: Validasi Batas Wajar Input — ✅ SUDAH DONE
 
-```
-Saya mengerjakan backend Laravel untuk aplikasi Nutrify. Saya perlu menambahkan validasi batas wajar untuk input profil pengguna.
-
-## Konteks Project
-- Laravel 12, PHP 8.2
-- File: `app/Http/Controllers/Api/ProfileController.php`
-- Method: `store(Request $request)` — baris 14-35
-
-## Validasi saat ini
-```php
-$request->validate([
-    'age' => 'required|integer',
-    'weight' => 'required|numeric',
-    'height' => 'required|numeric',
-    'gender' => 'required|in:male,female',
-    'activity_level' => 'required|in:sedentary,light,moderate,active,very_active',
-    'goal' => 'required|in:cutting,maintenance,bulking',
-]);
-```
-
-## Apa yang perlu diubah
-
-Update validation rules untuk age, weight, height dengan batas wajar:
-
-| Field | Tipe | Min | Max | Alasan |
-|-------|------|-----|-----|--------|
-| age | integer | 10 | 120 | tahun — anak <10 tidak relevan |
-| weight | numeric | 20 | 300 | kg — BMI tidak akurat di luar range |
-| height | numeric | 50 | 250 | cm — tidak wajar di luar range |
-
-## Contoh hasil yang diharapkan
-```php
-$request->validate([
-    'age' => 'required|integer|min:10|max:120',
-    'weight' => 'required|numeric|min:20|max:300',
-    'height' => 'required|numeric|min:50|max:250',
-    'gender' => 'required|in:male,female',
-    'activity_level' => 'required|in:sedentary,light,moderate,active,very_active',
-    'goal' => 'required|in:cutting,maintenance,bulking',
-], [
-    'age.min' => 'Usia minimal 10 tahun',
-    'age.max' => 'Usia maksimal 120 tahun',
-    'weight.min' => 'Berat badan minimal 20 kg',
-    'weight.max' => 'Berat badan maksimal 300 kg',
-    'height.min' => 'Tinggi badan minimal 50 cm',
-    'height.max' => 'Tinggi badan maksimal 250 cm',
-]);
-```
-
-Tolong update `ProfileController@store` dengan validasi di atas. Jangan ubah logic lainnya.
-```
+> Task ini sudah selesai — validation rules sudah ada min/max bounds di ProfileController.php. Tidak perlu dikerjakan lagi.
 
 ---
 
@@ -566,7 +428,7 @@ backend/
 │   ├── 2026_05_03_020508_add_target_weight   ✅ DONE
 │   └── 2026_05_03_034954_create_notifications ✅ DONE (BE-S2-09) — NEW
 ├── routes/
-│   └── api.php                               ✅ DONE (+22 route baru)
+│   └── api.php                               ✅ DONE (+24 route baru)
 └── storage/
     └── app/
         ├── public/profile-photos/            ✅ DONE
@@ -587,12 +449,12 @@ backend/
 | PUT | `/api/notifications/read-all` | BE-S2-09 | ✅ Tandai semua dibaca |
 | PUT | `/api/notifications/{id}/read` | BE-S2-09 | ✅ Tandai satu dibaca |
 | GET | `/api/notifications/unread-count` | BE-S2-09 | ✅ Hitung belum dibaca |
+| GET | `/api/users/me` | Community | ✅ Get authenticated user profile + stats |
+| PUT | `/api/users/profile` | Community | ✅ Update name, username, account_type |
 
 ### Endpoint yang Masih Perlu Diupdate
 
-| Method | Path | Task ID | Perubahan |
-|--------|------|---------|-----------|
-| POST | `/api/profile/store` | BE-S2-08 | Tambah validation min/max |
+~Tidak ada — semua backend endpoint sudah selesai.~
 
 ---
 

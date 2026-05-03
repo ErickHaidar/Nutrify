@@ -11,8 +11,8 @@
 |------|-----------|------|---------|----------|------------|
 | **UI/UX** | 8 | 8 | 0 | 0 | **100%** |
 | **Frontend** | 10 | 10 | 0 | 0 | **100%** |
-| **Backend** | 7 | 5 | 1 | 1 | **71%** |
-| **TOTAL** | 25 | 23 | 1 | 1 | **92%** |
+| **Backend** | 7 | 7 | 0 | 0 | **100%** |
+| **TOTAL** | 25 | 25 | 0 | 0 | **100%** |
 
 ---
 
@@ -125,7 +125,7 @@
 
 ## C. Backend (Eksekutor: Ibnu, Adit)
 
-> **Status: 5/7 DONE (71%)** — Update 3 Mei: BE-S2-07 selesai oleh Adit, follow system & community enhancement diimplementasikan Ibnu
+> **Status: 7/7 DONE (100%)** — Update 3 Mei: Semua backend task selesai termasuk BE-S2-08 (validasi input) & BE-S2-09 (notifikasi). Community enhancement (private filtering, MyProfile, dll) juga sudah diimplementasikan & di-deploy.
 
 ### ✅ DONE — Ibnu (4 task)
 
@@ -322,13 +322,53 @@
 
 ---
 
-### ❌ NOT DONE / ⚠️ PARTIAL — Adit → Ibnu (2 task)
+#### Task 6 (NEW): Community Feature Enhancement
 
-| ID | Backlog Item | Status | Detail yang Belum Ada |
-|----|-------------|--------|----------------------|
-| 13 | API upload foto profil (`PUT /profile/photo`) | ✅ DONE (Adit) | Sudah diimplementasikan Adit pada 3 Mei — migration, controller, storage, route |
-| 17 | Validasi batas wajar input (tinggi, berat, umur) | ❌ NOT DONE | Validasi hanya `required|integer/numeric`, tanpa min/max bounds |
-| 23 | Backend notifikasi (edge function/socket) | ⚠️ PARTIAL | FCM token field sudah ada di users table (via migration 000006). Tapi: belum ada tabel notifications, belum ada notification controller, belum ada FCM push trigger |
+> Polishing & enhancing fitur komunitas agar UX-nya mirip social media proper (Instagram style).
+
+**File yang dibuat:**
+
+| File | Deskripsi |
+|------|-----------|
+| `lib/screens/my_profile_screen.dart` | **BARU** — Instagram-style own profile: avatar, name, username, stats (Postingan/Pengikut/Mengikuti), edit name/username dialog, account type toggle (Publik/Privat), posts list |
+| `lib/screens/full_screen_image_screen.dart` | **BARU** — Full-screen image viewer with pinch-to-zoom & swipe-to-dismiss |
+
+**File yang diubah (Backend):**
+
+| File | Perubahan |
+|------|-----------|
+| `app/Http/Controllers/Api/PostController.php` | +Private account filtering (akun private hanya muncul jika diikuti), +`account_type` di `formatPost()` response |
+| `app/Http/Controllers/Api/FollowController.php` | +`is_private` & `posts_count` di `userProfile()`, +fix `$avatarUrl` closure, +method `getMe()`, +method `updateProfile()` |
+| `routes/api.php` | +2 route baru: `GET /users/me`, `PUT /users/profile` |
+
+**File yang diubah (Frontend):**
+
+| File | Perubahan |
+|------|-----------|
+| `lib/domain/entity/post/community_post.dart` | +`authorAccountType` field |
+| `lib/services/community_post_api_service.dart` | +`getMyProfile()`, +`updateProfile()` |
+| `lib/screens/komunitas_screen.dart` | Own profile → MyProfileScreen (bukan ProfileScreen), expanded post card tap area, follow status refresh on return from user profile, image tap → fullscreen viewer |
+| `lib/screens/user_profile_screen.dart` | Follow count refresh after toggle, loading state on follow button, private account display (lock icon + hidden posts) |
+| `lib/screens/post_detail_screen.dart` | Own profile → MyProfileScreen (bukan ProfileScreen) |
+
+**Endpoint API Baru:**
+
+| Method | Path | Deskripsi |
+|--------|------|-----------|
+| `GET` | `/api/users/me` | Get authenticated user profile with stats |
+| `PUT` | `/api/users/profile` | Update name, username, account_type |
+
+**Status:** ✅ DONE & DEPLOYED to production (3 Mei)
+
+---
+
+### ✅ DONE — Semua Backend Task Selesai
+
+| ID | Backlog Item | Status | Detail |
+|----|-------------|--------|--------|
+| 13 | API upload foto profil (`PUT /profile/photo`) | ✅ DONE (Adit) | Migration, controller, storage, route — 3 Mei |
+| 17 | Validasi batas wajar input (tinggi, berat, umur) | ✅ DONE | `min:13|max:100` (age), `min:25|max:300` (weight), `min:100|max:250` (height) di ProfileController |
+| 23 | Backend notifikasi | ✅ DONE (Adit) | Notification table, NotificationController, FCMService, PushNotification class, triggers (like/comment/follow) — 3 Mei, deployed to production |
 
 ---
 
@@ -343,28 +383,26 @@
 ## Dependency Map — Apa yang Memblokir Apa
 
 ```
-BACKEND — SISA (1 ❌ + 1 ⚠️):
-├── ID 17 (Validasi input) ────► ❌ Tidak memblokir frontend langsung, tapi risiko data tidak valid
-└── ID 23 (Notifikasi backend) ► ⚠️ PARTIAL — fcm_token field ada, tapi tidak ada notification table/triggers/push
-
-BACKEND — ADIT (1/3) — SELESAI:
-└── ID 13 (Upload foto profil) ─► ✅ DONE — migration + ProfileController@photo + route + frontend integration
-
-BACKEND — IBNU (4/4 + extra) — SELESAI & TERINTEGRASI:
-├── ID 5  (OTP API) ───────────► Frontend ID 6 ✅ DONE — backend OTP tersedia, frontend pakai Supabase built-in
-├── ID 10 (Favorit/Rekomendasi) ► Frontend ID 12 ✅ DONE — backend + frontend integrasi selesai
-├── ID 20 (Komunitas API) ──────► Frontend ID 19 ✅ DONE — mock data diganti API call
-└── EXTRA: Follow System ───────► ✅ DONE — FollowController + search + username + account_type + frontend
+BACKEND (7/7) — SEMUA SELESAI:
+├── ID 5  (OTP API) ───────────► ✅ DONE — Ibnu
+├── ID 9  (Dataset makanan) ───► ✅ DONE — Ibnu
+├── ID 10 (Favorit/Rekomendasi) ► ✅ DONE — Ibnu
+├── ID 13 (Upload foto profil) ─► ✅ DONE — Adit
+├── ID 17 (Validasi input) ────► ✅ DONE — Ibnu (min/max bounds sudah ada)
+├── ID 20 (Komunitas API) ──────► ✅ DONE — Ibnu
+├── ID 23 (Notifikasi backend) ─► ✅ DONE — Adit (FCM + notification table + triggers)
+├── EXTRA: Follow System ───────► ✅ DONE — Ibnu
+└── EXTRA: Community Enhancement ► ✅ DONE — Ibnu (private filtering, MyProfileScreen, dll)
 
 FRONTEND (10/10) — SELESAI:
 ├── ID 2  (Google Sign-In) ──────► ✅ DONE
 ├── ID 4  (Konsistensi bahasa) ───► ✅ DONE
-├── ID 6  (OTP Verification) ────► ✅ DONE — otp_verification_screen.dart + Supabase verifyOTP
-├── ID 8  (Help Info Page) ──────► ✅ DONE — help_screen.dart + tutorial overlay
-├── ID 12 (Favorit/Rekomendasi) ─► ✅ DONE — favorite_api_service.dart + add_meal_screen.dart
+├── ID 6  (OTP Verification) ────► ✅ DONE
+├── ID 8  (Help Info Page) ──────► ✅ DONE
+├── ID 12 (Favorit/Rekomendasi) ─► ✅ DONE
 ├── ID 14 (Ganti foto profil) ───► ✅ DONE
 ├── ID 16 (Dropdown aktivitas) ──► ✅ DONE
-├── ID 19 (Komunitas API) ───────► ✅ DONE — community_post_api_service.dart + komunitas_screen.dart
+├── ID 19 (Komunitas API) ───────► ✅ DONE
 ├── ID 22 (Notifikasi) ──────────► ✅ DONE
 └── ID 25 (UI/UX & warna baru) ──► ✅ DONE
 ```
@@ -409,7 +447,9 @@ FRONTEND (10/10) — SELESAI:
 | Komunitas | 6 (CRUD posts + like + comments) |
 | Follow System | 5 (follow, profile, search, username, account-type) |
 | Profile Photo | 1 (PUT /profile/photo) |
-| **Total** | **18** |
+| My Profile | 2 (GET /users/me, PUT /users/profile) |
+| Notifications | 4 (index, read, read-all, unread-count) |
+| **Total** | **24** |
 
 ### Data Baru
 
@@ -420,28 +460,29 @@ FRONTEND (10/10) — SELESAI:
 
 ---
 
-## Langkah Selanjutnya (Prioritas)
+## Langkah Selanjutnya
 
-### 1. Backend — Tersisa (2 task)
-- [ ] Validasi input (ID 17) → quick win, 15 menit kerjaan
-- [x] Upload foto profil API (ID 13) → ✅ DONE (3 Mei, Adit)
-- [ ] Notification backend (ID 23) → ⚠️ PARTIAL (fcm_token field sudah ada, butuh notification table + triggers + FCM push)
+### 1. Backend — ✅ SEMUA SELESAI (7/7)
+- [x] OTP API (ID 5) — Ibnu
+- [x] Dataset makanan (ID 9) — Ibnu
+- [x] Favorit/Rekomendasi (ID 10) — Ibnu
+- [x] Upload foto profil (ID 13) — Adit
+- [x] Komunitas API (ID 20) — Ibnu
+- [x] Validasi input (ID 17) — Ibnu (sudah ada min/max bounds)
+- [x] Notifikasi backend (ID 23) — Adit (FCM + notification table + triggers)
 
-### 2. Deploy Backend ke VPS
+### 2. Deploy Backend ke VPS — ✅ SEMUA SELESAI
 - [x] Jalankan migration baru (Sprint 2 awal)
 - [x] Jalankan deduplikasi + seeder makanan lokal
 - [x] Setup storage link untuk upload gambar komunitas
 - [x] Update CORS untuk production domain
 - [x] Deploy update komunitas + follow system + profile photo (3 Mei)
+- [x] Deploy notifikasi system — FCM + notification table (3 Mei, Adit)
+- [x] Deploy community enhancement — private filtering + new endpoints (3 Mei)
 
-### 3. QA Testing
+### 3. QA Testing — BELUM MULAI
 - [ ] Testing menyeluruh semua fitur Sprint 2 (ID 25)
 - [ ] Verifikasi pixel-perfect sesuai desain UI/UX di semua screen
 
-### 4. Frontend UI/UX Redesign — Sudah selesai
-- [x] Login screen: "Masuk", "ATAU", placeholder Indonesia
-- [x] Sign Up: "Daftar", label Indonesia, error styling
-- [x] Add Meal: kategori row, checkbox, search placeholder "Cari Makanan atau Minuman"
-- [x] Komunitas: format "Suka"/"Komentar", tab "Untuk Anda"/"Diikuti"
-- [x] Tutorial overlay: dark purple, numbered steps, "Mengerti" button
-- [x] OTP Verification: 6 digit input, countdown, resend
+### 4. Build APK — BELUM MULAI
+- [ ] Build release APK untuk testing/distribusi
