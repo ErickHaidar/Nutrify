@@ -204,12 +204,6 @@ class _MyProfileScreenState extends State<MyProfileScreen> {
           'Profil Saya',
           style: TextStyle(color: AppColors.navy, fontWeight: FontWeight.bold, fontSize: 18),
         ),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.edit, color: AppColors.navy),
-            onPressed: _showEditDialog,
-          ),
-        ],
       ),
       body: _isLoading
           ? const Center(child: CircularProgressIndicator(color: AppColors.navy))
