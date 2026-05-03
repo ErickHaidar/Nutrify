@@ -117,6 +117,14 @@ class PostController extends Controller
         if ($existing) {
             $existing->delete();
             $liked = false;
+
+            // Hapus notifikasi like yang belum dibaca dari user ini
+            Notification::where('user_id', $post->user_id)
+                ->where('actor_id', $userId)
+                ->where('type', 'like')
+                ->where('post_id', $id)
+                ->whereNull('read_at')
+                ->delete();
         } else {
             PostLike::create([
                 'user_id' => $userId,
@@ -128,19 +136,24 @@ class PostController extends Controller
             if ($post->user_id !== $userId) {
                 $actor = User::find($userId);
 
-                // Simpan ke database
-                Notification::create([
-                    'user_id' => $post->user_id,
-                    'actor_id' => $userId,
-                    'type' => 'like',
-                    'post_id' => $id,
-                    'title' => 'Suka Baru',
-                    'body' => "{$actor->name} menyukai postingan Anda",
-                    'data' => [
-                        'actor_name' => $actor->name,
-                        'actor_id' => $actor->id,
+                // Update atau buat notifikasi (hindari duplikat)
+                Notification::updateOrCreate(
+                    [
+                        'user_id' => $post->user_id,
+                        'actor_id' => $userId,
+                        'type' => 'like',
+                        'post_id' => $id,
                     ],
-                ]);
+                    [
+                        'title' => 'Suka Baru',
+                        'body' => "{$actor->name} menyukai postingan Anda",
+                        'data' => [
+                            'actor_name' => $actor->name,
+                            'actor_id' => $actor->id,
+                        ],
+                        'read_at' => null,
+                    ]
+                );
 
                 // Kirim FCM push notification
                 $postOwner = User::find($post->user_id);

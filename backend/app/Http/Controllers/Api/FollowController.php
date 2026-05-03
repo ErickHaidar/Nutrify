@@ -38,6 +38,13 @@ class FollowController extends Controller
         if ($existing) {
             $existing->delete();
             $followed = false;
+
+            // Hapus notifikasi follow yang belum dibaca
+            Notification::where('user_id', $userId)
+                ->where('actor_id', $currentUserId)
+                ->where('type', 'follow')
+                ->whereNull('read_at')
+                ->delete();
         } else {
             Follow::create([
                 'follower_id' => $currentUserId,
@@ -48,18 +55,23 @@ class FollowController extends Controller
             // TRIGGER NOTIFIKASI: Kirim ke user yang di-follow
             $actor = User::find($currentUserId);
 
-            // Simpan ke database
-            Notification::create([
-                'user_id' => $userId,
-                'actor_id' => $currentUserId,
-                'type' => 'follow',
-                'title' => 'Pengikut Baru',
-                'body' => "{$actor->name} mulai mengikuti Anda",
-                'data' => [
-                    'actor_name' => $actor->name,
-                    'actor_id' => $actor->id,
+            // Update atau buat notifikasi (hindari duplikat)
+            Notification::updateOrCreate(
+                [
+                    'user_id' => $userId,
+                    'actor_id' => $currentUserId,
+                    'type' => 'follow',
                 ],
-            ]);
+                [
+                    'title' => 'Pengikut Baru',
+                    'body' => "{$actor->name} mulai mengikuti Anda",
+                    'data' => [
+                        'actor_name' => $actor->name,
+                        'actor_id' => $actor->id,
+                    ],
+                    'read_at' => null,
+                ]
+            );
 
             // Kirim FCM push notification
             if (!empty($targetUser->fcm_token)) {

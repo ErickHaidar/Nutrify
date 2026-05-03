@@ -187,13 +187,14 @@ class NotificationService {
 
       final breakfastMenu = getMenuFor('Breakfast');
       final lunchMenu = getMenuFor('Lunch');
+      final snackMenu = getMenuFor('Snack');
       final dinnerMenu = getMenuFor('Dinner');
 
       // 3. Schedule with dynamic content and specific time ranges
       await _scheduleLocalNotification(
         id: 1,
         title: 'Makan Pagi Yuk! (07.00 - 08.00)',
-        body: breakfastMenu.isNotEmpty 
+        body: breakfastMenu.isNotEmpty
             ? 'Menu sarapanmu: $breakfastMenu. Jangan lupa makan ya!'
             : 'Waktunya sarapan sehat untuk memulai harimu dengan energi!',
         hour: 7,
@@ -203,17 +204,27 @@ class NotificationService {
       await _scheduleLocalNotification(
         id: 2,
         title: 'Sudah Jam Makan Siang! (12.00 - 13.00)',
-        body: lunchMenu.isNotEmpty 
+        body: lunchMenu.isNotEmpty
             ? 'Menu makan siangmu: $lunchMenu. Yuk isi ulang tenagamu!'
-            : 'Jangan lupa istirahat dan isi ulang tenagamu dengan makan siang Gizi seimbang.',
+            : 'Jangan lupa istirahat dan isi ulang tenagamu dengan makan siang gizi seimbang.',
         hour: 12,
         minute: 0,
       );
 
       await _scheduleLocalNotification(
         id: 3,
+        title: 'Camilan Sore! (15.00 - 16.00)',
+        body: snackMenu.isNotEmpty
+            ? 'Camilan soremu: $snackMenu. Tetap jaga energi di sore hari!'
+            : 'Sudah sore, yuk cemil sesuatu yang sehat untuk menjaga energi!',
+        hour: 15,
+        minute: 0,
+      );
+
+      await _scheduleLocalNotification(
+        id: 4,
         title: 'Waktunya Makan Malam! (18.00 - 19.00)',
-        body: dinnerMenu.isNotEmpty 
+        body: dinnerMenu.isNotEmpty
             ? 'Menu makan malammu: $dinnerMenu. Nikmati hidangan penutup harimu!'
             : 'Penuhi kebutuhan nutrisi harianmu sebelum beristirahat malam ini.',
         hour: 18,
