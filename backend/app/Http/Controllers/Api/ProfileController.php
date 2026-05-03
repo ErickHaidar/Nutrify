@@ -58,7 +58,7 @@ class ProfileController extends Controller
         ]);
     }
 
-    // Upload dan update foto profil
+    // Upload dan update foto profil — PUT /api/profile/photo
     public function photo(Request $request)
     {
         // Validasi file yang diunggah
@@ -105,7 +105,8 @@ class ProfileController extends Controller
         ]);
 
         return response()->json([
-            'message' => 'success',
+            'success' => true,
+            'message' => 'Foto profil berhasil diperbarui.',
             'data' => [
                 'photo_url' => 'https://nutrify-app.my.id/storage/' . $path
             ]
@@ -152,6 +153,7 @@ class ProfileController extends Controller
         return response()->json([
             'status' => 'success',
             'user' => $user->name,
+            'photo_url' => $profile->photo ? url('storage/' . $profile->photo) : null,
             'profile' => [
                 'age' => $profile->age,
                 'weight' => $profile->weight,

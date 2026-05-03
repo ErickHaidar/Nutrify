@@ -46,6 +46,25 @@ class CommunityPostApiService {
     final res = await _dio.dio.post('${Endpoints.posts}/$postId/comments', data: {'content': content});
     return CommentItem.fromJson(res.data['data'] as Map<String, dynamic>);
   }
+
+  Future<Map<String, dynamic>> toggleFollow(int userId) async {
+    final res = await _dio.dio.post('users/$userId/follow');
+    return {
+      'followed': res.data['followed'] as bool,
+      'followers_count': res.data['followers_count'] as int,
+    };
+  }
+
+  Future<Map<String, dynamic>> getUserProfile(int userId) async {
+    final res = await _dio.dio.get('users/$userId/profile');
+    return res.data['data'] as Map<String, dynamic>;
+  }
+
+  Future<List<Map<String, dynamic>>> searchUsers(String query) async {
+    final res = await _dio.dio.get('users/search', queryParameters: {'q': query});
+    final List<dynamic> data = res.data['data'] as List<dynamic>;
+    return data.map((e) => e as Map<String, dynamic>).toList();
+  }
 }
 
 class CommentItem {

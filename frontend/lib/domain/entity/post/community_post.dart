@@ -5,6 +5,8 @@ class CommunityPost {
   final String id;
   final String authorName;
   final String authorAvatarUrl;
+  final String authorUsername;
+  final String authorSupabaseId;
   final String timeAgo;
   final String content;
   final String? imagePath;
@@ -18,14 +20,16 @@ class CommunityPost {
 
   bool get isOwnPost {
     final currentUserId = sb.Supabase.instance.client.auth.currentUser?.id;
-    if (currentUserId == null) return false;
-    return currentUserId == authorId.toString();
+    if (currentUserId == null || authorSupabaseId.isEmpty) return false;
+    return currentUserId == authorSupabaseId;
   }
 
   CommunityPost({
     required this.id,
     required this.authorName,
     this.authorAvatarUrl = '',
+    this.authorUsername = '',
+    this.authorSupabaseId = '',
     this.timeAgo = '',
     required this.content,
     this.imagePath,
@@ -43,14 +47,16 @@ class CommunityPost {
     return CommunityPost(
       id: json['id'].toString(),
       authorName: user['name'] as String? ?? '',
-      authorAvatarUrl: '',
+      authorAvatarUrl: user['avatar_url'] as String? ?? '',
+      authorUsername: user['username'] as String? ?? '',
+      authorSupabaseId: user['supabase_id'] as String? ?? '',
       content: json['content'] as String? ?? '',
       imagePath: json['image_url'] as String?,
       authorId: user['id'] as int? ?? 0,
       likes: json['likes_count'] as int? ?? 0,
       comments: json['comments_count'] as int? ?? 0,
       isLiked: json['is_liked'] as bool? ?? false,
-      isFollowed: false,
+      isFollowed: json['is_followed'] as bool? ?? false,
       timeAgo: _formatTimeAgo(json['created_at'] as String?),
     );
   }

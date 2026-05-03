@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:nutrify/constants/colors.dart';
 import 'package:nutrify/domain/entity/post/community_post.dart';
+import 'package:nutrify/screens/profile_screen.dart';
 import 'package:nutrify/screens/user_profile_screen.dart';
 import 'package:nutrify/services/community_post_api_service.dart';
 import 'package:intl/intl.dart';
@@ -395,6 +396,13 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
           // Author row
           GestureDetector(
             onTap: () {
+              if (post.isOwnPost) {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (_) => const ProfileScreen()),
+                );
+                return;
+              }
               Navigator.push(
                 context,
                 MaterialPageRoute(
@@ -411,10 +419,15 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
                 CircleAvatar(
                   radius: 22,
                   backgroundColor: AppColors.peach,
-                  child: Text(
-                    post.authorName.isNotEmpty ? post.authorName[0].toUpperCase() : '-',
-                    style: const TextStyle(color: AppColors.navy, fontWeight: FontWeight.bold),
-                  ),
+                  backgroundImage: post.authorAvatarUrl.isNotEmpty
+                      ? NetworkImage(post.authorAvatarUrl.startsWith('http') ? post.authorAvatarUrl : 'https://nutrify-app.my.id${post.authorAvatarUrl}')
+                      : null,
+                  child: post.authorAvatarUrl.isEmpty
+                      ? Text(
+                          post.authorName.isNotEmpty ? post.authorName[0].toUpperCase() : '-',
+                          style: const TextStyle(color: AppColors.navy, fontWeight: FontWeight.bold),
+                        )
+                      : null,
                 ),
                 const SizedBox(width: 12),
                 Expanded(

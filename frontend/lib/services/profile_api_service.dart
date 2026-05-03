@@ -19,6 +19,7 @@ class ApiProfileData {
   final double bmi;
   final String bmiStatus;
   final int targetCalories;
+  final String? photoUrl;
 
   ApiProfileData({
     required this.name,
@@ -33,6 +34,7 @@ class ApiProfileData {
     required this.bmi,
     required this.bmiStatus,
     required this.targetCalories,
+    this.photoUrl,
   });
 
   String get genderDisplay => gender == 'male' ? 'Laki-Laki' : 'Perempuan';
@@ -88,6 +90,7 @@ class ProfileApiService {
         bmi: (data['bmi'] as num?)?.toDouble() ?? 0,
         bmiStatus: data['bmi_status'] as String? ?? '',
         targetCalories: (data['target_calories'] as num?)?.toInt() ?? 0,
+        photoUrl: data['photo_url'] as String?,
       );
       _cacheTime = DateTime.now();
       return _cache;
