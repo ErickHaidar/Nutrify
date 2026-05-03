@@ -19,6 +19,9 @@ Route::middleware(['supabase.auth'])->group(function () {
     Route::post('/profile/store', [ProfileController::class, 'store']);
     Route::get('/profile', [ProfileController::class, 'show']);
 
+    //Photo
+    Route::post('/profile/photo', [ProfileController::class, 'photo']);
+
     // Foods — GET /api/foods?search=&page=
     Route::get('/foods', [FoodController::class, 'index']);
     Route::get('/food/recommendations', [FoodController::class, 'recommendations']);
