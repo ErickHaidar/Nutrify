@@ -1,5 +1,6 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:timezone/timezone.dart' as tz;
 import 'package:timezone/data/latest.dart' as tz;
@@ -8,6 +9,8 @@ import 'package:nutrify/di/service_locator.dart';
 import 'package:nutrify/services/profile_api_service.dart';
 import 'package:nutrify/services/food_log_api_service.dart';
 import 'package:nutrify/utils/meal_type_mapper.dart';
+import 'package:nutrify/presentation/my_app.dart';
+import 'package:nutrify/screens/add_meal_screen.dart';
 import 'dart:io';
 
 // Step 2 & 4: Top-level background message handler
@@ -57,7 +60,15 @@ class NotificationService {
     await _notificationsPlugin.initialize(
       settings: initializationSettings,
       onDidReceiveNotificationResponse: (NotificationResponse response) {
-        // Handle notification tap logic
+        final payload = response.payload;
+        if (payload != null && payload.startsWith('meal:')) {
+          final mealType = payload.replaceFirst('meal:', '');
+          MyApp.navigatorKey.currentState?.push(
+            MaterialPageRoute(
+              builder: (_) => AddMealScreen(mealType: mealType),
+            ),
+          );
+        }
       },
     );
 
@@ -199,6 +210,7 @@ class NotificationService {
             : 'Waktunya sarapan sehat untuk memulai harimu dengan energi!',
         hour: 7,
         minute: 0,
+        payload: 'meal:Breakfast',
       );
 
       await _scheduleLocalNotification(
@@ -209,6 +221,7 @@ class NotificationService {
             : 'Jangan lupa istirahat dan isi ulang tenagamu dengan makan siang gizi seimbang.',
         hour: 12,
         minute: 0,
+        payload: 'meal:Lunch',
       );
 
       await _scheduleLocalNotification(
@@ -219,6 +232,7 @@ class NotificationService {
             : 'Sudah sore, yuk cemil sesuatu yang sehat untuk menjaga energi!',
         hour: 15,
         minute: 0,
+        payload: 'meal:Snack',
       );
 
       await _scheduleLocalNotification(
@@ -229,6 +243,7 @@ class NotificationService {
             : 'Penuhi kebutuhan nutrisi harianmu sebelum beristirahat malam ini.',
         hour: 18,
         minute: 0,
+        payload: 'meal:Dinner',
       );
     } catch (e) {
       print("Error scheduling meal reminders: $e");
@@ -241,6 +256,7 @@ class NotificationService {
     required String body,
     required int hour,
     required int minute,
+    String? payload,
   }) async {
     // Check for exact alarm permission
     bool canScheduleExact = true;
@@ -253,6 +269,7 @@ class NotificationService {
       title: title,
       body: body,
       scheduledDate: _nextInstanceOfTime(hour, minute),
+      payload: payload,
       notificationDetails: NotificationDetails(
         android: AndroidNotificationDetails(
           'meal_reminders',
