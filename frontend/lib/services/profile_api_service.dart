@@ -202,7 +202,7 @@ Future<void> uploadProfilePhoto(File image) async {
     if (userId == null) return;
 
     await _dio.dio.post(
-      Endpoints.profile, // Assuming profile endpoint handles token update or use a specific one
+      '${Endpoints.profile}/fcm-token', // Endpoint baru khusus untuk FCM token
       data: {'fcm_token': token},
     );
   }

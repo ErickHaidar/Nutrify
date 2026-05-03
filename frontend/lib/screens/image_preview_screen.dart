@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:image_cropper/image_cropper.dart';
@@ -18,12 +19,36 @@ class ImagePreviewScreen extends StatefulWidget {
 class _ImagePreviewScreenState extends State<ImagePreviewScreen> {
   late String _currentImagePath;
   bool _isCropping = false;
+  bool _isLoadingBytes = false;
+  Uint8List? _imageBytes;
   final _cropper = getIt<ImageCropper>();
 
   @override
   void initState() {
     super.initState();
     _currentImagePath = widget.imagePath;
+    _loadImageBytes();
+  }
+
+  Future<void> _loadImageBytes() async {
+    if (!kIsWeb) {
+      setState(() {
+        _isLoadingBytes = true;
+      });
+      try {
+        final file = File(_currentImagePath);
+        final bytes = await file.readAsBytes();
+        setState(() {
+          _imageBytes = bytes;
+        });
+      } catch (e) {
+        debugPrint('Error loading image bytes: $e');
+      } finally {
+        setState(() {
+          _isLoadingBytes = false;
+        });
+      }
+    }
   }
 
   Future<void> _editImage() async {
@@ -49,9 +74,9 @@ class _ImagePreviewScreenState extends State<ImagePreviewScreen> {
           IOSUiSettings(
             title: AppStrings.edit,
           ),
-            WebUiSettings(
-              context: context,
-            ),
+          WebUiSettings(
+            context: context,
+          ),
         ],
       );
 
@@ -59,6 +84,7 @@ class _ImagePreviewScreenState extends State<ImagePreviewScreen> {
         setState(() {
           _currentImagePath = croppedFile.path;
         });
+        await _loadImageBytes(); // Muat ulang bytes setelah crop gambar
       }
     } finally {
       if (mounted) {
@@ -86,74 +112,89 @@ class _ImagePreviewScreenState extends State<ImagePreviewScreen> {
         ),
         centerTitle: true,
       ),
-      body: Column(
-        children: [
-          Expanded(
-            child: Padding(
-              padding: const EdgeInsets.all(20.0),
-              child: Center(
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(20),
-                  child: kIsWeb
-                      ? Image.network(
-                          _currentImagePath,
-                          fit: BoxFit.contain,
-                        )
-                      : Image.file(
-                          File(_currentImagePath),
-                          fit: BoxFit.contain,
-                        ),
-                ),
-              ),
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 32.0),
-            child: Row(
+      body: _isLoadingBytes
+          ? const Center(child: CircularProgressIndicator())
+          : Column(
               children: [
                 Expanded(
-                  child: OutlinedButton(
-                    onPressed: _isCropping ? null : _editImage,
-                    style: OutlinedButton.styleFrom(
-                      foregroundColor: AppColors.navy,
-                      side: const BorderSide(color: AppColors.navy),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(30),
+                  child: Padding(
+                    padding: const EdgeInsets.all(20.0),
+                    child: Center(
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(20),
+                        child: kIsWeb
+                            ? Image.network(
+                                _currentImagePath,
+                                fit: BoxFit.contain,
+                              )
+                            : _imageBytes != null
+                                ? Image.memory(
+                                    _imageBytes!,
+                                    fit: BoxFit.contain,
+                                    errorBuilder: (context, error, stackTrace) {
+                                      return const Center(
+                                        child: Text(
+                                          'Format gambar tidak didukung.',
+                                          style: TextStyle(color: AppColors.navy),
+                                        ),
+                                      );
+                                    },
+                                  )
+                                : Image.file(
+                                    File(_currentImagePath),
+                                    fit: BoxFit.contain,
+                                  ),
                       ),
-                      padding: const EdgeInsets.symmetric(vertical: 16),
                     ),
-                    child: _isCropping
-                        ? const SizedBox(
-                            width: 20,
-                            height: 20,
-                            child: CircularProgressIndicator(
-                              strokeWidth: 2,
-                              color: AppColors.navy,
-                            ),
-                          )
-                        : Text(AppStrings.edit, style: const TextStyle(fontWeight: FontWeight.bold)),
                   ),
                 ),
-                const SizedBox(width: 16),
-                Expanded(
-                  child: ElevatedButton(
-                    onPressed: () => Navigator.pop(context, _currentImagePath),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: AppColors.navy,
-                      foregroundColor: Colors.white,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(30),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 32.0),
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: OutlinedButton(
+                          onPressed: _isCropping ? null : _editImage,
+                          style: OutlinedButton.styleFrom(
+                            foregroundColor: AppColors.navy,
+                            side: const BorderSide(color: AppColors.navy),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(30),
+                            ),
+                            padding: const EdgeInsets.symmetric(vertical: 16),
+                          ),
+                          child: _isCropping
+                              ? const SizedBox(
+                                  width: 20,
+                                  height: 20,
+                                  child: CircularProgressIndicator(
+                                    strokeWidth: 2,
+                                    color: AppColors.navy,
+                                  ),
+                                )
+                              : Text(AppStrings.edit, style: const TextStyle(fontWeight: FontWeight.bold)),
+                        ),
                       ),
-                      padding: const EdgeInsets.symmetric(vertical: 16),
-                    ),
-                    child: Text(AppStrings.usePhoto, style: const TextStyle(fontWeight: FontWeight.bold)),
+                      const SizedBox(width: 16),
+                      Expanded(
+                        child: ElevatedButton(
+                          onPressed: () => Navigator.pop(context, _currentImagePath),
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: AppColors.navy,
+                            foregroundColor: Colors.white,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(30),
+                            ),
+                            padding: const EdgeInsets.symmetric(vertical: 16),
+                          ),
+                          child: Text(AppStrings.usePhoto, style: const TextStyle(fontWeight: FontWeight.bold)),
+                        ),
+                      ),
+                    ],
                   ),
                 ),
               ],
             ),
-          ),
-        ],
-      ),
     );
   }
 }

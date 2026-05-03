@@ -200,4 +200,28 @@ class ProfileController extends Controller
         if ($bmi < 30) return 'Overweight';
         return 'Obese';
     }
+
+    // Update FCM token untuk push notifications
+    public function updateFcmToken(Request $request)
+    {
+        $request->validate([
+            'fcm_token' => 'required|string',
+        ]);
+
+        $user = User::find(Auth::id());
+        if (!$user) {
+            return response()->json([
+                'success' => false,
+                'message' => 'User not found',
+            ], 404);
+        }
+
+        $user->update(['fcm_token' => $request->fcm_token]);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'FCM token updated successfully',
+            'fcm_token' => $user->fcm_token,
+        ]);
+    }
 }

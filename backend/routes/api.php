@@ -20,6 +20,7 @@ Route::middleware(['supabase.auth'])->group(function () {
     // Profile
     Route::post('/profile/store', [ProfileController::class, 'store']);
     Route::get('/profile', [ProfileController::class, 'show']);
+    Route::post('/profile/fcm-token', [ProfileController::class, 'updateFcmToken']);
     Route::put('/profile/photo', [ProfileController::class, 'photo']);
 
     //Photo

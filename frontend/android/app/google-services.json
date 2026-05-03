@@ -1,81 +1,26 @@
 {
   "project_info": {
-    "project_number": "861353699556",
-    "project_id": "nutrify-eb5a4",
-    "storage_bucket": "nutrify-eb5a4.firebasestorage.app"
+    "project_number": "644373532110",
+    "project_id": "nutrify-1c768",
+    "storage_bucket": "nutrify-1c768.firebasestorage.app"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:861353699556:android:f9a901fd486d8128e524f1",
-        "android_client_info": {
-          "package_name": "PDBL.Nutrify"
-        }
-      },
-      "oauth_client": [
-        {
-          "client_id": "861353699556-0uv0f4q90pegtsaj7bo2tslq8031jdoo.apps.googleusercontent.com",
-          "client_type": 1,
-          "android_info": {
-            "package_name": "PDBL.Nutrify",
-            "certificate_hash": "367fa4db695758cf596fd541fcc2b9ba6059e860"
-          }
-        },
-        {
-          "client_id": "861353699556-actcurlih9k3oot63h59vm7o6mfc3hd7.apps.googleusercontent.com",
-          "client_type": 3
-        }
-      ],
-      "api_key": [
-        {
-          "current_key": "AIzaSyC1nrgMS8mqCj18C1mu6jJQ5WS_cfIk4go"
-        }
-      ],
-      "services": {
-        "appinvite_service": {
-          "other_platform_oauth_client": [
-            {
-              "client_id": "861353699556-actcurlih9k3oot63h59vm7o6mfc3hd7.apps.googleusercontent.com",
-              "client_type": 3
-            }
-          ]
-        }
-      }
-    },
-    {
-      "client_info": {
-        "mobilesdk_app_id": "1:861353699556:android:f3a9fd4d9f0ff793e524f1",
+        "mobilesdk_app_id": "1:644373532110:android:0ff07a2c6166bb5b1f6f9f",
         "android_client_info": {
           "package_name": "com.nutrifier.app"
         }
       },
-      "oauth_client": [
-        {
-          "client_id": "861353699556-kbuvfmqovunrll1b09hbcmgehrf2cbm8.apps.googleusercontent.com",
-          "client_type": 1,
-          "android_info": {
-            "package_name": "com.nutrifier.app",
-            "certificate_hash": "367fa4db695758cf596fd541fcc2b9ba6059e860"
-          }
-        },
-        {
-          "client_id": "861353699556-actcurlih9k3oot63h59vm7o6mfc3hd7.apps.googleusercontent.com",
-          "client_type": 3
-        }
-      ],
+      "oauth_client": [],
       "api_key": [
         {
-          "current_key": "AIzaSyC1nrgMS8mqCj18C1mu6jJQ5WS_cfIk4go"
+          "current_key": "AIzaSyAipeqGbjfNXJWvoJw1q1wim-tn498_uaQ"
         }
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": [
-            {
-              "client_id": "861353699556-actcurlih9k3oot63h59vm7o6mfc3hd7.apps.googleusercontent.com",
-              "client_type": 3
-            }
-          ]
+          "other_platform_oauth_client": []
         }
       }
     }
