@@ -26,6 +26,7 @@ class Endpoints {
   static const String foodFavorites = 'food/favorites';
   static const String foodRecommendations = 'food/recommendations';
   static const String posts = 'posts';
+  static const String notifications = 'notifications';
 
   // Legacy
   static const String getPosts = '/posts';

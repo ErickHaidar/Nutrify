@@ -251,56 +251,23 @@ class ProfileScreenState extends State<ProfileScreen> {
               Center(
                 child: Column(
                   children: [
-                    GestureDetector(
-                      onTap: () async {
-                        final result = await Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => const EditProfileScreen(),
-                          ),
-                        );
-                        if (result == true) {
-                          setState(() {
-                            _profileImagePath = getIt<SharedPreferences>().getString('profile_image');
-                          });
-                          loadProfile();
-                        }
-                      },
-                      child: Stack(
-                        children: [
-                          Container(
-                            width: 100,
-                            height: 100,
-                            decoration: BoxDecoration(
-                              color: const Color(0xFFC4BDB1),
-                              borderRadius: BorderRadius.circular(25),
-                              image: _buildProfileImageProvider() != null
-                                  ? DecorationImage(
-                                      image: _buildProfileImageProvider()!,
-                                      fit: BoxFit.cover,
-                                    )
-                                  : null,
-                            ),
-                            child: _buildProfileImageProvider() == null
-                                ? const Icon(Icons.person,
-                                    size: 60, color: AppColors.navy)
-                                : null,
-                          ),
-                          Positioned(
-                            bottom: 0,
-                            right: 0,
-                            child: Container(
-                              padding: const EdgeInsets.all(4),
-                              decoration: const BoxDecoration(
-                                color: AppColors.navy,
-                                shape: BoxShape.circle,
-                              ),
-                              child: const Icon(Icons.edit,
-                                  size: 14, color: Colors.white),
-                            ),
-                          ),
-                        ],
+                    Container(
+                      width: 100,
+                      height: 100,
+                      decoration: BoxDecoration(
+                        color: const Color(0xFFC4BDB1),
+                        borderRadius: BorderRadius.circular(25),
+                        image: _buildProfileImageProvider() != null
+                            ? DecorationImage(
+                                image: _buildProfileImageProvider()!,
+                                fit: BoxFit.cover,
+                              )
+                            : null,
                       ),
+                      child: _buildProfileImageProvider() == null
+                          ? const Icon(Icons.person,
+                              size: 60, color: AppColors.navy)
+                          : null,
                     ),
                     const SizedBox(height: 12),
                     Text(
@@ -324,8 +291,11 @@ class ProfileScreenState extends State<ProfileScreen> {
 
               const SizedBox(height: 30),
 
-              // 3. Info Grid
-              GridView.count(
+              // 3. Info Grid or CTA
+              if (_profile == null || _profile!.age == 0 || _profile!.weight == 0 || _profile!.height == 0)
+                _buildCompleteProfileBanner()
+              else
+                GridView.count(
                 shrinkWrap: true,
                 physics: const NeverScrollableScrollPhysics(),
                 crossAxisCount: 2,
@@ -481,6 +451,60 @@ class ProfileScreenState extends State<ProfileScreen> {
             ),
           ),
         ],
+      ),
+    );
+  }
+
+  Widget _buildCompleteProfileBanner() {
+    return GestureDetector(
+      onTap: () async {
+        final result = await Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => const EditProfileScreen()),
+        );
+        if (result == true) {
+          loadProfile();
+        }
+      },
+      child: Container(
+        width: double.infinity,
+        padding: const EdgeInsets.all(24),
+        decoration: BoxDecoration(
+          gradient: const LinearGradient(
+            colors: [AppColors.navy, Color(0xFF2D2A4A)],
+          ),
+          borderRadius: BorderRadius.circular(20),
+        ),
+        child: Column(
+          children: [
+            const Icon(Icons.edit_note_rounded, color: AppColors.amber, size: 40),
+            const SizedBox(height: 12),
+            Text(
+              AppStrings.isId ? 'Lengkapi Profil Anda' : 'Complete Your Profile',
+              style: const TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              AppStrings.isId
+                  ? 'Isi data tinggi, berat, dan usia untuk mendapatkan rekomendasi kalori personalized.'
+                  : 'Fill in your height, weight, and age to get personalized calorie recommendations.',
+              textAlign: TextAlign.center,
+              style: TextStyle(color: Colors.white.withOpacity(0.7), fontSize: 13),
+            ),
+            const SizedBox(height: 16),
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 10),
+              decoration: BoxDecoration(
+                color: AppColors.amber,
+                borderRadius: BorderRadius.circular(20),
+              ),
+              child: Text(
+                AppStrings.isId ? 'Isi Sekarang' : 'Fill Now',
+                style: const TextStyle(color: AppColors.navy, fontWeight: FontWeight.bold),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

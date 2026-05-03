@@ -9,6 +9,7 @@ import 'package:nutrify/constants/colors.dart';
 import 'package:nutrify/utils/locale/app_strings.dart';
 import '../services/food_log_api_service.dart';
 import '../services/profile_api_service.dart';
+import '../services/notification_api_service.dart';
 import '../widgets/notification_modal.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -24,7 +25,9 @@ class HomeScreenState extends State<HomeScreen> {
   bool _isLoadingData = false;
   final FoodLogApiService _foodLogApi = FoodLogApiService();
   final ProfileApiService _profileApi = ProfileApiService();
+  final NotificationApiService _notifApi = NotificationApiService();
   ApiProfileData? _profile;
+  int _unreadCount = 0;
   double totalProtein = 0;
   double totalCarbs = 0;
   double totalFat = 0;
@@ -52,13 +55,16 @@ class HomeScreenState extends State<HomeScreen> {
       final results = await Future.wait([
         _foodLogApi.getSummary(now).catchError((_) => null),
         _profileApi.getProfile(forceRefresh: forceRefresh).catchError((_) => null),
+        _notifApi.getUnreadCount().catchError((_) => 0),
       ]);
 
       final summary = results[0] as DailySummary?;
       final profile = results[1] as ApiProfileData?;
+      final unread = results[2] as int;
 
       if (mounted) {
         setState(() {
+          _unreadCount = unread;
           if (profile != null) {
             _profile = profile;
           }
@@ -193,10 +199,41 @@ class HomeScreenState extends State<HomeScreen> {
                         ),
                         const SizedBox(width: 8),
                         GestureDetector(
-                          onTap: _showNotifications,
-                          child: CircleAvatar(
-                            backgroundColor: AppColors.navy.withOpacity(0.1),
-                            child: const Icon(Icons.notifications, color: AppColors.navy),
+                          onTap: () async {
+                            _showNotifications();
+                            // Refresh unread count after viewing
+                            await Future.delayed(const Duration(seconds: 1));
+                            if (mounted) {
+                              final count = await _notifApi.getUnreadCount().catchError((_) => _unreadCount);
+                              if (mounted) setState(() => _unreadCount = count);
+                            }
+                          },
+                          child: Stack(
+                            clipBehavior: Clip.none,
+                            children: [
+                              CircleAvatar(
+                                backgroundColor: AppColors.navy.withOpacity(0.1),
+                                child: const Icon(Icons.notifications, color: AppColors.navy),
+                              ),
+                              if (_unreadCount > 0)
+                                Positioned(
+                                  right: -2,
+                                  top: -2,
+                                  child: Container(
+                                    padding: const EdgeInsets.all(4),
+                                    decoration: const BoxDecoration(
+                                      color: Colors.red,
+                                      shape: BoxShape.circle,
+                                    ),
+                                    constraints: const BoxConstraints(minWidth: 16, minHeight: 16),
+                                    child: Text(
+                                      _unreadCount > 99 ? '99+' : '$_unreadCount',
+                                      style: const TextStyle(color: Colors.white, fontSize: 9, fontWeight: FontWeight.bold),
+                                      textAlign: TextAlign.center,
+                                    ),
+                                  ),
+                                ),
+                            ],
                           ),
                         ),
                       ],

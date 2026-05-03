@@ -9,6 +9,8 @@ import 'package:nutrify/screens/post_detail_screen.dart';
 import 'package:nutrify/screens/my_profile_screen.dart';
 import 'package:nutrify/screens/user_profile_screen.dart';
 import 'package:nutrify/services/community_post_api_service.dart';
+import 'package:nutrify/services/notification_api_service.dart';
+import 'package:nutrify/widgets/notification_modal.dart';
 import 'package:nutrify/utils/locale/app_strings.dart';
 import 'package:intl/intl.dart';
 
@@ -22,14 +24,34 @@ class KomunitasScreen extends StatefulWidget {
 class _KomunitasScreenState extends State<KomunitasScreen> with SingleTickerProviderStateMixin {
   late TabController _tabController;
   final _api = CommunityPostApiService();
+  final _notifApi = NotificationApiService();
   List<CommunityPost> _posts = [];
   bool _isLoading = true;
+  int _unreadCount = 0;
 
   @override
   void initState() {
     super.initState();
     _tabController = TabController(length: 2, vsync: this);
     _loadPosts();
+    _loadUnreadCount();
+  }
+
+  Future<void> _loadUnreadCount() async {
+    try {
+      final count = await _notifApi.getUnreadCount();
+      if (mounted) setState(() => _unreadCount = count);
+    } catch (_) {}
+  }
+
+  void _showNotifications() async {
+    await showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.transparent,
+      isScrollControlled: true,
+      builder: (_) => const NotificationModal(),
+    );
+    _loadUnreadCount();
   }
 
   @override
@@ -91,15 +113,21 @@ class _KomunitasScreenState extends State<KomunitasScreen> with SingleTickerProv
 
   void _toggleFollow(String postId) async {
     final post = _posts.firstWhere((p) => p.id == postId);
+    final authorId = post.authorId;
+    final wasFollowed = post.isFollowed;
     setState(() {
-      post.isFollowed = !post.isFollowed;
+      for (final p in _posts) {
+        if (p.authorId == authorId) p.isFollowed = !wasFollowed;
+      }
     });
     try {
-      await _api.toggleFollow(post.authorId);
+      await _api.toggleFollow(authorId);
     } catch (_) {
       if (mounted) {
         setState(() {
-          post.isFollowed = !post.isFollowed;
+          for (final p in _posts) {
+            if (p.authorId == authorId) p.isFollowed = wasFollowed;
+          }
         });
       }
     }
@@ -156,6 +184,30 @@ class _KomunitasScreenState extends State<KomunitasScreen> with SingleTickerProv
           ],
         ),
         actions: [
+          Stack(
+            clipBehavior: Clip.none,
+            children: [
+              IconButton(
+                icon: const Icon(Icons.notifications, color: Color(0xFF49426E), size: 24),
+                onPressed: _showNotifications,
+              ),
+              if (_unreadCount > 0)
+                Positioned(
+                  right: 6,
+                  top: 6,
+                  child: Container(
+                    padding: const EdgeInsets.all(3),
+                    decoration: const BoxDecoration(color: Colors.red, shape: BoxShape.circle),
+                    constraints: const BoxConstraints(minWidth: 14, minHeight: 14),
+                    child: Text(
+                      _unreadCount > 99 ? '99+' : '$_unreadCount',
+                      style: const TextStyle(color: Colors.white, fontSize: 8, fontWeight: FontWeight.bold),
+                      textAlign: TextAlign.center,
+                    ),
+                  ),
+                ),
+            ],
+          ),
           IconButton(
             icon: const Icon(Icons.search, color: Color(0xFF49426E), size: 28),
             onPressed: _showUserSearch,

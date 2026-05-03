@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import '../constants/colors.dart';
 import '../services/food_log_api_service.dart';
+import '../services/notification_api_service.dart';
 import 'package:nutrify/utils/locale/app_strings.dart';
 
 class NotificationModal extends StatefulWidget {
@@ -13,9 +14,10 @@ class NotificationModal extends StatefulWidget {
 
 class _NotificationModalState extends State<NotificationModal> {
   final _foodLogApi = FoodLogApiService();
+  final _notifApi = NotificationApiService();
   bool _isLoading = true;
   List<FoodLogEntry> _todayLogs = [];
-  List<FoodLogEntry> _yesterdayLogs = [];
+  List<NotificationItem> _communityNotifs = [];
 
   @override
   void initState() {
@@ -27,21 +29,18 @@ class _NotificationModalState extends State<NotificationModal> {
     setState(() => _isLoading = true);
     try {
       final now = DateTime.now();
-      final yesterday = now.subtract(const Duration(days: 1));
-
       final results = await Future.wait([
         _foodLogApi.getLogs(now),
-        _foodLogApi.getLogs(yesterday),
+        _notifApi.getNotifications(),
       ]);
-
       if (mounted) {
         setState(() {
-          _todayLogs = results[0];
-          _yesterdayLogs = results[1];
+          _todayLogs = results[0] as List<FoodLogEntry>;
+          _communityNotifs = results[1] as List<NotificationItem>;
           _isLoading = false;
         });
       }
-    } catch (e) {
+    } catch (_) {
       if (mounted) setState(() => _isLoading = false);
     }
   }
@@ -52,10 +51,26 @@ class _NotificationModalState extends State<NotificationModal> {
     return items.map((e) => e.foodName).join(', ');
   }
 
+  String _formatTime(DateTime dt) {
+    final now = DateTime.now();
+    final diff = now.difference(dt);
+    if (diff.inMinutes < 1) return AppStrings.justNow;
+    if (diff.inMinutes < 60) return '${diff.inMinutes}m';
+    if (diff.inHours < 24) return '${diff.inHours}h';
+    if (diff.inDays < 7) return '${diff.inDays}d';
+    return DateFormat('dd MMM').format(dt);
+  }
+
+  Future<void> _markAllRead() async {
+    try {
+      await _notifApi.markAllAsRead();
+      _loadData();
+    } catch (_) {}
+  }
+
   @override
   Widget build(BuildContext context) {
     final now = DateTime.now();
-    final yesterday = now.subtract(const Duration(days: 1));
     final df = DateFormat('dd MMMM', 'id_ID');
 
     return Container(
@@ -98,7 +113,7 @@ class _NotificationModalState extends State<NotificationModal> {
                   child: Center(
                     child: Text(
                       AppStrings.inbox,
-                      style: TextStyle(
+                      style: const TextStyle(
                         color: AppColors.navy,
                         fontSize: 20,
                         fontWeight: FontWeight.bold,
@@ -106,82 +121,168 @@ class _NotificationModalState extends State<NotificationModal> {
                     ),
                   ),
                 ),
-                const SizedBox(width: 40),
+                if (_communityNotifs.any((n) => !n.isRead))
+                  GestureDetector(
+                    onTap: _markAllRead,
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                      decoration: BoxDecoration(
+                        color: AppColors.navy,
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: Text(
+                        AppStrings.isId ? 'Baca semua' : 'Read all',
+                        style: const TextStyle(color: Colors.white, fontSize: 11, fontWeight: FontWeight.w600),
+                      ),
+                    ),
+                  )
+                else
+                  const SizedBox(width: 50),
               ],
             ),
           ),
           const SizedBox(height: 8),
           Text(
             AppStrings.inboxSubtitle,
-            style: TextStyle(
-              color: AppColors.navy,
-              fontSize: 11,
-            ),
+            style: const TextStyle(color: AppColors.navy, fontSize: 11),
           ),
           const SizedBox(height: 25),
           Expanded(
             child: _isLoading
                 ? const Center(child: CircularProgressIndicator(color: AppColors.navy))
-                : ListView(
-                    padding: const EdgeInsets.symmetric(horizontal: 24),
-                    children: [
-                      // Today's Reminders (Only show if time has passed)
-                      if (now.hour >= 18)
-                        _buildMealItem(
-                          logs: _todayLogs,
-                          mealType: 'Dinner',
-                          title: AppStrings.dinnerReminder,
-                          date: '${df.format(now)} · 18.00',
-                          defaultDesc: AppStrings.dinnerDefault,
-                          icon: Icons.nightlight_round,
-                        ),
-                      if (now.hour >= 12)
-                        _buildMealItem(
-                          logs: _todayLogs,
-                          mealType: 'Lunch',
-                          title: AppStrings.lunchReminder,
-                          date: '${df.format(now)} · 12.00',
-                          defaultDesc: AppStrings.lunchDefault,
-                          icon: Icons.wb_sunny_rounded,
-                        ),
-                      if (now.hour >= 7)
-                        _buildMealItem(
-                          logs: _todayLogs,
-                          mealType: 'Breakfast',
-                          title: AppStrings.breakfastReminder,
-                          date: '${df.format(now)} · 07.00',
-                          defaultDesc: AppStrings.breakfastDefault,
-                          icon: Icons.wb_twilight,
-                        ),
-                      
-                      // Yesterday's Reminders (Always show)
-                      _buildMealItem(
-                        logs: _yesterdayLogs,
-                        mealType: 'Dinner',
-                        title: AppStrings.dinnerReminder,
-                        date: '${df.format(yesterday)} · 18.00',
-                        defaultDesc: AppStrings.dinnerDefault,
-                        icon: Icons.nightlight_round,
-                      ),
-                      _buildMealItem(
-                        logs: _yesterdayLogs,
-                        mealType: 'Lunch',
-                        title: AppStrings.lunchReminder,
-                        date: '${df.format(yesterday)} · 12.00',
-                        defaultDesc: AppStrings.lunchDefault,
-                        icon: Icons.wb_sunny_rounded,
-                      ),
-                      _buildMealItem(
-                        logs: _yesterdayLogs,
-                        mealType: 'Breakfast',
-                        title: AppStrings.breakfastReminder,
-                        date: '${df.format(yesterday)} · 07.00',
-                        defaultDesc: AppStrings.breakfastDefault,
-                        icon: Icons.wb_twilight,
-                      ),
-                    ],
+                : RefreshIndicator(
+                    onRefresh: _loadData,
+                    color: AppColors.navy,
+                    child: ListView(
+                      padding: const EdgeInsets.symmetric(horizontal: 24),
+                      children: [
+                        // Community notifications
+                        if (_communityNotifs.isNotEmpty) ...[
+                          _buildSectionHeader(AppStrings.isId ? 'Aktivitas' : 'Activity'),
+                          ..._communityNotifs.map((n) => _buildCommunityItem(n)),
+                          const SizedBox(height: 16),
+                        ],
+                        // Meal reminders
+                        _buildSectionHeader(AppStrings.isId ? 'Pengingat Makan' : 'Meal Reminders'),
+                        if (now.hour >= 18)
+                          _buildMealItem(
+                            logs: _todayLogs,
+                            mealType: 'Dinner',
+                            title: AppStrings.dinnerReminder,
+                            date: '${df.format(now)} · 18.00',
+                            defaultDesc: AppStrings.dinnerDefault,
+                            icon: Icons.nightlight_round,
+                          ),
+                        if (now.hour >= 12)
+                          _buildMealItem(
+                            logs: _todayLogs,
+                            mealType: 'Lunch',
+                            title: AppStrings.lunchReminder,
+                            date: '${df.format(now)} · 12.00',
+                            defaultDesc: AppStrings.lunchDefault,
+                            icon: Icons.wb_sunny_rounded,
+                          ),
+                        if (now.hour >= 7)
+                          _buildMealItem(
+                            logs: _todayLogs,
+                            mealType: 'Breakfast',
+                            title: AppStrings.breakfastReminder,
+                            date: '${df.format(now)} · 07.00',
+                            defaultDesc: AppStrings.breakfastDefault,
+                            icon: Icons.wb_twilight,
+                          ),
+                      ],
+                    ),
                   ),
           ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildSectionHeader(String title) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 12),
+      child: Text(
+        title,
+        style: const TextStyle(
+          color: AppColors.navy,
+          fontSize: 14,
+          fontWeight: FontWeight.bold,
+        ),
+      ),
+    );
+  }
+
+  Widget _buildCommunityItem(NotificationItem notif) {
+    final iconInfo = notif.iconData;
+    return Container(
+      margin: const EdgeInsets.only(bottom: 10),
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: notif.isRead ? Colors.white : Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        border: notif.isRead ? null : Border.all(color: AppColors.navy.withOpacity(0.15), width: 1.5),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.03),
+            blurRadius: 8,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
+      child: Row(
+        children: [
+          Container(
+            width: 40,
+            height: 40,
+            decoration: BoxDecoration(
+              color: iconInfo.color.withOpacity(0.15),
+              shape: BoxShape.circle,
+            ),
+            child: Icon(iconInfo.icon, color: iconInfo.color, size: 20),
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                RichText(
+                  text: TextSpan(
+                    style: TextStyle(
+                      color: AppColors.navy.withOpacity(0.8),
+                      fontSize: 13,
+                      height: 1.4,
+                    ),
+                    children: [
+                      TextSpan(
+                        text: notif.actorName ?? '',
+                        style: const TextStyle(fontWeight: FontWeight.bold, color: AppColors.navy),
+                      ),
+                      TextSpan(text: ' ${notif.body}'),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  _formatTime(notif.createdAt),
+                  style: TextStyle(
+                    color: AppColors.navy.withOpacity(0.4),
+                    fontSize: 11,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          if (!notif.isRead)
+            Container(
+              width: 8,
+              height: 8,
+              decoration: const BoxDecoration(
+                color: AppColors.navy,
+                shape: BoxShape.circle,
+              ),
+            ),
         ],
       ),
     );
@@ -196,24 +297,22 @@ class _NotificationModalState extends State<NotificationModal> {
     required IconData icon,
   }) {
     final menu = _getMenuFor(logs, mealType);
-    return NotificationItem(
+    return NotificationItemWidget(
       icon: icon,
       title: title,
       date: date,
-      description: menu.isNotEmpty 
-          ? AppStrings.scheduledMenu(menu) 
-          : defaultDesc,
+      description: menu.isNotEmpty ? AppStrings.scheduledMenu(menu) : defaultDesc,
     );
   }
 }
 
-class NotificationItem extends StatelessWidget {
+class NotificationItemWidget extends StatelessWidget {
   final IconData icon;
   final String title;
   final String date;
   final String description;
 
-  const NotificationItem({
+  const NotificationItemWidget({
     super.key,
     required this.icon,
     required this.title,
