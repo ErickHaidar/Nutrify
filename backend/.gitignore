@@ -23,3 +23,7 @@ Homestead.json
 Homestead.yaml
 .env
 Thumbs.db
+
+# Firebase Credentials (RAHASIA!)
+firebase-credentials.json.json
+storage/app/firebase-credentials.json.json

@@ -7,6 +7,9 @@ use App\Models\Post;
 use App\Models\PostLike;
 use App\Models\Comment;
 use App\Models\Follow;
+use App\Models\Notification;
+use App\Notifications\PushNotification;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
@@ -108,6 +111,40 @@ class PostController extends Controller
                 'post_id' => $id,
             ]);
             $liked = true;
+
+            // TRIGGER NOTIFIKASI: Jika like post orang lain
+            if ($post->user_id !== $userId) {
+                $actor = User::find($userId);
+
+                // Simpan ke database
+                Notification::create([
+                    'user_id' => $post->user_id,
+                    'actor_id' => $userId,
+                    'type' => 'like',
+                    'post_id' => $id,
+                    'title' => 'Suka Baru',
+                    'body' => "{$actor->name} menyukai postingan Anda",
+                    'data' => [
+                        'actor_name' => $actor->name,
+                        'actor_id' => $actor->id,
+                    ],
+                ]);
+
+                // Kirim FCM push notification
+                $postOwner = User::find($post->user_id);
+                if ($postOwner && !empty($postOwner->fcm_token)) {
+                    $notification = new PushNotification(
+                        'Suka Baru',
+                        "{$actor->name} menyukai postingan Anda",
+                        'like',
+                        ['post_id' => $id],
+                        $actor,
+                        $post
+                    );
+
+                    $notification->send($postOwner);
+                }
+            }
         }
 
         $post->loadCount('likes');
@@ -173,6 +210,45 @@ class PostController extends Controller
         ]);
 
         $comment->load('user');
+
+        // TRIGGER NOTIFIKASI: Jika komentar di post orang lain
+        if ($post->user_id !== Auth::id()) {
+            $actor = User::find(Auth::id());
+
+            // Simpan ke database
+            Notification::create([
+                'user_id' => $post->user_id,
+                'actor_id' => Auth::id(),
+                'type' => 'comment',
+                'post_id' => $id,
+                'title' => 'Komentar Baru',
+                'body' => "{$actor->name} mengomentari postingan Anda",
+                'data' => [
+                    'actor_name' => $actor->name,
+                    'actor_id' => $actor->id,
+                    'comment_content' => $comment->content,
+                ],
+            ]);
+
+            // Kirim FCM push notification
+            $postOwner = User::find($post->user_id);
+            if ($postOwner && !empty($postOwner->fcm_token)) {
+                $notification = new PushNotification(
+                    'Komentar Baru',
+                    "{$actor->name} mengomentari postingan Anda",
+                    'comment',
+                    [
+                        'post_id' => $id,
+                        'comment_id' => $comment->id,
+                        'comment_content' => $comment->content,
+                    ],
+                    $actor,
+                    $post
+                );
+
+                $notification->send($postOwner);
+            }
+        }
 
         return response()->json([
             'success' => true,

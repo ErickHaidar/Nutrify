@@ -8,6 +8,7 @@ use App\Http\Controllers\Api\FavoriteController;
 use App\Http\Controllers\Api\PostController;
 use App\Http\Controllers\Api\OtpController;
 use App\Http\Controllers\Api\FollowController;
+use App\Http\Controllers\Api\NotificationController;
 use App\Http\Controllers\FoodLogController;
 
 // OTP Verification (public, no auth required)
@@ -55,4 +56,10 @@ Route::middleware(['supabase.auth'])->group(function () {
     Route::get('/users/search', [FollowController::class, 'searchUsers']);
     Route::put('/username', [FollowController::class, 'updateUsername']);
     Route::put('/account-type', [FollowController::class, 'updateAccountType']);
+
+    // Notifications
+    Route::get('/notifications', [NotificationController::class, 'index']);
+    Route::put('/notifications/read-all', [NotificationController::class, 'markAllAsRead']);
+    Route::put('/notifications/{id}/read', [NotificationController::class, 'markAsRead']);
+    Route::get('/notifications/unread-count', [NotificationController::class, 'unreadCount']);
 });

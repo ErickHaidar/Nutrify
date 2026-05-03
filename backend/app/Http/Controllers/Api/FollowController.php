@@ -5,6 +5,8 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Models\Follow;
 use App\Models\User;
+use App\Models\Notification;
+use App\Notifications\PushNotification;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -42,6 +44,36 @@ class FollowController extends Controller
                 'following_id' => $userId,
             ]);
             $followed = true;
+
+            // TRIGGER NOTIFIKASI: Kirim ke user yang di-follow
+            $actor = User::find($currentUserId);
+
+            // Simpan ke database
+            Notification::create([
+                'user_id' => $userId,
+                'actor_id' => $currentUserId,
+                'type' => 'follow',
+                'title' => 'Pengikut Baru',
+                'body' => "{$actor->name} mulai mengikuti Anda",
+                'data' => [
+                    'actor_name' => $actor->name,
+                    'actor_id' => $actor->id,
+                ],
+            ]);
+
+            // Kirim FCM push notification
+            if (!empty($targetUser->fcm_token)) {
+                $notification = new PushNotification(
+                    'Pengikut Baru',
+                    "{$actor->name} mulai mengikuti Anda",
+                    'follow',
+                    ['actor_id' => $currentUserId],
+                    $actor,
+                    null
+                );
+
+                $notification->send($targetUser);
+            }
         }
 
         return response()->json([

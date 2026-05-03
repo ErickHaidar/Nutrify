@@ -1,0 +1,552 @@
+# Guide Deploy — target_weight + photo_url ke Production
+
+> **VPS:** `103.253.212.55` | **Path:** `/var/www/nutrify-app/backend/`
+> **Tanggal:** 3 Mei 2026
+> **Perubahan:** target_weight, photo upload, follow system, community fields
+
+---
+
+## Daftar Isi
+
+1. [Apa yang Berubah](#1-apa-yang-berubah)
+2. [Opsi A: Deploy via Git Pull (Rekomendasi)](#2-opsi-a-deploy-via-git-pull-rekomendasi)
+3. [Opsi B: Deploy via SCP](#3-opsi-b-deploy-via-scp)
+4. [Verifikasi Setelah Deploy](#4-verifikasi-setelah-deploy)
+5. [Rollback](#5-rollback)
+
+---
+
+## 1. Apa yang Berubah
+
+### File Backend yang Perlu Diupdate
+
+| File | Perubahan |
+|------|-----------|
+| `app/Models/Profile.php` | +`target_weight`, +`photo` di `$fillable` |
+| `app/Http/Controllers/Api/ProfileController.php` | +`target_weight` validation, +photo upload di `store()`, +method `photo()`, +`photo_url` + `target_weight` di `show()` response |
+| `app/Models/User.php` | +fillable: username, avatar, fcm_token, account_type. +relasi followers/followings |
+| `app/Http/Controllers/Api/FollowController.php` | **BARU** — toggle follow, user profile, search users, update username, update account type |
+| `app/Http/Controllers/Api/PostController.php` | +supabase_id, +username, +avatar_url, +is_followed di formatPost. Upload limit 10MB |
+| `app/Models/Follow.php` | **BARU** — Model Follow |
+| `routes/api.php` | +6 route baru (follow, profile, search, username, account-type, profile photo) |
+
+### Migration Baru
+
+| File | Perubahan |
+|------|-----------|
+| `2026_05_02_000006_add_community_fields_to_users_table.php` | users: +username, +avatar, +fcm_token, +account_type |
+| `2026_05_02_000007_create_follows_table.php` | tabel follows: follower_id, following_id |
+| `2026_05_03_000001_add_photo_to_profiles_table.php` | profiles: +photo |
+| `2026_05_03_020508_add_target_weight_to_profiles_table.php` | profiles: +target_weight |
+| `2026_05_03_034954_create_notifications_table.php` | **BARU** — tabel notifications: user_id, actor_id, type, post_id, title, body, data, read_at |
+
+### Notification System Files
+
+| File | Perubahan |
+|------|-----------|
+| `app/Models/Notification.php` | **BARU** — Model Notification dengan relasi User, Post, scopes (unread, latest) |
+| `app/Http/Controllers/Api/NotificationController.php` | **BARU** — list, markAsRead, markAllAsRead, unreadCount |
+| `app/Services/FCMService.php` | **BARU** — Firebase FCM v1 manual implementation (tanpa package) |
+| `app/Notifications/PushNotification.php` | **BARU** — Wrapper class untuk kirim push notification |
+| `app/Http/Controllers/Api/PostController.php` | +notification triggers di toggleLike(), storeComment() |
+| `app/Http/Controllers/Api/FollowController.php` | +notification trigger di toggleFollow() |
+| `app/Http/Controllers/Api/ProfileController.php` | +fcm_token update logic |
+| `routes/api.php` | +4 route baru (notifications list/read-all/read/unread-count) |
+
+### Response API yang Berubah
+
+**Sebelum deploy (production sekarang):**
+```json
+{
+  "profile": {
+    "age": 22,
+    "weight": 70,
+    "height": 175,
+    "gender": "male",
+    "goal": "bulking",
+    "activity_level": "active"
+  }
+}
+```
+
+**Setelah deploy:**
+```json
+{
+  "photo_url": "https://nutrify-app.my.id/storage/profile-photos/1_1746268800.jpg",
+  "profile": {
+    "age": 22,
+    "weight": 70,
+    "height": 175,
+    "gender": "male",
+    "goal": "bulking",
+    "activity_level": "active",
+    "target_weight": 80,
+    "photo_url": "https://nutrify-app.my.id/storage/profile-photos/1_1746268800.jpg"
+  }
+}
+```
+
+---
+
+## 2. Opsi A: Deploy via Git Pull (Rekomendasi)
+
+Langsung dari VPS, pull semua perubahan terbaru dari GitHub.
+
+### Step 1: SSH ke VPS
+
+```bash
+ssh root@103.253.212.55
+cd /var/www/nutrify-app/backend
+```
+
+### Step 2: Backup database (WAJIB)
+
+Buka https://supabase.com/dashboard → project Nutrify → Database → Backups → **Create backup**
+
+### Step 3: Pull code terbaru
+
+```bash
+git pull origin main
+```
+
+### Step 4: Jalankan migration
+
+```bash
+php artisan migrate
+```
+
+Output yang diharapkan:
+```
+INFO  Running migrations.
+
+  2026_05_02_000006_add_community_fields_to_users_table ... DONE
+  2026_05_02_000007_create_follows_table ................ DONE
+  2026_05_03_000001_add_photo_to_profiles_table ......... DONE
+  2026_05_03_020508_add_target_weight_to_profiles_table . DONE
+  2026_05_03_034954_create_notifications_table ........... DONE
+```
+
+> Kalau diminta "Do you really wish to run this command?", ketik `yes`.
+
+### Step 5: Cache & permission
+
+```bash
+sudo chown -R www-data:www-data /var/www/nutrify-app
+sudo chmod -R 775 /var/www/nutrify-app/backend/storage
+php artisan config:cache
+php artisan route:cache
+```
+
+### Step 6: Restart services
+
+```bash
+sudo systemctl restart php8.2-fpm && sudo systemctl reload nginx
+```
+
+### Step 7: Verifikasi
+
+Lihat [Section 4](#4-verifikasi-setelah-deploy)
+
+---
+
+## 3. Opsi B: Deploy via SCP
+
+Kalau VPS tidak bisa `git pull` (misal tidak ada git config), upload file manual via SCP dari laptop.
+
+### Step 3A: Upload semua file (Copy-Paste ke terminal lokal)
+
+Buka **Git Bash** atau **PowerShell** di laptop, jalankan:
+
+```bash
+LOCAL="C:/Users/Ibnu Habib/Documents/pdbl/baru/Nutrify/backend"
+VPS="root@103.253.212.55:/var/www/nutrify-app/backend"
+
+# Migration baru
+scp "$LOCAL/database/migrations/2026_05_02_000006_add_community_fields_to_users_table.php" "$VPS/database/migrations/"
+scp "$LOCAL/database/migrations/2026_05_02_000007_create_follows_table.php" "$VPS/database/migrations/"
+scp "$LOCAL/database/migrations/2026_05_03_000001_add_photo_to_profiles_table.php" "$VPS/database/migrations/"
+scp "$LOCAL/database/migrations/2026_05_03_020508_add_target_weight_to_profiles_table.php" "$VPS/database/migrations/"
+
+# Model
+scp "$LOCAL/app/Models/Profile.php" "$VPS/app/Models/"
+scp "$LOCAL/app/Models/User.php" "$VPS/app/Models/"
+scp "$LOCAL/app/Models/Follow.php" "$VPS/app/Models/"
+
+# Controller
+scp "$LOCAL/app/Http/Controllers/Api/ProfileController.php" "$VPS/app/Http/Controllers/Api/"
+scp "$LOCAL/app/Http/Controllers/Api/FollowController.php" "$VPS/app/Http/Controllers/Api/"
+scp "$LOCAL/app/Http/Controllers/Api/PostController.php" "$VPS/app/Http/Controllers/Api/"
+
+# Routes
+scp "$LOCAL/routes/api.php" "$VPS/routes/"
+
+echo "Upload selesai!"
+```
+
+### Step 3B: SSH ke VPS, jalankan migration + restart
+
+```bash
+ssh root@103.253.212.55
+
+cd /var/www/nutrify-app/backend
+
+# Jalankan migration
+php artisan migrate
+
+# Permission
+sudo chown -R www-data:www-data /var/www/nutrify-app
+sudo chmod -R 775 /var/www/nutrify-app/backend/storage
+
+# Cache
+php artisan config:cache
+php artisan route:cache
+
+# Restart
+sudo systemctl restart php8.2-fpm && sudo systemctl reload nginx
+```
+
+---
+
+## 4. Verifikasi Setelah Deploy
+
+### Cek endpoint lama masih jalan
+
+```bash
+curl -s https://nutrify-app.my.id/api/foods?search=nasi | head -c 200
+```
+
+Harus return JSON dengan `"success":true`.
+
+### Cek profile response punya target_weight + photo_url
+
+```bash
+curl -s https://nutrify-app.my.id/api/profile \
+  -H "Authorization: Bearer <token>" \
+  -H "Accept: application/json" | head -c 500
+```
+
+Harus ada `target_weight` dan `photo_url` di dalam `profile`.
+
+### Cek endpoint baru — Follow
+
+```bash
+curl -s https://nutrify-app.my.id/api/users/1/follow
+```
+
+Harus return **401 Unauthorized** atau **405 Method Not Allowed** (karena harus POST dengan token).
+
+### Cek endpoint baru — Search users
+
+```bash
+curl -s "https://nutrify-app.my.id/api/users/search?q=test"
+```
+
+Harus return **401** atau **422** (butuh parameter `q` dan auth).
+
+### Cek kolom baru di database
+
+```bash
+cd /var/www/nutrify-app/backend
+php artisan tinker --execute="
+  echo 'target_weight: ' . (Schema::hasColumn('profiles', 'target_weight') ? 'OK' : 'MISSING') . PHP_EOL;
+  echo 'photo: ' . (Schema::hasColumn('profiles', 'photo') ? 'OK' : 'MISSING') . PHP_EOL;
+  echo 'username: ' . (Schema::hasColumn('users', 'username') ? 'OK' : 'MISSING') . PHP_EOL;
+  echo 'account_type: ' . (Schema::hasColumn('users', 'account_type') ? 'OK' : 'MISSING') . PHP_EOL;
+  echo 'follows table: ' . (Schema::hasTable('follows') ? 'OK' : 'MISSING') . PHP_EOL;
+"
+```
+
+Harus semua **OK**.
+
+### Cek log (tidak ada error)
+
+```bash
+tail -20 /var/www/nutrify-app/backend/storage/logs/laravel.log
+```
+
+---
+
+## 5. Rollback
+
+Kalau ada masalah setelah deploy:
+
+### Rollback Migration
+
+```bash
+cd /var/www/nutrify-app/backend
+php artisan migrate:rollback --step=4
+```
+
+### Restore Database dari Supabase Backup
+
+1. Buka https://supabase.com/dashboard
+2. Project Nutrify → Database → Backups
+3. Pilih backup yang dibuat sebelum deploy
+4. Klik **Restore**
+
+### Cek Error Log
+
+```bash
+tail -50 /var/www/nutrify-app/backend/storage/logs/laravel.log
+```
+
+---
+
+## Catatan Penting
+
+1. **Selalu backup database** sebelum migration
+2. Kalau menggunakan **Opsi B (SCP)**, pastikan semua file berhasil diupload sebelum jalankan migration
+3. **PHP version**: kalau `php8.2-fpm` gagal, cek `php -v` lalu sesuaikan (misal `php8.1-fpm` atau `php8.3-fpm`)
+4. **Storage link**: kalau foto profil tidak muncul, jalankan `php artisan storage:link`
+
+---
+
+## 6. Firebase Setup (PENTING - Notification System)
+
+### Apa itu Firebase FCM?
+
+Firebase Cloud Messaging (FCM) adalah layanan push notification dari Google yang digunakan untuk mengirim notifikasi ke device Android/iOS.
+
+### Step 1: Download Firebase Credentials di VPS
+
+**⚠️ CRITICAL: JANGAN copy file dari local ke VPS! Download baru di VPS!**
+
+```bash
+# SSH ke VPS
+ssh root@103.253.212.55
+
+# Buat folder untuk credentials
+mkdir -p /var/www/nutrify-app/backend/storage/app
+
+# Exit SSH untuk sementara
+exit
+```
+
+**Download Firebase Credentials:**
+1. Buka browser di VPS (atau dari laptop, tapi download untuk VPS)
+2. Login ke https://console.firebase.google.com/
+3. Pilih project: **nutrify-1c768**
+4. Klik **Settings** (gear icon) → **Project settings**
+5. Tab **Service accounts**
+6. Klik **Generate new private key**
+7. File akan terdownload: `nutrify-1c768-firebase-adminsdk-xxx.json`
+
+**Upload ke VPS:**
+```bash
+# Dari laptop, upload file yang baru didownload
+scp nutrify-1c768-firebase-adminsdk-xxx.json root@103.253.212.55:/var/www/nutrify-app/backend/storage/app/firebase-credentials.json.json
+
+# Atau jika sudah ada file di VPS, rename:
+ssh root@103.253.212.55
+cd /var/www/nutrify-app/backend/storage/app
+mv nutrify-1c768-firebase-adminsdk-xxx.json firebase-credentials.json.json
+```
+
+### Step 2: Update Environment Variable di VPS
+
+```bash
+# SSH ke VPS
+ssh root@103.253.212.55
+cd /var/www/nutrify-app/backend
+
+# Edit .env
+nano .env
+```
+
+**Tambahkan baris ini di akhir file .env:**
+```env
+# Firebase FCM (Notification System)
+FIREBASE_CREDENTIALS_PATH=storage/app/firebase-credentials.json.json
+```
+
+**Save dan exit:**
+- Tekan `Ctrl + O` (save)
+- Tekan `Enter` (confirm)
+- Tekan `Ctrl + X` (exit)
+
+### Step 3: Clear Cache dan Restart
+
+```bash
+# Clear cache Laravel
+php artisan config:clear
+php artisan config:cache
+
+# Restart services
+sudo systemctl restart php8.2-fpm
+sudo systemctl reload nginx
+```
+
+### Step 4: Test Notification System
+
+```bash
+# Test endpoint notifikasi
+curl -s https://nutrify-app.my.id/api/notifications \
+  -H "Authorization: Bearer <token>" \
+  -H "Accept: application/json"
+```
+
+Harus return JSON dengan notifikasi list (kosong atau ada data).
+
+---
+
+## 7. Panduan VPS untuk Pemula
+
+### Apa itu VPS?
+
+VPS (Virtual Private Server) adalah komputer virtual yang berjalan di cloud. Dalam kasus ini:
+- **IP Address**: 103.253.212.55
+- **OS**: Linux (Ubuntu/Debian)
+- **Web Server**: Nginx
+- **PHP**: 8.2
+- **Database**: PostgreSQL (via Supabase, bukan di VPS)
+
+### Cara Akses VPS
+
+**Dari Windows (Git Bash/PowerShell):**
+```bash
+ssh root@103.253.212.55
+```
+
+**Dari Mac/Linux:**
+```bash
+ssh root@103.253.212.55
+```
+
+**Masukkan password VPS saat diminta.**
+
+### Perintah Dasar Linux
+
+| Perintah | Fungsi |
+|----------|--------|
+| `ls` | List files di directory saat ini |
+| `cd /path` | Pindah directory |
+| `pwd` | Tampilkan directory saat ini |
+| `mkdir nama_folder` | Buat folder baru |
+| `rm file.txt` | Hapus file |
+| `rm -rf folder` | Hapus folder beserta isinya |
+| `cp source dest` | Copy file |
+| `mv source dest` | Move/rename file |
+| `cat file.txt` | Tampilkan isi file |
+| `nano file.txt` | Edit file (text editor) |
+| `tail -20 file.log` | Tampilkan 20 baris terakhir file |
+| `systemctl status nginx` | Cek status Nginx |
+| `systemctl restart nginx` | Restart Nginx |
+| `top` | Monitoring resource (CPU, RAM) |
+| `exit` | Keluar dari SSH |
+
+### Struktur Folder di VPS
+
+```
+/var/www/nutrify-app/
+├── backend/
+│   ├── app/
+│   ├── public/
+│   ├── storage/
+│   ├── .env
+│   └── ...
+└── logs/
+```
+
+### Cek Status Service
+
+```bash
+# Cek status Nginx (web server)
+sudo systemctl status nginx
+
+# Cek status PHP-FPM
+sudo systemctl status php8.2-fpm
+
+# Cek error log Nginx
+sudo tail -50 /var/log/nginx/error.log
+
+# Cek error log Laravel
+tail -50 /var/www/nutrify-app/backend/storage/logs/laravel.log
+```
+
+### Restart Service jika Ada Masalah
+
+```bash
+# Restart Nginx
+sudo systemctl restart nginx
+
+# Restart PHP-FPM
+sudo systemctl restart php8.2-fpm
+
+# Restart keduanya sekaligus
+sudo systemctl restart php8.2-fpm && sudo systemctl reload nginx
+```
+
+### Backup Sebelum Deploy
+
+```bash
+# Backup folder backend
+cd /var/www
+sudo cp -r nutrify-app nutrify-app-backup-$(date +%Y%m%d)
+
+# Backup database via Supabase Dashboard
+# Buka: https://supabase.com/dashboard → Nutrify → Database → Backups → Create backup
+```
+
+### Monitoring Resource
+
+```bash
+# Cek penggunaan disk
+df -h
+
+# Cek penggunaan RAM
+free -h
+
+# Cek process yang berjalan
+top
+
+# Cek process PHP
+ps aux | grep php
+```
+
+### Troubleshooting Umum
+
+**Error 502 Bad Gateway:**
+```bash
+# Biasanya PHP-FPM tidak jalan
+sudo systemctl restart php8.2-fpm
+```
+
+**Error 504 Gateway Timeout:**
+```bash
+# Biasanya Nginx timeout, cek error log
+sudo tail -50 /var/log/nginx/error.log
+
+# Atau restart Nginx
+sudo systemctl restart nginx
+```
+
+**Migration Error:**
+```bash
+# Cek database connection
+php artisan tinker --execute="DB::connection()->getPdo();"
+
+# Cek log
+tail -100 /var/www/nutrify-app/backend/storage/logs/laravel.log
+```
+
+**Permission Error:**
+```bash
+# Fix permission storage
+cd /var/www/nutrify-app/backend
+sudo chown -R www-data:www-data storage bootstrap/cache
+sudo chmod -R 775 storage bootstrap/cache
+```
+
+### Tips untuk Pemula
+
+1. **Selalu backup sebelum melakukan perubahan**
+2. **Gunakan `sudo` untuk perintah yang butuh akses root**
+3. **Cek log jika ada error**: `tail -f /var/www/nutrify-app/backend/storage/logs/laravel.log`
+4. **Jalankan perintah satu per satu**, jangan copy-paste banyak perintah sekaligus
+5. **Test perubahan di development environment dulu** (jika ada)
+6. **Gunakan `nano` untuk edit file**, lebih mudah dari `vi` atau `vim`
+
+---
+
+*Dokumen ini dibuat pada 3 Mei 2026.*
+

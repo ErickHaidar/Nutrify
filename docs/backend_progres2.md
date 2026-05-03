@@ -22,8 +22,7 @@
 
 | Status | Jumlah | Task ID |
 |--------|--------|---------|
-| ✅ Done | 7 task | BE-S2-01 s/d BE-S2-07 |
-| ⚠️ Partial | 1 task | BE-S2-09 (fcm_token field done, notification triggers not done) |
+| ✅ Done | 8 task | BE-S2-01 s/d BE-S2-07, BE-S2-09 |
 | ❌ Not Started | 1 task | BE-S2-08 |
 
 
@@ -42,13 +41,13 @@
 | BE-S2-05 | API Food Favorites | `FavoriteController.php`, `UserFavorite.php` | ✅ Done |
 | BE-S2-06 | Backend OTP (send + verify) | `OtpController.php`, `Otp.php`, `OtpMail.php` | ✅ Done |
 | BE-S2-07 | API Upload Foto Profil | `ProfileController@photo`, migration, route | ✅ Done (3 Mei — Adit) |
+| BE-S2-09 | Backend Notifikasi | FCM token storage + database notifications + FCM push | ✅ Done (3 Mei — Notification system complete) |
 
-### ❌ BELUM DIKERJAKAN / ⚠️ PARTIAL
+### ❌ BELUM DIKERJAKAN
 
 | ID | Task | Deskripsi | Frontend Siap? | Status |
 |----|------|-----------|----------------|--------|
 | BE-S2-08 | Validasi Batas Wajar Input | Min/max untuk age, weight, height di `ProfileController@store` | ✅ Frontend sudah kirim data | ❌ Not Started |
-| BE-S2-09 | Backend Notifikasi | FCM token storage + push notification saat like/comment/follow | ⚠️ Frontend kirim token | ⚠️ Partial — fcm_token field sudah ada di users via migration 000006 |
 
 ### ✅ TAMBAHAN (beyond original backlog)
 
@@ -91,6 +90,135 @@ Future<void> uploadProfilePhoto(File image) async {
   await _dio.dio.put(Endpoints.profilePhoto, data: formData);
 }
 ```
+
+---
+
+### BE-S2-09: Backend Notifikasi — ✅ DONE (3 Mei)
+
+**Task ini sudah diimplementasikan sepenuhnya pada 3 Mei 2026.**
+
+#### Sub-task A: FCM Token Storage
+
+| Komponen | Status | Detail |
+|----------|--------|--------|
+| Migration: tambah `fcm_token` ke users | ✅ Done | `2026_05_02_000006_add_community_fields_to_users_table.php` — `string('fcm_token')->nullable()` |
+| Endpoint: `POST /api/profile` terima `fcm_token` | ✅ Done | `ProfileController@store` — validation `'fcm_token' => 'nullable|string'` |
+| Simpan token ke database | ✅ Done | Update user dengan `fcm_token` |
+
+**Implementation:**
+```php
+// ProfileController.php - validation
+$request->validate([
+    // ... other fields
+    'fcm_token' => 'nullable|string',
+]);
+
+// Update fcm_token logic
+if ($request->has('fcm_token')) {
+    $user = User::find(Auth::id());
+    if ($user) {
+        $user->update(['fcm_token' => $request->fcm_token]);
+    }
+}
+```
+
+#### Sub-task B: Database Tabel Notifications
+
+| Komponen | Status | Detail |
+|----------|--------|--------|
+| Migration `notifications` table | ✅ Done | `2026_05_03_034954_create_notifications_table.php` — complete structure |
+| Model `Notification` | ✅ Done | Relasi ke User (penerima & actor), Post. Scopes: unread(), latest(). Accessor: isRead |
+| Controller `NotificationController` | ✅ Done | index(), markAsRead(), markAllAsRead(), unreadCount() |
+| Routes | ✅ Done | 4 notification routes ditambahkan |
+
+**Implementation:**
+```php
+// Migration structure
+$table->id();
+$table->foreignId('user_id')->constrained()->onDelete('cascade'); // penerima
+$table->foreignId('actor_id')->nullable()->constrained('users')->onDelete('cascade'); // pengirim
+$table->string('type'); // 'like', 'comment', 'follow'
+$table->foreignId('post_id')->nullable()->constrained()->onDelete('cascade');
+$table->string('title');
+$table->text('body');
+$table->json('data')->nullable();
+$table->timestamp('read_at')->nullable();
+$table->timestamps();
+
+// Routes
+Route::get('/notifications', [NotificationController::class, 'index']);
+Route::put('/notifications/read-all', [NotificationController::class, 'markAllAsRead']);
+Route::put('/notifications/{id}/read', [NotificationController::class, 'markAsRead']);
+Route::get('/notifications/unread-count', [NotificationController::class, 'unreadCount']);
+```
+
+#### Sub-task C: Push Notification via FCM
+
+| Komponen | Status | Detail |
+|----------|--------|--------|
+| FCM Package/Service | ✅ Done | Manual implementation - `FCMService.php` (tanpa package untuk Laravel 12 compatibility) |
+| Firebase service account JSON | ✅ Done | Setup via `.env` — `FIREBASE_CREDENTIALS_PATH=storage/app/firebase-credentials.json.json` |
+| `.env` config | ✅ Done | Firebase credentials path ditambahkan |
+| Notification class | ✅ Done | `PushNotification.php` — wrapper untuk FCMService |
+| Trigger saat like | ✅ Done | `PostController@toggleLike` — kirim notif ke pemilik post |
+| Trigger saat comment | ✅ Done | `PostController@storeComment` — kirim notif ke pemilik post |
+| Trigger saat follow | ✅ Done | `FollowController@toggleFollow` — kirim notif ke user yang di-follow |
+
+**Implementation:**
+```php
+// Trigger like - PostController.php
+if ($liked && $post->user_id !== Auth::id()) {
+    $actor = User::find(Auth::id());
+
+    // Simpan ke database
+    Notification::create([
+        'user_id' => $post->user_id,
+        'actor_id' => Auth::id(),
+        'type' => 'like',
+        'post_id' => $id,
+        'title' => 'Suka Baru',
+        'body' => "{$actor->name} menyukai postingan Anda",
+        'data' => [
+            'actor_name' => $actor->name,
+            'actor_id' => $actor->id,
+        ],
+    ]);
+
+    // Kirim FCM push notification
+    $postOwner = User::find($post->user_id);
+    if ($postOwner && !empty($postOwner->fcm_token)) {
+        $notification = new PushNotification(
+            'Suka Baru',
+            "{$actor->name} menyukai postingan Anda",
+            'like',
+            ['post_id' => $id],
+            $actor,
+            $post
+        );
+        $notification->send($postOwner);
+    }
+}
+```
+
+**FCMService Manual Implementation:**
+- Class `FCMService` di `app/Services/FCMService.php`
+- Menggunakan Firebase FCM API v1
+- Manual OAuth 2.0 authentication dengan JWT
+- Tidak perlu package eksternal (Laravel 12 compatible)
+
+**Event Triggers:**
+
+| Event | Trigger di | Penerima | Pesan |
+|-------|-----------|----------|-------|
+| Someone likes your post | `PostController@toggleLike` | Post owner | "{name} menyukai postingan Anda" |
+| Someone comments on your post | `PostController@storeComment` | Post owner | "{name} mengomentari postingan Anda" |
+| Someone follows you | `FollowController@toggleFollow` | Followed user | "{name} mulai mengikuti Anda" |
+
+**Security:**
+- ✅ Tidak kirim notifikasi ke diri sendiri (`if ($post->user_id !== Auth::id())`)
+- ✅ Tidak kirim notifikasi untuk unlike (hanya saat like)
+- ✅ Skip FCM push jika user tidak punya fcm_token
+- ✅ Firebase credentials dilindungi di `.gitignore`
 
 ---
 
@@ -296,153 +424,27 @@ Tolong update `ProfileController@store` dengan validasi di atas. Jangan ubah log
 
 ---
 
-### Prompt BE-S2-09: Backend Notifikasi (Full)
+### Prompt BE-S2-09: Backend Notifikasi — ✅ SUDAH DONE
 
-```
-Saya mengerjakan backend Laravel untuk aplikasi Nutrify. Saya perlu mengimplementasikan sistem notifikasi lengkap (database + FCM push notification).
+> Task ini sudah diimplementasikan sepenuhnya pada 3 Mei 2026. Tidak perlu dikerjakan lagi.
 
-## Konteks Project
-- Laravel 12, PHP 8.2
-- Auth: Supabase JWT (middleware `supabase.auth`, guard menggunakan `Auth::id()` untuk user ID)
-- Database: PostgreSQL (Supabase)
-- Model User sudah ada di `app/Models/User.php` ( menggunakan trait `Notifiable`)
-- Model Profile di `app/Models/Profile.php` (fillable: user_id, age, weight, height, gender, goal, activity_level)
-- PostController di `app/Http/Controllers/Api/PostController.php` sudah ada methods: toggleLike, comments, storeComment
-- Routes di `routes/api.php`
+**Yang sudah diimplementasikan:**
+- ✅ FCM Token Storage (fcm_token field di users table + ProfileController handling)
+- ✅ Database Notifications (migration, model, controller, routes)
+- ✅ FCM Push Notification (manual FCMService, PushNotification class)
+- ✅ Notification Triggers (like, comment, follow)
 
-## Struktur database yang sudah ada
-- `users` table: id, name, email, password, supabase_id, timestamps
-- `profiles` table: id, user_id, age, weight, height, gender, goal, activity_level, timestamps
-- `posts` table: id, user_id, content, image, timestamps
-- `post_likes` table: id, user_id, post_id, timestamps
-- `comments` table: id, user_id, post_id, content, timestamps
+**Files yang sudah dibuat:**
+- `app/Models/Notification.php`
+- `app/Http/Controllers/Api/NotificationController.php`
+- `app/Services/FCMService.php`
+- `app/Notifications/PushNotification.php`
+- `database/migrations/2026_05_03_034954_create_notifications_table.php`
 
-## Apa yang perlu dibuat (3 bagian)
-
-### Bagian A: FCM Token Storage
-
-1. **Migration** — tambah `fcm_token` (string, nullable) ke tabel `users` ATAU `profiles` (pilih yang lebih cocok)
-2. **Update model** — tambah ke fillable
-3. **Update `ProfileController@store`** — accept `fcm_token` sebagai optional field, simpan ke user/profile
-   ATAU buat endpoint terpisah `POST /api/profile/fcm-token`
-
-   Frontend mengirim:
-   ```dart
-   await _dio.dio.post(
-     '/profile',  // POST /api/profile
-     data: {'fcm_token': token},
-   );
-   ```
-   Jadi field `fcm_token` harus diterima di ProfileController (optional, jangan required).
-
-### Bagian B: Database Notifications
-
-1. **Migration `create_notifications_table`**:
-   ```php
-   $table->id();
-   $table->foreignId('user_id')->constrained()->onDelete('cascade'); // penerima
-   $table->foreignId('actor_id')->constrained('users')->onDelete('cascade'); // pengirim
-   $table->string('type'); // 'like', 'comment', 'follow'
-   $table->foreignId('post_id')->nullable()->constrained()->onDelete('cascade');
-   $table->string('title');
-   $table->text('body');
-   $table->json('data')->nullable();
-   $table->timestamp('read_at')->nullable();
-   $table->timestamps();
-   ```
-
-2. **Model `Notification`** (`app/Models/Notification.php`):
-   - Relasi: belongsTo User (penerima via user_id), belongsTo User (actor via actor_id), belongsTo Post (nullable)
-   - Scope: `unread()`, `latest()`
-   - Accessor: `isRead`
-
-3. **Controller `NotificationController`** (`app/Http/Controllers/Api/NotificationController.php`):
-   - `index()` — GET /notifications — list notifikasi user login (paginated, eager load actor)
-   - `markAsRead($id)` — PUT /notifications/{id}/read
-   - `markAllAsRead()` — PUT /notifications/read-all
-   - `unreadCount()` — GET /notifications/unread-count
-
-4. **Routes** (dalam middleware group):
-   ```php
-   Route::get('/notifications', [NotificationController::class, 'index']);
-   Route::put('/notifications/read-all', [NotificationController::class, 'markAllAsRead']);
-   Route::put('/notifications/{id}/read', [NotificationController::class, 'markAsRead']);
-   Route::get('/notifications/unread-count', [NotificationController::class, 'unreadCount']);
-   ```
-
-### Bagian C: FCM Push Notification + Triggers
-
-1. **Install package**:
-   ```bash
-   composer require laravel-notification-channels/fcm
-   ```
-
-2. **Konfigurasi**:
-   - Taruh Firebase service account JSON di `storage/app/firebase-credentials.json`
-   - Tambah di `.env`: `FIREBASE_CREDENTIALS_PATH=storage/app/firebase-credentials.json`
-
-3. **Buat Notification class** (`app/Notifications/PushNotification.php`):
-   - Via FcmChannel
-   - Title, body, data payload
-   - Support untuk like, comment, follow type
-
-4. **Tambah trigger di PostController**:
-
-   a. Di `toggleLike()` — SETELAH like berhasil (bukan unlike):
-   ```php
-   // Cek jika ini like (bukan unlike) DAN bukan post sendiri
-   if ($liked && $post->user_id !== Auth::id()) {
-       // Simpan ke notifications table
-       // Kirim FCM push ke post owner
-   }
-   ```
-
-   b. Di `storeComment()` — SETELAH comment tersimpan:
-   ```php
-   // Jika bukan komentar di post sendiri
-   if ($post->user_id !== Auth::id()) {
-       // Simpan ke notifications table
-       // Kirim FCM push ke post owner
-   }
-   ```
-
-   c. (Jika ada follow endpoint) — SETELAH follow berhasil:
-   ```php
-   // Simpan ke notifications table
-   // Kirim FCM push ke user yang di-follow
-   ```
-
-## PENTING
-- **JANGAN kirim notifikasi ke diri sendiri!** Selalu cek `$post->user_id !== Auth::id()`
-- **JANGAN kirim notifikasi untuk UNLIKE** — hanya saat like
-- Untuk FCM: jika user tidak punya fcm_token, tetap simpan ke database tapi skip push
-- Response notification harus include actor name dan photo (jika ada) untuk ditampilkan di frontend
-
-## Response format yang diharapkan
-
-GET /notifications:
-```json
-{
-  "data": [
-    {
-      "id": 1,
-      "type": "like",
-      "title": "Suka baru",
-      "body": "John menyukai postingan Anda",
-      "actor": {
-        "id": 2,
-        "name": "John"
-      },
-      "post_id": 5,
-      "read_at": null,
-      "created_at": "2026-05-02T10:00:00Z"
-    }
-  ]
-}
-```
-
-Tolong implementasikan ketiga bagian (A, B, C) secara lengkap. Buat semua migration, model, controller, notification class, update routes, dan tambah trigger di PostController.
-```
+**Yang perlu dilakukan di VPS:**
+- Setup Firebase credentials (download dari Firebase Console, upload ke VPS)
+- Update `.env` dengan `FIREBASE_CREDENTIALS_PATH`
+- Jalankan migration `notifications` table
 
 ---
 
@@ -456,9 +458,10 @@ backend/
 │   ├── Http/
 │   │   ├── Controllers/
 │   │   │   ├── Api/
-│   │   │   │   ├── ProfileController.php    ✅ DONE (BE-S2-07 photo + photo_url, BE-S2-08 still TODO)
-│   │   │   │   ├── PostController.php       ✅ DONE (enhanced formatPost + 10MB limit, BE-S2-09C triggers TODO)
-│   │   │   │   ├── FollowController.php     ✅ DONE (follow, profile, search, username, account-type)
+│   │   │   │   ├── ProfileController.php    ✅ DONE (BE-S2-07 photo + photo_url, BE-S2-08 still TODO, BE-S2-09 fcm_token)
+│   │   │   │   ├── PostController.php       ✅ DONE (enhanced formatPost + 10MB limit, BE-S2-09 triggers done)
+│   │   │   │   ├── FollowController.php     ✅ DONE (follow, profile, search, username, account-type, BE-S2-09 triggers)
+│   │   │   │   ├── NotificationController.php ✅ DONE (BE-S2-09) — NEW
 │   │   │   │   ├── FoodController.php       ✅
 │   │   │   │   ├── FavoriteController.php   ✅
 │   │   │   │   └── OtpController.php        ✅
@@ -467,8 +470,9 @@ backend/
 │   │       └── VerifySupabaseToken.php       ✅
 │   ├── Models/
 │   │   ├── User.php                          ✅ DONE (+username, avatar, fcm_token, account_type, follow relations)
-│   │   ├── Profile.php                       ✅ DONE (+'photo')
+│   │   ├── Profile.php                       ✅ DONE (+'photo', 'target_weight')
 │   │   ├── Follow.php                        ✅ DONE (NEW)
+│   │   ├── Notification.php                  ✅ DONE (BE-S2-09) — NEW
 │   │   ├── Post.php                          ✅
 │   │   ├── PostLike.php                      ✅
 │   │   ├── Comment.php                       ✅
@@ -476,22 +480,25 @@ backend/
 │   │   ├── Food.php                          ✅
 │   │   ├── FoodLog.php                       ✅
 │   │   └── Otp.php                           ✅
-│   ├── Mail/
-│   │   └── OtpMail.php                       ✅
-│   └── Notifications/                        ← NEW (BE-S2-09C, belum dibuat)
-│       └── PushNotification.php
+│   ├── Services/
+│   │   └── FCMService.php                    ✅ DONE (BE-S2-09) — NEW
+│   ├── Notifications/
+│   │   └── PushNotification.php              ✅ DONE (BE-S2-09) — NEW
+│   └── Mail/
+│       └── OtpMail.php                       ✅
 ├── database/migrations/
-│   ├── ... (15 existing + 2 new Sprint 2)    ✅
+│   ├── ... (15 existing + 5 new Sprint 2)    ✅
 │   ├── 2026_05_02_000006_add_community_fields ✅ DONE
 │   ├── 2026_05_02_000007_create_follows      ✅ DONE
 │   ├── 2026_05_03_000001_add_photo_profiles  ✅ DONE
-│   └── xxxx_create_notifications_table.php   ← NEW (BE-S2-09B, belum dibuat)
+│   ├── 2026_05_03_020508_add_target_weight   ✅ DONE
+│   └── 2026_05_03_034954_create_notifications ✅ DONE (BE-S2-09) — NEW
 ├── routes/
-│   └── api.php                               ✅ DONE (+18 route baru)
+│   └── api.php                               ✅ DONE (+22 route baru)
 └── storage/
     └── app/
         ├── public/profile-photos/            ✅ DONE
-        └── firebase-credentials.json         ← NEW (BE-S2-09C, belum dibuat)
+        └── firebase-credentials.json.json    ⚠️ Setup di VPS (BE-S2-09)
 ```
 
 ### Endpoint yang Sudah Ditambahkan ✅
@@ -504,23 +511,16 @@ backend/
 | GET | `/api/users/search?q=` | Follow | ✅ Cari user |
 | PUT | `/api/username` | Follow | ✅ Set/update username |
 | PUT | `/api/account-type` | Follow | ✅ Set public/private |
-
-### Endpoint yang Masih Perlu Ditambahkan
-
-| Method | Path | Task ID | Keterangan |
-|--------|------|---------|------------|
-| GET | `/api/notifications` | BE-S2-09 | List notifikasi |
-| PUT | `/api/notifications/read-all` | BE-S2-09 | Tandai semua dibaca |
-| PUT | `/api/notifications/{id}/read` | BE-S2-09 | Tandai satu dibaca |
-| GET | `/api/notifications/unread-count` | BE-S2-09 | Hitung belum dibaca |
+| GET | `/api/notifications` | BE-S2-09 | ✅ List notifikasi (paginated) |
+| PUT | `/api/notifications/read-all` | BE-S2-09 | ✅ Tandai semua dibaca |
+| PUT | `/api/notifications/{id}/read` | BE-S2-09 | ✅ Tandai satu dibaca |
+| GET | `/api/notifications/unread-count` | BE-S2-09 | ✅ Hitung belum dibaca |
 
 ### Endpoint yang Masih Perlu Diupdate
 
 | Method | Path | Task ID | Perubahan |
 |--------|------|---------|-----------|
 | POST | `/api/profile/store` | BE-S2-08 | Tambah validation min/max |
-| POST | `/api/posts/{id}/like` | BE-S2-09C | Trigger notifikasi like |
-| POST | `/api/posts/{id}/comments` | BE-S2-09C | Trigger notifikasi comment |
 
 ---
 

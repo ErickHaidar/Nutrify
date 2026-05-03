@@ -24,6 +24,7 @@ class ProfileController extends Controller
             'goal' => 'required|in:cutting,maintenance,bulking',
             'target_weight' => 'nullable|integer|min:25|max:300', // Target berat badan
             'photo' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:10240', // Opsional: max 10MB
+            'fcm_token' => 'nullable|string', // FCM token untuk push notification
         ]);
 
         // Ambil data profile tanpa photo
@@ -50,6 +51,14 @@ class ProfileController extends Controller
 
             // Update database dengan path foto
             $profile->update(['photo' => $path]);
+        }
+
+        // Handle FCM token update jika ada
+        if ($request->has('fcm_token')) {
+            $user = User::find(Auth::id());
+            if ($user) {
+                $user->update(['fcm_token' => $request->fcm_token]);
+            }
         }
 
         return response()->json([
