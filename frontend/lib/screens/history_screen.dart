@@ -4,11 +4,11 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import '../constants/colors.dart';
 import '../services/food_log_api_service.dart';
+import 'package:nutrify/constants/assets.dart';
 import 'package:nutrify/utils/locale/app_strings.dart';
 import '../services/profile_api_service.dart';
 import '../widgets/nutrify_calendar_picker.dart' show showNutrifyDatePicker, SelectionMode;
 import 'food_detail_screen.dart';
-import '../constants/assets.dart';
 import '../widgets/nutrify_calendar_picker.dart';
 
 class HistoryScreen extends StatefulWidget {
@@ -113,16 +113,17 @@ class HistoryScreenState extends State<HistoryScreen> with WidgetsBindingObserve
                       Row(
                         children: [
                           Image.asset(
-                            'assets/images/nutrify-logo.png',
+                            Assets.nutrifyLogo,
                             height: 40,
                             width: 40,
                           ),
+                          const SizedBox(width: 8),
                           Text(
                             'Nutrify',
                             style: GoogleFonts.inter(
                               fontSize: 30,
                               fontWeight: FontWeight.w900,
-                              color: AppColors.peach,
+                              color: const Color(0xFFFFB26B),
                             ),
                           ),
                         ],

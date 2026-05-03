@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:nutrify/constants/colors.dart';
+import 'package:nutrify/constants/assets.dart';
 import 'package:nutrify/domain/entity/post/community_post.dart';
 import 'package:nutrify/screens/add_post_screen.dart';
 import 'package:nutrify/screens/full_screen_image_screen.dart';
@@ -141,21 +142,36 @@ class _KomunitasScreenState extends State<KomunitasScreen> with SingleTickerProv
       appBar: AppBar(
         backgroundColor: AppColors.cream,
         elevation: 0,
-        title: Text(
-          'Nutrify',
-          style: GoogleFonts.inter(
-            color: const Color(0xFFFFB26B),
-            fontWeight: FontWeight.w900,
-            fontSize: 30,
-          ),
+        title: Row(
+          children: [
+            Image.asset(Assets.nutrifyLogo, height: 36, width: 36),
+            const SizedBox(width: 8),
+            Text(
+              'Nutrify',
+              style: GoogleFonts.inter(
+                color: const Color(0xFFFFB26B),
+                fontWeight: FontWeight.w900,
+                fontSize: 30,
+              ),
+            ),
+          ],
         ),
         actions: [
+          GestureDetector(
+            onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const MyProfileScreen())),
+            child: CircleAvatar(
+              radius: 16,
+              backgroundColor: AppColors.navy.withValues(alpha: 0.1),
+              child: const Icon(Icons.person, color: AppColors.navy, size: 20),
+            ),
+          ),
+          const SizedBox(width: 12),
           IconButton(
             icon: const Icon(Icons.search, color: Color(0xFF49426E), size: 28),
             onPressed: _showUserSearch,
           ),
           IconButton(
-            icon: const Icon(Icons.add_box, color: Color(0xFF49426E), size: 28),
+            icon: const Icon(Icons.add_box_outlined, color: Color(0xFF49426E), size: 28),
             onPressed: _navigateToAddPost,
           ),
           IconButton(
@@ -169,7 +185,7 @@ class _KomunitasScreenState extends State<KomunitasScreen> with SingleTickerProv
               );
             },
           ),
-          const SizedBox(width: 8),
+          const SizedBox(width: 4),
         ],
         bottom: PreferredSize(
           preferredSize: const Size.fromHeight(60),

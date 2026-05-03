@@ -233,6 +233,7 @@ class ProfileScreenState extends State<ProfileScreen> {
               Row(
                 children: [
                   Image.asset(Assets.nutrifyLogo, height: 40, width: 40),
+                  const SizedBox(width: 8),
                   Text(
                     'Nutrify',
                     style: GoogleFonts.inter(
