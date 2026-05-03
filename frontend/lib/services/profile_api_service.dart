@@ -20,6 +20,7 @@ class ApiProfileData {
   final String bmiStatus;
   final int targetCalories;
   final String? photoUrl;
+  final MacroNutrients? macronutrients;
 
   ApiProfileData({
     required this.name,
@@ -35,6 +36,7 @@ class ApiProfileData {
     required this.bmiStatus,
     required this.targetCalories,
     this.photoUrl,
+    this.macronutrients,
   });
 
   String get genderDisplay => gender == 'male' ? 'Laki-Laki' : 'Perempuan';
@@ -91,6 +93,9 @@ class ProfileApiService {
         bmiStatus: data['bmi_status'] as String? ?? '',
         targetCalories: (data['target_calories'] as num?)?.toInt() ?? 0,
         photoUrl: data['photo_url'] as String?,
+        macronutrients: data['macronutrients'] != null
+            ? MacroNutrients.fromJson(data['macronutrients'] as Map<String, dynamic>)
+            : null,
       );
       _cacheTime = DateTime.now();
       return _cache;
@@ -202,8 +207,34 @@ Future<void> uploadProfilePhoto(File image) async {
     if (userId == null) return;
 
     await _dio.dio.post(
-      '${Endpoints.profile}/fcm-token', // Endpoint baru khusus untuk FCM token
+      '${Endpoints.profile}/fcm-token',
       data: {'fcm_token': token},
     );
   }
+}
+
+class MacroNutrients {
+  final MacroData protein;
+  final MacroData carbohydrates;
+  final MacroData fat;
+
+  MacroNutrients({required this.protein, required this.carbohydrates, required this.fat});
+
+  factory MacroNutrients.fromJson(Map<String, dynamic> json) => MacroNutrients(
+        protein: MacroData.fromJson(json['protein'] as Map<String, dynamic>? ?? {}),
+        carbohydrates: MacroData.fromJson(json['carbohydrates'] as Map<String, dynamic>? ?? {}),
+        fat: MacroData.fromJson(json['fat'] as Map<String, dynamic>? ?? {}),
+      );
+}
+
+class MacroData {
+  final int grams;
+  final int percent;
+
+  MacroData({required this.grams, required this.percent});
+
+  factory MacroData.fromJson(Map<String, dynamic> json) => MacroData(
+        grams: (json['grams'] as num?)?.toInt() ?? 0,
+        percent: (json['percent'] as num?)?.toInt() ?? 0,
+      );
 }

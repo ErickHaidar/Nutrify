@@ -159,6 +159,9 @@ class ProfileController extends Controller
         if ($profile->goal == 'cutting') $targetCalories -= 500;
         if ($profile->goal == 'bulking') $targetCalories += 500;
 
+        // 5. Rekomendasi Makronutrien
+        $macros = $this->calculateMacros(round($targetCalories), $profile->weight, $profile->goal);
+
         return response()->json([
             'status' => 'success',
             'user' => $user->name,
@@ -177,6 +180,7 @@ class ProfileController extends Controller
             'bmi_status' => $this->getBmiStatus($bmiScore),
             'target_calories' => round($targetCalories),
             'maintenance_calories' => round($tdee),
+            'macronutrients' => $macros,
             'physical_data' => [
                 'age' => $profile->age,
                 'weight' => $profile->weight . ' kg',
@@ -187,18 +191,78 @@ class ProfileController extends Controller
             'nutrition_plan' => [
                 'maintenance_calories' => round($tdee) . ' kcal',
                 'daily_target_calories' => round($targetCalories) . ' kcal',
-                'goal' => $profile->goal
+                'goal' => $profile->goal,
+                'macronutrients' => $macros,
             ]
         ]);
     }
 
-    // Helper untuk menentukan status BMI
+    // Helper untuk menentukan status BMI (WHO Classification)
     private function getBmiStatus($bmi)
     {
+        if ($bmi < 16.0) return 'Severely Underweight';
         if ($bmi < 18.5) return 'Underweight';
-        if ($bmi < 25) return 'Normal';
-        if ($bmi < 30) return 'Overweight';
-        return 'Obese';
+        if ($bmi < 25.0) return 'Normal';
+        if ($bmi < 30.0) return 'Overweight';
+        if ($bmi < 35.0) return 'Obesity Class I';
+        if ($bmi < 40.0) return 'Obesity Class II';
+        return 'Obesity Class III';
+    }
+
+    // Helper untuk kalkulasi rekomendasi makronutrien
+    private function calculateMacros($calories, $weightKg, $goal)
+    {
+        if ($calories <= 0) {
+            return [
+                'protein' => ['grams' => 0, 'percent' => 0],
+                'carbohydrates' => ['grams' => 0, 'percent' => 0],
+                'fat' => ['grams' => 0, 'percent' => 0],
+            ];
+        }
+
+        // Rasio makronutrien berdasarkan goal (evidence-based)
+        $proteinRatio = match ($goal) {
+            'cutting' => 0.35,
+            'bulking' => 0.28,
+            default => 0.28,
+        };
+        $carbRatio = match ($goal) {
+            'cutting' => 0.38,
+            'bulking' => 0.48,
+            default => 0.45,
+        };
+        $fatRatio = 1.0 - $proteinRatio - $carbRatio;
+
+        $proteinG = ($calories * $proteinRatio) / 4;
+        $carbsG = ($calories * $carbRatio) / 4;
+
+        // Minimum protein berdasarkan berat badan dan goal
+        $minProtein = match ($goal) {
+            'cutting' => $weightKg * 1.8,  // 1.6-2.2 g/kg for cutting
+            'bulking' => $weightKg * 1.6,  // 1.4-2.0 g/kg for bulking
+            default => $weightKg * 1.0,    // 0.8-1.2 g/kg RDA
+        };
+
+        $finalProteinG = max($proteinG, $minProtein);
+
+        // Recalculate fat with remaining calories
+        $remainingCal = $calories - ($finalProteinG * 4) - ($carbsG * 4);
+        $finalFatG = max($remainingCal / 9, ($calories * 0.15) / 9);
+
+        return [
+            'protein' => [
+                'grams' => round($finalProteinG),
+                'percent' => round(($finalProteinG * 4 / $calories) * 100),
+            ],
+            'carbohydrates' => [
+                'grams' => round($carbsG),
+                'percent' => round(($carbsG * 4 / $calories) * 100),
+            ],
+            'fat' => [
+                'grams' => round($finalFatG),
+                'percent' => round(($finalFatG * 9 / $calories) * 100),
+            ],
+        ];
     }
 
     // Update FCM token untuk push notifications

@@ -359,6 +359,49 @@ class ProfileScreenState extends State<ProfileScreen> {
                 ],
               ),
 
+              if (_profile?.macronutrients != null) ...[
+                const SizedBox(height: 20),
+                Text(
+                  'Rekomendasi Makronutrien',
+                  style: const TextStyle(
+                    color: AppColors.navy,
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                const SizedBox(height: 12),
+                Row(
+                  children: [
+                    Expanded(
+                      child: _buildMacroCard(
+                        'Protein',
+                        '${_profile!.macronutrients!.protein.grams}g',
+                        _profile!.macronutrients!.protein.percent,
+                        const Color(0xFFE57373),
+                      ),
+                    ),
+                    const SizedBox(width: 10),
+                    Expanded(
+                      child: _buildMacroCard(
+                        'Karbohidrat',
+                        '${_profile!.macronutrients!.carbohydrates.grams}g',
+                        _profile!.macronutrients!.carbohydrates.percent,
+                        const Color(0xFF64B5F6),
+                      ),
+                    ),
+                    const SizedBox(width: 10),
+                    Expanded(
+                      child: _buildMacroCard(
+                        'Lemak',
+                        '${_profile!.macronutrients!.fat.grams}g',
+                        _profile!.macronutrients!.fat.percent,
+                        const Color(0xFFFFD54F),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+
               const SizedBox(height: 30),
 
               // 4. General Setting
@@ -480,6 +523,25 @@ class ProfileScreenState extends State<ProfileScreen> {
               ),
             ),
           ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildMacroCard(String label, String value, int percent, Color color) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 12),
+      decoration: BoxDecoration(
+        color: NutrifyTheme.lightCard,
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: Column(
+        children: [
+          Text(label, style: TextStyle(color: AppColors.navy.withOpacity(0.7), fontSize: 11)),
+          const SizedBox(height: 4),
+          Text(value, style: TextStyle(color: color, fontSize: 16, fontWeight: FontWeight.bold)),
+          const SizedBox(height: 2),
+          Text('$percent%', style: TextStyle(color: AppColors.navy.withOpacity(0.5), fontSize: 11)),
         ],
       ),
     );
