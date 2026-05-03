@@ -51,7 +51,11 @@ Future<void> main() async {
         ServiceLocator.configureDependencies(),
       ]);
 
-      // Step 3b: Schedule notifications if enabled
+      // Step 3b: Initialize NotificationService
+      await getIt<NotificationService>().init();
+      await getIt<NotificationService>().registerPushNotifications();
+
+      // Step 3c: Schedule notifications if enabled
       final prefs = getIt<SharedPreferences>();
       if (prefs.getBool('notifications_enabled') ?? true) {
         await getIt<NotificationService>().scheduleMealReminders();

@@ -17,6 +17,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:supabase_flutter/supabase_flutter.dart' as sb;
 import 'package:nutrify/screens/otp_verification_screen.dart';
+import 'package:nutrify/services/notification_service.dart';
 
 import '../../di/service_locator.dart';
 
@@ -522,13 +523,21 @@ color: Colors.white,
     });
   }
 
-  void _handleNavigation() {
+  void _handleNavigation() async {
     SharedPreferences.getInstance().then((prefs) {
       prefs.setBool(Preferences.is_logged_in, true);
     });
 
+    // Initialize push notifications after login
+    try {
+      await getIt<NotificationService>().init();
+      await getIt<NotificationService>().registerPushNotifications();
+    } catch (e) {
+      print('Error initializing notifications: $e');
+    }
+
     Navigator.of(context).pushNamedAndRemoveUntil(
-      Routes.home, 
+      Routes.home,
       (Route<dynamic> route) => false
     );
   }
