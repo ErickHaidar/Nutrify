@@ -5,6 +5,7 @@ import 'dart:math' as math;
 import 'package:nutrify/utils/locale/app_strings.dart';
 import '../services/food_log_api_service.dart';
 import '../services/profile_api_service.dart';
+import '../widgets/shimmer_loading.dart';
 
 class TrackingKaloriScreen extends StatefulWidget {
   const TrackingKaloriScreen({super.key});
@@ -83,8 +84,8 @@ class _TrackingKaloriScreenState extends State<TrackingKaloriScreen> {
 
     if (_isLoading) {
       return const Scaffold(
-      backgroundColor: NutrifyTheme.background,
-        body: Center(child: CircularProgressIndicator()),
+        backgroundColor: NutrifyTheme.background,
+        body: TrackingShimmer(),
       );
     }
 

@@ -11,6 +11,7 @@ import 'package:nutrify/screens/user_profile_screen.dart';
 import 'package:nutrify/services/community_post_api_service.dart';
 import 'package:nutrify/services/notification_api_service.dart';
 import 'package:nutrify/widgets/notification_modal.dart';
+import 'package:nutrify/widgets/shimmer_loading.dart';
 import 'package:nutrify/utils/locale/app_strings.dart';
 import 'package:intl/intl.dart';
 
@@ -277,7 +278,7 @@ class _KomunitasScreenState extends State<KomunitasScreen> with SingleTickerProv
         ),
       ),
       body: _isLoading
-          ? const Center(child: CircularProgressIndicator(color: AppColors.navy))
+          ? const KomunitasShimmer()
           : RefreshIndicator(
               onRefresh: _loadPosts,
               child: TabBarView(

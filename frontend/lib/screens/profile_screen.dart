@@ -13,6 +13,7 @@ import 'edit_profile_screen.dart';
 import '../services/profile_api_service.dart';
 import '../services/notification_service.dart';
 import '../constants/colors.dart';
+import '../widgets/shimmer_loading.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -215,7 +216,7 @@ class ProfileScreenState extends State<ProfileScreen> {
     if (_isLoading) {
       return const Scaffold(
         backgroundColor: AppColors.cream,
-        body: Center(child: CircularProgressIndicator()),
+        body: SafeArea(child: ProfileShimmer()),
       );
     }
 
