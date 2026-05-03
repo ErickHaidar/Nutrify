@@ -4,6 +4,7 @@ import 'package:nutrify/constants/colors.dart';
 import 'package:nutrify/domain/entity/post/community_post.dart';
 import 'package:nutrify/screens/add_post_screen.dart';
 import 'package:nutrify/screens/post_detail_screen.dart';
+import 'package:nutrify/screens/profile_screen.dart';
 import 'package:nutrify/screens/user_profile_screen.dart';
 import 'package:nutrify/services/community_post_api_service.dart';
 import 'package:nutrify/utils/locale/app_strings.dart';
@@ -87,14 +88,20 @@ class _KomunitasScreenState extends State<KomunitasScreen> with SingleTickerProv
     }
   }
 
-  void _toggleFollow(String postId) {
+  void _toggleFollow(String postId) async {
+    final post = _posts.firstWhere((p) => p.id == postId);
     setState(() {
-      final post = _posts.firstWhere((p) => p.id == postId);
       post.isFollowed = !post.isFollowed;
-      for (var p in _posts.where((p) => p.authorName == post.authorName)) {
-        p.isFollowed = post.isFollowed;
-      }
     });
+    try {
+      await _api.toggleFollow(post.authorId);
+    } catch (_) {
+      if (mounted) {
+        setState(() {
+          post.isFollowed = !post.isFollowed;
+        });
+      }
+    }
   }
 
   void _showComments(CommunityPost post) {
@@ -142,6 +149,10 @@ class _KomunitasScreenState extends State<KomunitasScreen> with SingleTickerProv
           ),
         ),
         actions: [
+          IconButton(
+            icon: const Icon(Icons.search, color: Color(0xFF49426E), size: 28),
+            onPressed: _showUserSearch,
+          ),
           IconButton(
             icon: const Icon(Icons.add_box, color: Color(0xFF49426E), size: 28),
             onPressed: _navigateToAddPost,
@@ -255,10 +266,15 @@ class _KomunitasScreenState extends State<KomunitasScreen> with SingleTickerProv
                 child: CircleAvatar(
                   radius: 20,
                   backgroundColor: AppColors.peach,
-                  child: Text(
-                    post.authorName.isNotEmpty ? post.authorName[0].toUpperCase() : '-',
-                    style: const TextStyle(color: AppColors.navy, fontWeight: FontWeight.bold),
-                  ),
+                  backgroundImage: post.authorAvatarUrl.isNotEmpty
+                      ? NetworkImage(post.authorAvatarUrl.startsWith('http') ? post.authorAvatarUrl : 'https://nutrify-app.my.id${post.authorAvatarUrl}')
+                      : null,
+                  child: post.authorAvatarUrl.isEmpty
+                      ? Text(
+                          post.authorName.isNotEmpty ? post.authorName[0].toUpperCase() : '-',
+                          style: const TextStyle(color: AppColors.navy, fontWeight: FontWeight.bold),
+                        )
+                      : null,
                 ),
               ),
               const SizedBox(width: 12),
@@ -366,6 +382,13 @@ class _KomunitasScreenState extends State<KomunitasScreen> with SingleTickerProv
   }
 
   void _navigateToUserProfile(CommunityPost post) {
+    if (post.isOwnPost) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (_) => const ProfileScreen()),
+      );
+      return;
+    }
     Navigator.push(
       context,
       MaterialPageRoute(
@@ -375,6 +398,192 @@ class _KomunitasScreenState extends State<KomunitasScreen> with SingleTickerProv
           api: _api,
         ),
       ),
+    );
+  }
+
+  void _showUserSearch() {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.transparent,
+      isScrollControlled: true,
+      builder: (sheetCtx) => _UserSearchSheet(api: _api),
+    );
+  }
+}
+
+class _UserSearchSheet extends StatefulWidget {
+  final CommunityPostApiService api;
+  const _UserSearchSheet({required this.api});
+
+  @override
+  State<_UserSearchSheet> createState() => _UserSearchSheetState();
+}
+
+class _UserSearchSheetState extends State<_UserSearchSheet> {
+  final _searchCtrl = TextEditingController();
+  List<Map<String, dynamic>> _results = [];
+  bool _isSearching = false;
+  bool _hasSearched = false;
+
+  @override
+  void dispose() {
+    _searchCtrl.dispose();
+    super.dispose();
+  }
+
+  Future<void> _doSearch() async {
+    final q = _searchCtrl.text.trim();
+    if (q.length < 2) return;
+
+    setState(() => _isSearching = true);
+    try {
+      final users = await widget.api.searchUsers(q);
+      if (mounted) {
+        setState(() {
+          _results = users;
+          _isSearching = false;
+          _hasSearched = true;
+        });
+      }
+    } catch (_) {
+      if (mounted) setState(() => _isSearching = false);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      decoration: const BoxDecoration(
+        color: AppColors.cream,
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+      ),
+      constraints: BoxConstraints(maxHeight: MediaQuery.of(context).size.height * 0.7),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Padding(
+            padding: const EdgeInsets.only(top: 12, bottom: 4),
+            child: Container(
+              width: 40, height: 4,
+              decoration: BoxDecoration(
+                color: AppColors.navy.withValues(alpha: 0.2),
+                borderRadius: BorderRadius.circular(2),
+              ),
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.fromLTRB(20, 8, 20, 12),
+            child: Row(
+              children: [
+                const Text('Cari User', style: TextStyle(color: AppColors.navy, fontSize: 18, fontWeight: FontWeight.bold)),
+                const Spacer(),
+                GestureDetector(
+                  onTap: () => Navigator.pop(context),
+                  child: CircleAvatar(
+                    radius: 16,
+                    backgroundColor: AppColors.navy.withValues(alpha: 0.1),
+                    child: const Icon(Icons.close, size: 18, color: AppColors.navy),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 20),
+            child: TextField(
+              controller: _searchCtrl,
+              autofocus: true,
+              decoration: InputDecoration(
+                hintText: 'Cari nama atau username...',
+                hintStyle: TextStyle(color: AppColors.navy.withValues(alpha: 0.4)),
+                prefixIcon: const Icon(Icons.search, color: AppColors.navy, size: 20),
+                filled: true,
+                fillColor: Colors.white,
+                contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                border: OutlineInputBorder(borderRadius: BorderRadius.circular(24), borderSide: BorderSide.none),
+              ),
+              onSubmitted: (_) => _doSearch(),
+            ),
+          ),
+          const SizedBox(height: 12),
+          Expanded(
+            child: _isSearching
+                ? const Center(child: CircularProgressIndicator(color: AppColors.navy))
+                : !_hasSearched
+                    ? Center(
+                        child: Text('Ketik minimal 2 karakter untuk mencari',
+                            style: TextStyle(color: AppColors.navy.withValues(alpha: 0.4), fontSize: 13)))
+                    : _results.isEmpty
+                        ? Center(
+                            child: Text('User tidak ditemukan',
+                                style: TextStyle(color: AppColors.navy.withValues(alpha: 0.4), fontSize: 13)))
+                        : ListView.separated(
+                            padding: const EdgeInsets.symmetric(horizontal: 20),
+                            itemCount: _results.length,
+                            separatorBuilder: (_, __) => const Divider(height: 1),
+                            itemBuilder: (ctx, i) {
+                              final u = _results[i];
+                              return _buildUserTile(u);
+                            },
+                          ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildUserTile(Map<String, dynamic> u) {
+    final name = u['name'] as String? ?? '';
+    final username = u['username'] as String? ?? '';
+    final avatarUrl = u['avatar_url'] as String? ?? '';
+    final isFollowing = u['is_following'] as bool? ?? false;
+    final userId = u['id'] as int? ?? 0;
+
+    return ListTile(
+      contentPadding: const EdgeInsets.symmetric(vertical: 4),
+      leading: CircleAvatar(
+        radius: 22,
+        backgroundColor: AppColors.peach,
+        backgroundImage: avatarUrl.isNotEmpty ? NetworkImage(avatarUrl) : null,
+        child: avatarUrl.isEmpty
+            ? Text(name.isNotEmpty ? name[0].toUpperCase() : '?',
+                style: const TextStyle(color: AppColors.navy, fontWeight: FontWeight.bold))
+            : null,
+      ),
+      title: Text(name, style: const TextStyle(color: AppColors.navy, fontWeight: FontWeight.bold, fontSize: 14)),
+      subtitle: username.isNotEmpty ? Text('@$username', style: TextStyle(color: AppColors.navy.withValues(alpha: 0.5), fontSize: 12)) : null,
+      trailing: GestureDetector(
+        onTap: () async {
+          try {
+            final result = await widget.api.toggleFollow(userId);
+            if (mounted) {
+              setState(() {
+                u['is_following'] = !(isFollowing);
+              });
+            }
+          } catch (_) {}
+        },
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 5),
+          decoration: BoxDecoration(
+            color: isFollowing ? AppColors.navy : AppColors.amber,
+            borderRadius: BorderRadius.circular(16),
+          ),
+          child: Text(
+            isFollowing ? 'Diikuti' : 'Ikuti',
+            style: TextStyle(color: isFollowing ? Colors.white : AppColors.navy, fontWeight: FontWeight.bold, fontSize: 12),
+          ),
+        ),
+      ),
+      onTap: () {
+        Navigator.pop(context);
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (_) => UserProfileScreen(userId: userId, userName: name, api: widget.api),
+          ),
+        );
+      },
     );
   }
 }

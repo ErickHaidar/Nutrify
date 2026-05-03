@@ -7,6 +7,7 @@ use App\Http\Controllers\Api\FoodController;
 use App\Http\Controllers\Api\FavoriteController;
 use App\Http\Controllers\Api\PostController;
 use App\Http\Controllers\Api\OtpController;
+use App\Http\Controllers\Api\FollowController;
 use App\Http\Controllers\FoodLogController;
 
 // OTP Verification (public, no auth required)
@@ -18,6 +19,7 @@ Route::middleware(['supabase.auth'])->group(function () {
     // Profile
     Route::post('/profile/store', [ProfileController::class, 'store']);
     Route::get('/profile', [ProfileController::class, 'show']);
+    Route::put('/profile/photo', [ProfileController::class, 'photo']);
 
     // Foods — GET /api/foods?search=&page=
     Route::get('/foods', [FoodController::class, 'index']);
@@ -43,4 +45,11 @@ Route::middleware(['supabase.auth'])->group(function () {
     Route::post('/posts/{id}/like', [PostController::class, 'toggleLike']);
     Route::get('/posts/{id}/comments', [PostController::class, 'comments']);
     Route::post('/posts/{id}/comments', [PostController::class, 'storeComment']);
+
+    // Follow System
+    Route::post('/users/{id}/follow', [FollowController::class, 'toggleFollow']);
+    Route::get('/users/{id}/profile', [FollowController::class, 'userProfile']);
+    Route::get('/users/search', [FollowController::class, 'searchUsers']);
+    Route::put('/username', [FollowController::class, 'updateUsername']);
+    Route::put('/account-type', [FollowController::class, 'updateAccountType']);
 });

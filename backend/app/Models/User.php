@@ -24,6 +24,10 @@ class User extends Authenticatable
         'email',
         'password',
         'supabase_id',
+        'username',
+        'avatar',
+        'fcm_token',
+        'account_type',
     ];
 
     /**
@@ -34,6 +38,7 @@ class User extends Authenticatable
     protected $hidden = [
         'password',
         'remember_token',
+        'fcm_token',
     ];
 
     /**
@@ -80,5 +85,30 @@ class User extends Authenticatable
     public function comments(): HasMany
     {
         return $this->hasMany(Comment::class);
+    }
+
+    public function followers(): HasMany
+    {
+        return $this->hasMany(Follow::class, 'following_id');
+    }
+
+    public function followings(): HasMany
+    {
+        return $this->hasMany(Follow::class, 'follower_id');
+    }
+
+    public function getFollowersCount(): int
+    {
+        return $this->followers()->count();
+    }
+
+    public function getFollowingsCount(): int
+    {
+        return $this->followings()->count();
+    }
+
+    public function getAvatarUrlAttribute(): ?string
+    {
+        return $this->avatar ? url('storage/' . $this->avatar) : null;
     }
 }

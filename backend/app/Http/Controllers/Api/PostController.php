@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Post;
 use App\Models\PostLike;
 use App\Models\Comment;
+use App\Models\Follow;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
@@ -14,7 +15,7 @@ class PostController extends Controller
 {
     public function index(Request $request)
     {
-        $posts = Post::with(['user', 'likes', 'comments.user'])
+        $posts = Post::with(['user.profile', 'likes', 'comments.user'])
             ->withCount(['likes', 'comments'])
             ->orderBy('created_at', 'desc')
             ->paginate(15);
@@ -32,7 +33,7 @@ class PostController extends Controller
     {
         $request->validate([
             'content' => 'required|string|max:1000',
-            'image'   => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
+            'image'   => 'nullable|image|mimes:jpeg,png,jpg,webp|max:10240',
         ]);
 
         $imageUrl = null;
@@ -48,7 +49,7 @@ class PostController extends Controller
             'image_url' => $imageUrl,
         ]);
 
-        $post->load(['user', 'likes', 'comments.user']);
+        $post->load(['user.profile', 'likes', 'comments.user']);
         $post->loadCount(['likes', 'comments']);
 
         return response()->json([
@@ -139,8 +140,9 @@ class PostController extends Controller
                 'id'         => $comment->id,
                 'content'    => $comment->content,
                 'user'       => [
-                    'id'   => $comment->user->id,
-                    'name' => $comment->user->name,
+                    'id'         => $comment->user->id,
+                    'name'       => $comment->user->name,
+                    'supabase_id' => $comment->user->supabase_id,
                 ],
                 'created_at' => $comment->created_at,
             ];
@@ -179,8 +181,9 @@ class PostController extends Controller
                 'id'         => $comment->id,
                 'content'    => $comment->content,
                 'user'       => [
-                    'id'   => $comment->user->id,
-                    'name' => $comment->user->name,
+                    'id'         => $comment->user->id,
+                    'name'       => $comment->user->name,
+                    'supabase_id' => $comment->user->supabase_id,
                 ],
                 'created_at' => $comment->created_at,
             ],
@@ -190,6 +193,16 @@ class PostController extends Controller
     private function formatPost($post, $userId)
     {
         $isLiked = $post->likes->contains('user_id', $userId);
+        $isFollowed = Follow::where('follower_id', $userId)
+            ->where('following_id', $post->user_id)
+            ->exists();
+
+        $avatarUrl = null;
+        if ($post->user->profile && $post->user->profile->photo) {
+            $avatarUrl = url('storage/' . $post->user->profile->photo);
+        } elseif ($post->user->avatar) {
+            $avatarUrl = url('storage/' . $post->user->avatar);
+        }
 
         return [
             'id'            => $post->id,
@@ -197,11 +210,15 @@ class PostController extends Controller
             'image_url'     => $post->image_url,
             'created_at'    => $post->created_at,
             'user'          => [
-                'id'   => $post->user->id,
-                'name' => $post->user->name,
+                'id'          => $post->user->id,
+                'name'        => $post->user->name,
+                'supabase_id' => $post->user->supabase_id,
+                'username'    => $post->user->username,
+                'avatar_url'  => $avatarUrl,
             ],
-            'is_liked'      => $isLiked,
-            'likes_count'   => $post->likes_count,
+            'is_liked'       => $isLiked,
+            'is_followed'    => $isFollowed,
+            'likes_count'    => $post->likes_count,
             'comments_count' => $post->comments_count,
         ];
     }

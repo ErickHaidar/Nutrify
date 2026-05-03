@@ -24,13 +24,15 @@ class _AddPostScreenState extends State<AddPostScreen> {
   final ImagePicker _picker = getIt<ImagePicker>();
   final CommunityPostApiService _api = CommunityPostApiService();
 
-  Future<void> _pickImage() async {
+  static const int _maxChars = 1000;
+
+  Future<void> _pickImage(ImageSource source) async {
     if (_isPickingImage) return;
     setState(() => _isPickingImage = true);
 
     try {
-      final XFile? image = await _picker.pickImage(source: ImageSource.gallery);
-      
+      final XFile? image = await _picker.pickImage(source: source);
+
       if (image != null && mounted) {
         final String? finalImagePath = await Navigator.push(
           context,
@@ -56,6 +58,38 @@ class _AddPostScreenState extends State<AddPostScreen> {
         setState(() => _isPickingImage = false);
       }
     }
+  }
+
+  void _showImagePickerModal() {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: const Color(0xFF2D2A4A),
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (ctx) => SafeArea(
+        child: Wrap(
+          children: [
+            ListTile(
+              leading: const Icon(Icons.photo_library, color: Color(0xFFFFCC80)),
+              title: const Text('Galeri', style: TextStyle(color: Colors.white)),
+              onTap: () {
+                Navigator.pop(ctx);
+                _pickImage(ImageSource.gallery);
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.camera_alt, color: Color(0xFFFFCC80)),
+              title: const Text('Kamera', style: TextStyle(color: Colors.white)),
+              onTap: () {
+                Navigator.pop(ctx);
+                _pickImage(ImageSource.camera);
+              },
+            ),
+          ],
+        ),
+      ),
+    );
   }
 
   void _handleUpload() async {
@@ -123,7 +157,7 @@ class _AddPostScreenState extends State<AddPostScreen> {
             children: [
               // Image Picker Area
               GestureDetector(
-                onTap: _pickImage,
+                onTap: _showImagePickerModal,
                 child: Container(
                   width: double.infinity,
                   height: 250,
@@ -178,19 +212,29 @@ class _AddPostScreenState extends State<AddPostScreen> {
                   color: AppColors.peach,
                   borderRadius: BorderRadius.circular(16),
                 ),
-                child: TextField(
-                  controller: _descController,
-                  maxLines: 5,
-                  minLines: 3,
-                  style: const TextStyle(color: AppColors.navy),
-                  decoration: InputDecoration(
-                    hintText: AppStrings.writeDescription,
-                    hintStyle: TextStyle(
-                      color: AppColors.navy.withOpacity(0.4),
+                child: Column(
+                  children: [
+                    TextField(
+                      controller: _descController,
+                      maxLength: _maxChars,
+                      maxLines: 5,
+                      minLines: 3,
+                      style: const TextStyle(color: AppColors.navy),
+                      decoration: InputDecoration(
+                        hintText: AppStrings.writeDescription,
+                        hintStyle: TextStyle(
+                          color: AppColors.navy.withOpacity(0.4),
+                        ),
+                        border: InputBorder.none,
+                        contentPadding: const EdgeInsets.all(16),
+                        counterStyle: TextStyle(
+                          color: AppColors.navy.withOpacity(0.4),
+                          fontSize: 12,
+                        ),
+                      ),
+                      onChanged: (_) => setState(() {}),
                     ),
-                    border: InputBorder.none,
-                    contentPadding: const EdgeInsets.all(16),
-                  ),
+                  ],
                 ),
               ),
               

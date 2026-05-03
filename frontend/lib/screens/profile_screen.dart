@@ -93,6 +93,20 @@ class ProfileScreenState extends State<ProfileScreen> {
     }
   }
 
+  ImageProvider? _buildProfileImageProvider() {
+    // Priority: API photo URL > local cached file
+    if (_profile?.photoUrl != null && _profile!.photoUrl!.isNotEmpty) {
+      return NetworkImage(_profile!.photoUrl!);
+    }
+    if (_profileImagePath != null) {
+      if (kIsWeb) {
+        return NetworkImage(_profileImagePath!);
+      }
+      return FileImage(File(_profileImagePath!));
+    }
+    return null;
+  }
+
   void _showLanguagePicker() {
     final languageStore = getIt<LanguageStore>();
     showModalBottomSheet(
@@ -259,18 +273,14 @@ class ProfileScreenState extends State<ProfileScreen> {
                             decoration: BoxDecoration(
                               color: const Color(0xFFC4BDB1),
                               borderRadius: BorderRadius.circular(25),
-                              image: _profileImagePath != null
+                              image: _buildProfileImageProvider() != null
                                   ? DecorationImage(
-                                      image: (kIsWeb
-                                              ? NetworkImage(_profileImagePath!)
-                                              : FileImage(
-                                                  File(_profileImagePath!)))
-                                          as ImageProvider,
+                                      image: _buildProfileImageProvider()!,
                                       fit: BoxFit.cover,
                                     )
                                   : null,
                             ),
-                            child: _profileImagePath == null
+                            child: _buildProfileImageProvider() == null
                                 ? const Icon(Icons.person,
                                     size: 60, color: AppColors.navy)
                                 : null,

@@ -27,55 +27,78 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
   List<CommunityPost> _userPosts = [];
   int _followingCount = 0;
   int _followerCount = 0;
+  String _username = '';
+  String _avatarUrl = '';
   bool _isCurrentUser = false;
 
   @override
   void initState() {
     super.initState();
     _isCurrentUser = _checkIsCurrentUser();
-    _loadUserData();
+    _loadUserProfile();
   }
 
   bool _checkIsCurrentUser() {
     final currentUserId = sb.Supabase.instance.client.auth.currentUser?.id;
     if (currentUserId == null) return false;
-    return currentUserId == widget.userId.toString();
+    // Can't easily compare without supabase_id here, rely on backend
+    return false;
   }
 
-  Future<void> _loadUserData() async {
+  Future<void> _loadUserProfile() async {
     try {
-      // Fetch posts for this user
-      final allPosts = await widget.api.getPosts();
-      final userPosts = allPosts.where((p) => p.authorId == widget.userId).toList();
-
-      // Check if we're already following this user from the loaded posts
-      final isFollowed = userPosts.isNotEmpty ? userPosts.first.isFollowed : false;
-
-      // Count unique followers from post data (approximation)
-      // Real follower/following counts would need a dedicated API endpoint
-      final postAuthors = <int>{};
-      for (final p in allPosts) {
-        postAuthors.add(p.authorId);
-      }
-
+      final data = await widget.api.getUserProfile(widget.userId);
       if (mounted) {
+        final currentSupabaseId = sb.Supabase.instance.client.auth.currentUser?.id;
+        final isOwn = data['supabase_id'] == currentSupabaseId;
+
         setState(() {
-          _userPosts = userPosts;
-          _isFollowing = isFollowed;
+          _isFollowing = data['is_following'] as bool? ?? false;
+          _followerCount = data['followers_count'] as int? ?? 0;
+          _followingCount = data['followings_count'] as int? ?? 0;
+          _username = data['username'] as String? ?? '';
+          _avatarUrl = data['avatar_url'] as String? ?? '';
+          _isCurrentUser = isOwn;
+
+          final postsData = data['posts'] as List<dynamic>? ?? [];
+          _userPosts = postsData.map((e) => CommunityPost.fromJson(e as Map<String, dynamic>)).toList();
           _isLoading = false;
-          // These would come from a real API endpoint
-          _followerCount = 0;
-          _followingCount = 0;
         });
       }
     } catch (_) {
-      if (mounted) setState(() => _isLoading = false);
+      // Fallback: load from existing posts
+      try {
+        final allPosts = await widget.api.getPosts();
+        final userPosts = allPosts.where((p) => p.authorId == widget.userId).toList();
+        if (mounted) {
+          setState(() {
+            _userPosts = userPosts;
+            if (userPosts.isNotEmpty) {
+              _isFollowing = userPosts.first.isFollowed;
+              _username = userPosts.first.authorUsername;
+              _avatarUrl = userPosts.first.authorAvatarUrl;
+            }
+            _isLoading = false;
+          });
+        }
+      } catch (_) {
+        if (mounted) setState(() => _isLoading = false);
+      }
     }
   }
 
-  void _toggleFollow() {
+  void _toggleFollow() async {
     setState(() => _isFollowing = !_isFollowing);
-    // TODO: API call to follow/unfollow when backend supports it
+    try {
+      final result = await widget.api.toggleFollow(widget.userId);
+      if (mounted) {
+        setState(() {
+          _followerCount = result['followers_count'] as int? ?? _followerCount;
+        });
+      }
+    } catch (_) {
+      if (mounted) setState(() => _isFollowing = !_isFollowing);
+    }
   }
 
   String _formatCount(int count) {
@@ -96,7 +119,7 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
           onPressed: () => Navigator.pop(context),
         ),
         title: Text(
-          widget.userName,
+          _username.isNotEmpty ? '@$_username' : widget.userName,
           style: const TextStyle(
             color: AppColors.navy,
             fontWeight: FontWeight.bold,
@@ -108,7 +131,7 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
       body: _isLoading
           ? const Center(child: CircularProgressIndicator(color: AppColors.navy))
           : RefreshIndicator(
-              onRefresh: _loadUserData,
+              onRefresh: _loadUserProfile,
               color: AppColors.amber,
               backgroundColor: AppColors.navy,
               child: SingleChildScrollView(
@@ -146,16 +169,15 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
                 ),
               ],
             ),
-            child: Center(
-              child: Text(
-                widget.userName.isNotEmpty ? widget.userName[0].toUpperCase() : '?',
-                style: const TextStyle(
-                  color: AppColors.navy,
-                  fontSize: 36,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ),
+            child: _avatarUrl.isNotEmpty
+                ? ClipOval(
+                    child: Image.network(
+                      _avatarUrl.startsWith('http') ? _avatarUrl : 'https://nutrify-app.my.id$_avatarUrl',
+                      width: 90, height: 90, fit: BoxFit.cover,
+                      errorBuilder: (_, __, ___) => _buildInitialsAvatar(),
+                    ),
+                  )
+                : _buildInitialsAvatar(),
           ),
           const SizedBox(height: 16),
 
@@ -168,17 +190,16 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
               fontWeight: FontWeight.bold,
             ),
           ),
-          const SizedBox(height: 4),
-
-          // Bio placeholder
-          if (_isCurrentUser)
+          if (_username.isNotEmpty) ...[
+            const SizedBox(height: 2),
             Text(
-              'Kelola profil Anda di Pengaturan',
+              '@$_username',
               style: TextStyle(
                 color: AppColors.navy.withValues(alpha: 0.5),
-                fontSize: 13,
+                fontSize: 14,
               ),
             ),
+          ],
           const SizedBox(height: 20),
 
           // Stats row
@@ -187,15 +208,13 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
             children: [
               _buildStatItem('Postingan', _userPosts.length),
               Container(
-                width: 1,
-                height: 30,
+                width: 1, height: 30,
                 color: AppColors.navy.withValues(alpha: 0.1),
                 margin: const EdgeInsets.symmetric(horizontal: 24),
               ),
               _buildStatItem('Mengikuti', _followingCount),
               Container(
-                width: 1,
-                height: 30,
+                width: 1, height: 30,
                 color: AppColors.navy.withValues(alpha: 0.1),
                 margin: const EdgeInsets.symmetric(horizontal: 24),
               ),
@@ -204,7 +223,7 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
           ),
           const SizedBox(height: 20),
 
-          // Follow / Edit profile button
+          // Follow button
           if (!_isCurrentUser)
             SizedBox(
               width: double.infinity,
@@ -214,21 +233,25 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
                 style: ElevatedButton.styleFrom(
                   backgroundColor: _isFollowing ? AppColors.navy : AppColors.amber,
                   foregroundColor: _isFollowing ? Colors.white : AppColors.navy,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(24),
-                  ),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
                   elevation: 0,
                 ),
                 child: Text(
                   _isFollowing ? 'Diikuti' : 'Ikuti',
-                  style: const TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 15,
-                  ),
+                  style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
                 ),
               ),
             ),
         ],
+      ),
+    );
+  }
+
+  Widget _buildInitialsAvatar() {
+    return Center(
+      child: Text(
+        widget.userName.isNotEmpty ? widget.userName[0].toUpperCase() : '?',
+        style: const TextStyle(color: AppColors.navy, fontSize: 36, fontWeight: FontWeight.bold),
       ),
     );
   }
@@ -238,20 +261,10 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
       children: [
         Text(
           _formatCount(count),
-          style: const TextStyle(
-            color: AppColors.navy,
-            fontSize: 18,
-            fontWeight: FontWeight.bold,
-          ),
+          style: const TextStyle(color: AppColors.navy, fontSize: 18, fontWeight: FontWeight.bold),
         ),
         const SizedBox(height: 2),
-        Text(
-          label,
-          style: TextStyle(
-            color: AppColors.navy.withValues(alpha: 0.6),
-            fontSize: 12,
-          ),
-        ),
+        Text(label, style: TextStyle(color: AppColors.navy.withValues(alpha: 0.6), fontSize: 12)),
       ],
     );
   }
@@ -262,14 +275,7 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
       children: [
         Padding(
           padding: const EdgeInsets.fromLTRB(24, 16, 24, 8),
-          child: Text(
-            'Postingan',
-            style: TextStyle(
-              color: AppColors.navy,
-              fontSize: 16,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
+          child: Text('Postingan', style: TextStyle(color: AppColors.navy, fontSize: 16, fontWeight: FontWeight.bold)),
         ),
         if (_userPosts.isEmpty)
           Padding(
@@ -279,13 +285,7 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
                 children: [
                   Icon(Icons.article_outlined, size: 48, color: AppColors.navy.withValues(alpha: 0.2)),
                   const SizedBox(height: 12),
-                  Text(
-                    'Belum ada postingan',
-                    style: TextStyle(
-                      color: AppColors.navy.withValues(alpha: 0.5),
-                      fontSize: 14,
-                    ),
-                  ),
+                  Text('Belum ada postingan', style: TextStyle(color: AppColors.navy.withValues(alpha: 0.5), fontSize: 14)),
                 ],
               ),
             ),
@@ -296,15 +296,8 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
             physics: const NeverScrollableScrollPhysics(),
             padding: const EdgeInsets.only(bottom: 16),
             itemCount: _userPosts.length,
-            separatorBuilder: (_, __) => Divider(
-              color: AppColors.navy.withValues(alpha: 0.1),
-              thickness: 1,
-              height: 24,
-            ),
-            itemBuilder: (context, index) {
-              final post = _userPosts[index];
-              return _buildPostCard(post);
-            },
+            separatorBuilder: (_, __) => Divider(color: AppColors.navy.withValues(alpha: 0.1), thickness: 1, height: 24),
+            itemBuilder: (context, index) => _buildPostCard(_userPosts[index]),
           ),
       ],
     );
@@ -315,9 +308,7 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
       onTap: () {
         Navigator.push(
           context,
-          MaterialPageRoute(
-            builder: (_) => PostDetailScreen(post: post, api: widget.api),
-          ),
+          MaterialPageRoute(builder: (_) => PostDetailScreen(post: post, api: widget.api)),
         );
       },
       child: Padding(
@@ -325,25 +316,14 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              post.content,
-              style: const TextStyle(
-                color: AppColors.navy,
-                fontSize: 14,
-                height: 1.5,
-              ),
-              maxLines: 4,
-              overflow: TextOverflow.ellipsis,
-            ),
+            Text(post.content, style: const TextStyle(color: AppColors.navy, fontSize: 14, height: 1.5), maxLines: 4, overflow: TextOverflow.ellipsis),
             if (post.imagePath != null && post.imagePath!.isNotEmpty) ...[
               const SizedBox(height: 12),
               ClipRRect(
                 borderRadius: BorderRadius.circular(12),
                 child: Image.network(
                   post.imagePath!.startsWith('http') ? post.imagePath! : 'https://nutrify-app.my.id${post.imagePath!}',
-                  width: double.infinity,
-                  height: 160,
-                  fit: BoxFit.cover,
+                  width: double.infinity, height: 160, fit: BoxFit.cover,
                   errorBuilder: (_, __, ___) => const SizedBox.shrink(),
                 ),
               ),
@@ -351,43 +331,15 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
             const SizedBox(height: 12),
             Row(
               children: [
-                Icon(
-                  post.isLiked ? Icons.favorite : Icons.favorite_border,
-                  color: post.isLiked ? Colors.red : AppColors.navy.withValues(alpha: 0.4),
-                  size: 18,
-                ),
+                Icon(post.isLiked ? Icons.favorite : Icons.favorite_border, color: post.isLiked ? Colors.red : AppColors.navy.withValues(alpha: 0.4), size: 18),
                 const SizedBox(width: 4),
-                Text(
-                  '${post.likes}',
-                  style: TextStyle(
-                    color: AppColors.navy.withValues(alpha: 0.6),
-                    fontSize: 12,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
+                Text('${post.likes}', style: TextStyle(color: AppColors.navy.withValues(alpha: 0.6), fontSize: 12, fontWeight: FontWeight.w600)),
                 const SizedBox(width: 16),
-                Icon(
-                  Icons.chat_bubble_outline,
-                  color: AppColors.navy.withValues(alpha: 0.4),
-                  size: 16,
-                ),
+                Icon(Icons.chat_bubble_outline, color: AppColors.navy.withValues(alpha: 0.4), size: 16),
                 const SizedBox(width: 4),
-                Text(
-                  '${post.comments}',
-                  style: TextStyle(
-                    color: AppColors.navy.withValues(alpha: 0.6),
-                    fontSize: 12,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
+                Text('${post.comments}', style: TextStyle(color: AppColors.navy.withValues(alpha: 0.6), fontSize: 12, fontWeight: FontWeight.w600)),
                 const Spacer(),
-                Text(
-                  post.timeAgo,
-                  style: TextStyle(
-                    color: AppColors.navy.withValues(alpha: 0.4),
-                    fontSize: 11,
-                  ),
-                ),
+                Text(post.timeAgo, style: TextStyle(color: AppColors.navy.withValues(alpha: 0.4), fontSize: 11)),
               ],
             ),
           ],
