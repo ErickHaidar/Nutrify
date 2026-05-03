@@ -46,7 +46,9 @@ Route::middleware(['supabase.auth'])->group(function () {
     // Community Posts
     Route::get('/posts', [PostController::class, 'index']);
     Route::post('/posts', [PostController::class, 'store']);
+    Route::put('/posts/{id}', [PostController::class, 'update']);
     Route::delete('/posts/{id}', [PostController::class, 'destroy']);
+    Route::post('/posts/{id}/pin', [PostController::class, 'togglePin']);
     Route::post('/posts/{id}/like', [PostController::class, 'toggleLike']);
     Route::get('/posts/{id}/comments', [PostController::class, 'comments']);
     Route::post('/posts/{id}/comments', [PostController::class, 'storeComment']);

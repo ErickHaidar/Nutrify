@@ -350,6 +350,7 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
 
   Widget _buildPostCard(CommunityPost post) {
     return GestureDetector(
+      behavior: HitTestBehavior.opaque,
       onTap: () {
         Navigator.push(
           context,

@@ -5,6 +5,7 @@ import '../services/food_log_api_service.dart';
 import '../services/notification_api_service.dart';
 import '../screens/post_detail_screen.dart';
 import '../screens/user_profile_screen.dart';
+import '../screens/add_meal_screen.dart';
 import '../services/community_post_api_service.dart';
 import '../domain/entity/post/community_post.dart';
 import 'package:nutrify/utils/locale/app_strings.dart';
@@ -73,6 +74,7 @@ class _NotificationModalState extends State<NotificationModal> {
           unified.add(_UnifiedNotification(
             id: -(meal.hour), // negative IDs for local items
             type: 'meal',
+            mealType: meal.apiType,
             title: menu.isNotEmpty
                 ? '${meal.label}: ${menu.split(', ').take(3).join(', ')}'
                 : (AppStrings.isId ? '${meal.label} — belum dicatat' : '${meal.label} — not logged'),
@@ -142,41 +144,46 @@ class _NotificationModalState extends State<NotificationModal> {
   }
 
   Future<void> _onTap(_UnifiedNotification notif) async {
-    if (notif.type == 'meal') return; // meal reminders aren't tappable
-
-    // Mark as read
+    // Mark as read (server notifications only)
     if (!notif.isRead && notif.id > 0) {
       try { await _notifApi.markAsRead(notif.id); } catch (_) {}
     }
 
-    if (!mounted) return;
-    Navigator.pop(context); // close modal first
-
-    // Navigate based on type
-    if (notif.type == 'follow' && notif.actorId != null) {
+    // Meal reminder → navigate to AddMealScreen
+    if (notif.type == 'meal' && notif.mealType != null) {
+      Navigator.pop(context);
       Navigator.push(
         context,
         MaterialPageRoute(
-          builder: (_) => UserProfileScreen(
-            userId: notif.actorId!,
-            userName: notif.actorName ?? '',
-            api: CommunityPostApiService(),
-          ),
+          builder: (_) => AddMealScreen(mealType: notif.mealType!),
         ),
       );
+      return;
+    }
+
+    // Community notifications
+    if (notif.type == 'follow' && notif.actorId != null) {
+      final route = MaterialPageRoute(
+        builder: (_) => UserProfileScreen(
+          userId: notif.actorId!,
+          userName: notif.actorName ?? '',
+          api: CommunityPostApiService(),
+        ),
+      );
+      Navigator.pop(context);
+      Navigator.push(context, route);
     } else if ((notif.type == 'like' || notif.type == 'comment') && notif.postId != null) {
-      // Fetch post and navigate to detail
+      // Fetch post BEFORE closing modal to avoid context issues
       try {
         final api = CommunityPostApiService();
         final posts = await api.getPosts();
         final post = posts.where((p) => p.id == notif.postId.toString()).firstOrNull;
         if (post != null && mounted) {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (_) => PostDetailScreen(post: post, api: api),
-            ),
+          final route = MaterialPageRoute(
+            builder: (_) => PostDetailScreen(post: post, api: api),
           );
+          Navigator.pop(context);
+          Navigator.push(context, route);
         }
       } catch (_) {}
     }
@@ -422,6 +429,7 @@ class _UnifiedNotification {
   final String? actorName;
   final int? actorId;
   final int? postId;
+  final String? mealType;
   final bool isRead;
   final DateTime createdAt;
   final IconData icon;
@@ -435,6 +443,7 @@ class _UnifiedNotification {
     this.actorName,
     this.actorId,
     this.postId,
+    this.mealType,
     required this.isRead,
     required this.createdAt,
     required this.icon,

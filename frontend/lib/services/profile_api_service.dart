@@ -143,10 +143,11 @@ Future<void> uploadProfilePhoto(File image) async {
       'photo': await MultipartFile.fromFile(image.path, filename: fileName),
     });
 
-    await _dio.dio.post( 
+    await _dio.dio.post(
       Endpoints.profilePhoto,
       data: formData,
     );
+    invalidateCache();
   }
   Future<void> saveProfile({
     required int age,

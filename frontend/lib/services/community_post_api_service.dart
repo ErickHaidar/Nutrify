@@ -31,6 +31,16 @@ class CommunityPostApiService {
     await _dio.dio.delete('${Endpoints.posts}/$postId');
   }
 
+  Future<CommunityPost> updatePost(int postId, {required String content}) async {
+    final res = await _dio.dio.put('${Endpoints.posts}/$postId', data: {'content': content});
+    return CommunityPost.fromJson(res.data['data'] as Map<String, dynamic>);
+  }
+
+  Future<bool> togglePin(int postId) async {
+    final res = await _dio.dio.post('${Endpoints.posts}/$postId/pin');
+    return res.data['is_pinned'] as bool;
+  }
+
   Future<Map<String, dynamic>> toggleLike(int postId) async {
     final res = await _dio.dio.post('${Endpoints.posts}/$postId/like');
     return {'liked': res.data['liked'] as bool, 'likes_count': res.data['likes_count'] as int};

@@ -6,7 +6,6 @@ import 'package:nutrify/domain/entity/post/community_post.dart';
 import 'package:nutrify/screens/add_post_screen.dart';
 import 'package:nutrify/screens/full_screen_image_screen.dart';
 import 'package:nutrify/screens/post_detail_screen.dart';
-import 'package:nutrify/screens/my_profile_screen.dart';
 import 'package:nutrify/screens/user_profile_screen.dart';
 import 'package:nutrify/services/community_post_api_service.dart';
 import 'package:nutrify/services/notification_api_service.dart';
@@ -16,13 +15,14 @@ import 'package:nutrify/utils/locale/app_strings.dart';
 import 'package:intl/intl.dart';
 
 class KomunitasScreen extends StatefulWidget {
-  const KomunitasScreen({super.key});
+  final VoidCallback? onNavigateToProfile;
+  const KomunitasScreen({super.key, this.onNavigateToProfile});
 
   @override
-  State<KomunitasScreen> createState() => _KomunitasScreenState();
+  State<KomunitasScreen> createState() => KomunitasScreenState();
 }
 
-class _KomunitasScreenState extends State<KomunitasScreen> with SingleTickerProviderStateMixin {
+class KomunitasScreenState extends State<KomunitasScreen> with SingleTickerProviderStateMixin {
   late TabController _tabController;
   final _api = CommunityPostApiService();
   final _notifApi = NotificationApiService();
@@ -74,6 +74,10 @@ class _KomunitasScreenState extends State<KomunitasScreen> with SingleTickerProv
       if (mounted) setState(() => _isLoading = false);
     }
   }
+
+  void navigateToAddPost() => _navigateToAddPost();
+
+  void refreshPosts() => _loadPosts();
 
   void _navigateToAddPost() async {
     final newPost = await Navigator.push<CommunityPost>(
@@ -253,20 +257,11 @@ class _KomunitasScreenState extends State<KomunitasScreen> with SingleTickerProv
             ),
           ),
           const SizedBox(width: 4),
-          GestureDetector(
-            onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const MyProfileScreen())),
-            child: CircleAvatar(
-              radius: 16,
-              backgroundColor: AppColors.navy.withValues(alpha: 0.1),
-              child: const Icon(Icons.person, color: AppColors.navy, size: 20),
-            ),
-          ),
-          const SizedBox(width: 8),
         ],
         bottom: PreferredSize(
           preferredSize: const Size.fromHeight(60),
           child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 8),
+            padding: const EdgeInsets.fromLTRB(24, 10, 24, 14),
             child: Container(
               height: 44,
               decoration: BoxDecoration(
@@ -336,7 +331,7 @@ class _KomunitasScreenState extends State<KomunitasScreen> with SingleTickerProv
       return _buildEmptyState(AppStrings.noFollowingPosts);
     }
     return ListView.separated(
-      padding: const EdgeInsets.symmetric(vertical: 16),
+      padding: const EdgeInsets.only(top: 20, bottom: 16),
       itemCount: feedPosts.length,
       separatorBuilder: (context, index) => Divider(
         color: AppColors.navy.withOpacity(0.1), thickness: 1, height: 32,
@@ -507,10 +502,7 @@ class _KomunitasScreenState extends State<KomunitasScreen> with SingleTickerProv
 
   void _navigateToUserProfile(CommunityPost post) async {
     if (post.isOwnPost) {
-      await Navigator.push(
-        context,
-        MaterialPageRoute(builder: (_) => const MyProfileScreen()),
-      );
+      widget.onNavigateToProfile?.call();
       return;
     }
     await Navigator.push(

@@ -370,49 +370,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
         child: Column(
           children: [
-            // Avatar placeholder
-            GestureDetector(
-              onTap: _showImagePickerModal,
-              child: Stack(
-                alignment: Alignment.bottomRight,
-                children: [
-                  Container(
-                    width: 100,
-                    height: 100,
-                    decoration: BoxDecoration(
-                      color: const Color(0xFFC4BDB1),
-                      borderRadius: BorderRadius.circular(25),
-                      image: _profileImage != null
-                          ? DecorationImage(
-                              image: (kIsWeb
-                                      ? NetworkImage(_profileImage!.path)
-                                      : FileImage(File(_profileImage!.path)))
-                                  as ImageProvider,
-                              fit: BoxFit.cover,
-                            )
-                          : null,
-                    ),
-                    child: _profileImage == null
-                        ? const Icon(Icons.person,
-                            size: 60, color: AppColors.navy)
-                        : null,
-                  ),
-                  Container(
-                    padding: const EdgeInsets.all(6),
-                    decoration: const BoxDecoration(
-                      color: AppColors.navy,
-                      shape: BoxShape.circle,
-                    ),
-                    child: const Icon(
-                      Icons.edit,
-                      size: 14,
-                      color: Colors.white,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            const SizedBox(height: 32),
+            const SizedBox(height: 8),
 
             _buildSectionLabel(AppStrings.bodyComposition),
             const SizedBox(height: 16),

@@ -35,7 +35,7 @@ class PostController extends Controller
                     })
                     ->orWhereIn('user_id', $followingIds); // Followed users (any account type)
             })
-            ->orderBy('created_at', 'desc')
+            ->orderByRaw('is_pinned DESC, pinned_at DESC NULLS LAST, created_at DESC')
             ->paginate(15);
 
         $data = $posts->through(function ($post) use ($userId) {
@@ -292,6 +292,81 @@ class PostController extends Controller
         ], 201);
     }
 
+    public function update(Request $request, $id)
+    {
+        $post = Post::where('user_id', Auth::id())->find($id);
+
+        if (!$post) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Post tidak ditemukan atau bukan milik Anda.',
+            ], 404);
+        }
+
+        if ($post->created_at->diffInHours(now()) >= 1) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Postingan hanya bisa diedit dalam 1 jam setelah dibuat.',
+            ], 403);
+        }
+
+        $request->validate([
+            'content' => 'required|string|max:1000',
+        ]);
+
+        $post->update(['content' => $request->content]);
+
+        $post->load(['user.profile', 'likes', 'comments.user']);
+        $post->loadCount(['likes', 'comments']);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Postingan berhasil diperbarui.',
+            'data'    => $this->formatPost($post, Auth::id()),
+        ]);
+    }
+
+    public function togglePin($id)
+    {
+        $post = Post::where('user_id', Auth::id())->find($id);
+
+        if (!$post) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Post tidak ditemukan atau bukan milik Anda.',
+            ], 404);
+        }
+
+        if ($post->is_pinned) {
+            $post->update(['is_pinned' => false, 'pinned_at' => null]);
+            return response()->json([
+                'success'   => true,
+                'is_pinned' => false,
+                'message'   => 'Sematan dilepas.',
+            ]);
+        }
+
+        $pinnedCount = Post::where('user_id', Auth::id())->where('is_pinned', true)->count();
+
+        if ($pinnedCount >= 3) {
+            $oldest = Post::where('user_id', Auth::id())
+                ->where('is_pinned', true)
+                ->orderBy('pinned_at', 'asc')
+                ->first();
+            if ($oldest) {
+                $oldest->update(['is_pinned' => false, 'pinned_at' => null]);
+            }
+        }
+
+        $post->update(['is_pinned' => true, 'pinned_at' => now()]);
+
+        return response()->json([
+            'success'   => true,
+            'is_pinned' => true,
+            'message'   => 'Postingan disematkan.',
+        ]);
+    }
+
     private function formatPost($post, $userId)
     {
         $isLiked = $post->likes->contains('user_id', $userId);
@@ -322,6 +397,8 @@ class PostController extends Controller
                 'account_type'      => $post->user->account_type ?? 'public',
             ],
             'is_liked'       => $isLiked,
+            'is_pinned'      => $post->is_pinned,
+            'pinned_at'      => $post->pinned_at,
             'is_followed'    => $isFollowed,
             'is_requested'   => $isRequested,
             'likes_count'    => $post->likes_count,

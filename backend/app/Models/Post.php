@@ -12,6 +12,13 @@ class Post extends Model
         'user_id',
         'content',
         'image_url',
+        'is_pinned',
+        'pinned_at',
+    ];
+
+    protected $casts = [
+        'is_pinned' => 'boolean',
+        'pinned_at' => 'datetime',
     ];
 
     public function user(): BelongsTo

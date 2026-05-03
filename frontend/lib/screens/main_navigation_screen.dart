@@ -26,13 +26,29 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
     if (index == 1) {
       _historyKey.currentState?.refreshData();
     }
+    if (index == 2) {
+      _komunitasKey.currentState?.refreshPosts();
+    }
     if (index == 3) {
       _profileKey.currentState?.loadProfile();
     }
   }
 
+  void _switchToProfileTab() {
+    setState(() => _selectedIndex = 3);
+    _profileKey.currentState?.loadProfile();
+    _profileKey.currentState?.switchToSocialTab();
+  }
+
+  void _switchToProfileAndCreatePost() {
+    setState(() => _selectedIndex = 2);
+    _komunitasKey.currentState?.navigateToAddPost();
+  }
+
   final GlobalKey<HomeScreenState> _homeKey = GlobalKey<HomeScreenState>();
   final GlobalKey<HistoryScreenState> _historyKey = GlobalKey<HistoryScreenState>();
+  final GlobalKey<KomunitasScreenState> _komunitasKey =
+      GlobalKey<KomunitasScreenState>();
   final GlobalKey<ProfileScreenState> _profileKey =
       GlobalKey<ProfileScreenState>();
 
@@ -44,8 +60,8 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
     _pages = [
       HomeScreen(key: _homeKey),
       HistoryScreen(key: _historyKey),
-      KomunitasScreen(),
-      ProfileScreen(key: _profileKey),
+      KomunitasScreen(key: _komunitasKey, onNavigateToProfile: _switchToProfileTab),
+      ProfileScreen(key: _profileKey, onNavigateToCreatePost: _switchToProfileAndCreatePost),
     ];
   }
 

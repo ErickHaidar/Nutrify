@@ -50,6 +50,13 @@ class _AddMealScreenState extends State<AddMealScreen> {
     _loadFavoriteIds();
   }
 
+  static const _apiMealTypes = {'Breakfast', 'Lunch', 'Dinner', 'Snack'};
+
+  String _resolveMealApi(String mealType) {
+    if (_apiMealTypes.contains(mealType)) return mealType;
+    return MealTypeMapper.toApi(mealType);
+  }
+
   Future<void> _loadFavoriteIds() async {
     try {
       final favs = await _favApi.getFavorites();
@@ -92,7 +99,7 @@ class _AddMealScreenState extends State<AddMealScreen> {
   Future<void> _loadMealLogs() async {
     try {
       final logs = await _foodLogApi.getLogs(widget.date ?? DateTime.now());
-      final currentMealApi = MealTypeMapper.toApi(_currentMealType);
+      final currentMealApi = _resolveMealApi(_currentMealType);
       final filteredList =
           logs.where((l) => l.mealTime == currentMealApi).toList();
 
@@ -132,7 +139,7 @@ class _AddMealScreenState extends State<AddMealScreen> {
     if (_isSavingBatch) return;
     setState(() => _isSavingBatch = true);
 
-    final mealTimeApi = MealTypeMapper.toApi(_currentMealType);
+    final mealTimeApi = _resolveMealApi(_currentMealType);
     final date = widget.date ?? DateTime.now();
 
     try {

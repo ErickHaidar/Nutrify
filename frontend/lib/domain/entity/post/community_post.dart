@@ -19,6 +19,11 @@ class CommunityPost {
   bool isFollowed;
   bool isRequested;
   final String tabCategory;
+  final DateTime createdAt;
+  final bool isPinned;
+  final DateTime? pinnedAt;
+
+  bool get canEdit => DateTime.now().difference(createdAt).inHours < 1;
 
   bool get isOwnPost {
     final currentUserId = sb.Supabase.instance.client.auth.currentUser?.id;
@@ -44,7 +49,10 @@ class CommunityPost {
     required this.isFollowed,
     required this.isRequested,
     this.tabCategory = 'Untuk Anda',
-  });
+    DateTime? createdAt,
+    this.isPinned = false,
+    this.pinnedAt,
+  }) : createdAt = createdAt ?? DateTime.now();
 
   factory CommunityPost.fromJson(Map<String, dynamic> json) {
     final user = json['user'] as Map<String, dynamic>? ?? {};
@@ -63,6 +71,9 @@ class CommunityPost {
       isLiked: json['is_liked'] as bool? ?? false,
       isFollowed: json['is_followed'] as bool? ?? false,
       isRequested: json['is_requested'] as bool? ?? false,
+      isPinned: json['is_pinned'] as bool? ?? false,
+      pinnedAt: json['pinned_at'] != null ? DateTime.parse(json['pinned_at'] as String) : null,
+      createdAt: json['created_at'] != null ? DateTime.parse(json['created_at'] as String) : null,
       timeAgo: _formatTimeAgo(json['created_at'] as String?),
     );
   }

@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:nutrify/constants/colors.dart';
 import 'package:nutrify/domain/entity/post/community_post.dart';
-import 'package:nutrify/screens/my_profile_screen.dart';
 import 'package:nutrify/screens/user_profile_screen.dart';
 import 'package:nutrify/services/community_post_api_service.dart';
 import 'package:intl/intl.dart';
@@ -397,10 +396,6 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
           GestureDetector(
             onTap: () {
               if (post.isOwnPost) {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (_) => const MyProfileScreen()),
-                );
                 return;
               }
               Navigator.push(
