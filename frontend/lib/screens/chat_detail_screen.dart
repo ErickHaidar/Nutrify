@@ -125,10 +125,66 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
     }
   }
 
-  Future<void> _pickImage() async {
+  void _showImageSourceSheet() {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.transparent,
+      builder: (ctx) => Container(
+        decoration: const BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+        ),
+        child: SafeArea(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Padding(
+                padding: const EdgeInsets.only(top: 12, bottom: 4),
+                child: Container(
+                  width: 40, height: 4,
+                  decoration: BoxDecoration(
+                    color: AppColors.navy.withValues(alpha: 0.2),
+                    borderRadius: BorderRadius.circular(2),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 8),
+              ListTile(
+                leading: Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: AppColors.navy.withValues(alpha: 0.08),
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: const Icon(Icons.camera_alt, color: AppColors.navy),
+                ),
+                title: const Text('Kamera', style: TextStyle(color: AppColors.navy, fontWeight: FontWeight.w600)),
+                onTap: () { Navigator.pop(ctx); _pickImage(ImageSource.camera); },
+              ),
+              ListTile(
+                leading: Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: AppColors.navy.withValues(alpha: 0.08),
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: const Icon(Icons.photo_library, color: AppColors.navy),
+                ),
+                title: const Text('Galeri', style: TextStyle(color: AppColors.navy, fontWeight: FontWeight.w600)),
+                onTap: () { Navigator.pop(ctx); _pickImage(ImageSource.gallery); },
+              ),
+              const SizedBox(height: 8),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Future<void> _pickImage(ImageSource source) async {
     final picker = getIt<ImagePicker>();
     final picked = await picker.pickImage(
-      source: ImageSource.gallery,
+      source: source,
       maxWidth: 1024,
       maxHeight: 1024,
       imageQuality: 80,
@@ -376,7 +432,7 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
             children: [
               IconButton(
                 icon: Icon(Icons.add_circle_outline, color: AppColors.navy.withValues(alpha: 0.6), size: 28),
-                onPressed: _pickImage,
+                onPressed: _showImageSourceSheet,
               ),
               Expanded(
                 child: TextField(

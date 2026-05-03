@@ -114,6 +114,6 @@ class CommentItem {
         id: json['id'] as int,
         content: json['content'] as String,
         userName: (json['user'] ?? {})['name'] as String? ?? '',
-        createdAt: DateTime.parse(json['created_at'] as String),
+        createdAt: DateTime.parse(json['created_at'] as String).toLocal(),
       );
 }

@@ -41,7 +41,7 @@ class ConversationItem {
             ? json['last_message']['image_url'] as String?
             : null,
         lastMessageAt: json['last_message'] != null
-            ? DateTime.parse(json['last_message']['created_at'] as String)
+            ? DateTime.parse(json['last_message']['created_at'] as String).toLocal()
             : null,
         unreadCount: json['unread_count'] as int? ?? 0,
       );
@@ -70,7 +70,7 @@ class MessageItem {
         content: json['content'] as String?,
         imageUrl: json['image_url'] as String?,
         isRead: json['is_read'] as bool? ?? false,
-        createdAt: DateTime.parse(json['created_at'] as String),
+        createdAt: DateTime.parse(json['created_at'] as String).toLocal(),
       );
 }
 

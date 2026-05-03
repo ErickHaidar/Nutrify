@@ -72,8 +72,8 @@ class CommunityPost {
       isFollowed: json['is_followed'] as bool? ?? false,
       isRequested: json['is_requested'] as bool? ?? false,
       isPinned: json['is_pinned'] as bool? ?? false,
-      pinnedAt: json['pinned_at'] != null ? DateTime.parse(json['pinned_at'] as String) : null,
-      createdAt: json['created_at'] != null ? DateTime.parse(json['created_at'] as String) : null,
+      pinnedAt: json['pinned_at'] != null ? DateTime.parse(json['pinned_at'] as String).toLocal() : null,
+      createdAt: json['created_at'] != null ? DateTime.parse(json['created_at'] as String).toLocal() : null,
       timeAgo: _formatTimeAgo(json['created_at'] as String?),
     );
   }
@@ -81,7 +81,7 @@ class CommunityPost {
   static String _formatTimeAgo(String? isoDate) {
     if (isoDate == null) return '';
     try {
-      final dt = DateTime.parse(isoDate);
+      final dt = DateTime.parse(isoDate).toLocal();
       final diff = DateTime.now().difference(dt);
       if (diff.inMinutes < 1) return 'Baru saja';
       if (diff.inHours < 1) return '${diff.inMinutes}m lalu';

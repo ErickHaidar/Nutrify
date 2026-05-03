@@ -226,7 +226,7 @@ class _ChatListScreenState extends State<ChatListScreen> {
                                     leading: CircleAvatar(
                                       radius: 22,
                                       backgroundColor: AppColors.peach,
-                                      backgroundImage: avatarUrl.isNotEmpty ? NetworkImage(avatarUrl) : null,
+                                      backgroundImage: avatarUrl.isNotEmpty ? NetworkImage(avatarUrl.startsWith('http') ? avatarUrl : 'https://nutrify-app.my.id/$avatarUrl') : null,
                                       child: avatarUrl.isEmpty ? Text(name.isNotEmpty ? name[0].toUpperCase() : '?', style: const TextStyle(color: AppColors.navy, fontWeight: FontWeight.bold)) : null,
                                     ),
                                     title: Text(name, style: const TextStyle(color: AppColors.navy, fontWeight: FontWeight.bold, fontSize: 14)),

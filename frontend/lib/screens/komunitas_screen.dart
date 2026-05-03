@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:nutrify/constants/colors.dart';
+import 'package:nutrify/constants/assets.dart';
 import 'package:nutrify/domain/entity/post/community_post.dart';
 import 'package:nutrify/screens/add_post_screen.dart';
 import 'package:nutrify/screens/full_screen_image_screen.dart';
@@ -209,38 +211,25 @@ class KomunitasScreenState extends State<KomunitasScreen> with SingleTickerProvi
       appBar: AppBar(
         backgroundColor: AppColors.cream,
         elevation: 0,
-        title: GestureDetector(
-          onTap: _openChatList,
-          child: Stack(
-            clipBehavior: Clip.none,
-            children: [
-              Container(
-                padding: const EdgeInsets.all(8),
-                decoration: BoxDecoration(
-                  color: AppColors.navy.withValues(alpha: 0.08),
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: const Icon(Icons.chat_bubble_outline, color: AppColors.navy, size: 24),
+        title: Row(
+          children: [
+            Image.asset(Assets.nutrifyLogo, height: 36, width: 36),
+            const SizedBox(width: 8),
+            Text(
+              'Nutrify',
+              style: GoogleFonts.inter(
+                color: const Color(0xFFFFB26B),
+                fontWeight: FontWeight.w900,
+                fontSize: 30,
               ),
-              if (_chatUnreadCount > 0)
-                Positioned(
-                  right: -4,
-                  top: -4,
-                  child: Container(
-                    padding: const EdgeInsets.all(3),
-                    decoration: const BoxDecoration(color: Colors.red, shape: BoxShape.circle),
-                    constraints: const BoxConstraints(minWidth: 16, minHeight: 16),
-                    child: Text(
-                      _chatUnreadCount > 99 ? '99+' : '$_chatUnreadCount',
-                      style: const TextStyle(color: Colors.white, fontSize: 9, fontWeight: FontWeight.bold),
-                      textAlign: TextAlign.center,
-                    ),
-                  ),
-                ),
-            ],
-          ),
+            ),
+          ],
         ),
         actions: [
+          IconButton(
+            icon: const Icon(Icons.search, color: Color(0xFF49426E), size: 26),
+            onPressed: _showUserSearch,
+          ),
           Stack(
             clipBehavior: Clip.none,
             children: [
@@ -265,33 +254,60 @@ class KomunitasScreenState extends State<KomunitasScreen> with SingleTickerProvi
                 ),
             ],
           ),
-          IconButton(
-            icon: const Icon(Icons.search, color: Color(0xFF49426E), size: 28),
-            onPressed: _showUserSearch,
+          GestureDetector(
+            onTap: _openChatList,
+            child: Stack(
+              clipBehavior: Clip.none,
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(8),
+                  margin: const EdgeInsets.only(right: 4),
+                  decoration: BoxDecoration(
+                    color: AppColors.navy.withValues(alpha: 0.08),
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: const Icon(Icons.chat_bubble_outline, color: AppColors.navy, size: 20),
+                ),
+                if (_chatUnreadCount > 0)
+                  Positioned(
+                    right: 0,
+                    top: 0,
+                    child: Container(
+                      padding: const EdgeInsets.all(3),
+                      decoration: const BoxDecoration(color: Colors.red, shape: BoxShape.circle),
+                      constraints: const BoxConstraints(minWidth: 16, minHeight: 16),
+                      child: Text(
+                        _chatUnreadCount > 99 ? '99+' : '$_chatUnreadCount',
+                        style: const TextStyle(color: Colors.white, fontSize: 9, fontWeight: FontWeight.bold),
+                        textAlign: TextAlign.center,
+                      ),
+                    ),
+                  ),
+              ],
+            ),
           ),
           GestureDetector(
             onTap: _navigateToAddPost,
             child: Container(
-              margin: const EdgeInsets.symmetric(horizontal: 4),
+              margin: const EdgeInsets.only(right: 8),
               padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 7),
               decoration: BoxDecoration(
-                color: AppColors.amber,
+                color: AppColors.navy,
                 borderRadius: BorderRadius.circular(20),
               ),
               child: const Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Icon(Icons.add, color: AppColors.navy, size: 18),
+                  Icon(Icons.add, color: Colors.white, size: 18),
                   SizedBox(width: 4),
                   Text(
-                    'Post',
-                    style: TextStyle(color: AppColors.navy, fontWeight: FontWeight.bold, fontSize: 13),
+                    'Posting',
+                    style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 13),
                   ),
                 ],
               ),
             ),
           ),
-          const SizedBox(width: 4),
         ],
         bottom: PreferredSize(
           preferredSize: const Size.fromHeight(60),

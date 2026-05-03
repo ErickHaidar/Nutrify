@@ -25,7 +25,7 @@ class MealData {
         name: json['name'],
         calories: json['calories'],
         type: json['type'],
-        timestamp: DateTime.parse(json['timestamp']),
+        timestamp: DateTime.parse(json['timestamp']).toLocal(),
       );
 }
 

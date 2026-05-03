@@ -34,18 +34,26 @@ class _NotificationModalState extends State<NotificationModal> {
   Future<void> _loadData() async {
     setState(() => _isLoading = true);
     try {
-      final results = await Future.wait([
-        _notifApi.getNotifications(),
-        _foodLogApi.getLogs(DateTime.now()),
-      ]);
-      if (!mounted) return;
+      // Load independently — if food logs fail, notifications still show
+      final serverNotifsFuture = _notifApi.getNotifications();
+      final todayLogsFuture = _foodLogApi.getLogs(DateTime.now());
 
-      final serverNotifs = results[0] as List<NotificationItem>;
-      final todayLogs = results[1] as List<FoodLogEntry>;
+      List<NotificationItem> serverNotifs = [];
+      List<FoodLogEntry> todayLogs = [];
+
+      try {
+        serverNotifs = await serverNotifsFuture;
+      } catch (_) {}
+
+      try {
+        todayLogs = await todayLogsFuture;
+      } catch (_) {}
+
+      if (!mounted) return;
 
       final List<_UnifiedNotification> unified = [];
 
-      // Server notifications (like, comment, follow)
+      // Server notifications (like, comment, follow, message)
       for (final n in serverNotifs) {
         unified.add(_UnifiedNotification(
           id: n.id,

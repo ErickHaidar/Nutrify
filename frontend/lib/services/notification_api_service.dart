@@ -66,7 +66,7 @@ class NotificationItem {
       postId: (json['post_id'] as num?)?.toInt(),
       data: json['data'] as Map<String, dynamic>?,
       createdAt: json['created_at'] != null
-          ? DateTime.parse(json['created_at'] as String)
+          ? DateTime.parse(json['created_at'] as String).toLocal()
           : DateTime.now(),
       isRead: json['read_at'] != null,
     );

@@ -128,7 +128,9 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
             builder: (_) => ChatDetailScreen(
               conversationId: conv.id,
               otherUserName: widget.userName,
-              otherUserAvatarUrl: _avatarUrl.isNotEmpty ? _avatarUrl : null,
+              otherUserAvatarUrl: _avatarUrl.isNotEmpty
+                  ? (_avatarUrl.startsWith('http') ? _avatarUrl : 'https://nutrify-app.my.id/$_avatarUrl')
+                  : null,
             ),
           ),
         );
