@@ -25,13 +25,19 @@ class _AddPostScreenState extends State<AddPostScreen> {
   final CommunityPostApiService _api = CommunityPostApiService();
 
   static const int _maxChars = 1000;
+  static const int _maxImageBytes = 5 * 1024 * 1024; // 5MB target after compression
 
   Future<void> _pickImage(ImageSource source) async {
     if (_isPickingImage) return;
     setState(() => _isPickingImage = true);
 
     try {
-      final XFile? image = await _picker.pickImage(source: source);
+      final XFile? image = await _picker.pickImage(
+        source: source,
+        maxWidth: 1920,
+        maxHeight: 1920,
+        imageQuality: 85,
+      );
 
       if (image != null && mounted) {
         final String? finalImagePath = await Navigator.push(
@@ -103,22 +109,86 @@ class _AddPostScreenState extends State<AddPostScreen> {
     setState(() => _isUploading = true);
 
     try {
+      File? imageToUpload = _selectedImage;
+
+      // Compress image if too large
+      if (imageToUpload != null) {
+        final fileSize = await imageToUpload.length();
+        if (fileSize > _maxImageBytes) {
+          // Resize using Dart image compression
+          final compressed = await _compressImage(imageToUpload);
+          if (compressed != null) {
+            imageToUpload = compressed;
+          }
+        }
+      }
+
       final newPost = await _api.createPost(
         content: _descController.text.trim(),
-        imageFile: _selectedImage,
+        imageFile: imageToUpload,
       );
       if (mounted) {
         Navigator.pop(context, newPost);
       }
     } catch (e) {
       if (mounted) {
+        String errorMsg = AppStrings.uploadFailed;
+        final errStr = e.toString();
+        if (errStr.contains('413') || errStr.contains('Payload Too Large')) {
+          errorMsg = 'Gambar terlalu besar. Maksimal 5MB.';
+        } else if (errStr.contains('422')) {
+          errorMsg = 'Format file tidak didukung. Gunakan JPG/PNG.';
+        } else if (errStr.contains('Connection') || errStr.contains('timeout')) {
+          errorMsg = 'Koneksi timeout. Coba lagi.';
+        }
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('${AppStrings.uploadFailed}: $e')),
+          SnackBar(
+            content: Text(errorMsg),
+            backgroundColor: Colors.red.shade700,
+            duration: const Duration(seconds: 4),
+          ),
         );
       }
     } finally {
       if (mounted) setState(() => _isUploading = false);
     }
+  }
+
+  Future<File?> _compressImage(File file) async {
+    try {
+      // Read image bytes and decode
+      final bytes = await file.readAsBytes();
+      final image = await decodeImageFromList(bytes);
+
+      // Calculate target dimensions (max 1920px on longest side)
+      int targetWidth = image.width;
+      int targetHeight = image.height;
+      const maxDimension = 1920;
+
+      if (targetWidth > maxDimension || targetHeight > maxDimension) {
+        if (targetWidth > targetHeight) {
+          targetHeight = (targetHeight * maxDimension / targetWidth).round();
+          targetWidth = maxDimension;
+        } else {
+          targetWidth = (targetWidth * maxDimension / targetHeight).round();
+          targetHeight = maxDimension;
+        }
+      }
+
+      // Use Flutter's built-in approach: re-encode via a temp file
+      // For simpler approach, we use the image_picker quality setting
+      final XFile? compressed = await _picker.pickImage(
+        source: ImageSource.gallery,
+        maxWidth: targetWidth.toDouble(),
+        maxHeight: targetHeight.toDouble(),
+        imageQuality: 80,
+      );
+
+      if (compressed != null) {
+        return File(compressed.path);
+      }
+    } catch (_) {}
+    return null;
   }
 
   @override

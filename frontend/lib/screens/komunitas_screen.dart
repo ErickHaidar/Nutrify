@@ -10,7 +10,6 @@ import 'package:nutrify/screens/my_profile_screen.dart';
 import 'package:nutrify/screens/user_profile_screen.dart';
 import 'package:nutrify/services/community_post_api_service.dart';
 import 'package:nutrify/utils/locale/app_strings.dart';
-import 'package:nutrify/widgets/notification_modal.dart';
 import 'package:intl/intl.dart';
 
 class KomunitasScreen extends StatefulWidget {
@@ -157,6 +156,33 @@ class _KomunitasScreenState extends State<KomunitasScreen> with SingleTickerProv
           ],
         ),
         actions: [
+          IconButton(
+            icon: const Icon(Icons.search, color: Color(0xFF49426E), size: 28),
+            onPressed: _showUserSearch,
+          ),
+          GestureDetector(
+            onTap: _navigateToAddPost,
+            child: Container(
+              margin: const EdgeInsets.symmetric(horizontal: 4),
+              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 7),
+              decoration: BoxDecoration(
+                color: AppColors.amber,
+                borderRadius: BorderRadius.circular(20),
+              ),
+              child: const Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(Icons.add, color: AppColors.navy, size: 18),
+                  SizedBox(width: 4),
+                  Text(
+                    'Post',
+                    style: TextStyle(color: AppColors.navy, fontWeight: FontWeight.bold, fontSize: 13),
+                  ),
+                ],
+              ),
+            ),
+          ),
+          const SizedBox(width: 4),
           GestureDetector(
             onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const MyProfileScreen())),
             child: CircleAvatar(
@@ -165,27 +191,7 @@ class _KomunitasScreenState extends State<KomunitasScreen> with SingleTickerProv
               child: const Icon(Icons.person, color: AppColors.navy, size: 20),
             ),
           ),
-          const SizedBox(width: 12),
-          IconButton(
-            icon: const Icon(Icons.search, color: Color(0xFF49426E), size: 28),
-            onPressed: _showUserSearch,
-          ),
-          IconButton(
-            icon: const Icon(Icons.add_box_outlined, color: Color(0xFF49426E), size: 28),
-            onPressed: _navigateToAddPost,
-          ),
-          IconButton(
-            icon: const Icon(Icons.notifications, color: Color(0xFF49426E), size: 28),
-            onPressed: () {
-              showModalBottomSheet(
-                context: context,
-                backgroundColor: Colors.transparent,
-                isScrollControlled: true,
-                builder: (context) => const NotificationModal(),
-              );
-            },
-          ),
-          const SizedBox(width: 4),
+          const SizedBox(width: 8),
         ],
         bottom: PreferredSize(
           preferredSize: const Size.fromHeight(60),
