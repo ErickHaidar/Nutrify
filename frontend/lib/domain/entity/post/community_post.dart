@@ -12,6 +12,7 @@ class CommunityPost {
   final String? imagePath;
   final File? localImageFile;
   final int authorId;
+  final String authorAccountType;
   int likes;
   int comments;
   bool isLiked;
@@ -35,6 +36,7 @@ class CommunityPost {
     this.imagePath,
     this.localImageFile,
     this.authorId = 0,
+    this.authorAccountType = 'public',
     required this.likes,
     required this.comments,
     required this.isLiked,
@@ -53,6 +55,7 @@ class CommunityPost {
       content: json['content'] as String? ?? '',
       imagePath: json['image_url'] as String?,
       authorId: user['id'] as int? ?? 0,
+      authorAccountType: user['account_type'] as String? ?? 'public',
       likes: json['likes_count'] as int? ?? 0,
       comments: json['comments_count'] as int? ?? 0,
       isLiked: json['is_liked'] as bool? ?? false,

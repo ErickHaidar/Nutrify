@@ -65,6 +65,20 @@ class CommunityPostApiService {
     final List<dynamic> data = res.data['data'] as List<dynamic>;
     return data.map((e) => e as Map<String, dynamic>).toList();
   }
+
+  Future<Map<String, dynamic>> getMyProfile() async {
+    final res = await _dio.dio.get('users/me');
+    return res.data['data'] as Map<String, dynamic>;
+  }
+
+  Future<Map<String, dynamic>> updateProfile({String? name, String? username, String? accountType}) async {
+    final data = <String, dynamic>{};
+    if (name != null) data['name'] = name;
+    if (username != null) data['username'] = username;
+    if (accountType != null) data['account_type'] = accountType;
+    final res = await _dio.dio.put('users/profile', data: data);
+    return res.data['data'] as Map<String, dynamic>;
+  }
 }
 
 class CommentItem {

@@ -3,8 +3,9 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:nutrify/constants/colors.dart';
 import 'package:nutrify/domain/entity/post/community_post.dart';
 import 'package:nutrify/screens/add_post_screen.dart';
+import 'package:nutrify/screens/full_screen_image_screen.dart';
 import 'package:nutrify/screens/post_detail_screen.dart';
-import 'package:nutrify/screens/profile_screen.dart';
+import 'package:nutrify/screens/my_profile_screen.dart';
 import 'package:nutrify/screens/user_profile_screen.dart';
 import 'package:nutrify/services/community_post_api_service.dart';
 import 'package:nutrify/utils/locale/app_strings.dart';
@@ -253,120 +254,121 @@ class _KomunitasScreenState extends State<KomunitasScreen> with SingleTickerProv
   }
 
   Widget _buildPostCard(CommunityPost post) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 24),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // Author row
-          Row(
-            children: [
+    return GestureDetector(
+      onTap: () => _navigateToPostDetail(post),
+      behavior: HitTestBehavior.opaque,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 24),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Author row
+            Row(
+              children: [
+                GestureDetector(
+                  onTap: () => _navigateToUserProfile(post),
+                  child: CircleAvatar(
+                    radius: 20,
+                    backgroundColor: AppColors.peach,
+                    backgroundImage: post.authorAvatarUrl.isNotEmpty
+                        ? NetworkImage(post.authorAvatarUrl.startsWith('http') ? post.authorAvatarUrl : 'https://nutrify-app.my.id${post.authorAvatarUrl}')
+                        : null,
+                    child: post.authorAvatarUrl.isEmpty
+                        ? Text(
+                            post.authorName.isNotEmpty ? post.authorName[0].toUpperCase() : '-',
+                            style: const TextStyle(color: AppColors.navy, fontWeight: FontWeight.bold),
+                          )
+                        : null,
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: GestureDetector(
+                    onTap: () => _navigateToUserProfile(post),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(post.authorName, style: const TextStyle(color: AppColors.navy, fontWeight: FontWeight.bold, fontSize: 15)),
+                        const SizedBox(height: 2),
+                        Text(post.timeAgo, style: TextStyle(color: AppColors.navy.withOpacity(0.5), fontSize: 12)),
+                      ],
+                    ),
+                  ),
+                ),
+                if (!post.isOwnPost)
+                  GestureDetector(
+                    onTap: () => _toggleFollow(post.id),
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+                      decoration: BoxDecoration(
+                        color: post.isFollowed ? AppColors.navy : AppColors.amber,
+                        borderRadius: BorderRadius.circular(16),
+                      ),
+                      child: Text(
+                        post.isFollowed ? AppStrings.following : AppStrings.follow,
+                        style: TextStyle(color: post.isFollowed ? Colors.white : AppColors.navy, fontWeight: FontWeight.bold, fontSize: 12),
+                      ),
+                    ),
+                  ),
+              ],
+            ),
+            const SizedBox(height: 12),
+
+            // Post content
+            Text(post.content, style: const TextStyle(color: AppColors.navy, fontSize: 14, height: 1.5)),
+            if (post.imagePath != null && post.imagePath!.isNotEmpty) ...[
+              const SizedBox(height: 12),
               GestureDetector(
-                onTap: () => _navigateToUserProfile(post),
-                child: CircleAvatar(
-                  radius: 20,
-                  backgroundColor: AppColors.peach,
-                  backgroundImage: post.authorAvatarUrl.isNotEmpty
-                      ? NetworkImage(post.authorAvatarUrl.startsWith('http') ? post.authorAvatarUrl : 'https://nutrify-app.my.id${post.authorAvatarUrl}')
-                      : null,
-                  child: post.authorAvatarUrl.isEmpty
-                      ? Text(
-                          post.authorName.isNotEmpty ? post.authorName[0].toUpperCase() : '-',
-                          style: const TextStyle(color: AppColors.navy, fontWeight: FontWeight.bold),
-                        )
-                      : null,
+                onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => FullScreenImageScreen(imageUrl: post.imagePath!))),
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(16),
+                  child: Image.network(
+                    post.imagePath!.startsWith('http') ? post.imagePath! : 'https://nutrify-app.my.id${post.imagePath!}',
+                    width: double.infinity,
+                    height: 200,
+                    fit: BoxFit.cover,
+                    errorBuilder: (_, __, ___) => const SizedBox.shrink(),
+                  ),
                 ),
               ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: GestureDetector(
-                  onTap: () => _navigateToUserProfile(post),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+            ],
+            if (post.localImageFile != null) ...[
+              const SizedBox(height: 12),
+              ClipRRect(
+                borderRadius: BorderRadius.circular(16),
+                child: Image.file(post.localImageFile!, width: double.infinity, height: 200, fit: BoxFit.cover),
+              ),
+            ],
+            const SizedBox(height: 12),
+
+            // Action buttons (like/comment) — stop propagation so tap doesn't go to detail
+            Row(
+              children: [
+                GestureDetector(
+                  onTap: () => _toggleLike(post.id),
+                  child: Row(
                     children: [
-                      Text(post.authorName, style: const TextStyle(color: AppColors.navy, fontWeight: FontWeight.bold, fontSize: 15)),
-                      const SizedBox(height: 2),
-                      Text(post.timeAgo, style: TextStyle(color: AppColors.navy.withOpacity(0.5), fontSize: 12)),
+                      Icon(post.isLiked ? Icons.favorite : Icons.favorite_border, color: post.isLiked ? Colors.red : AppColors.navy.withOpacity(0.6), size: 22),
+                      const SizedBox(width: 6),
+                      Text(AppStrings.likes(_formatCount(post.likes)), style: TextStyle(color: AppColors.navy.withOpacity(0.8), fontWeight: FontWeight.w600, fontSize: 13)),
                     ],
                   ),
                 ),
-              ),
-              if (!post.isOwnPost)
+                const SizedBox(width: 24),
                 GestureDetector(
-                  onTap: () => _toggleFollow(post.id),
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
-                    decoration: BoxDecoration(
-                      color: post.isFollowed ? AppColors.navy : AppColors.amber,
-                      borderRadius: BorderRadius.circular(16),
-                    ),
-                    child: Text(
-                      post.isFollowed ? AppStrings.following : AppStrings.follow,
-                      style: TextStyle(color: post.isFollowed ? Colors.white : AppColors.navy, fontWeight: FontWeight.bold, fontSize: 12),
-                    ),
+                  onTap: () => _showComments(post),
+                  child: Row(
+                    children: [
+                      Icon(Icons.chat_bubble_outline, color: AppColors.navy.withOpacity(0.6), size: 20),
+                      const SizedBox(width: 6),
+                      Text(AppStrings.comments(_formatCount(post.comments)), style: TextStyle(color: AppColors.navy.withOpacity(0.8), fontWeight: FontWeight.w600, fontSize: 13)),
+                    ],
                   ),
                 ),
-            ],
-          ),
-          const SizedBox(height: 12),
-
-          // Post content (tappable → post detail)
-          GestureDetector(
-            onTap: () => _navigateToPostDetail(post),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(post.content, style: const TextStyle(color: AppColors.navy, fontSize: 14, height: 1.5)),
-                if (post.imagePath != null && post.imagePath!.isNotEmpty) ...[
-                  const SizedBox(height: 12),
-                  ClipRRect(
-                    borderRadius: BorderRadius.circular(16),
-                    child: Image.network(
-                      post.imagePath!.startsWith('http') ? post.imagePath! : 'https://nutrify-app.my.id${post.imagePath!}',
-                      width: double.infinity,
-                      height: 200,
-                      fit: BoxFit.cover,
-                      errorBuilder: (_, __, ___) => const SizedBox.shrink(),
-                    ),
-                  ),
-                ],
-                if (post.localImageFile != null) ...[
-                  const SizedBox(height: 12),
-                  ClipRRect(
-                    borderRadius: BorderRadius.circular(16),
-                    child: Image.file(post.localImageFile!, width: double.infinity, height: 200, fit: BoxFit.cover),
-                  ),
-                ],
               ],
             ),
-          ),
-          const SizedBox(height: 12),
-          Row(
-            children: [
-              GestureDetector(
-                onTap: () => _toggleLike(post.id),
-                child: Row(
-                  children: [
-                    Icon(post.isLiked ? Icons.favorite : Icons.favorite_border, color: post.isLiked ? Colors.red : AppColors.navy.withOpacity(0.6), size: 22),
-                    const SizedBox(width: 6),
-                    Text(AppStrings.likes(_formatCount(post.likes)), style: TextStyle(color: AppColors.navy.withOpacity(0.8), fontWeight: FontWeight.w600, fontSize: 13)),
-                  ],
-                ),
-              ),
-              const SizedBox(width: 24),
-              GestureDetector(
-                onTap: () => _showComments(post),
-                child: Row(
-                  children: [
-                    Icon(Icons.chat_bubble_outline, color: AppColors.navy.withOpacity(0.6), size: 20),
-                    const SizedBox(width: 6),
-                    Text(AppStrings.comments(_formatCount(post.comments)), style: TextStyle(color: AppColors.navy.withOpacity(0.8), fontWeight: FontWeight.w600, fontSize: 13)),
-                  ],
-                ),
-              ),
-            ],
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
@@ -381,15 +383,15 @@ class _KomunitasScreenState extends State<KomunitasScreen> with SingleTickerProv
     if (mounted) setState(() {});
   }
 
-  void _navigateToUserProfile(CommunityPost post) {
+  void _navigateToUserProfile(CommunityPost post) async {
     if (post.isOwnPost) {
-      Navigator.push(
+      await Navigator.push(
         context,
-        MaterialPageRoute(builder: (_) => const ProfileScreen()),
+        MaterialPageRoute(builder: (_) => const MyProfileScreen()),
       );
       return;
     }
-    Navigator.push(
+    await Navigator.push(
       context,
       MaterialPageRoute(
         builder: (_) => UserProfileScreen(
@@ -399,6 +401,26 @@ class _KomunitasScreenState extends State<KomunitasScreen> with SingleTickerProv
         ),
       ),
     );
+    // Refresh follow status for posts by this author after returning
+    if (mounted) {
+      _refreshFollowStatus(post.authorId);
+    }
+  }
+
+  void _refreshFollowStatus(int authorId) async {
+    try {
+      final data = await _api.getUserProfile(authorId);
+      final isFollowing = data['is_following'] as bool? ?? false;
+      if (mounted) {
+        setState(() {
+          for (final post in _posts) {
+            if (post.authorId == authorId) {
+              post.isFollowed = isFollowing;
+            }
+          }
+        });
+      }
+    } catch (_) {}
   }
 
   void _showUserSearch() {

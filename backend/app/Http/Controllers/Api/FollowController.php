@@ -104,6 +104,8 @@ class FollowController extends Controller
             $avatarUrl = url('storage/' . $user->profile->photo);
         }
 
+        $postsCount = $user->posts()->count();
+
         $posts = $user->posts->map(function ($post) use ($currentUserId, $avatarUrl) {
             $post->loadCount(['likes', 'comments']);
             $isLiked = $post->likes->contains('user_id', $currentUserId);
@@ -137,10 +139,12 @@ class FollowController extends Controller
                 'name'            => $user->name,
                 'username'        => $user->username,
                 'avatar_url'      => $avatarUrl,
-                'account_type'    => $user->account_type,
+                'account_type'    => $user->account_type ?? 'public',
+                'is_private'      => ($user->account_type ?? 'public') === 'private',
                 'is_following'    => $isFollowing,
                 'followers_count' => $user->getFollowersCount(),
                 'followings_count' => $user->getFollowingsCount(),
+                'posts_count'     => $postsCount,
                 'posts'           => $posts,
             ],
         ]);
@@ -214,6 +218,72 @@ class FollowController extends Controller
             'success'      => true,
             'message'      => 'Tipe akun berhasil diperbarui.',
             'account_type' => $user->account_type,
+        ]);
+    }
+
+    public function getMe()
+    {
+        $user = User::with('profile', 'posts')->find(Auth::id());
+
+        if (!$user) {
+            return response()->json([
+                'success' => false,
+                'message' => 'User tidak ditemukan.',
+            ], 404);
+        }
+
+        $avatarUrl = null;
+        if ($user->profile && $user->profile->photo) {
+            $avatarUrl = url('storage/' . $user->profile->photo);
+        }
+
+        return response()->json([
+            'success' => true,
+            'data'    => [
+                'id'               => $user->id,
+                'name'             => $user->name,
+                'username'         => $user->username,
+                'email'            => $user->email,
+                'avatar_url'       => $avatarUrl,
+                'account_type'     => $user->account_type ?? 'public',
+                'is_private'       => ($user->account_type ?? 'public') === 'private',
+                'followers_count'  => $user->getFollowersCount(),
+                'followings_count' => $user->getFollowingsCount(),
+                'posts_count'      => $user->posts()->count(),
+            ],
+        ]);
+    }
+
+    public function updateProfile(Request $request)
+    {
+        $request->validate([
+            'name'          => 'nullable|string|min:2|max:50',
+            'username'      => 'nullable|string|min:3|max:30|alpha_num|unique:users,username,' . Auth::id(),
+            'account_type'  => 'nullable|in:public,private',
+        ]);
+
+        $user = User::find(Auth::id());
+
+        if ($request->has('name')) {
+            $user->name = $request->name;
+        }
+        if ($request->has('username')) {
+            $user->username = strtolower($request->username);
+        }
+        if ($request->has('account_type')) {
+            $user->account_type = $request->account_type;
+        }
+
+        $user->save();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Profil berhasil diperbarui.',
+            'data'    => [
+                'name'         => $user->name,
+                'username'     => $user->username,
+                'account_type' => $user->account_type,
+            ],
         ]);
     }
 }

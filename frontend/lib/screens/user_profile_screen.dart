@@ -24,11 +24,15 @@ class UserProfileScreen extends StatefulWidget {
 class _UserProfileScreenState extends State<UserProfileScreen> {
   bool _isFollowing = false;
   bool _isLoading = true;
+  bool _isFollowLoading = false;
   List<CommunityPost> _userPosts = [];
   int _followingCount = 0;
   int _followerCount = 0;
   String _username = '';
   String _avatarUrl = '';
+  String _accountType = 'public';
+  bool _isPrivate = false;
+  int _postsCount = 0;
   bool _isCurrentUser = false;
 
   @override
@@ -58,6 +62,9 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
           _followingCount = data['followings_count'] as int? ?? 0;
           _username = data['username'] as String? ?? '';
           _avatarUrl = data['avatar_url'] as String? ?? '';
+          _accountType = data['account_type'] as String? ?? 'public';
+          _isPrivate = data['is_private'] as bool? ?? false;
+          _postsCount = data['posts_count'] as int? ?? 0;
           _isCurrentUser = isOwn;
 
           final postsData = data['posts'] as List<dynamic>? ?? [];
@@ -88,16 +95,27 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
   }
 
   void _toggleFollow() async {
-    setState(() => _isFollowing = !_isFollowing);
+    if (_isFollowLoading) return;
+    setState(() {
+      _isFollowing = !_isFollowing;
+      _isFollowLoading = true;
+    });
     try {
       final result = await widget.api.toggleFollow(widget.userId);
       if (mounted) {
         setState(() {
+          _isFollowing = result['followed'] as bool? ?? _isFollowing;
           _followerCount = result['followers_count'] as int? ?? _followerCount;
+          _isFollowLoading = false;
         });
       }
     } catch (_) {
-      if (mounted) setState(() => _isFollowing = !_isFollowing);
+      if (mounted) {
+        setState(() {
+          _isFollowing = !_isFollowing;
+          _isFollowLoading = false;
+        });
+      }
     }
   }
 
@@ -206,7 +224,7 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              _buildStatItem('Postingan', _userPosts.length),
+              _buildStatItem('Postingan', _postsCount),
               Container(
                 width: 1, height: 30,
                 color: AppColors.navy.withValues(alpha: 0.1),
@@ -229,17 +247,19 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
               width: double.infinity,
               height: 48,
               child: ElevatedButton(
-                onPressed: _toggleFollow,
+                onPressed: _isFollowLoading ? null : _toggleFollow,
                 style: ElevatedButton.styleFrom(
                   backgroundColor: _isFollowing ? AppColors.navy : AppColors.amber,
                   foregroundColor: _isFollowing ? Colors.white : AppColors.navy,
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
                   elevation: 0,
                 ),
-                child: Text(
-                  _isFollowing ? 'Diikuti' : 'Ikuti',
-                  style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
-                ),
+                child: _isFollowLoading
+                    ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white))
+                    : Text(
+                        _isFollowing ? 'Diikuti' : 'Ikuti',
+                        style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
+                      ),
               ),
             ),
         ],
@@ -270,6 +290,31 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
   }
 
   Widget _buildPostsSection() {
+    // Private account: hide posts if not following
+    if (_isPrivate && !_isFollowing && !_isCurrentUser) {
+      return Padding(
+        padding: const EdgeInsets.all(40),
+        child: Center(
+          child: Column(
+            children: [
+              Icon(Icons.lock_outline, size: 48, color: AppColors.navy.withValues(alpha: 0.3)),
+              const SizedBox(height: 12),
+              Text(
+                'Akun Privat',
+                style: TextStyle(color: AppColors.navy, fontSize: 16, fontWeight: FontWeight.bold),
+              ),
+              const SizedBox(height: 4),
+              Text(
+                'Ikuti akun ini untuk melihat postingan.',
+                style: TextStyle(color: AppColors.navy.withValues(alpha: 0.5), fontSize: 13),
+                textAlign: TextAlign.center,
+              ),
+            ],
+          ),
+        ),
+      );
+    }
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [

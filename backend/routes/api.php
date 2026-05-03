@@ -57,6 +57,10 @@ Route::middleware(['supabase.auth'])->group(function () {
     Route::put('/username', [FollowController::class, 'updateUsername']);
     Route::put('/account-type', [FollowController::class, 'updateAccountType']);
 
+    // My Profile
+    Route::get('/users/me', [FollowController::class, 'getMe']);
+    Route::put('/users/profile', [FollowController::class, 'updateProfile']);
+
     // Notifications
     Route::get('/notifications', [NotificationController::class, 'index']);
     Route::put('/notifications/read-all', [NotificationController::class, 'markAllAsRead']);

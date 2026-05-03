@@ -18,12 +18,24 @@ class PostController extends Controller
 {
     public function index(Request $request)
     {
+        $userId = Auth::id();
+
+        // Get IDs of users that the authenticated user follows
+        $followingIds = Follow::where('follower_id', $userId)
+            ->pluck('following_id')
+            ->toArray();
+
         $posts = Post::with(['user.profile', 'likes', 'comments.user'])
             ->withCount(['likes', 'comments'])
+            ->where(function ($query) use ($userId, $followingIds) {
+                $query->where('user_id', $userId) // Own posts
+                    ->orWhereHas('user', function ($q) {
+                        $q->where('account_type', 'public'); // Public accounts
+                    })
+                    ->orWhereIn('user_id', $followingIds); // Followed users (any account type)
+            })
             ->orderBy('created_at', 'desc')
             ->paginate(15);
-
-        $userId = Auth::id();
 
         $data = $posts->through(function ($post) use ($userId) {
             return $this->formatPost($post, $userId);
@@ -286,11 +298,12 @@ class PostController extends Controller
             'image_url'     => $post->image_url,
             'created_at'    => $post->created_at,
             'user'          => [
-                'id'          => $post->user->id,
-                'name'        => $post->user->name,
-                'supabase_id' => $post->user->supabase_id,
-                'username'    => $post->user->username,
-                'avatar_url'  => $avatarUrl,
+                'id'                => $post->user->id,
+                'name'              => $post->user->name,
+                'supabase_id'       => $post->user->supabase_id,
+                'username'          => $post->user->username,
+                'avatar_url'        => $avatarUrl,
+                'account_type'      => $post->user->account_type ?? 'public',
             ],
             'is_liked'       => $isLiked,
             'is_followed'    => $isFollowed,
