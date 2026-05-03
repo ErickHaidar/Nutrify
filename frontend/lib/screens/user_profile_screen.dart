@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:nutrify/constants/colors.dart';
 import 'package:nutrify/domain/entity/post/community_post.dart';
+import 'package:nutrify/screens/chat_detail_screen.dart';
 import 'package:nutrify/screens/post_detail_screen.dart';
+import 'package:nutrify/services/chat_api_service.dart';
 import 'package:nutrify/services/community_post_api_service.dart';
 import 'package:supabase_flutter/supabase_flutter.dart' as sb;
 
@@ -112,6 +114,31 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
       }
     } catch (_) {
       if (mounted) setState(() => _isFollowLoading = false);
+    }
+  }
+
+  void _openChat() async {
+    try {
+      final chatApi = ChatApiService();
+      final conv = await chatApi.createConversation(widget.userId);
+      if (mounted) {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (_) => ChatDetailScreen(
+              conversationId: conv.id,
+              otherUserName: widget.userName,
+              otherUserAvatarUrl: _avatarUrl.isNotEmpty ? _avatarUrl : null,
+            ),
+          ),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Gagal membuka chat: $e'), backgroundColor: Colors.red),
+        );
+      }
     }
   }
 
@@ -262,6 +289,25 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
                       ),
               ),
             ),
+
+          // Kirim Pesan button
+          if (!_isCurrentUser) ...[
+            const SizedBox(height: 10),
+            SizedBox(
+              width: double.infinity,
+              height: 48,
+              child: OutlinedButton.icon(
+                onPressed: _openChat,
+                icon: const Icon(Icons.chat_bubble_outline, size: 18),
+                label: const Text('Kirim Pesan', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15)),
+                style: OutlinedButton.styleFrom(
+                  foregroundColor: AppColors.navy,
+                  side: BorderSide(color: AppColors.navy.withValues(alpha: 0.3)),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+                ),
+              ),
+            ),
+          ],
         ],
       ),
     );

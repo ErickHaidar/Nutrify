@@ -9,6 +9,7 @@ use App\Http\Controllers\Api\PostController;
 use App\Http\Controllers\Api\OtpController;
 use App\Http\Controllers\Api\FollowController;
 use App\Http\Controllers\Api\NotificationController;
+use App\Http\Controllers\Api\ChatController;
 use App\Http\Controllers\FoodLogController;
 
 // OTP Verification (public, no auth required)
@@ -71,4 +72,13 @@ Route::middleware(['supabase.auth'])->group(function () {
     Route::put('/notifications/read-all', [NotificationController::class, 'markAllAsRead']);
     Route::put('/notifications/{id}/read', [NotificationController::class, 'markAsRead']);
     Route::get('/notifications/unread-count', [NotificationController::class, 'unreadCount']);
+
+    // Chat / Direct Messages
+    Route::get('/chat/conversations', [ChatController::class, 'index']);
+    Route::post('/chat/conversations', [ChatController::class, 'store']);
+    Route::get('/chat/conversations/{id}/messages', [ChatController::class, 'messages']);
+    Route::post('/chat/conversations/{id}/messages', [ChatController::class, 'sendMessage']);
+    Route::put('/chat/conversations/{id}/read', [ChatController::class, 'markAsRead']);
+    Route::get('/chat/unread-count', [ChatController::class, 'unreadCount']);
+    Route::post('/chat/mark-all-read', [ChatController::class, 'markAllRead']);
 });

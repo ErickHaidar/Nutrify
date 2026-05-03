@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:nutrify/constants/colors.dart';
-import 'package:nutrify/constants/assets.dart';
 import 'package:nutrify/domain/entity/post/community_post.dart';
 import 'package:nutrify/screens/add_post_screen.dart';
 import 'package:nutrify/screens/full_screen_image_screen.dart';
 import 'package:nutrify/screens/post_detail_screen.dart';
 import 'package:nutrify/screens/user_profile_screen.dart';
+import 'package:nutrify/screens/chat_list_screen.dart';
 import 'package:nutrify/services/community_post_api_service.dart';
+import 'package:nutrify/services/chat_api_service.dart';
 import 'package:nutrify/services/notification_api_service.dart';
 import 'package:nutrify/widgets/notification_modal.dart';
 import 'package:nutrify/widgets/shimmer_loading.dart';
@@ -29,6 +29,7 @@ class KomunitasScreenState extends State<KomunitasScreen> with SingleTickerProvi
   List<CommunityPost> _posts = [];
   bool _isLoading = true;
   int _unreadCount = 0;
+  int _chatUnreadCount = 0;
 
   @override
   void initState() {
@@ -36,6 +37,7 @@ class KomunitasScreenState extends State<KomunitasScreen> with SingleTickerProvi
     _tabController = TabController(length: 2, vsync: this);
     _loadPosts();
     _loadUnreadCount();
+    _loadChatUnreadCount();
   }
 
   Future<void> _loadUnreadCount() async {
@@ -43,6 +45,22 @@ class KomunitasScreenState extends State<KomunitasScreen> with SingleTickerProvi
       final count = await _notifApi.getUnreadCount();
       if (mounted) setState(() => _unreadCount = count);
     } catch (_) {}
+  }
+
+  Future<void> _loadChatUnreadCount() async {
+    try {
+      final chatApi = ChatApiService();
+      final count = await chatApi.getUnreadCount();
+      if (mounted) setState(() => _chatUnreadCount = count);
+    } catch (_) {}
+  }
+
+  void _openChatList() async {
+    await Navigator.push(
+      context,
+      MaterialPageRoute(builder: (_) => const ChatListScreen()),
+    );
+    _loadChatUnreadCount();
   }
 
   void _showNotifications() async {
@@ -191,19 +209,36 @@ class KomunitasScreenState extends State<KomunitasScreen> with SingleTickerProvi
       appBar: AppBar(
         backgroundColor: AppColors.cream,
         elevation: 0,
-        title: Row(
-          children: [
-            Image.asset(Assets.nutrifyLogo, height: 36, width: 36),
-            const SizedBox(width: 8),
-            Text(
-              'Nutrify',
-              style: GoogleFonts.inter(
-                color: const Color(0xFFFFB26B),
-                fontWeight: FontWeight.w900,
-                fontSize: 30,
+        title: GestureDetector(
+          onTap: _openChatList,
+          child: Stack(
+            clipBehavior: Clip.none,
+            children: [
+              Container(
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  color: AppColors.navy.withValues(alpha: 0.08),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: const Icon(Icons.chat_bubble_outline, color: AppColors.navy, size: 24),
               ),
-            ),
-          ],
+              if (_chatUnreadCount > 0)
+                Positioned(
+                  right: -4,
+                  top: -4,
+                  child: Container(
+                    padding: const EdgeInsets.all(3),
+                    decoration: const BoxDecoration(color: Colors.red, shape: BoxShape.circle),
+                    constraints: const BoxConstraints(minWidth: 16, minHeight: 16),
+                    child: Text(
+                      _chatUnreadCount > 99 ? '99+' : '$_chatUnreadCount',
+                      style: const TextStyle(color: Colors.white, fontSize: 9, fontWeight: FontWeight.bold),
+                      textAlign: TextAlign.center,
+                    ),
+                  ),
+                ),
+            ],
+          ),
         ),
         actions: [
           Stack(

@@ -27,6 +27,8 @@ class Endpoints {
   static const String foodRecommendations = 'food/recommendations';
   static const String posts = 'posts';
   static const String notifications = 'notifications';
+  static const String chatConversations = 'chat/conversations';
+  static const String chatUnreadCount = 'chat/unread-count';
 
   // Legacy
   static const String getPosts = '/posts';

@@ -5,7 +5,9 @@ import '../services/food_log_api_service.dart';
 import '../services/notification_api_service.dart';
 import '../screens/post_detail_screen.dart';
 import '../screens/user_profile_screen.dart';
+import '../screens/chat_detail_screen.dart';
 import '../screens/add_meal_screen.dart';
+import '../services/chat_api_service.dart';
 import '../services/community_post_api_service.dart';
 import '../domain/entity/post/community_post.dart';
 import 'package:nutrify/utils/locale/app_strings.dart';
@@ -111,6 +113,7 @@ class _NotificationModalState extends State<NotificationModal> {
       case 'comment': return Icons.chat_bubble;
       case 'follow': return Icons.person_add;
       case 'follow_request': return Icons.person_add_disabled;
+      case 'message': return Icons.chat;
       default: return Icons.notifications;
     }
   }
@@ -121,6 +124,7 @@ class _NotificationModalState extends State<NotificationModal> {
       case 'comment': return const Color(0xFF64B5F6);
       case 'follow': return const Color(0xFF81C784);
       case 'follow_request': return Colors.orange;
+      case 'message': return const Color(0xFF7E57C2);
       default: return Colors.orangeAccent;
     }
   }
@@ -162,7 +166,24 @@ class _NotificationModalState extends State<NotificationModal> {
     }
 
     // Community notifications
-    if (notif.type == 'follow' && notif.actorId != null) {
+    if (notif.type == 'message' && notif.actorId != null) {
+      try {
+        final chatApi = ChatApiService();
+        final conv = await chatApi.createConversation(notif.actorId!);
+        if (mounted) {
+          Navigator.pop(context);
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (_) => ChatDetailScreen(
+                conversationId: conv.id,
+                otherUserName: notif.actorName ?? '',
+              ),
+            ),
+          );
+        }
+      } catch (_) {}
+    } else if (notif.type == 'follow' && notif.actorId != null) {
       final route = MaterialPageRoute(
         builder: (_) => UserProfileScreen(
           userId: notif.actorId!,

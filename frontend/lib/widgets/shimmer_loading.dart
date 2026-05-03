@@ -167,6 +167,40 @@ class KomunitasShimmer extends StatelessWidget {
   }
 }
 
+class ChatListShimmer extends StatelessWidget {
+  const ChatListShimmer({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return ShimmerLoading(
+      child: ListView.separated(
+        padding: const EdgeInsets.symmetric(vertical: 8),
+        itemCount: 6,
+        separatorBuilder: (_, __) => const SizedBox(height: 4),
+        itemBuilder: (_, __) => Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+          child: Row(
+            children: [
+              ShimmerBlock(width: 56, height: 56, borderRadius: BorderRadius.circular(28)),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const ShimmerBlock(width: 140, height: 14),
+                    const SizedBox(height: 6),
+                    const ShimmerBlock(width: 200, height: 12),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
 class TrackingShimmer extends StatelessWidget {
   const TrackingShimmer({super.key});
 
