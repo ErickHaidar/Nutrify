@@ -1,8 +1,0 @@
-{
-    "env": {
-        "ANTHROPIC_BASE_URL": "https://api.z.ai/api/anthropic",
-        "ANTHROPIC_AUTH_TOKEN": "801c94df28b04c588504b8f9d355648e.hpJlJFzLOLUENlj4",
-        "ANTHROPIC_MODEL": "glm-5.1",
-        "API_TIMEOUT_MS": "2000000"
-    }
-}
