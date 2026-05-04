@@ -23,11 +23,12 @@ class UserProfileScreen extends StatefulWidget {
   State<UserProfileScreen> createState() => _UserProfileScreenState();
 }
 
-class _UserProfileScreenState extends State<UserProfileScreen> {
+class _UserProfileScreenState extends State<UserProfileScreen> with SingleTickerProviderStateMixin {
   bool _isFollowing = false;
   bool _isRequested = false;
   bool _isLoading = true;
   bool _isFollowLoading = false;
+  DateTime? _lastFollowToggle;
   List<CommunityPost> _userPosts = [];
   int _followingCount = 0;
   int _followerCount = 0;
@@ -37,12 +38,25 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
   bool _isPrivate = false;
   int _postsCount = 0;
   bool _isCurrentUser = false;
+  late AnimationController _followAnimController;
 
   @override
   void initState() {
     super.initState();
+    _followAnimController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 300),
+      lowerBound: 0.7,
+      upperBound: 1.3,
+    )..value = 1.0;
     _isCurrentUser = _checkIsCurrentUser();
     _loadUserProfile();
+  }
+
+  @override
+  void dispose() {
+    _followAnimController.dispose();
+    super.dispose();
   }
 
   bool _checkIsCurrentUser() {
@@ -100,8 +114,13 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
   }
 
   void _toggleFollow() async {
-    if (_isFollowLoading) return;
+    final now = DateTime.now();
+    if (_isFollowLoading || (_lastFollowToggle != null && now.difference(_lastFollowToggle!).inSeconds < 2)) return;
+    _lastFollowToggle = now;
     setState(() => _isFollowLoading = true);
+    _followAnimController.forward(from: 0.8).then((_) {
+      if (mounted) _followAnimController.animateTo(1.0);
+    });
     try {
       final result = await widget.api.toggleFollow(widget.userId);
       if (mounted) {
@@ -268,7 +287,9 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
 
           // Follow button
           if (!_isCurrentUser)
-            SizedBox(
+            ScaleTransition(
+              scale: _followAnimController,
+              child: SizedBox(
               width: double.infinity,
               height: 48,
               child: ElevatedButton(
@@ -290,6 +311,7 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
                         style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
                       ),
               ),
+            ),
             ),
 
           // Kirim Pesan button
@@ -399,11 +421,14 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
   Widget _buildPostCard(CommunityPost post) {
     return GestureDetector(
       behavior: HitTestBehavior.opaque,
-      onTap: () {
-        Navigator.push(
+      onTap: () async {
+        final deleted = await Navigator.push<bool>(
           context,
           MaterialPageRoute(builder: (_) => PostDetailScreen(post: post, api: widget.api)),
         );
+        if (deleted == true && mounted) {
+          _loadUserProfile();
+        }
       },
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 24),

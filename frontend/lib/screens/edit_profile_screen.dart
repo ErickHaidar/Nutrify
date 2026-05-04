@@ -386,6 +386,9 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                     hintText: '100-250 cm',
                     maxLength: 3,
                     isDecimal: false,
+                    minValue: 100,
+                    maxValue: 250,
+                    unit: 'cm',
                   ),
                 ),
                 const SizedBox(width: 16),
@@ -398,6 +401,9 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                     hintText: '25-300 kg',
                     maxLength: 3,
                     isDecimal: false,
+                    minValue: 25,
+                    maxValue: 300,
+                    unit: 'kg',
                   ),
                 ),
               ],
@@ -415,6 +421,9 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
               hintText: '25-300 kg',
               maxLength: 3,
               isDecimal: false,
+              minValue: 25,
+              maxValue: 300,
+              unit: 'kg',
             ),
 
             const SizedBox(height: 32),
@@ -883,6 +892,7 @@ class ProfileInput extends StatelessWidget {
   final double? maxValue;
   final double? minValue;
   final String? fieldName;
+  final String? unit;
 
   const ProfileInput({
     super.key,
@@ -896,7 +906,29 @@ class ProfileInput extends StatelessWidget {
     this.maxValue,
     this.minValue,
     this.fieldName,
+    this.unit,
   });
+
+  bool get _isInvalid {
+    final value = double.tryParse(controller.text);
+    if (value == null || controller.text.isEmpty) return false;
+    if (minValue != null && value < minValue!) return true;
+    if (maxValue != null && value > maxValue!) return true;
+    return false;
+  }
+
+  String get _errorText {
+    if (!_isInvalid) return '';
+    final value = double.tryParse(controller.text);
+    if (value == null) return '';
+    if (minValue != null && value < minValue!) {
+      return 'Minimal $minValue${unit != null ? ' $unit' : ''}';
+    }
+    if (maxValue != null && value > maxValue!) {
+      return 'Maksimal $maxValue${unit != null ? ' $unit' : ''}';
+    }
+    return '';
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -916,12 +948,13 @@ class ProfileInput extends StatelessWidget {
           decoration: BoxDecoration(
             color: const Color(0xFFFFD1A8),
             borderRadius: BorderRadius.circular(40),
+            border: _isInvalid ? Border.all(color: Colors.red, width: 2) : null,
           ),
           child: TextField(
             controller: controller,
             keyboardType: keyboardType,
             maxLength: maxLength,
-            style: const TextStyle(color: AppColors.navy, fontSize: 15),
+            style: TextStyle(color: _isInvalid ? Colors.red : AppColors.navy, fontSize: 15),
             decoration: InputDecoration(
               border: InputBorder.none,
               hintText: hintText,
@@ -945,9 +978,8 @@ class ProfileInput extends StatelessWidget {
                 : null,
             onChanged: isDecimal ? (value) {
               final number = double.tryParse(value);
-              final max = maxValue; // Fix type promotion issue
+              final max = maxValue;
               if (number != null && max != null && number > max) {
-                // Hapus karakter terakhir
                 final newValue = value.substring(0, value.length - 1);
                 controller.value = TextEditingValue(
                   text: newValue,
@@ -956,6 +988,18 @@ class ProfileInput extends StatelessWidget {
               }
             } : null,
           ),
+        ),
+        SizedBox(
+          height: 18,
+          child: _isInvalid && _errorText.isNotEmpty
+              ? Padding(
+                  padding: const EdgeInsets.only(top: 4, left: 20),
+                  child: Text(
+                    _errorText,
+                    style: const TextStyle(color: Colors.red, fontSize: 11, fontWeight: FontWeight.w500),
+                  ),
+                )
+              : const SizedBox.shrink(),
         ),
       ],
     );

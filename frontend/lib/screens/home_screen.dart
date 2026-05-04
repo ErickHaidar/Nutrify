@@ -28,6 +28,7 @@ class HomeScreenState extends State<HomeScreen> {
   final NotificationApiService _notifApi = NotificationApiService();
   ApiProfileData? _profile;
   int _unreadCount = 0;
+  bool _isShowingNotifications = false;
   double totalProtein = 0;
   double totalCarbs = 0;
   double totalFat = 0;
@@ -125,13 +126,16 @@ class HomeScreenState extends State<HomeScreen> {
     }
   }
 
-  void _showNotifications() {
-    showModalBottomSheet(
+  void _showNotifications() async {
+    if (_isShowingNotifications) return;
+    _isShowingNotifications = true;
+    await showModalBottomSheet(
       context: context,
       backgroundColor: Colors.transparent,
       isScrollControlled: true,
       builder: (context) => const NotificationModal(),
     );
+    _isShowingNotifications = false;
   }
 
   @override
@@ -533,7 +537,7 @@ class HomeScreenState extends State<HomeScreen> {
                   ),
                 );
                 if (result == true) {
-                  loadDailyData();
+                  loadDailyData(forceRefresh: true);
                 }
               },
               style: ElevatedButton.styleFrom(

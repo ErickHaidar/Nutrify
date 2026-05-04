@@ -23,7 +23,7 @@ class KomunitasScreen extends StatefulWidget {
   State<KomunitasScreen> createState() => KomunitasScreenState();
 }
 
-class KomunitasScreenState extends State<KomunitasScreen> with SingleTickerProviderStateMixin {
+class KomunitasScreenState extends State<KomunitasScreen> with TickerProviderStateMixin {
   late TabController _tabController;
   final _api = CommunityPostApiService();
   final _notifApi = NotificationApiService();
@@ -33,7 +33,9 @@ class KomunitasScreenState extends State<KomunitasScreen> with SingleTickerProvi
   int _chatUnreadCount = 0;
   final Set<String> _likingPostIds = {};
   final Set<int> _followingUserIds = {};
-  final Map<String, double> _likeScales = {};
+  final Map<String, AnimationController> _likeAnimControllers = {};
+  final Map<int, AnimationController> _followAnimControllers = {};
+  bool _isShowingNotifications = false;
 
   @override
   void initState() {
@@ -68,18 +70,23 @@ class KomunitasScreenState extends State<KomunitasScreen> with SingleTickerProvi
   }
 
   void _showNotifications() async {
+    if (_isShowingNotifications) return;
+    _isShowingNotifications = true;
     await showModalBottomSheet(
       context: context,
       backgroundColor: Colors.transparent,
       isScrollControlled: true,
       builder: (_) => const NotificationModal(),
     );
+    _isShowingNotifications = false;
     _loadUnreadCount();
   }
 
   @override
   void dispose() {
     _tabController.dispose();
+    for (final c in _likeAnimControllers.values) { c.dispose(); }
+    for (final c in _followAnimControllers.values) { c.dispose(); }
     super.dispose();
   }
 
@@ -113,10 +120,16 @@ class KomunitasScreenState extends State<KomunitasScreen> with SingleTickerProvi
     }
   }
 
+  AnimationController _getLikeController(String postId) {
+    return _likeAnimControllers.putIfAbsent(postId, () =>
+      AnimationController(vsync: this, duration: const Duration(milliseconds: 300), lowerBound: 0.7, upperBound: 1.3)..value = 1.0,
+    );
+  }
+
   void _animateLike(String postId) {
-    setState(() => _likeScales[postId] = 0.8);
-    Future.delayed(const Duration(milliseconds: 100), () {
-      if (mounted) setState(() => _likeScales[postId] = 1.0);
+    final controller = _getLikeController(postId);
+    controller.forward(from: 0.8).then((_) {
+      if (mounted) controller.animateTo(1.0);
     });
   }
 
@@ -124,19 +137,22 @@ class KomunitasScreenState extends State<KomunitasScreen> with SingleTickerProvi
     if (_likingPostIds.contains(postId)) return; // Debounce
     _likingPostIds.add(postId);
     _animateLike(postId);
-    
+
     final post = _posts.firstWhere((p) => p.id == postId);
     final wasLiked = post.isLiked;
     setState(() {
       post.isLiked = !post.isLiked;
       post.isLiked ? post.likes++ : post.likes--;
+      if (post.likes < 0) post.likes = 0;
     });
     try {
       final result = await _api.toggleLike(int.parse(postId));
       if (mounted) {
         setState(() {
-          post.isLiked = result['liked'] as bool;
-          post.likes = result['likes_count'] as int;
+          final liked = result['liked'] as bool;
+          final count = result['likes_count'] as int;
+          post.isLiked = liked;
+          post.likes = liked && count < 1 ? 1 : (!liked && count < 0 ? 0 : count);
         });
       }
     } catch (_) {
@@ -144,11 +160,26 @@ class KomunitasScreenState extends State<KomunitasScreen> with SingleTickerProvi
         setState(() {
           post.isLiked = wasLiked;
           wasLiked ? post.likes++ : post.likes--;
+          if (post.likes < 0) post.likes = 0;
         });
       }
     } finally {
-      _likingPostIds.remove(postId);
+      await Future.delayed(const Duration(milliseconds: 500));
+      if (mounted) _likingPostIds.remove(postId);
     }
+  }
+
+  AnimationController _getFollowController(int userId) {
+    return _followAnimControllers.putIfAbsent(userId, () =>
+      AnimationController(vsync: this, duration: const Duration(milliseconds: 300), lowerBound: 0.7, upperBound: 1.3)..value = 1.0,
+    );
+  }
+
+  void _animateFollow(int userId) {
+    final controller = _getFollowController(userId);
+    controller.forward(from: 0.8).then((_) {
+      if (mounted) controller.animateTo(1.0);
+    });
   }
 
   void _toggleFollow(String postId) async {
@@ -156,6 +187,7 @@ class KomunitasScreenState extends State<KomunitasScreen> with SingleTickerProvi
     final authorId = post.authorId;
     if (_followingUserIds.contains(authorId)) return; // Debounce
     _followingUserIds.add(authorId);
+    _animateFollow(authorId);
     
     final wasFollowed = post.isFollowed;
     final wasRequested = post.isRequested;
@@ -454,28 +486,31 @@ class KomunitasScreenState extends State<KomunitasScreen> with SingleTickerProvi
                   ),
                 ),
                 if (!post.isOwnPost)
-                  GestureDetector(
-                    onTap: () => _toggleFollow(post.id),
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
-                      decoration: BoxDecoration(
-                        color: post.isFollowed
-                            ? AppColors.navy
-                            : post.isRequested
-                                ? AppColors.navy.withOpacity(0.5)
-                                : AppColors.amber,
-                        borderRadius: BorderRadius.circular(16),
-                      ),
-                      child: Text(
-                        post.isFollowed
-                            ? AppStrings.following
-                            : post.isRequested
-                                ? (AppStrings.isId ? 'Diminta' : 'Requested')
-                                : AppStrings.follow,
-                        style: TextStyle(
-                          color: post.isFollowed || post.isRequested ? Colors.white : AppColors.navy,
-                          fontWeight: FontWeight.bold,
-                          fontSize: 12,
+                  ScaleTransition(
+                    scale: _getFollowController(post.authorId),
+                    child: GestureDetector(
+                      onTap: () => _toggleFollow(post.id),
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+                        decoration: BoxDecoration(
+                          color: post.isFollowed
+                              ? AppColors.navy
+                              : post.isRequested
+                                  ? AppColors.navy.withOpacity(0.5)
+                                  : AppColors.amber,
+                          borderRadius: BorderRadius.circular(16),
+                        ),
+                        child: Text(
+                          post.isFollowed
+                              ? AppStrings.following
+                              : post.isRequested
+                                  ? (AppStrings.isId ? 'Diminta' : 'Requested')
+                                  : AppStrings.follow,
+                          style: TextStyle(
+                            color: post.isFollowed || post.isRequested ? Colors.white : AppColors.navy,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 12,
+                          ),
                         ),
                       ),
                     ),
@@ -536,9 +571,8 @@ class KomunitasScreenState extends State<KomunitasScreen> with SingleTickerProvi
                   onTap: () => _toggleLike(post.id),
                   child: Row(
                     children: [
-                      AnimatedScale(
-                        scale: _likeScales[post.id] ?? 1.0,
-                        duration: const Duration(milliseconds: 150),
+                      ScaleTransition(
+                        scale: _getLikeController(post.id),
                         child: Icon(post.isLiked ? Icons.favorite : Icons.favorite_border, color: post.isLiked ? Colors.red : AppColors.navy.withOpacity(0.6), size: 22),
                       ),
                       const SizedBox(width: 6),
@@ -574,12 +608,9 @@ class KomunitasScreenState extends State<KomunitasScreen> with SingleTickerProvi
     );
     if (mounted) {
       if (result == true) {
-        // Post was deleted, remove it from the list
-        setState(() {
-          _posts.removeWhere((p) => p.id == post.id);
-        });
+        _loadPosts();
       } else {
-        setState(() {}); // Refresh like/comment counts
+        setState(() {});
       }
     }
   }
@@ -1043,7 +1074,16 @@ class _CommentSheetState extends State<_CommentSheet> {
     );
   }
 
-  Widget _buildSingleComment(CommentItem c, {bool isReply = false, int? parentIndex, VoidCallback? onTap}) {
+  Widget _buildSingleComment(CommentItem c, {bool isReply = false, int? parentIndex, String? replyToName, VoidCallback? onTap}) {
+    String headerName = c.userName;
+    String displayContent = c.content;
+    if (isReply && replyToName != null) {
+      headerName = 'Membalas $replyToName';
+      final mentionPrefix = '@$replyToName';
+      if (c.content.startsWith(mentionPrefix)) {
+        displayContent = c.content.substring(mentionPrefix.length).trimLeft();
+      }
+    }
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -1070,7 +1110,7 @@ class _CommentSheetState extends State<_CommentSheet> {
                 RichText(
                   text: TextSpan(children: [
                     TextSpan(
-                      text: c.userName,
+                      text: headerName,
                       style: TextStyle(
                         color: AppColors.navy, fontWeight: FontWeight.bold, fontSize: isReply ? 12 : 13),
                     ),
@@ -1081,7 +1121,7 @@ class _CommentSheetState extends State<_CommentSheet> {
                   ]),
                 ),
                 const SizedBox(height: 2),
-                _buildContentWithMentions(c.content, fontSize: isReply ? 12 : 13),
+                _buildContentWithMentions(displayContent, fontSize: isReply ? 12 : 13),
                 const SizedBox(height: 4),
                 Row(
                   children: [
@@ -1134,7 +1174,7 @@ class _CommentSheetState extends State<_CommentSheet> {
             final r = entry.value;
             return Padding(
               padding: const EdgeInsets.only(left: 42, bottom: 8),
-              child: _buildSingleComment(r, isReply: true, parentIndex: parentIndex, onTap: () => _openCommentDetail(c)),
+              child: _buildSingleComment(r, isReply: true, parentIndex: parentIndex, replyToName: c.userName, onTap: () => _openCommentDetail(c)),
             );
           }),
           if (c.repliesCount > c.replies.length)

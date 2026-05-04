@@ -54,3 +54,4 @@ backend/bootstrap/cache/
 # Claude Code
 .claude
 .claude/*
+CLAUDE.md

@@ -734,11 +734,30 @@ class _ForgotPasswordDialogContentState
                           } catch (e) {
                             if (mounted) {
                               setState(() => isLoading = false);
-                              // Error handling inside dialog
-                              FlushbarHelper.createError(
-                                message: _parseError(e),
-                                title: AppStrings.error,
-                              ).show(context);
+                              final errMsg = _parseError(e);
+                              if (errMsg.contains('Google') || errMsg.contains('google') || errMsg.contains('provider')) {
+                                Navigator.pop(context);
+                                showDialog(
+                                  context: context,
+                                  builder: (ctx) => AlertDialog(
+                                    backgroundColor: Colors.white,
+                                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+                                    title: const Text('Akun Google', style: TextStyle(color: NutrifyTheme.darkCard, fontWeight: FontWeight.bold)),
+                                    content: const Text('Akun ini terdaftar menggunakan Google. Silakan gunakan tombol "Masuk dengan Google" untuk login.', style: TextStyle(fontSize: 14)),
+                                    actions: [
+                                      TextButton(
+                                        onPressed: () => Navigator.pop(ctx),
+                                        child: const Text('Mengerti', style: TextStyle(color: NutrifyTheme.darkCard, fontWeight: FontWeight.bold)),
+                                      ),
+                                    ],
+                                  ),
+                                );
+                              } else {
+                                FlushbarHelper.createError(
+                                  message: errMsg,
+                                  title: AppStrings.error,
+                                ).show(context);
+                              }
                             }
                           }
                         },

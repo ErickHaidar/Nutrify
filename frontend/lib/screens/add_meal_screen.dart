@@ -340,9 +340,11 @@ class _AddMealScreenState extends State<AddMealScreen> {
       context: context,
       barrierColor: Colors.black.withOpacity(0.6),
       builder: (context) => Dialog(
-        backgroundColor: const Color(0xFF4A446F), // Muted Indigo from Card Panduan.png
+        backgroundColor: const Color(0xFF4A446F),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
-        child: Padding(
+        insetPadding: const EdgeInsets.symmetric(horizontal: 24, vertical: 32),
+        child: SingleChildScrollView(
+          child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
           child: Column(
             mainAxisSize: MainAxisSize.min,
@@ -356,14 +358,14 @@ class _AddMealScreenState extends State<AddMealScreen> {
                 ),
                 textAlign: TextAlign.center,
               ),
-              const SizedBox(height: 24),
+              const SizedBox(height: 20),
               _buildTutorialStep(
                 '1. ',
                 'Cari Makanan',
                 ' : Ketik menu makanan atau minuman anda.',
                 null,
                 'assets/images/Gambar Search (1).png',
-                customImageWidth: 110,
+                customImageWidth: 140,
               ),
               _buildTutorialStep(
                 '2. ',
@@ -371,7 +373,7 @@ class _AddMealScreenState extends State<AddMealScreen> {
                 ' : Centang kotak checklist di kanan.',
                 '(Menggunakan porsi template standar, tidak mengedit)',
                 'assets/images/Tambah Cepat (2).png',
-                customImageWidth: 110,
+                customImageWidth: 140,
               ),
               Padding(
                 padding: const EdgeInsets.symmetric(vertical: 4),
@@ -390,7 +392,7 @@ class _AddMealScreenState extends State<AddMealScreen> {
                 ' : Klik area tengah kotak makanan.',
                 '(Sesuaikan takaran porsi (gram/buah) sebelum simpan)',
                 'assets/images/Atur Manual (2).png',
-                customImageWidth: 110,
+                customImageWidth: 140,
               ),
               _buildTutorialStep(
                 '3. ',
@@ -398,16 +400,16 @@ class _AddMealScreenState extends State<AddMealScreen> {
                 ' : Ketuk tombol ceklish disebelah pojok kanan bawah untuk simpan.\\n(Untuk Mencatat Kalori Anda)',
                 null,
                 'assets/images/Simpan.png',
-                customImageWidth: 80,
+                customImageWidth: 100,
               ),
-              const SizedBox(height: 24),
+              const SizedBox(height: 20),
               SizedBox(
                 width: double.infinity,
                 child: ElevatedButton(
                   onPressed: () => Navigator.pop(context),
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFFFFD1A4), // Light Peach from Mengerti.png
-                    foregroundColor: const Color(0xFF2D3154), // Dark Navy text from Mengerti.png
+                    backgroundColor: const Color(0xFFFFD1A4),
+                    foregroundColor: const Color(0xFF2D3154),
                     shape: const StadiumBorder(),
                     padding: const EdgeInsets.symmetric(vertical: 14),
                     elevation: 0,
@@ -423,37 +425,31 @@ class _AddMealScreenState extends State<AddMealScreen> {
             ],
           ),
         ),
+        ),
       ),
     );
   }
 
   Widget _buildTutorialStep(String number, String title, String description, String? subtitle, String imagePath, {double? customImageWidth}) {
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 12),
+      padding: const EdgeInsets.symmetric(vertical: 8),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Illustration Box - transparent background, fixed size to prevent overflow
           SizedBox(
-            width: 130,
+            width: 120,
             height: 80,
-            child: Container(
-              decoration: BoxDecoration(
-                color: Colors.transparent,
-                borderRadius: BorderRadius.circular(16),
-              ),
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(16),
-                child: Image.asset(
-                  imagePath,
-                  width: customImageWidth ?? 130,
-                  height: 80,
-                  fit: BoxFit.contain,
-                ),
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(12),
+              child: Image.asset(
+                imagePath,
+                width: customImageWidth ?? 120,
+                height: 80,
+                fit: BoxFit.contain,
               ),
             ),
           ),
-          const SizedBox(width: 12),
+          const SizedBox(width: 10),
           // Text Column
           Expanded(
             child: Column(
@@ -840,7 +836,7 @@ class _AddMealScreenState extends State<AddMealScreen> {
                     .firstOrNull;
                 _draftSelections[food.id] = DraftSelection(
                   multiplier: existingLog?.servingMultiplier ?? 1.0,
-                  unit: existingLog?.unit ?? 'Gram(g)',
+                  unit: existingLog?.unit ?? AppStrings.serving,
                   logId: existingLog?.id,
                 );
               } else {

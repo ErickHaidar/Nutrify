@@ -20,7 +20,7 @@ class PostDetailScreen extends StatefulWidget {
   State<PostDetailScreen> createState() => _PostDetailScreenState();
 }
 
-class _PostDetailScreenState extends State<PostDetailScreen> {
+class _PostDetailScreenState extends State<PostDetailScreen> with SingleTickerProviderStateMixin {
   List<CommentItem> _comments = [];
   bool _isLoadingComments = true;
   bool _isSending = false;
@@ -29,16 +29,23 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
   final Set<int> _loadingReplies = {};
   CommentItem? _replyTarget;
   bool _isLikingPost = false;
-  double _likeScale = 1.0;
+  late AnimationController _likeAnimController;
 
   @override
   void initState() {
     super.initState();
+    _likeAnimController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 300),
+      lowerBound: 0.7,
+      upperBound: 1.3,
+    )..value = 1.0;
     _fetchComments();
   }
 
   @override
   void dispose() {
+    _likeAnimController.dispose();
     _commentCtrl.dispose();
     _commentFocusNode.dispose();
     super.dispose();
@@ -113,9 +120,8 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
   }
 
   void _animateLike() {
-    setState(() => _likeScale = 0.8);
-    Future.delayed(const Duration(milliseconds: 100), () {
-      if (mounted) setState(() => _likeScale = 1.0);
+    _likeAnimController.forward(from: 0.8).then((_) {
+      if (mounted) _likeAnimController.animateTo(1.0);
     });
   }
 
@@ -123,18 +129,21 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
     if (_isLikingPost) return; // Debounce
     _isLikingPost = true;
     _animateLike();
-    
+
     final wasLiked = widget.post.isLiked;
     setState(() {
       widget.post.isLiked = !widget.post.isLiked;
       widget.post.isLiked ? widget.post.likes++ : widget.post.likes--;
+      if (widget.post.likes < 0) widget.post.likes = 0;
     });
     try {
       final result = await widget.api.toggleLike(int.parse(widget.post.id));
       if (mounted) {
         setState(() {
-          widget.post.isLiked = result['liked'] as bool;
-          widget.post.likes = result['likes_count'] as int;
+          final liked = result['liked'] as bool;
+          final count = result['likes_count'] as int;
+          widget.post.isLiked = liked;
+          widget.post.likes = liked && count < 1 ? 1 : (!liked && count < 0 ? 0 : count);
         });
       }
     } catch (_) {
@@ -142,9 +151,11 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
         setState(() {
           widget.post.isLiked = wasLiked;
           wasLiked ? widget.post.likes++ : widget.post.likes--;
+          if (widget.post.likes < 0) widget.post.likes = 0;
         });
       }
     } finally {
+      await Future.delayed(const Duration(milliseconds: 500));
       _isLikingPost = false;
     }
   }
@@ -319,9 +330,8 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
                         Expanded(
                           child: TextButton.icon(
                             onPressed: _toggleLike,
-                            icon: AnimatedScale(
-                              scale: _likeScale,
-                              duration: const Duration(milliseconds: 150),
+                            icon: ScaleTransition(
+                              scale: _likeAnimController,
                               child: Icon(post.isLiked ? Icons.favorite : Icons.favorite_border,
                                   color: post.isLiked ? Colors.red : AppColors.navy.withValues(alpha: 0.7), size: 22),
                             ),
@@ -394,7 +404,7 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
             final r = entry.value;
             return Padding(
               padding: const EdgeInsets.only(left: 42, bottom: 8),
-              child: _buildSingleComment(r, isReply: true, parentIndex: parentIndex, onTap: () => _openCommentDetail(c)),
+              child: _buildSingleComment(r, isReply: true, parentIndex: parentIndex, replyToName: c.userName, onTap: () => _openCommentDetail(c)),
             );
           }),
           if (c.repliesCount > c.replies.length)
@@ -454,7 +464,16 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
     );
   }
 
-  Widget _buildSingleComment(CommentItem c, {bool isReply = false, int? parentIndex, VoidCallback? onTap}) {
+  Widget _buildSingleComment(CommentItem c, {bool isReply = false, int? parentIndex, String? replyToName, VoidCallback? onTap}) {
+    String headerName = c.userName;
+    String displayContent = c.content;
+    if (isReply && replyToName != null) {
+      headerName = 'Membalas $replyToName';
+      final mentionPrefix = '@$replyToName';
+      if (c.content.startsWith(mentionPrefix)) {
+        displayContent = c.content.substring(mentionPrefix.length).trimLeft();
+      }
+    }
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -481,7 +500,7 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
                 RichText(
                   text: TextSpan(children: [
                     TextSpan(
-                      text: c.userName,
+                      text: headerName,
                       style: TextStyle(
                         color: AppColors.navy, fontWeight: FontWeight.bold, fontSize: isReply ? 12 : 13),
                     ),
@@ -492,7 +511,7 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
                   ]),
                 ),
                 const SizedBox(height: 2),
-                _buildContentWithMentions(c.content, fontSize: isReply ? 12 : 13),
+                _buildContentWithMentions(displayContent, fontSize: isReply ? 12 : 13),
                 const SizedBox(height: 4),
                 Row(
                   children: [

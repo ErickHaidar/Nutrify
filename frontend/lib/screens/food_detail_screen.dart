@@ -8,6 +8,7 @@ import 'package:nutrify/utils/locale/app_strings.dart';
 import 'package:nutrify/services/food_api_service.dart';
 import 'package:nutrify/services/food_log_api_service.dart';
 import 'package:nutrify/di/service_locator.dart';
+import 'package:flutter/services.dart';
 import 'package:nutrify/services/notification_service.dart';
 
 class FoodDetailScreen extends StatefulWidget {
@@ -80,6 +81,27 @@ class _FoodDetailScreenState extends State<FoodDetailScreen> {
 
   double get _currentAmount => double.tryParse(_amountController.text) ?? 0;
 
+  double get _maxAmount {
+    if (_selectedUnit == AppStrings.gram) return 5000;
+    if (_selectedUnit == AppStrings.piece) return 100;
+    return 100; // Porsi
+  }
+
+  bool get _isAmountInvalid {
+    if (_amountController.text.isEmpty) return false;
+    return _currentAmount > _maxAmount || _currentAmount <= 0;
+  }
+
+  String get _amountErrorText {
+    if (_amountController.text.isEmpty || !_isAmountInvalid) return '';
+    if (_currentAmount <= 0) return 'Jumlah harus lebih dari 0';
+    if (_currentAmount > _maxAmount) {
+      final unitLabel = _selectedUnit;
+      return 'Maksimal ${_maxAmount.toStringAsFixed(0)} $unitLabel';
+    }
+    return '';
+  }
+
   double get _multiplier {
     if (_selectedUnit == AppStrings.gram) {
       return _currentAmount / 100.0;
@@ -89,6 +111,22 @@ class _FoodDetailScreenState extends State<FoodDetailScreen> {
 
   Future<void> _handleSave() async {
     if (_isSaving) return;
+
+    if (_currentAmount <= 0) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Masukkan jumlah yang valid')),
+      );
+      return;
+    }
+
+    if (_currentAmount > _maxAmount) {
+      final unitLabel = _selectedUnit;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Maksimal $_maxAmount $unitLabel')),
+      );
+      return;
+    }
+
     setState(() => _isSaving = true);
 
     // Map meal type from Indonesian to English for backend compatibility
@@ -176,18 +214,28 @@ class _FoodDetailScreenState extends State<FoodDetailScreen> {
                     decoration: BoxDecoration(
                       color: Colors.white,
                       borderRadius: BorderRadius.circular(12),
+                      border: _isAmountInvalid
+                          ? Border.all(color: Colors.red, width: 2)
+                          : null,
                     ),
                     child: Row(
                       children: [
-                        const Icon(Icons.scale_outlined, color: AppColors.navy),
+                        Icon(Icons.scale_outlined, color: _isAmountInvalid ? Colors.red : AppColors.navy),
                         const SizedBox(width: 16),
                         Expanded(
                           child: TextField(
                             controller: _amountController,
                             keyboardType: TextInputType.number,
-                            style: const TextStyle(color: AppColors.navy, fontSize: 18),
-                            decoration: const InputDecoration(
+                            maxLength: _selectedUnit == AppStrings.gram ? 4 : 3,
+                            inputFormatters: [
+                              FilteringTextInputFormatter.digitsOnly,
+                            ],
+                            style: TextStyle(color: _isAmountInvalid ? Colors.red : AppColors.navy, fontSize: 18),
+                            decoration: InputDecoration(
                               border: InputBorder.none,
+                              counterText: '',
+                              hintText: 'Maks ${_maxAmount.toStringAsFixed(0)} $_selectedUnit',
+                              hintStyle: TextStyle(color: AppColors.navy.withOpacity(0.3), fontSize: 13),
                             ),
                             onChanged: (_) => setState(() {}),
                           ),
@@ -195,6 +243,14 @@ class _FoodDetailScreenState extends State<FoodDetailScreen> {
                       ],
                     ),
                   ),
+                  if (_isAmountInvalid)
+                    Padding(
+                      padding: const EdgeInsets.only(top: 6, left: 4),
+                      child: Text(
+                        _amountErrorText,
+                        style: const TextStyle(color: Colors.red, fontSize: 11, fontWeight: FontWeight.w500),
+                      ),
+                    ),
                   const SizedBox(height: 16),
                   // Unit Selection
                   Row(

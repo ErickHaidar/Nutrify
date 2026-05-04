@@ -23,6 +23,7 @@ class _NotificationModalState extends State<NotificationModal> {
   final _notifApi = NotificationApiService();
   final _foodLogApi = FoodLogApiService();
   bool _isLoading = true;
+  bool _isNavigating = false;
   List<_UnifiedNotification> _allNotifications = [];
 
   @override
@@ -164,9 +165,32 @@ class _NotificationModalState extends State<NotificationModal> {
   }
 
   Future<void> _onTap(_UnifiedNotification notif) async {
+    if (_isNavigating) return;
+    _isNavigating = true;
+
     // Mark as read (server notifications only)
     if (!notif.isRead && notif.id > 0) {
       try { await _notifApi.markAsRead(notif.id); } catch (_) {}
+      // Update local state
+      final idx = _allNotifications.indexWhere((n) => n.id == notif.id);
+      if (idx != -1) {
+        setState(() {
+          _allNotifications[idx] = _UnifiedNotification(
+            id: notif.id,
+            type: notif.type,
+            title: notif.title,
+            subtitle: notif.subtitle,
+            actorName: notif.actorName,
+            actorId: notif.actorId,
+            postId: notif.postId,
+            mealType: notif.mealType,
+            isRead: true,
+            createdAt: notif.createdAt,
+            icon: notif.icon,
+            iconColor: notif.iconColor,
+          );
+        });
+      }
     }
 
     // Meal reminder → navigate to AddMealScreen
@@ -177,7 +201,7 @@ class _NotificationModalState extends State<NotificationModal> {
         MaterialPageRoute(
           builder: (_) => AddMealScreen(mealType: notif.mealType!),
         ),
-      );
+      ).then((_) => _isNavigating = false);
       return;
     }
 
@@ -196,9 +220,11 @@ class _NotificationModalState extends State<NotificationModal> {
                 otherUserName: notif.actorName ?? '',
               ),
             ),
-          );
+          ).then((_) => _isNavigating = false);
         }
-      } catch (_) {}
+      } catch (_) {
+        _isNavigating = false;
+      }
     } else if (notif.type == 'reply' && notif.postId != null) {
       try {
         final api = CommunityPostApiService();
@@ -208,9 +234,11 @@ class _NotificationModalState extends State<NotificationModal> {
           Navigator.pop(context);
           Navigator.push(context, MaterialPageRoute(
             builder: (_) => PostDetailScreen(post: post, api: api),
-          ));
+          )).then((_) => _isNavigating = false);
         }
-      } catch (_) {}
+      } catch (_) {
+        _isNavigating = false;
+      }
     } else if (notif.type == 'follow' && notif.actorId != null) {
       final route = MaterialPageRoute(
         builder: (_) => UserProfileScreen(
@@ -220,7 +248,7 @@ class _NotificationModalState extends State<NotificationModal> {
         ),
       );
       Navigator.pop(context);
-      Navigator.push(context, route);
+      Navigator.push(context, route).then((_) => _isNavigating = false);
     } else if ((notif.type == 'like' || notif.type == 'comment') && notif.postId != null) {
       // Fetch post BEFORE closing modal to avoid context issues
       try {
@@ -232,9 +260,13 @@ class _NotificationModalState extends State<NotificationModal> {
             builder: (_) => PostDetailScreen(post: post, api: api),
           );
           Navigator.pop(context);
-          Navigator.push(context, route);
+          Navigator.push(context, route).then((_) => _isNavigating = false);
         }
-      } catch (_) {}
+      } catch (_) {
+        _isNavigating = false;
+      }
+    } else {
+      _isNavigating = false;
     }
   }
 

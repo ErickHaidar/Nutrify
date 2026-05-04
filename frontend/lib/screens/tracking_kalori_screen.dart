@@ -161,9 +161,10 @@ class _TrackingKaloriScreenState extends State<TrackingKaloriScreen> {
                           _formatCalories(_totalCalories),
                           style: GoogleFonts.montserrat(
                             color: AppColors.navy,
-                            fontSize: 42,
+                            fontSize: _totalCalories > 99999 ? 28 : 42,
                             fontWeight: FontWeight.bold,
                           ),
+                          overflow: TextOverflow.ellipsis,
                         ),
                         Text(
                           'kkal',
@@ -349,6 +350,7 @@ class _TrackingKaloriScreenState extends State<TrackingKaloriScreen> {
                   fontSize: 13,
                   fontWeight: FontWeight.w500,
                 ),
+                overflow: TextOverflow.ellipsis,
               ),
             ],
           ),
@@ -418,25 +420,29 @@ class _TrackingKaloriScreenState extends State<TrackingKaloriScreen> {
               ),
             ),
             if (hasData) ...[
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.end,
-                children: [
-                  Text(
-                    '$kcal kkal',
-                    style: GoogleFonts.montserrat(
-                      color: AppColors.navy,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 14,
+              Flexible(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  children: [
+                    Text(
+                      '$kcal kkal',
+                      style: GoogleFonts.montserrat(
+                        color: AppColors.navy,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 14,
+                      ),
+                      overflow: TextOverflow.ellipsis,
                     ),
-                  ),
-                  Text(
-                    'P ${meal!.protein.toStringAsFixed(0)}g  C ${meal.carbohydrates.toStringAsFixed(0)}g  L ${meal.fat.toStringAsFixed(0)}g',
-                    style: TextStyle(
-                      color: AppColors.navy.withOpacity(0.4),
-                      fontSize: 11,
+                    Text(
+                      'P ${meal!.protein.toStringAsFixed(0)}g  C ${meal.carbohydrates.toStringAsFixed(0)}g  L ${meal.fat.toStringAsFixed(0)}g',
+                      style: TextStyle(
+                        color: AppColors.navy.withOpacity(0.4),
+                        fontSize: 11,
+                      ),
+                      overflow: TextOverflow.ellipsis,
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ] else
               Text(

@@ -15,7 +15,7 @@ class FoodLogController extends Controller
     {
         $validated = $request->validate([
             'food_id'            => 'required|exists:foods,id',
-            'serving_multiplier' => 'required|numeric|min:0.1',
+            'serving_multiplier' => 'required|numeric|min:0.1|max:100',
             'unit'               => 'nullable|string',
             'meal_time'          => 'required|in:Breakfast,Lunch,Dinner,Snack',
             'date'               => 'nullable|date_format:Y-m-d',
@@ -154,7 +154,7 @@ class FoodLogController extends Controller
         }
 
         $validated = $request->validate([
-            'serving_multiplier' => 'required|numeric|min:0.1',
+            'serving_multiplier' => 'required|numeric|min:0.1|max:100',
             'unit'               => 'nullable|string',
             'meal_time'          => 'required|in:Breakfast,Lunch,Dinner,Snack',
         ]);

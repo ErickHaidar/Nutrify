@@ -29,14 +29,19 @@ class FavoriteApiService {
         Endpoints.foodRecommendations,
         queryParameters: {'limit': limit},
       );
-      
+
       if (res.data == null || res.data is! Map) {
         return [];
       }
 
-      final List<dynamic> data = res.data['data'] is List ? res.data['data'] : [];
-      return data
-          .map((e) => FoodItem.fromJson(e as Map<String, dynamic>))
+      final rawData = res.data['data'];
+      if (rawData == null || rawData is! List) {
+        return [];
+      }
+
+      return rawData
+          .whereType<Map<String, dynamic>>()
+          .map((e) => FoodItem.fromJson(e))
           .toList();
     } catch (e) {
       // Return empty list on error to handle new users or API failures gracefully

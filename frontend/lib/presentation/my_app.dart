@@ -45,6 +45,8 @@ class _MyAppState extends State<MyApp> {
         data,
       ) async {
         if (data.event == AuthChangeEvent.signedOut) {
+          // Don't navigate to login if we're in the middle of a Google sign-in
+          if (MyApp.isHandlingLoginNavigation) return;
           // Session habis atau user di-sign-out dari luar
           _userStore.clearSession();
           _prefs.removeAuthToken();

@@ -31,6 +31,7 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
     }
     if (index == 3) {
       _profileKey.currentState?.loadProfile();
+      _profileKey.currentState?.refreshSocialData();
       _profileKey.currentState?.switchToUmumTab();
     }
   }
@@ -38,6 +39,7 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
   void _switchToProfileTab() {
     setState(() => _selectedIndex = 3);
     _profileKey.currentState?.loadProfile();
+    _profileKey.currentState?.refreshSocialData();
     _profileKey.currentState?.switchToSocialTab();
   }
 

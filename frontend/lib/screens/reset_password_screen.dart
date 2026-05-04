@@ -104,7 +104,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
               const SizedBox(height: 24),
               Text(
                 AppStrings.newPassword,
-                style: TextStyle(
+                style: const TextStyle(
                   color: AppColors.navy,
                   fontSize: 13,
                   fontWeight: FontWeight.w600,
@@ -121,7 +121,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
               const SizedBox(height: 20),
               Text(
                 AppStrings.confirmPassword,
-                style: TextStyle(
+                style: const TextStyle(
                   color: AppColors.navy,
                   fontSize: 13,
                   fontWeight: FontWeight.w600,
@@ -160,7 +160,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                         )
                       : Text(
                           AppStrings.savePassword,
-                          style: TextStyle(
+                          style: const TextStyle(
                             color: NutrifyTheme.darkCard,
                             fontSize: 16,
                             fontWeight: FontWeight.bold,

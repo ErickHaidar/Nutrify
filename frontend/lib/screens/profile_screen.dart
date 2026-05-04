@@ -86,6 +86,10 @@ class ProfileScreenState extends State<ProfileScreen>
     _tabController.animateTo(0);
   }
 
+  void refreshSocialData() {
+    _loadSocialProfile();
+  }
+
   Future<void> loadProfile() async {
     try {
       final profile = await _profileApiService.getProfile();
@@ -860,7 +864,7 @@ class ProfileScreenState extends State<ProfileScreen>
               onPressed: () => _toggleNotifications(!_notificationsEnabled),
               trailing: Switch.adaptive(
                 value: _notificationsEnabled,
-                onChanged: null, // Let the row's onPressed handle it
+                onChanged: null,
                 activeColor: AppColors.navy,
               )),
           const SizedBox(height: 12),
@@ -968,7 +972,7 @@ class ProfileScreenState extends State<ProfileScreen>
             ),
             const SizedBox(height: 12),
             Text(
-              _profile?.name ?? _socName,
+              _socName.isNotEmpty ? _socName : (_profile?.name ?? ''),
               style: const TextStyle(
                   color: AppColors.navy,
                   fontSize: 20,

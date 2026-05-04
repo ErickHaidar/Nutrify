@@ -45,10 +45,13 @@ class FoodController extends Controller
             ->pluck('food_id');
 
         if ($topFoodIds->isEmpty()) {
+            $fallbackFoods = Food::inRandomOrder()
+                ->limit($limit)
+                ->get();
             return response()->json([
                 'success' => true,
-                'data' => [],
-                'message' => 'Belum ada riwayat makanan.',
+                'data' => $fallbackFoods,
+                'message' => 'Rekomendasi makanan untuk Anda.',
             ]);
         }
 

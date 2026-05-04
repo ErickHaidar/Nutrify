@@ -1,6 +1,7 @@
 // lib/screens/body_data_goals_screen.dart
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../services/profile_api_service.dart';
 import '../widgets/nutrify_calendar_picker.dart';
 import 'package:nutrify/constants/colors.dart';
@@ -41,19 +42,23 @@ class _BodyDataGoalsScreenState extends State<BodyDataGoalsScreen> {
   void initState() {
     super.initState();
     _loadData();
-    _heightController.addListener(() => setState(() {}));
-    _weightController.addListener(() => setState(() {}));
   }
 
   Future<void> _loadData() async {
     try {
       final profile = await _profileApi.getProfile();
       if (profile != null && mounted) {
+        // Restore exact birth date from SharedPreferences if available
+        final savedBirthDate = await SharedPreferences.getInstance().then((prefs) => prefs.getString('birth_date'));
+        DateTime? birthDate;
+        if (savedBirthDate != null) {
+          birthDate = DateTime.tryParse(savedBirthDate);
+        }
+        birthDate ??= profile.age > 0 ? DateTime(DateTime.now().year - profile.age, 1, 1) : null;
+
         setState(() {
           _heightController.text = profile.height.toString();
-          if (profile.age > 0) {
-            _birthDate = DateTime(DateTime.now().year - profile.age, 1, 1);
-          }
+          _birthDate = birthDate;
           _weightController.text = profile.weight.toString();
           _selectedGender = profile.gender;
           _selectedActivity = profile.activityLevel;
@@ -83,8 +88,35 @@ class _BodyDataGoalsScreenState extends State<BodyDataGoalsScreen> {
       return;
     }
 
+    if (age < 13 || age > 100) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Usia harus antara 13-100 tahun')),
+      );
+      return;
+    }
+
+    if (weight < 25 || weight > 300) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Berat badan harus antara 25-300 kg')),
+      );
+      return;
+    }
+
+    if (height < 100 || height > 250) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Tinggi badan harus antara 100-250 cm')),
+      );
+      return;
+    }
+
     setState(() => _isSaving = true);
     try {
+      // Save birth date to SharedPreferences for exact date sync
+      if (_birthDate != null) {
+        final prefs = await SharedPreferences.getInstance();
+        await prefs.setString('birth_date', _birthDate!.toIso8601String());
+      }
+
       await _profileApi.saveProfile(
         age: age,
         weight: weight,
@@ -174,7 +206,10 @@ class _BodyDataGoalsScreenState extends State<BodyDataGoalsScreen> {
             Row(
               children: [
                 Expanded(
-                    child: _buildInputField(AppStrings.heightBodyCm, _heightController)),
+                    child: ListenableBuilder(
+                      listenable: _heightController,
+                      builder: (context, _) => _buildInputField(AppStrings.heightBodyCm, _heightController, hintText: '100-250 cm', maxLength: 3, minValue: 100, maxValue: 250, unit: 'cm'),
+                    )),
                 const SizedBox(width: 16),
                 Expanded(
                   child: GestureDetector(
@@ -185,7 +220,10 @@ class _BodyDataGoalsScreenState extends State<BodyDataGoalsScreen> {
                         firstDate: DateTime(1900),
                         lastDate: DateTime.now(),
                       );
-                      if (picked != null) setState(() => _birthDate = picked);
+                      if (picked != null) {
+                          setState(() => _birthDate = picked);
+                          SharedPreferences.getInstance().then((prefs) => prefs.setString('birth_date', picked.toIso8601String()));
+                        }
                     },
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -208,6 +246,7 @@ class _BodyDataGoalsScreenState extends State<BodyDataGoalsScreen> {
                             style: TextStyle(color: _birthDate != null ? AppColors.navy : AppColors.navy.withOpacity(0.4)),
                           ),
                         ),
+                        const SizedBox(height: 18), // Reserve space to match error text height on sibling
                       ],
                     ),
                   ),
@@ -218,8 +257,11 @@ class _BodyDataGoalsScreenState extends State<BodyDataGoalsScreen> {
             Row(
               children: [
                 Expanded(
-                    child: _buildInputField(
-                        AppStrings.weightBodyKg, _weightController)),
+                    child: ListenableBuilder(
+                      listenable: _weightController,
+                      builder: (context, _) => _buildInputField(
+                          AppStrings.weightBodyKg, _weightController, hintText: '25-300 kg', maxLength: 3, minValue: 25, maxValue: 300, unit: 'kg'),
+                    )),
               ],
             ),
             const SizedBox(height: 16),
@@ -273,7 +315,10 @@ class _BodyDataGoalsScreenState extends State<BodyDataGoalsScreen> {
             const SizedBox(height: 35),
             _buildSectionHeader(AppStrings.estimatedTarget),
             const SizedBox(height: 15),
-            _buildCaloriePreview(),
+            ListenableBuilder(
+              listenable: Listenable.merge([_heightController, _weightController]),
+              builder: (context, _) => _buildCaloriePreview(),
+            ),
             const SizedBox(height: 35),
             SizedBox(
               width: double.infinity,
@@ -324,7 +369,21 @@ class _BodyDataGoalsScreenState extends State<BodyDataGoalsScreen> {
     );
   }
 
-  Widget _buildInputField(String label, TextEditingController controller) {
+  Widget _buildInputField(String label, TextEditingController controller, {String? hintText, int? maxLength, double? minValue, double? maxValue, String? unit}) {
+    final value = double.tryParse(controller.text);
+    final isInvalid = controller.text.isNotEmpty && value != null &&
+        ((minValue != null && value < minValue) || (maxValue != null && value > maxValue));
+
+    String errorText = '';
+    if (isInvalid) {
+      final unitSuffix = unit != null ? ' $unit' : '';
+      if (minValue != null && value < minValue) {
+        errorText = 'Minimal $minValue$unitSuffix';
+      } else if (maxValue != null && value > maxValue) {
+        errorText = 'Maksimal $maxValue$unitSuffix';
+      }
+    }
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -339,13 +398,34 @@ class _BodyDataGoalsScreenState extends State<BodyDataGoalsScreen> {
           decoration: BoxDecoration(
               color: Colors.white,
               borderRadius: BorderRadius.circular(15),
-              border: Border.all(color: AppColors.navy.withOpacity(0.1))),
+              border: Border.all(
+                color: isInvalid ? Colors.red : AppColors.navy.withOpacity(0.1),
+                width: isInvalid ? 2 : 1,
+              )),
           child: TextField(
             controller: controller,
-            style: const TextStyle(color: AppColors.navy),
+            style: TextStyle(color: isInvalid ? Colors.red : AppColors.navy),
             keyboardType: TextInputType.number,
-            decoration: const InputDecoration(border: InputBorder.none),
+            maxLength: maxLength,
+            decoration: InputDecoration(
+              border: InputBorder.none,
+              counterText: '',
+              hintText: hintText,
+              hintStyle: TextStyle(color: AppColors.navy.withOpacity(0.3), fontSize: 13),
+            ),
           ),
+        ),
+        SizedBox(
+          height: 18,
+          child: isInvalid && errorText.isNotEmpty
+              ? Padding(
+                  padding: const EdgeInsets.only(top: 4, left: 4),
+                  child: Text(
+                    errorText,
+                    style: const TextStyle(color: Colors.red, fontSize: 11, fontWeight: FontWeight.w500),
+                  ),
+                )
+              : const SizedBox.shrink(),
         ),
       ],
     );
