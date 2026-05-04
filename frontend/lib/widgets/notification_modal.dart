@@ -126,6 +126,8 @@ class _NotificationModalState extends State<NotificationModal> {
       case 'follow': return Icons.person_add;
       case 'follow_request': return Icons.person_add_disabled;
       case 'message': return Icons.chat;
+      case 'reply': return Icons.reply;
+      case 'comment_like': return Icons.favorite;
       default: return Icons.notifications;
     }
   }
@@ -137,6 +139,8 @@ class _NotificationModalState extends State<NotificationModal> {
       case 'follow': return const Color(0xFF81C784);
       case 'follow_request': return Colors.orange;
       case 'message': return const Color(0xFF7E57C2);
+      case 'reply': return const Color(0xFF26A69A);
+      case 'comment_like': return Colors.pink;
       default: return Colors.orangeAccent;
     }
   }
@@ -193,6 +197,18 @@ class _NotificationModalState extends State<NotificationModal> {
               ),
             ),
           );
+        }
+      } catch (_) {}
+    } else if (notif.type == 'reply' && notif.postId != null) {
+      try {
+        final api = CommunityPostApiService();
+        final posts = await api.getPosts();
+        final post = posts.where((p) => p.id == notif.postId.toString()).firstOrNull;
+        if (post != null && mounted) {
+          Navigator.pop(context);
+          Navigator.push(context, MaterialPageRoute(
+            builder: (_) => PostDetailScreen(post: post, api: api),
+          ));
         }
       } catch (_) {}
     } else if (notif.type == 'follow' && notif.actorId != null) {

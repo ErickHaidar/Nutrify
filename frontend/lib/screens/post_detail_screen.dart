@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:nutrify/constants/colors.dart';
 import 'package:nutrify/domain/entity/post/community_post.dart';
+import 'package:nutrify/screens/comment_detail_screen.dart';
 import 'package:nutrify/screens/user_profile_screen.dart';
 import 'package:nutrify/services/community_post_api_service.dart';
 import 'package:intl/intl.dart';
@@ -24,6 +25,7 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
   bool _isLoadingComments = true;
   bool _isSending = false;
   final _commentCtrl = TextEditingController();
+  CommentItem? _replyTarget;
 
   @override
   void initState() {
@@ -58,13 +60,41 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
     setState(() => _isSending = true);
 
     try {
-      final newComment = await widget.api.addComment(int.parse(widget.post.id), text);
+      final newComment = await widget.api.addComment(
+        int.parse(widget.post.id),
+        text,
+        parentId: _replyTarget?.id,
+      );
       _commentCtrl.clear();
+      final target = _replyTarget;
       if (mounted) {
         setState(() {
-          _comments.add(newComment);
-          widget.post.comments++;
           _isSending = false;
+          if (target != null) {
+            // Add reply to parent's replies list
+            final idx = _comments.indexWhere((c) => c.id == target.id);
+            if (idx != -1) {
+              final parent = _comments[idx];
+              _comments[idx] = CommentItem(
+                id: parent.id,
+                content: parent.content,
+                userId: parent.userId,
+                userName: parent.userName,
+                userUsername: parent.userUsername,
+                userAvatarUrl: parent.userAvatarUrl,
+                parentId: parent.parentId,
+                likesCount: parent.likesCount,
+                isLiked: parent.isLiked,
+                repliesCount: parent.repliesCount + 1,
+                replies: [...parent.replies, newComment],
+                createdAt: parent.createdAt,
+              );
+            }
+          } else {
+            _comments.add(newComment);
+          }
+          widget.post.comments++;
+          _replyTarget = null;
         });
       }
     } catch (_) {
@@ -96,13 +126,91 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
     }
   }
 
+  Future<void> _toggleCommentLike(CommentItem c, {bool isReply = false, int? parentIndex}) async {
+    final wasLiked = c.isLiked;
+    setState(() {
+      c = CommentItem(
+        id: c.id, content: c.content, userId: c.userId, userName: c.userName,
+        userUsername: c.userUsername, userAvatarUrl: c.userAvatarUrl, parentId: c.parentId,
+        likesCount: wasLiked ? c.likesCount - 1 : c.likesCount + 1,
+        isLiked: !wasLiked, repliesCount: c.repliesCount, replies: c.replies, createdAt: c.createdAt,
+      );
+      if (isReply && parentIndex != null) {
+        final parent = _comments[parentIndex];
+        final replyIdx = parent.replies.indexWhere((r) => r.id == c.id);
+        if (replyIdx != -1) {
+          _comments[parentIndex] = CommentItem(
+            id: parent.id, content: parent.content, userId: parent.userId, userName: parent.userName,
+            userUsername: parent.userUsername, userAvatarUrl: parent.userAvatarUrl, parentId: parent.parentId,
+            likesCount: parent.likesCount, isLiked: parent.isLiked, repliesCount: parent.repliesCount,
+            replies: [...parent.replies.sublist(0, replyIdx), c, ...parent.replies.sublist(replyIdx + 1)],
+            createdAt: parent.createdAt,
+          );
+        }
+      } else {
+        final idx = _comments.indexWhere((x) => x.id == c.id);
+        if (idx != -1) _comments[idx] = c;
+      }
+    });
+    try {
+      final result = await widget.api.toggleCommentLike(c.id);
+      // Server confirms — already updated optimistically
+    } catch (_) {
+      // Revert
+      if (mounted) {
+        setState(() {
+          if (isReply && parentIndex != null) {
+            final parent = _comments[parentIndex];
+            final replyIdx = parent.replies.indexWhere((r) => r.id == c.id);
+            if (replyIdx != -1) {
+              _comments[parentIndex] = CommentItem(
+                id: parent.id, content: parent.content, userId: parent.userId, userName: parent.userName,
+                userUsername: parent.userUsername, userAvatarUrl: parent.userAvatarUrl, parentId: parent.parentId,
+                likesCount: parent.likesCount, isLiked: parent.isLiked, repliesCount: parent.repliesCount,
+                replies: [...parent.replies.sublist(0, replyIdx), CommentItem(
+                  id: c.id, content: c.content, userId: c.userId, userName: c.userName,
+                  userUsername: c.userUsername, userAvatarUrl: c.userAvatarUrl, parentId: c.parentId,
+                  likesCount: wasLiked ? c.likesCount + 1 : c.likesCount - 1,
+                  isLiked: wasLiked, repliesCount: c.repliesCount, replies: c.replies, createdAt: c.createdAt,
+                ), ...parent.replies.sublist(replyIdx + 1)],
+                createdAt: parent.createdAt,
+              );
+            }
+          } else {
+            final idx = _comments.indexWhere((x) => x.id == c.id);
+            if (idx != -1) _comments[idx] = CommentItem(
+              id: c.id, content: c.content, userId: c.userId, userName: c.userName,
+              userUsername: c.userUsername, userAvatarUrl: c.userAvatarUrl, parentId: c.parentId,
+              likesCount: wasLiked ? c.likesCount + 1 : c.likesCount - 1,
+              isLiked: wasLiked, repliesCount: c.repliesCount, replies: c.replies, createdAt: c.createdAt,
+            );
+          }
+        });
+      }
+    }
+  }
+
+  void _openCommentDetail(CommentItem c) async {
+    await Navigator.push(context, MaterialPageRoute(
+      builder: (_) => CommentDetailScreen(comment: c, api: widget.api, postId: int.parse(widget.post.id)),
+    ));
+    _fetchComments();
+  }
+
+  void _openProfile(int userId, String userName) {
+    Navigator.push(context, MaterialPageRoute(
+      builder: (_) => UserProfileScreen(userId: userId, userName: userName, api: widget.api),
+    ));
+  }
+
   String _formatTime(DateTime dt) {
     final now = DateTime.now();
     final diff = now.difference(dt);
     if (diff.inMinutes < 1) return 'Baru saja';
-    if (diff.inMinutes < 60) return '${diff.inMinutes} menit lalu';
-    if (diff.inHours < 24) return '${diff.inHours} jam lalu';
-    return DateFormat('dd MMM yyyy, HH:mm').format(dt);
+    if (diff.inMinutes < 60) return '${diff.inMinutes}m';
+    if (diff.inHours < 24) return '${diff.inHours}j';
+    if (diff.inDays < 7) return '${diff.inDays}h';
+    return DateFormat('dd MMM').format(dt);
   }
 
   String _formatCount(int count) {
@@ -126,11 +234,7 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
         ),
         title: const Text(
           'Postingan',
-          style: TextStyle(
-            color: AppColors.navy,
-            fontWeight: FontWeight.bold,
-            fontSize: 18,
-          ),
+          style: TextStyle(color: AppColors.navy, fontWeight: FontWeight.bold, fontSize: 18),
         ),
       ),
       body: Column(
@@ -140,38 +244,21 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // Post content
                   _buildPostContent(post),
                   const Divider(height: 1, color: Colors.black12),
-
-                  // Like / Comment counts bar
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
                     child: Row(
                       children: [
-                        Text(
-                          '${_formatCount(post.likes)} Suka',
-                          style: TextStyle(
-                            color: AppColors.navy.withValues(alpha: 0.6),
-                            fontSize: 13,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
+                        Text('${_formatCount(post.likes)} Suka',
+                            style: TextStyle(color: AppColors.navy.withValues(alpha: 0.6), fontSize: 13, fontWeight: FontWeight.w600)),
                         const SizedBox(width: 16),
-                        Text(
-                          '${_formatCount(post.comments)} Komentar',
-                          style: TextStyle(
-                            color: AppColors.navy.withValues(alpha: 0.6),
-                            fontSize: 13,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
+                        Text('${_formatCount(post.comments)} Komentar',
+                            style: TextStyle(color: AppColors.navy.withValues(alpha: 0.6), fontSize: 13, fontWeight: FontWeight.w600)),
                       ],
                     ),
                   ),
                   const Divider(height: 1, color: Colors.black12),
-
-                  // Action buttons (like, comment)
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
                     child: Row(
@@ -179,58 +266,28 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
                         Expanded(
                           child: TextButton.icon(
                             onPressed: _toggleLike,
-                            icon: Icon(
-                              post.isLiked ? Icons.favorite : Icons.favorite_border,
-                              color: post.isLiked ? Colors.red : AppColors.navy.withValues(alpha: 0.7),
-                              size: 22,
-                            ),
-                            label: Text(
-                              post.isLiked ? 'Disukai' : 'Suka',
-                              style: TextStyle(
-                                color: post.isLiked ? Colors.red : AppColors.navy.withValues(alpha: 0.7),
-                                fontWeight: FontWeight.w600,
-                              ),
-                            ),
+                            icon: Icon(post.isLiked ? Icons.favorite : Icons.favorite_border,
+                                color: post.isLiked ? Colors.red : AppColors.navy.withValues(alpha: 0.7), size: 22),
+                            label: Text(post.isLiked ? 'Disukai' : 'Suka',
+                                style: TextStyle(color: post.isLiked ? Colors.red : AppColors.navy.withValues(alpha: 0.7), fontWeight: FontWeight.w600)),
                           ),
                         ),
                         Expanded(
                           child: TextButton.icon(
-                            onPressed: () {
-                              FocusScope.of(context).requestFocus(FocusNode());
-                              // Focus the comment field at bottom
-                            },
-                            icon: Icon(
-                              Icons.chat_bubble_outline,
-                              color: AppColors.navy.withValues(alpha: 0.7),
-                              size: 20,
-                            ),
-                            label: Text(
-                              'Komentar',
-                              style: TextStyle(
-                                color: AppColors.navy.withValues(alpha: 0.7),
-                                fontWeight: FontWeight.w600,
-                              ),
-                            ),
+                            onPressed: () => FocusScope.of(context).requestFocus(FocusNode()),
+                            icon: Icon(Icons.chat_bubble_outline, color: AppColors.navy.withValues(alpha: 0.7), size: 20),
+                            label: Text('Komentar',
+                                style: TextStyle(color: AppColors.navy.withValues(alpha: 0.7), fontWeight: FontWeight.w600)),
                           ),
                         ),
                       ],
                     ),
                   ),
                   const Divider(height: 1, color: Colors.black12),
-
-                  // Comments section
                   Padding(
                     padding: const EdgeInsets.fromLTRB(24, 16, 24, 8),
-                    child: Text(
-                      'Komentar',
-                      style: TextStyle(
-                        color: AppColors.navy,
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
+                    child: Text('Komentar', style: TextStyle(color: AppColors.navy, fontSize: 16, fontWeight: FontWeight.bold)),
                   ),
-
                   if (_isLoadingComments)
                     const Padding(
                       padding: EdgeInsets.all(32),
@@ -240,13 +297,8 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
                     Padding(
                       padding: const EdgeInsets.all(32),
                       child: Center(
-                        child: Text(
-                          'Belum ada komentar. Jadilah yang pertama!',
-                          style: TextStyle(
-                            color: AppColors.navy.withValues(alpha: 0.5),
-                            fontSize: 14,
-                          ),
-                        ),
+                        child: Text('Belum ada komentar. Jadilah yang pertama!',
+                            style: TextStyle(color: AppColors.navy.withValues(alpha: 0.5), fontSize: 14)),
                       ),
                     )
                   else
@@ -258,130 +310,213 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
                       separatorBuilder: (_, __) => const SizedBox(height: 16),
                       itemBuilder: (context, index) {
                         final c = _comments[index];
-                        return Row(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            GestureDetector(
-                              onTap: () {
-                                // Navigate to user profile
-                              },
-                              child: CircleAvatar(
-                                radius: 18,
-                                backgroundColor: AppColors.peach,
-                                child: Text(
-                                  c.userName.isNotEmpty ? c.userName[0].toUpperCase() : '-',
-                                  style: const TextStyle(
-                                    color: AppColors.navy,
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 14,
-                                  ),
-                                ),
-                              ),
-                            ),
-                            const SizedBox(width: 10),
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  RichText(
-                                    text: TextSpan(
-                                      children: [
-                                        TextSpan(
-                                          text: c.userName,
-                                          style: const TextStyle(
-                                            color: AppColors.navy,
-                                            fontWeight: FontWeight.bold,
-                                            fontSize: 13,
-                                          ),
-                                        ),
-                                        TextSpan(
-                                          text: '  ${_formatTime(c.createdAt)}',
-                                          style: TextStyle(
-                                            color: AppColors.navy.withValues(alpha: 0.4),
-                                            fontSize: 11,
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                  const SizedBox(height: 2),
-                                  Text(
-                                    c.content,
-                                    style: TextStyle(
-                                      color: AppColors.navy.withValues(alpha: 0.8),
-                                      fontSize: 13,
-                                      height: 1.4,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ],
-                        );
+                        return _buildCommentTile(c, index);
                       },
                     ),
-
-                  const SizedBox(height: 80), // Space for bottom input
+                  const SizedBox(height: 80),
                 ],
               ),
             ),
           ),
+          _buildInputBar(),
+        ],
+      ),
+    );
+  }
 
-          // Comment input (fixed at bottom)
-          Container(
-            decoration: BoxDecoration(
-              color: Colors.white,
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withValues(alpha: 0.05),
-                  blurRadius: 10,
-                  offset: const Offset(0, -2),
+  Widget _buildCommentTile(CommentItem c, int parentIndex) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        _buildSingleComment(c, onTap: () => _openCommentDetail(c)),
+        // Preview replies (max 2)
+        if (c.replies.isNotEmpty) ...[
+          const SizedBox(height: 8),
+          ...c.replies.asMap().entries.map((entry) {
+            final idx = entry.key;
+            final r = entry.value;
+            return Padding(
+              padding: const EdgeInsets.only(left: 42, bottom: 8),
+              child: _buildSingleComment(r, isReply: true, parentIndex: parentIndex, onTap: () => _openCommentDetail(c)),
+            );
+          }),
+          if (c.repliesCount > c.replies.length)
+            Padding(
+              padding: const EdgeInsets.only(left: 42),
+              child: GestureDetector(
+                onTap: () => _openCommentDetail(c),
+                child: Text(
+                  'Lihat ${c.repliesCount - c.replies.length} balasan lainnya',
+                  style: TextStyle(color: AppColors.navy.withValues(alpha: 0.6), fontSize: 12, fontWeight: FontWeight.w600),
                 ),
-              ],
+              ),
             ),
-            child: SafeArea(
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-                child: Row(
-                  children: [
-                    Expanded(
-                      child: TextField(
-                        controller: _commentCtrl,
-                        enabled: !_isSending,
-                        decoration: InputDecoration(
-                          hintText: 'Tulis komentar...',
-                          hintStyle: TextStyle(color: AppColors.navy.withValues(alpha: 0.4)),
-                          filled: true,
-                          fillColor: AppColors.cream,
-                          contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(24),
-                            borderSide: BorderSide.none,
-                          ),
-                        ),
-                        onSubmitted: (_) => _sendComment(),
-                      ),
-                    ),
-                    const SizedBox(width: 8),
-                    CircleAvatar(
-                      radius: 22,
-                      backgroundColor: AppColors.navy,
-                      child: _isSending
-                          ? const SizedBox(
-                              width: 18, height: 18,
-                              child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
-                            )
-                          : IconButton(
-                              icon: const Icon(Icons.send, color: Colors.white, size: 20),
-                              onPressed: _sendComment,
-                            ),
-                    ),
-                  ],
-                ),
+        ] else if (c.repliesCount > 0) ...[
+          const SizedBox(height: 4),
+          Padding(
+            padding: const EdgeInsets.only(left: 42),
+            child: GestureDetector(
+              onTap: () => _openCommentDetail(c),
+              child: Text(
+                'Lihat ${c.repliesCount} balasan',
+                style: TextStyle(color: AppColors.navy.withValues(alpha: 0.6), fontSize: 12, fontWeight: FontWeight.w600),
               ),
             ),
           ),
         ],
+      ],
+    );
+  }
+
+  Widget _buildSingleComment(CommentItem c, {bool isReply = false, int? parentIndex, VoidCallback? onTap}) {
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        GestureDetector(
+          onTap: () => _openProfile(c.userId, c.userName),
+          child: CircleAvatar(
+            radius: isReply ? 14 : 18,
+            backgroundColor: AppColors.peach,
+            backgroundImage: c.userAvatarUrl != null ? NetworkImage(c.userAvatarUrl!) : null,
+            child: c.userAvatarUrl == null
+                ? Text(c.userName.isNotEmpty ? c.userName[0].toUpperCase() : '-',
+                    style: TextStyle(color: AppColors.navy, fontWeight: FontWeight.bold, fontSize: isReply ? 10 : 14))
+                : null,
+          ),
+        ),
+        const SizedBox(width: 10),
+        Expanded(
+          child: GestureDetector(
+            onTap: onTap,
+            behavior: HitTestBehavior.opaque,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                RichText(
+                  text: TextSpan(children: [
+                    TextSpan(
+                      text: c.userName,
+                      style: TextStyle(
+                        color: AppColors.navy, fontWeight: FontWeight.bold, fontSize: isReply ? 12 : 13),
+                    ),
+                    TextSpan(
+                      text: '  ${_formatTime(c.createdAt)}',
+                      style: TextStyle(color: AppColors.navy.withValues(alpha: 0.4), fontSize: 10),
+                    ),
+                  ]),
+                ),
+                const SizedBox(height: 2),
+                Text(c.content,
+                    style: TextStyle(color: AppColors.navy.withValues(alpha: 0.8), fontSize: isReply ? 12 : 13, height: 1.4)),
+                const SizedBox(height: 4),
+                Row(
+                  children: [
+                    // Like button
+                    GestureDetector(
+                      onTap: () => _toggleCommentLike(c, isReply: isReply, parentIndex: parentIndex),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(c.isLiked ? Icons.favorite : Icons.favorite_border,
+                              color: c.isLiked ? Colors.red : AppColors.navy.withValues(alpha: 0.4),
+                              size: isReply ? 12 : 14),
+                          if (c.likesCount > 0) ...[
+                            const SizedBox(width: 3),
+                            Text('${c.likesCount}',
+                                style: TextStyle(color: AppColors.navy.withValues(alpha: 0.5), fontSize: 11)),
+                          ],
+                        ],
+                      ),
+                    ),
+                    const SizedBox(width: 16),
+                    // Reply button
+                    GestureDetector(
+                      onTap: () {
+                        setState(() {
+                          _replyTarget = c;
+                          FocusScope.of(context).requestFocus(FocusNode());
+                        });
+                      },
+                      child: Text('Balas',
+                          style: TextStyle(color: AppColors.navy.withValues(alpha: 0.5), fontSize: 11, fontWeight: FontWeight.w600)),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildInputBar() {
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.white,
+        boxShadow: [
+          BoxShadow(color: Colors.black.withValues(alpha: 0.05), blurRadius: 10, offset: const Offset(0, -2)),
+        ],
+      ),
+      child: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              if (_replyTarget != null)
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                  margin: const EdgeInsets.only(bottom: 8),
+                  decoration: BoxDecoration(
+                    color: AppColors.navy.withValues(alpha: 0.06),
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+                  child: Row(
+                    children: [
+                      Text('Membalas @${_replyTarget!.userName}',
+                          style: TextStyle(color: AppColors.navy.withValues(alpha: 0.6), fontSize: 12)),
+                      const Spacer(),
+                      GestureDetector(
+                        onTap: () => setState(() => _replyTarget = null),
+                        child: Icon(Icons.close, size: 16, color: AppColors.navy.withValues(alpha: 0.5)),
+                      ),
+                    ],
+                  ),
+                ),
+              Row(
+                children: [
+                  Expanded(
+                    child: TextField(
+                      controller: _commentCtrl,
+                      enabled: !_isSending,
+                      decoration: InputDecoration(
+                        hintText: _replyTarget != null ? 'Balas @${_replyTarget!.userName}...' : 'Tulis komentar...',
+                        hintStyle: TextStyle(color: AppColors.navy.withValues(alpha: 0.4)),
+                        filled: true,
+                        fillColor: AppColors.cream,
+                        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                        border: OutlineInputBorder(borderRadius: BorderRadius.circular(24), borderSide: BorderSide.none),
+                      ),
+                      onSubmitted: (_) => _sendComment(),
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  CircleAvatar(
+                    radius: 22,
+                    backgroundColor: AppColors.navy,
+                    child: _isSending
+                        ? const SizedBox(width: 18, height: 18, child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white))
+                        : IconButton(
+                            icon: const Icon(Icons.send, color: Colors.white, size: 20),
+                            onPressed: _sendComment,
+                          ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }
@@ -392,22 +527,10 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Author row
           GestureDetector(
             onTap: () {
-              if (post.isOwnPost) {
-                return;
-              }
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (_) => UserProfileScreen(
-                    userId: post.authorId,
-                    userName: post.authorName,
-                    api: widget.api,
-                  ),
-                ),
-              );
+              if (post.isOwnPost) return;
+              _openProfile(post.authorId, post.authorName);
             },
             child: Row(
               children: [
@@ -418,10 +541,8 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
                       ? NetworkImage(post.authorAvatarUrl.startsWith('http') ? post.authorAvatarUrl : 'https://nutrify-app.my.id${post.authorAvatarUrl}')
                       : null,
                   child: post.authorAvatarUrl.isEmpty
-                      ? Text(
-                          post.authorName.isNotEmpty ? post.authorName[0].toUpperCase() : '-',
-                          style: const TextStyle(color: AppColors.navy, fontWeight: FontWeight.bold),
-                        )
+                      ? Text(post.authorName.isNotEmpty ? post.authorName[0].toUpperCase() : '-',
+                          style: const TextStyle(color: AppColors.navy, fontWeight: FontWeight.bold))
                       : null,
                 ),
                 const SizedBox(width: 12),
@@ -429,22 +550,9 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(
-                        post.authorName,
-                        style: const TextStyle(
-                          color: AppColors.navy,
-                          fontWeight: FontWeight.bold,
-                          fontSize: 15,
-                        ),
-                      ),
+                      Text(post.authorName, style: const TextStyle(color: AppColors.navy, fontWeight: FontWeight.bold, fontSize: 15)),
                       const SizedBox(height: 2),
-                      Text(
-                        post.timeAgo,
-                        style: TextStyle(
-                          color: AppColors.navy.withValues(alpha: 0.5),
-                          fontSize: 12,
-                        ),
-                      ),
+                      Text(post.timeAgo, style: TextStyle(color: AppColors.navy.withValues(alpha: 0.5), fontSize: 12)),
                     ],
                   ),
                 ),
@@ -463,28 +571,18 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
                             title: const Text('Hapus Postingan?', style: TextStyle(color: AppColors.navy)),
                             content: const Text('Postingan ini akan dihapus secara permanen.'),
                             actions: [
-                              TextButton(
-                                onPressed: () => Navigator.pop(ctx, false),
-                                child: const Text('Batal'),
-                              ),
-                              TextButton(
-                                onPressed: () => Navigator.pop(ctx, true),
-                                child: const Text('Hapus', style: TextStyle(color: Colors.red)),
-                              ),
+                              TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text('Batal')),
+                              TextButton(onPressed: () => Navigator.pop(ctx, true), child: const Text('Hapus', style: TextStyle(color: Colors.red))),
                             ],
                           ),
                         );
                         if (confirm == true) {
                           try {
                             await widget.api.deletePost(int.parse(post.id));
-                            if (mounted) {
-                              Navigator.pop(context, true);
-                            }
+                            if (mounted) Navigator.pop(context, true);
                           } catch (_) {
                             if (mounted) {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(content: Text('Gagal menghapus postingan')),
-                              );
+                              ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Gagal menghapus postingan')));
                             }
                           }
                         }
@@ -493,13 +591,11 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
                     itemBuilder: (_) => [
                       const PopupMenuItem(
                         value: 'delete',
-                        child: Row(
-                          children: [
-                            Icon(Icons.delete_outline, color: Colors.red, size: 20),
-                            SizedBox(width: 8),
-                            Text('Hapus', style: TextStyle(color: Colors.red)),
-                          ],
-                        ),
+                        child: Row(children: [
+                          Icon(Icons.delete_outline, color: Colors.red, size: 20),
+                          SizedBox(width: 8),
+                          Text('Hapus', style: TextStyle(color: Colors.red)),
+                        ]),
                       ),
                     ],
                   ),
@@ -507,32 +603,16 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
             ),
           ),
           const SizedBox(height: 16),
-
-          // Content text
-          Text(
-            post.content,
-            style: const TextStyle(
-              color: AppColors.navy,
-              fontSize: 15,
-              height: 1.6,
-            ),
-          ),
-
-          // Image
+          Text(post.content, style: const TextStyle(color: AppColors.navy, fontSize: 15, height: 1.6)),
           if (post.imagePath != null && post.imagePath!.isNotEmpty) ...[
             const SizedBox(height: 16),
-            GestureDetector(
-              onTap: () {
-                // Full screen image view
-              },
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(16),
-                child: Image.network(
-                  post.imagePath!.startsWith('http') ? post.imagePath! : 'https://nutrify-app.my.id${post.imagePath!}',
-                  width: double.infinity,
-                  fit: BoxFit.cover,
-                  errorBuilder: (_, __, ___) => const SizedBox.shrink(),
-                ),
+            ClipRRect(
+              borderRadius: BorderRadius.circular(16),
+              child: Image.network(
+                post.imagePath!.startsWith('http') ? post.imagePath! : 'https://nutrify-app.my.id${post.imagePath!}',
+                width: double.infinity,
+                fit: BoxFit.cover,
+                errorBuilder: (_, __, ___) => const SizedBox.shrink(),
               ),
             ),
           ],

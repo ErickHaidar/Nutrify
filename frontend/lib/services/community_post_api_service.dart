@@ -52,9 +52,22 @@ class CommunityPostApiService {
     return data.map((e) => CommentItem.fromJson(e as Map<String, dynamic>)).toList();
   }
 
-  Future<CommentItem> addComment(int postId, String content) async {
-    final res = await _dio.dio.post('${Endpoints.posts}/$postId/comments', data: {'content': content});
+  Future<CommentItem> addComment(int postId, String content, {int? parentId}) async {
+    final data = <String, dynamic>{'content': content};
+    if (parentId != null) data['parent_id'] = parentId;
+    final res = await _dio.dio.post('${Endpoints.posts}/$postId/comments', data: data);
     return CommentItem.fromJson(res.data['data'] as Map<String, dynamic>);
+  }
+
+  Future<Map<String, dynamic>> toggleCommentLike(int commentId) async {
+    final res = await _dio.dio.post('comments/$commentId/like');
+    return {'liked': res.data['liked'] as bool, 'likes_count': res.data['likes_count'] as int};
+  }
+
+  Future<List<CommentItem>> getCommentReplies(int commentId, {int page = 1}) async {
+    final res = await _dio.dio.get('comments/$commentId/replies', queryParameters: {'page': page});
+    final List<dynamic> data = res.data['data']['data'] ?? res.data['data'] ?? [];
+    return data.map((e) => CommentItem.fromJson(e as Map<String, dynamic>)).toList();
   }
 
   Future<Map<String, dynamic>> toggleFollow(int userId) async {
@@ -105,15 +118,53 @@ class CommunityPostApiService {
 class CommentItem {
   final int id;
   final String content;
+  final int userId;
   final String userName;
+  final String? userUsername;
+  final String? userAvatarUrl;
+  final int? parentId;
+  final int likesCount;
+  final bool isLiked;
+  final int repliesCount;
+  final List<CommentItem> replies;
   final DateTime createdAt;
 
-  CommentItem({required this.id, required this.content, required this.userName, required this.createdAt});
+  CommentItem({
+    required this.id,
+    required this.content,
+    required this.userId,
+    required this.userName,
+    this.userUsername,
+    this.userAvatarUrl,
+    this.parentId,
+    this.likesCount = 0,
+    this.isLiked = false,
+    this.repliesCount = 0,
+    this.replies = const [],
+    required this.createdAt,
+  });
 
-  factory CommentItem.fromJson(Map<String, dynamic> json) => CommentItem(
-        id: json['id'] as int,
-        content: json['content'] as String,
-        userName: (json['user'] ?? {})['name'] as String? ?? '',
-        createdAt: DateTime.parse(json['created_at'] as String).toLocal(),
-      );
+  factory CommentItem.fromJson(Map<String, dynamic> json) {
+    final user = json['user'] as Map<String, dynamic>? ?? {};
+    final avatarUrl = user['avatar_url'] as String?;
+    return CommentItem(
+      id: json['id'] as int,
+      content: json['content'] as String,
+      userId: user['id'] as int? ?? 0,
+      userName: user['name'] as String? ?? '',
+      userUsername: user['username'] as String?,
+      userAvatarUrl: avatarUrl != null && avatarUrl.isNotEmpty
+          ? (avatarUrl.startsWith('http') ? avatarUrl : 'https://nutrify-app.my.id/$avatarUrl')
+          : null,
+      parentId: json['parent_id'] as int?,
+      likesCount: json['likes_count'] as int? ?? 0,
+      isLiked: json['is_liked'] as bool? ?? false,
+      repliesCount: json['replies_count'] as int? ?? 0,
+      replies: (json['replies'] as List<dynamic>?)
+              ?.map((e) => CommentItem.fromJson(e as Map<String, dynamic>))
+              .toList() ??
+          [],
+      createdAt: DateTime.parse(json['created_at'] as String).toLocal(),
+    );
+  }
 }

@@ -54,6 +54,10 @@ Route::middleware(['supabase.auth'])->group(function () {
     Route::get('/posts/{id}/comments', [PostController::class, 'comments']);
     Route::post('/posts/{id}/comments', [PostController::class, 'storeComment']);
 
+    // Comment Likes & Replies
+    Route::post('/comments/{id}/like', [PostController::class, 'toggleCommentLike']);
+    Route::get('/comments/{id}/replies', [PostController::class, 'commentReplies']);
+
     // Follow System
     Route::post('/users/{id}/follow', [FollowController::class, 'toggleFollow']);
     Route::post('/follow-requests/{id}/approve', [FollowController::class, 'approveFollow']);

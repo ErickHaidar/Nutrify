@@ -117,4 +117,9 @@ class User extends Authenticatable
         return Conversation::where('user1_id', $this->id)
             ->orWhere('user2_id', $this->id);
     }
+
+    public function commentLikes()
+    {
+        return $this->hasMany(CommentLike::class);
+    }
 }
