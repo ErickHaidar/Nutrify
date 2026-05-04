@@ -27,6 +27,7 @@ class _CommentDetailScreenState extends State<CommentDetailScreen> {
   bool _isSending = false;
   CommentItem? _replyTarget;
   final _replyCtrl = TextEditingController();
+  final _replyFocusNode = FocusNode();
 
   @override
   void initState() {
@@ -38,6 +39,7 @@ class _CommentDetailScreenState extends State<CommentDetailScreen> {
   @override
   void dispose() {
     _replyCtrl.dispose();
+    _replyFocusNode.dispose();
     super.dispose();
   }
 
@@ -248,7 +250,7 @@ class _CommentDetailScreenState extends State<CommentDetailScreen> {
                       onTap: () {
                         setState(() {
                           _replyTarget = c;
-                          FocusScope.of(context).requestFocus(FocusNode());
+                          _replyFocusNode.requestFocus();
                         });
                       },
                       child: Text('Balas',
@@ -288,9 +290,15 @@ class _CommentDetailScreenState extends State<CommentDetailScreen> {
                   ),
                   child: Row(
                     children: [
-                      Text('Membalas @${_replyTarget!.userName}',
-                          style: TextStyle(color: AppColors.navy.withValues(alpha: 0.6), fontSize: 12)),
-                      const Spacer(),
+                      Expanded(
+                        child: Text(
+                          'Membalas @${_replyTarget!.userName}',
+                          style: TextStyle(color: AppColors.navy.withValues(alpha: 0.6), fontSize: 12),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
+                      const SizedBox(width: 8),
                       GestureDetector(
                         onTap: () => setState(() => _replyTarget = null),
                         child: Icon(Icons.close, size: 16, color: AppColors.navy.withValues(alpha: 0.5)),
@@ -303,6 +311,7 @@ class _CommentDetailScreenState extends State<CommentDetailScreen> {
                   Expanded(
                     child: TextField(
                       controller: _replyCtrl,
+                      focusNode: _replyFocusNode,
                       enabled: !_isSending,
                       decoration: InputDecoration(
                         hintText: _replyTarget != null ? 'Balas @${_replyTarget!.userName}...' : 'Tulis balasan...',

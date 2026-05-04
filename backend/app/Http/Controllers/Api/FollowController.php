@@ -40,11 +40,9 @@ class FollowController extends Controller
             $wasPending = $existing->status === 'pending';
             $existing->delete();
 
-            $notifType = $wasPending ? 'follow_request' : 'follow';
             Notification::where('user_id', $userId)
                 ->where('actor_id', $currentUserId)
-                ->where('type', $notifType)
-                ->whereNull('read_at')
+                ->whereIn('type', ['follow', 'follow_request'])
                 ->delete();
 
             return response()->json([
@@ -86,16 +84,20 @@ class FollowController extends Controller
                 ]
             );
 
-            if (!empty($targetUser->fcm_token)) {
-                $notification = new PushNotification(
-                    'Permintaan Ikuti',
-                    "{$actor->name} ingin mengikuti Anda",
-                    'follow_request',
-                    ['actor_id' => $currentUserId],
-                    $actor,
-                    null
-                );
-                $notification->send($targetUser);
+            $cacheKey = "follow_spam_{$currentUserId}_{$userId}";
+            if (!\Illuminate\Support\Facades\Cache::has($cacheKey)) {
+                if (!empty($targetUser->fcm_token)) {
+                    $notification = new PushNotification(
+                        'Permintaan Ikuti',
+                        "{$actor->name} ingin mengikuti Anda",
+                        'follow_request',
+                        ['actor_id' => $currentUserId],
+                        $actor,
+                        null
+                    );
+                    $notification->send($targetUser);
+                }
+                \Illuminate\Support\Facades\Cache::put($cacheKey, true, now()->addHours(1));
             }
 
             return response()->json([
@@ -121,16 +123,20 @@ class FollowController extends Controller
             ]
         );
 
-        if (!empty($targetUser->fcm_token)) {
-            $notification = new PushNotification(
-                'Pengikut Baru',
-                "{$actor->name} mulai mengikuti Anda",
-                'follow',
-                ['actor_id' => $currentUserId],
-                $actor,
-                null
-            );
-            $notification->send($targetUser);
+        $cacheKey = "follow_spam_{$currentUserId}_{$userId}";
+        if (!\Illuminate\Support\Facades\Cache::has($cacheKey)) {
+            if (!empty($targetUser->fcm_token)) {
+                $notification = new PushNotification(
+                    'Pengikut Baru',
+                    "{$actor->name} mulai mengikuti Anda",
+                    'follow',
+                    ['actor_id' => $currentUserId],
+                    $actor,
+                    null
+                );
+                $notification->send($targetUser);
+            }
+            \Illuminate\Support\Facades\Cache::put($cacheKey, true, now()->addHours(1));
         }
 
         return response()->json([

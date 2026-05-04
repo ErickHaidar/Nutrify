@@ -24,11 +24,24 @@ class FavoriteApiService {
   }
 
   Future<List<FoodItem>> getRecommendations({int limit = 10}) async {
-    final res = await _dio.dio.get(
-      Endpoints.foodRecommendations,
-      queryParameters: {'limit': limit},
-    );
-    final List<dynamic> data = res.data['data'] ?? [];
-    return data.map((e) => FoodItem.fromJson(e as Map<String, dynamic>)).toList();
+    try {
+      final res = await _dio.dio.get(
+        Endpoints.foodRecommendations,
+        queryParameters: {'limit': limit},
+      );
+      
+      if (res.data == null || res.data is! Map) {
+        return [];
+      }
+
+      final List<dynamic> data = res.data['data'] is List ? res.data['data'] : [];
+      return data
+          .map((e) => FoodItem.fromJson(e as Map<String, dynamic>))
+          .toList();
+    } catch (e) {
+      // Return empty list on error to handle new users or API failures gracefully
+      return [];
+    }
   }
+
 }

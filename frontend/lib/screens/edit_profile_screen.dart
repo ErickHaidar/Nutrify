@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../services/profile_api_service.dart';
@@ -203,7 +204,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         setState(() => _isSaving = false);
         ScaffoldMessenger.of(
           context,
-        ).showSnackBar(SnackBar(content: Text('Gagal menyimpan: $e')));
+        ).showSnackBar(const SnackBar(content: Text('Gagal menyimpan profil. Silakan coba lagi.')));
       }
     }
   }
@@ -251,9 +252,9 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('${AppStrings.failedToPickImage}: $e')),
-        );
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Gagal memilih foto. Silakan coba lagi.')),
+          );
       }
     } finally {
       if (mounted) {
@@ -934,17 +935,18 @@ class ProfileInput extends StatelessWidget {
                 vertical: 16,
               ),
             ),
+            inputFormatters: keyboardType == TextInputType.number ||
+                keyboardType == const TextInputType.numberWithOptions(decimal: true)
+                ? [
+                    FilteringTextInputFormatter.allow(
+                      isDecimal ? RegExp(r'[0-9.]') : RegExp(r'[0-9]'),
+                    ),
+                  ]
+                : null,
             onChanged: isDecimal ? (value) {
               final number = double.tryParse(value);
               final max = maxValue; // Fix type promotion issue
               if (number != null && max != null && number > max) {
-                // Show error real-time jika melebihi batas
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: Text('$fieldName tidak boleh lebih dari $max'),
-                    duration: const Duration(seconds: 2),
-                  ),
-                );
                 // Hapus karakter terakhir
                 final newValue = value.substring(0, value.length - 1);
                 controller.value = TextEditingValue(

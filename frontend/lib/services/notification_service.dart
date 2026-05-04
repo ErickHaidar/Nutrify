@@ -122,16 +122,14 @@ class NotificationService {
   Future<void> registerPushNotifications() async {
     if (!_isFirebaseReady) return;
 
-    // A. Request Permissions
-    final status = await requestPermissions();
-    if (!status) return;
+    // Only check the current permission status — do NOT call requestPermissions()
+    // to avoid showing the OS dialog again when the user simply toggles the switch.
+    final status = await Permission.notification.status;
+    if (!status.isGranted) return;
 
     try {
-      // B. Get FCM Token
       String? token = await FirebaseMessaging.instance.getToken();
       if (token != null) {
-        print("FCM Token: $token");
-        // C. Send to Server (Supabase via ProfileApiService)
         await getIt<ProfileApiService>().updateFcmToken(token);
       }
     } catch (e) {
@@ -141,31 +139,30 @@ class NotificationService {
 
   Future<bool> requestPermissions() async {
     if (Platform.isAndroid || Platform.isIOS) {
-      // 1. Request Notification Permission
       var status = await Permission.notification.status;
-      if (status.isDenied) {
+
+      // Only prompt the OS dialog if not already granted and not permanently denied
+      if (!status.isGranted && !status.isPermanentlyDenied) {
         status = await Permission.notification.request();
       }
-      
-      // 2. Request Exact Alarm Permission (Android 12+)
+
+      if (status.isPermanentlyDenied || status.isDenied) {
+        return false;
+      }
+
+      // Request Exact Alarm Permission (Android 12+) — only once if not granted
       if (Platform.isAndroid) {
-        var alarmStatus = await Permission.scheduleExactAlarm.status;
-        if (alarmStatus.isDenied) {
+        final alarmStatus = await Permission.scheduleExactAlarm.status;
+        if (!alarmStatus.isGranted && !alarmStatus.isPermanentlyDenied) {
           await Permission.scheduleExactAlarm.request();
         }
       }
 
-      if (status.isPermanentlyDenied) {
-        return false;
-      }
-      
-      // Also request via FCM specifically for iOS if Firebase is ready
+      // iOS FCM permission (only if not already set)
       if (Platform.isIOS && _isFirebaseReady) {
         try {
           await FirebaseMessaging.instance.requestPermission(
-            alert: true,
-            badge: true,
-            sound: true,
+            alert: true, badge: true, sound: true,
           );
         } catch (e) {}
       }

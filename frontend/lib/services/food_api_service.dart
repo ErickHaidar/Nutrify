@@ -28,17 +28,18 @@ class FoodItem {
   });
 
   factory FoodItem.fromJson(Map<String, dynamic> json) => FoodItem(
-    id: json['id'] as int,
-    name: json['name'] as String,
-    servingSize: json['serving_size'] as String? ?? '100g',
-    calories: (json['calories'] as num).toDouble(),
-    protein: (json['protein'] as num).toDouble(),
-    carbohydrates: (json['carbohydrates'] as num).toDouble(),
-    fat: (json['fat'] as num).toDouble(),
+    id: json['id'] as int? ?? 0,
+    name: json['name'] as String? ?? 'Tidak diketahui',
+    servingSize: json['serving_size'] as String? ?? '1 porsi',
+    calories: (json['calories'] as num? ?? 0).toDouble(),
+    protein: (json['protein'] as num? ?? 0).toDouble(),
+    carbohydrates: (json['carbohydrates'] as num? ?? 0).toDouble(),
+    fat: (json['fat'] as num? ?? 0).toDouble(),
     sugar: (json['sugar'] as num?)?.toDouble() ?? 0,
     sodium: (json['sodium'] as num?)?.toDouble() ?? 0,
     fiber: (json['fiber'] as num?)?.toDouble() ?? 0,
   );
+
 }
 
 class FoodApiService {

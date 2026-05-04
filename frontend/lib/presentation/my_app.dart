@@ -21,6 +21,10 @@ class MyApp extends StatefulWidget {
   static final GlobalKey<NavigatorState> navigatorKey =
       GlobalKey<NavigatorState>();
 
+  // Flag to prevent double-navigation: when LoginScreen handles navigation itself,
+  // it sets this flag so the auth listener doesn't also navigate.
+  static bool isHandlingLoginNavigation = false;
+
   @override
   State<MyApp> createState() => _MyAppState();
 }
@@ -67,10 +71,16 @@ class _MyAppState extends State<MyApp> {
               getIt<NotificationService>().scheduleMealReminders();
             }
           } catch (_) {}
-          MyApp.navigatorKey.currentState?.pushNamedAndRemoveUntil(
-            Routes.home,
-            (route) => false,
-          );
+          // BUG 10 FIX: Don't auto-navigate on signedIn - let the login screen handle navigation
+          // The login screen's success reaction already handles this.
+          // Only navigate if we're NOT coming from the login flow (e.g., token refresh, session recovery)
+          // We can detect this by checking if _userStore.success was recently set
+          if (!_userStore.success && !MyApp.isHandlingLoginNavigation) {
+            MyApp.navigatorKey.currentState?.pushNamedAndRemoveUntil(
+              Routes.home,
+              (route) => false,
+            );
+          }
         } else if (data.event == AuthChangeEvent.tokenRefreshed) {
           // Supabase auto-refresh token — simpan token baru ke SharedPrefs
           // supaya Dio AuthInterceptor selalu gunakan token terbaru

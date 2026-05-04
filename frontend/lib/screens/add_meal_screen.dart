@@ -598,7 +598,7 @@ class _AddMealScreenState extends State<AddMealScreen> {
                           const SizedBox(height: 12),
                           Text(
                             _filterMode == 'recommendations'
-                                ? 'Belum ada rekomendasi.\nMulai catat makanan Anda!'
+                                ? 'Mulai catat makanan untuk mendapatkan rekomendasi!'
                                 : _filterMode == 'favorites'
                                     ? 'Belum ada makanan favorit.'
                                     : AppStrings.noResultsFound,
@@ -608,6 +608,7 @@ class _AddMealScreenState extends State<AddMealScreen> {
                               fontSize: 14,
                             ),
                           ),
+
                         ],
                       ),
                     ),

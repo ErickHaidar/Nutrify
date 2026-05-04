@@ -25,7 +25,11 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
   bool _isLoadingComments = true;
   bool _isSending = false;
   final _commentCtrl = TextEditingController();
+  final _commentFocusNode = FocusNode();
+  final Set<int> _loadingReplies = {};
   CommentItem? _replyTarget;
+  bool _isLikingPost = false;
+  double _likeScale = 1.0;
 
   @override
   void initState() {
@@ -36,6 +40,7 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
   @override
   void dispose() {
     _commentCtrl.dispose();
+    _commentFocusNode.dispose();
     super.dispose();
   }
 
@@ -60,9 +65,13 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
     setState(() => _isSending = true);
 
     try {
+      String textToSend = text;
+      if (_replyTarget != null && !text.startsWith('@${_replyTarget!.userName}')) {
+        textToSend = '@${_replyTarget!.userName} $text';
+      }
       final newComment = await widget.api.addComment(
         int.parse(widget.post.id),
-        text,
+        textToSend,
         parentId: _replyTarget?.id,
       );
       _commentCtrl.clear();
@@ -72,7 +81,8 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
           _isSending = false;
           if (target != null) {
             // Add reply to parent's replies list
-            final idx = _comments.indexWhere((c) => c.id == target.id);
+            final topLevelId = target.parentId ?? target.id;
+            final idx = _comments.indexWhere((c) => c.id == topLevelId);
             if (idx != -1) {
               final parent = _comments[idx];
               _comments[idx] = CommentItem(
@@ -102,7 +112,18 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
     }
   }
 
+  void _animateLike() {
+    setState(() => _likeScale = 0.8);
+    Future.delayed(const Duration(milliseconds: 100), () {
+      if (mounted) setState(() => _likeScale = 1.0);
+    });
+  }
+
   void _toggleLike() async {
+    if (_isLikingPost) return; // Debounce
+    _isLikingPost = true;
+    _animateLike();
+    
     final wasLiked = widget.post.isLiked;
     setState(() {
       widget.post.isLiked = !widget.post.isLiked;
@@ -123,6 +144,8 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
           wasLiked ? widget.post.likes++ : widget.post.likes--;
         });
       }
+    } finally {
+      _isLikingPost = false;
     }
   }
 
@@ -190,9 +213,38 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
     }
   }
 
-  void _openCommentDetail(CommentItem c) async {
+  Future<void> _loadMoreReplies(CommentItem c, int parentIndex) async {
+    if (_loadingReplies.contains(c.id)) return;
+    setState(() => _loadingReplies.add(c.id));
+
+    try {
+      final page = (c.replies.length ~/ 10) + 1;
+      final newReplies = await widget.api.getCommentReplies(c.id, page: page);
+      
+      if (mounted) {
+        setState(() {
+          _loadingReplies.remove(c.id);
+          
+          final existingIds = c.replies.map((r) => r.id).toSet();
+          final merged = List<CommentItem>.from(c.replies);
+          for (var r in newReplies) {
+            if (!existingIds.contains(r.id)) merged.add(r);
+          }
+          
+          final updated = CommentItem(
+            id: c.id, content: c.content, userId: c.userId, userName: c.userName, userUsername: c.userUsername, userAvatarUrl: c.userAvatarUrl, parentId: c.parentId, likesCount: c.likesCount, isLiked: c.isLiked, repliesCount: c.repliesCount, replies: merged, createdAt: c.createdAt,
+          );
+          _comments[parentIndex] = updated;
+        });
+      }
+    } catch (_) {
+      if (mounted) setState(() => _loadingReplies.remove(c.id));
+    }
+  }
+
+  void _openCommentDetail(CommentItem comment) async {
     await Navigator.push(context, MaterialPageRoute(
-      builder: (_) => CommentDetailScreen(comment: c, api: widget.api, postId: int.parse(widget.post.id)),
+      builder: (_) => CommentDetailScreen(comment: comment, api: widget.api, postId: int.parse(widget.post.id)),
     ));
     _fetchComments();
   }
@@ -225,6 +277,7 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
 
     return Scaffold(
       backgroundColor: AppColors.cream,
+      resizeToAvoidBottomInset: true,
       appBar: AppBar(
         backgroundColor: AppColors.cream,
         elevation: 0,
@@ -266,8 +319,12 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
                         Expanded(
                           child: TextButton.icon(
                             onPressed: _toggleLike,
-                            icon: Icon(post.isLiked ? Icons.favorite : Icons.favorite_border,
-                                color: post.isLiked ? Colors.red : AppColors.navy.withValues(alpha: 0.7), size: 22),
+                            icon: AnimatedScale(
+                              scale: _likeScale,
+                              duration: const Duration(milliseconds: 150),
+                              child: Icon(post.isLiked ? Icons.favorite : Icons.favorite_border,
+                                  color: post.isLiked ? Colors.red : AppColors.navy.withValues(alpha: 0.7), size: 22),
+                            ),
                             label: Text(post.isLiked ? 'Disukai' : 'Suka',
                                 style: TextStyle(color: post.isLiked ? Colors.red : AppColors.navy.withValues(alpha: 0.7), fontWeight: FontWeight.w600)),
                           ),
@@ -343,28 +400,57 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
           if (c.repliesCount > c.replies.length)
             Padding(
               padding: const EdgeInsets.only(left: 42),
-              child: GestureDetector(
-                onTap: () => _openCommentDetail(c),
-                child: Text(
-                  'Lihat ${c.repliesCount - c.replies.length} balasan lainnya',
-                  style: TextStyle(color: AppColors.navy.withValues(alpha: 0.6), fontSize: 12, fontWeight: FontWeight.w600),
-                ),
-              ),
+              child: _loadingReplies.contains(c.id)
+                  ? const SizedBox(width: 14, height: 14, child: CircularProgressIndicator(strokeWidth: 2, color: AppColors.navy))
+                  : GestureDetector(
+                      onTap: () => _loadMoreReplies(c, parentIndex),
+                      child: Text(
+                        'Lihat ${c.repliesCount - c.replies.length} balasan lainnya',
+                        style: TextStyle(color: AppColors.navy.withValues(alpha: 0.6), fontSize: 12, fontWeight: FontWeight.w600),
+                      ),
+                    ),
             ),
         ] else if (c.repliesCount > 0) ...[
           const SizedBox(height: 4),
           Padding(
             padding: const EdgeInsets.only(left: 42),
-            child: GestureDetector(
-              onTap: () => _openCommentDetail(c),
-              child: Text(
-                'Lihat ${c.repliesCount} balasan',
-                style: TextStyle(color: AppColors.navy.withValues(alpha: 0.6), fontSize: 12, fontWeight: FontWeight.w600),
-              ),
-            ),
+            child: _loadingReplies.contains(c.id)
+                ? const SizedBox(width: 14, height: 14, child: CircularProgressIndicator(strokeWidth: 2, color: AppColors.navy))
+                : GestureDetector(
+                    onTap: () => _loadMoreReplies(c, parentIndex),
+                    child: Text(
+                      'Lihat ${c.repliesCount} balasan',
+                      style: TextStyle(color: AppColors.navy.withValues(alpha: 0.6), fontSize: 12, fontWeight: FontWeight.w600),
+                    ),
+                  ),
           ),
         ],
       ],
+    );
+  }
+
+  Widget _buildContentWithMentions(String content, {required double fontSize}) {
+    final regex = RegExp(r'(@\w+)');
+    final spans = <TextSpan>[];
+    int lastEnd = 0;
+    for (final match in regex.allMatches(content)) {
+      if (match.start > lastEnd) {
+        spans.add(TextSpan(text: content.substring(lastEnd, match.start)));
+      }
+      spans.add(TextSpan(
+        text: match.group(0),
+        style: TextStyle(color: AppColors.navy, fontWeight: FontWeight.bold, fontSize: fontSize),
+      ));
+      lastEnd = match.end;
+    }
+    if (lastEnd < content.length) {
+      spans.add(TextSpan(text: content.substring(lastEnd)));
+    }
+    return RichText(
+      text: TextSpan(
+        style: TextStyle(color: AppColors.navy.withValues(alpha: 0.8), fontSize: fontSize, height: 1.4),
+        children: spans,
+      ),
     );
   }
 
@@ -406,8 +492,7 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
                   ]),
                 ),
                 const SizedBox(height: 2),
-                Text(c.content,
-                    style: TextStyle(color: AppColors.navy.withValues(alpha: 0.8), fontSize: isReply ? 12 : 13, height: 1.4)),
+                _buildContentWithMentions(c.content, fontSize: isReply ? 12 : 13),
                 const SizedBox(height: 4),
                 Row(
                   children: [
@@ -434,7 +519,7 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
                       onTap: () {
                         setState(() {
                           _replyTarget = c;
-                          FocusScope.of(context).requestFocus(FocusNode());
+                          _commentFocusNode.requestFocus();
                         });
                       },
                       child: Text('Balas',
@@ -474,9 +559,15 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
                   ),
                   child: Row(
                     children: [
-                      Text('Membalas @${_replyTarget!.userName}',
-                          style: TextStyle(color: AppColors.navy.withValues(alpha: 0.6), fontSize: 12)),
-                      const Spacer(),
+                      Expanded(
+                        child: Text(
+                          'Membalas @${_replyTarget!.userName}',
+                          style: TextStyle(color: AppColors.navy.withValues(alpha: 0.6), fontSize: 12),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
+                      const SizedBox(width: 8),
                       GestureDetector(
                         onTap: () => setState(() => _replyTarget = null),
                         child: Icon(Icons.close, size: 16, color: AppColors.navy.withValues(alpha: 0.5)),
@@ -489,6 +580,7 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
                   Expanded(
                     child: TextField(
                       controller: _commentCtrl,
+                      focusNode: _commentFocusNode,
                       enabled: !_isSending,
                       decoration: InputDecoration(
                         hintText: _replyTarget != null ? 'Balas @${_replyTarget!.userName}...' : 'Tulis komentar...',

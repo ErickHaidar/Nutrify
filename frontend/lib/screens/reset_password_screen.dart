@@ -105,7 +105,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
               Text(
                 AppStrings.newPassword,
                 style: TextStyle(
-                  color: Colors.white.withOpacity(0.85),
+                  color: AppColors.navy,
                   fontSize: 13,
                   fontWeight: FontWeight.w600,
                 ),
@@ -122,7 +122,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
               Text(
                 AppStrings.confirmPassword,
                 style: TextStyle(
-                  color: Colors.white.withOpacity(0.85),
+                  color: AppColors.navy,
                   fontSize: 13,
                   fontWeight: FontWeight.w600,
                 ),

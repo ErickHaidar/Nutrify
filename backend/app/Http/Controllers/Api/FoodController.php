@@ -26,8 +26,16 @@ class FoodController extends Controller
 
     public function recommendations(Request $request)
     {
-        $limit = $request->query('limit', 10);
+        $limit = (int) $request->query('limit', 10);
         $userId = Auth::id();
+
+        if (!$userId) {
+            return response()->json([
+                'success' => true,
+                'data' => [],
+                'message' => 'User tidak terautentikasi.'
+            ]);
+        }
 
         $topFoodIds = FoodLog::where('user_id', $userId)
             ->selectRaw('food_id, COUNT(*) as total')

@@ -18,6 +18,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:supabase_flutter/supabase_flutter.dart' as sb;
 import 'package:nutrify/screens/otp_verification_screen.dart';
 import 'package:nutrify/services/notification_service.dart';
+import 'package:nutrify/presentation/my_app.dart';
 
 import '../../di/service_locator.dart';
 
@@ -415,9 +416,24 @@ color: Colors.white,
           child: GestureDetector(
             onTap: () async {
               try {
+                MyApp.isHandlingLoginNavigation = true;
                 await _userStore.signInWithGoogle();
               } catch (e) {
-                _showErrorMessage('${AppStrings.googleLoginFailed}: $e');
+                String errorMsg = e.toString();
+                if (errorMsg.contains('ApiException: 10')) {
+                  errorMsg = 'Konfigurasi SHA-1 belum terdaftar di Google Cloud Console.';
+                } else if (errorMsg.contains('sign_in_canceled') || errorMsg.contains('canceled')) {
+                  errorMsg = 'Login Google dibatalkan.';
+                } else if (errorMsg.contains('network_error')) {
+                  errorMsg = 'Masalah jaringan. Periksa koneksi internet Anda.';
+                } else {
+                  // Jika pesan error terlalu panjang dan tidak ada spasinya, kita bisa memotongnya agar tidak membuat dialog jelek
+                  if (errorMsg.length > 100) {
+                     errorMsg = errorMsg.substring(0, 100) + '...';
+                  }
+                }
+                _showErrorMessage('${AppStrings.googleLoginFailed}:\n$errorMsg');
+                MyApp.isHandlingLoginNavigation = false;
               }
             },
             child: Container(
@@ -524,6 +540,7 @@ color: Colors.white,
   }
 
   void _handleNavigation() async {
+    MyApp.isHandlingLoginNavigation = true;
     SharedPreferences.getInstance().then((prefs) {
       prefs.setBool(Preferences.is_logged_in, true);
     });
@@ -540,6 +557,10 @@ color: Colors.white,
       Routes.home,
       (Route<dynamic> route) => false
     );
+    // Reset flag after navigation is complete
+    Future.delayed(const Duration(seconds: 2), () {
+      MyApp.isHandlingLoginNavigation = false;
+    });
   }
 
   // General Methods:-----------------------------------------------------------
@@ -765,7 +786,7 @@ class _ForgotPasswordDialogContentState
       }
       if (msg.contains('user already registered') ||
           msg.contains('already registered')) {
-        return 'Email sudah terdaftar, silakan login';
+        return 'Email sudah terdaftar. Jika Anda mendaftar menggunakan Google, gunakan tombol Google untuk login.';
       }
       if (msg.contains('password should be at least') ||
           msg.contains('weak_password')) {
@@ -1163,7 +1184,7 @@ class _SignUpModalContentState extends State<_SignUpModalContent> {
       }
       if (msg.contains('user already registered') ||
           msg.contains('already registered')) {
-        return AppStrings.emailAlreadyRegistered;
+        return 'Email sudah terdaftar. Jika Anda mendaftar menggunakan Google, gunakan tombol Google untuk login.';
       }
       if (msg.contains('password should be at least') ||
           msg.contains('weak_password')) {
@@ -1228,6 +1249,16 @@ class _CheckEmailModalContent extends StatelessWidget {
                     fontSize: 14,
                     color: NutrifyTheme.darkCard,
                     fontWeight: FontWeight.normal,
+                  ),
+                ),
+                const SizedBox(height: 12),
+                Text(
+                  'Jika akun Anda terdaftar menggunakan Google, gunakan tombol "Masuk dengan Google" untuk login.',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    color: NutrifyTheme.darkCard.withOpacity(0.6),
+                    fontSize: 12,
+                    fontStyle: FontStyle.italic,
                   ),
                 ),
                 const SizedBox(height: 32),

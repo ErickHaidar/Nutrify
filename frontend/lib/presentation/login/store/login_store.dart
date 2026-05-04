@@ -116,9 +116,21 @@ abstract class _UserStore with Store {
       success = true;
     } catch (e) {
       final prefs = getIt<SharedPreferences>();
-    prefs.remove('profile_image');
-    isLoggedIn = false;
+      prefs.remove('profile_image');
+      isLoggedIn = false;
       success = false;
+      
+      // Bug 11 fix: handle provider mismatch error
+      if (e is sb.AuthException) {
+        final msg = e.message.toLowerCase();
+        if (msg.contains('email already in use') ||
+            msg.contains('already registered') ||
+            msg.contains('user already registered')) {
+          errorStore.errorMessage = 'Email ini sudah terdaftar menggunakan email dan password. Silakan login menggunakan email dan password.';
+          return; // Don't rethrow - we handled it
+        }
+      }
+      
       errorStore.errorMessage = _parseAuthError(e);
       rethrow;
     } finally {
@@ -205,7 +217,7 @@ abstract class _UserStore with Store {
       final msg = e.message.toLowerCase();
       if (msg.contains('invalid login credentials') ||
           msg.contains('invalid_credentials')) {
-        return 'Email atau password salah';
+        return 'Email atau password salah. Jika Anda mendaftar menggunakan Google, silakan gunakan tombol "Masuk dengan Google".';
       }
       if (msg.contains('email not confirmed')) {
         return 'Cek email Anda untuk konfirmasi akun terlebih dahulu';

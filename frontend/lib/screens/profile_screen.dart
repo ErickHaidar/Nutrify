@@ -36,6 +36,7 @@ class ProfileScreenState extends State<ProfileScreen>
   bool _isLoading = true;
   String? _profileImagePath;
   bool _notificationsEnabled = true;
+  bool _isTogglingNotif = false; // Guard against spam-clicking
   XFile? _profileImage;
   bool _isPhotoChanged = false;
   final ImagePicker _picker = getIt<ImagePicker>();
@@ -100,39 +101,47 @@ class ProfileScreenState extends State<ProfileScreen>
   }
 
   Future<void> _toggleNotifications(bool value) async {
+    // Prevent spam: ignore if already in progress
+    if (_isTogglingNotif) return;
+    setState(() => _isTogglingNotif = true);
+
     final prefs = getIt<SharedPreferences>();
     final notificationService = getIt<NotificationService>();
 
-    if (value) {
-      setState(() => _notificationsEnabled = true);
-      final granted = await notificationService.requestPermissions();
-      if (granted) {
-        await prefs.setBool('notifications_enabled', true);
-        await notificationService.scheduleMealReminders();
-        await notificationService.registerPushNotifications();
-        if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(AppStrings.notifEnabled)),
-          );
+    try {
+      if (value) {
+        setState(() => _notificationsEnabled = true);
+        final granted = await notificationService.requestPermissions();
+        if (granted) {
+          await prefs.setBool('notifications_enabled', true);
+          await notificationService.scheduleMealReminders();
+          await notificationService.registerPushNotifications();
+          if (mounted) {
+            ScaffoldMessenger.of(context)
+              ..clearSnackBars()
+              ..showSnackBar(SnackBar(content: Text(AppStrings.notifEnabled)));
+          }
+        } else {
+          setState(() => _notificationsEnabled = false);
+          await prefs.setBool('notifications_enabled', false);
+          if (mounted) {
+            ScaffoldMessenger.of(context)
+              ..clearSnackBars()
+              ..showSnackBar(SnackBar(content: Text(AppStrings.notifDenied)));
+          }
         }
       } else {
         setState(() => _notificationsEnabled = false);
         await prefs.setBool('notifications_enabled', false);
+        await notificationService.cancelAllNotifications();
         if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(AppStrings.notifDenied)),
-          );
+          ScaffoldMessenger.of(context)
+            ..clearSnackBars()
+            ..showSnackBar(SnackBar(content: Text(AppStrings.notifDisabled)));
         }
       }
-    } else {
-      setState(() => _notificationsEnabled = false);
-      await prefs.setBool('notifications_enabled', false);
-      await notificationService.cancelAllNotifications();
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(AppStrings.notifDisabled)),
-        );
-      }
+    } finally {
+      if (mounted) setState(() => _isTogglingNotif = false);
     }
   }
 
@@ -307,6 +316,9 @@ class ProfileScreenState extends State<ProfileScreen>
                             if (mounted) {
                               Navigator.pop(ctx);
                               _loadSocialProfile();
+                              // BUG 6 FIX: Also refresh body profile and invalidate cache
+                              ProfileApiService.invalidateCache();
+                              loadProfile();
                             }
                           } catch (e) {
                             if (mounted) {
@@ -848,7 +860,7 @@ class ProfileScreenState extends State<ProfileScreen>
               onPressed: () => _toggleNotifications(!_notificationsEnabled),
               trailing: Switch.adaptive(
                 value: _notificationsEnabled,
-                onChanged: (val) => _toggleNotifications(val),
+                onChanged: null, // Let the row's onPressed handle it
                 activeColor: AppColors.navy,
               )),
           const SizedBox(height: 12),
