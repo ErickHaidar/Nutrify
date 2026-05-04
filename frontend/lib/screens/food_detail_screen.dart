@@ -34,7 +34,7 @@ class _FoodDetailScreenState extends State<FoodDetailScreen> {
   final _amountController = TextEditingController();
   final _foodLogApi = FoodLogApiService();
   
-  String _selectedUnit = AppStrings.gram; // Use AppStrings for units
+  String _selectedUnit = AppStrings.serving; // Use AppStrings for units
   bool _isSaving = false;
 
   late String _foodName;
@@ -66,9 +66,9 @@ class _FoodDetailScreenState extends State<FoodDetailScreen> {
       _baseProtein = f.protein;
       _baseCarbos = f.carbohydrates;
       _baseFat = f.fat;
-      
-      _amountController.text = '100';
-      _selectedUnit = AppStrings.gram;
+
+      _amountController.text = '1';
+      _selectedUnit = AppStrings.serving;
     }
   }
 
@@ -273,7 +273,20 @@ class _FoodDetailScreenState extends State<FoodDetailScreen> {
   Widget _buildUnitButton(String unit) {
     bool isSelected = _selectedUnit == unit;
     return GestureDetector(
-      onTap: () => setState(() => _selectedUnit = unit),
+      onTap: () {
+        if (!isSelected) {
+          // Reset to sensible default for the new unit
+          final defaults = {
+            AppStrings.gram: '100',
+            AppStrings.piece: '1',
+            AppStrings.serving: '1',
+          };
+          setState(() {
+            _selectedUnit = unit;
+            _amountController.text = defaults[unit] ?? '100';
+          });
+        }
+      },
       child: Container(
         padding: const EdgeInsets.symmetric(vertical: 12),
         decoration: BoxDecoration(

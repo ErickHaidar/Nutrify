@@ -563,79 +563,16 @@ class _AddMealScreenState extends State<AddMealScreen> {
             ),
           ),
 
-          // Category row
-          Padding(
-            padding: const EdgeInsets.fromLTRB(24, 8, 8, 0),
-            child: SizedBox(
-              height: 70,
-              child: ListView.separated(
-                scrollDirection: Axis.horizontal,
-                itemCount: _categories.length,
-                separatorBuilder: (_, __) => const SizedBox(width: 12),
-                itemBuilder: (_, i) {
-                  final cat = _categories[i];
-                  final isSelected = _selectedCategory == cat["name"];
-                  return GestureDetector(
-                    onTap: () {
-                      setState(() {
-                        _selectedCategory = isSelected ? "" : cat["name"] as String;
-                      });
-                      if (_filterMode == 'favorites') {
-                        _loadFavoritesList();
-                      } else if (_filterMode == 'recommendations') {
-                        _loadRecommendationsList();
-                      } else {
-                        final query = _searchController.text.trim();
-                        if (query.isEmpty && _selectedCategory.isNotEmpty) {
-                          _search(_selectedCategory.toLowerCase());
-                        } else {
-                          _search(query);
-                        }
-                      }
-                    },
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Container(
-                          width: 44,
-                          height: 44,
-                          decoration: BoxDecoration(
-                            color: isSelected ? AppColors.navy : AppColors.peach,
-                            shape: BoxShape.circle,
-                          ),
-                          child: Icon(
-                            cat["icon"] as IconData,
-                            color: isSelected ? Colors.white : AppColors.navy,
-                            size: 22,
-                          ),
-                        ),
-                        const SizedBox(height: 4),
-                        Text(
-                          cat["name"] as String,
-                          style: TextStyle(
-                            color: AppColors.navy,
-                            fontSize: 11,
-                            fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
-                          ),
-                        ),
-                      ],
-                    ),
-                  );
-                },
-              ),
-            ),
-          ),
-
-          // Filter chips: Semua | Favorit | Rekomendasi
+          // Filter chips: Semua | Rekomendasi | Favorit
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 8),
             child: Row(
               children: [
                 _buildFilterChip('Semua', 'all'),
                 const SizedBox(width: 8),
-                _buildFilterChip('Favorit', 'favorites'),
-                const SizedBox(width: 8),
                 _buildFilterChip('Rekomendasi', 'recommendations'),
+                const SizedBox(width: 8),
+                _buildFilterChip('Favorit', 'favorites'),
               ],
             ),
           ),
@@ -662,11 +599,9 @@ class _AddMealScreenState extends State<AddMealScreen> {
                           Text(
                             _filterMode == 'recommendations'
                                 ? 'Belum ada rekomendasi.\nMulai catat makanan Anda!'
-                                : _selectedCategory.isNotEmpty
-                                    ? 'Tidak ada makanan untuk kategori ini.'
-                                    : _searchController.text.isEmpty
-                                        ? AppStrings.noFoodAdded
-                                        : AppStrings.noResultsFound,
+                                : _filterMode == 'favorites'
+                                    ? 'Belum ada makanan favorit.'
+                                    : AppStrings.noResultsFound,
                             textAlign: TextAlign.center,
                             style: TextStyle(
                               color: AppColors.navy.withOpacity(0.5),
