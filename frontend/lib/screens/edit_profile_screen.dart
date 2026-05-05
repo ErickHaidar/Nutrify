@@ -140,7 +140,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     // Validasi input
     if (height == 0 || weight == 0 || age == 0) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Isi semua kolom dengan benar')),
+        SnackBar(content: Text(AppStrings.fillFieldsCorrectly)),
       );
       return;
     }
@@ -148,21 +148,21 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     // Validasi batasan wajar
     if (age < 13 || age > 100) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Usia harus antara 13-100 tahun')),
+        SnackBar(content: Text(AppStrings.ageValidation)),
       );
       return;
     }
 
     if (weight < 25 || weight > 300) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Berat badan harus antara 25-300 kg')),
+        SnackBar(content: Text(AppStrings.weightValidation)),
       );
       return;
     }
 
     if (height < 100 || height > 250) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Tinggi badan harus antara 100-250 cm')),
+        SnackBar(content: Text(AppStrings.heightValidation)),
       );
       return;
     }
@@ -204,7 +204,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         setState(() => _isSaving = false);
         ScaffoldMessenger.of(
           context,
-        ).showSnackBar(const SnackBar(content: Text('Gagal menyimpan profil. Silakan coba lagi.')));
+        ).showSnackBar(SnackBar(content: Text(AppStrings.failedToSaveProfile)));
       }
     }
   }
@@ -225,9 +225,9 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
           // Tambahkan pengecekan context.mounted di sini
           if (!context.mounted) return;
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('Ukuran foto terlalu besar. Maksimal 10 MB.'),
-              duration: Duration(seconds: 4),
+            SnackBar(
+              content: Text(AppStrings.photoSizeTooLarge),
+              duration: const Duration(seconds: 4),
             ),
           );
           return;
@@ -253,7 +253,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     } catch (e) {
       if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Gagal memilih foto. Silakan coba lagi.')),
+            SnackBar(content: Text(AppStrings.failedToPickPhoto)),
           );
       }
     } finally {
@@ -535,9 +535,9 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
               dropdownColor: const Color(0xFF2D2A4A),
               style: const TextStyle(color: Colors.white, fontSize: 15),
               iconEnabledColor: const Color(0xFFFFCC80),
-              items: const [
-                DropdownMenuItem(value: 'male', child: Text('Laki-Laki')),
-                DropdownMenuItem(value: 'female', child: Text('Perempuan')),
+              items: [
+                DropdownMenuItem(value: 'male', child: Text(AppStrings.male)),
+                DropdownMenuItem(value: 'female', child: Text(AppStrings.female)),
               ],
               onChanged: (v) {
                 if (v != null) setState(() => _gender = v);
@@ -550,10 +550,10 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   }
 
   Widget _buildGoalDropdown() {
-    const goals = {
-      'cutting': 'Cutting (Defisit)',
-      'maintenance': 'Maintenance',
-      'bulking': 'Bulking (Surplus)',
+    final goals = {
+      'cutting': AppStrings.cuttingLabel,
+      'maintenance': AppStrings.maintenanceLabel,
+      'bulking': AppStrings.bulkingLabel,
     };
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -725,9 +725,9 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       ),
       child: Column(
         children: [
-          const Text(
-            'Estimated Daily Calorie Target',
-            style: TextStyle(color: AppColors.navy, fontSize: 13),
+          Text(
+            AppStrings.estimatedDailyTarget,
+            style: const TextStyle(color: AppColors.navy, fontSize: 13),
           ),
           const SizedBox(height: 8),
           Text(
@@ -922,10 +922,10 @@ class ProfileInput extends StatelessWidget {
     final value = double.tryParse(controller.text);
     if (value == null) return '';
     if (minValue != null && value < minValue!) {
-      return 'Minimal $minValue${unit != null ? ' $unit' : ''}';
+      return AppStrings.minLabel(minValue, unit);
     }
     if (maxValue != null && value > maxValue!) {
-      return 'Maksimal $maxValue${unit != null ? ' $unit' : ''}';
+      return AppStrings.maxLabel(maxValue, unit);
     }
     return '';
   }

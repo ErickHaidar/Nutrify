@@ -6,6 +6,7 @@ import 'package:nutrify/core/widgets/empty_app_bar_widget.dart';
 import 'package:nutrify/core/widgets/progress_indicator_widget.dart';
 import 'package:nutrify/data/sharedpref/constants/preferences.dart';
 import 'package:nutrify/presentation/login/store/login_store.dart';
+import 'package:nutrify/presentation/home/store/language/language_store.dart';
 import 'package:nutrify/utils/device/device_utils.dart';
 import 'package:nutrify/utils/locale/app_localization.dart';
 import 'package:nutrify/utils/locale/app_strings.dart';
@@ -86,6 +87,7 @@ class _LoginScreenState extends State<LoginScreen> {
     return Stack(
       children: <Widget>[
         Center(child: _buildRightSide()),
+        Positioned(top: 10, right: 16, child: _buildLanguageToggle()),
         // Removing the old Observer-based error side effect which caused assertion errors
         Observer(
           builder: (context) {
@@ -365,7 +367,7 @@ color: Colors.white,
           elevation: 5,
         ),
         child: Text(
-          'Masuk',
+          AppStrings.login,
           style: TextStyle(
             color: Colors.white,
             fontSize: 20,
@@ -383,7 +385,7 @@ color: Colors.white,
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16.0),
           child: Text(
-            'ATAU',
+            AppStrings.or_,
             style: TextStyle(
               color: NutrifyTheme.accentOrange,
               fontWeight: FontWeight.bold,
@@ -612,6 +614,100 @@ color: Colors.white,
       );
     }
     return const SizedBox.shrink();
+  }
+
+    Widget _buildLanguageToggle() {
+    return Observer(
+      builder: (_) {
+        final _langStore = getIt<LanguageStore>();
+        return TextButton.icon(
+          onPressed: () => _showLanguagePicker(_langStore),
+          icon: const Icon(Icons.language, color: NutrifyTheme.darkCard, size: 20),
+          label: Text(
+            _langStore.locale == 'id' ? 'ID' : 'EN',
+            style: const TextStyle(color: NutrifyTheme.darkCard, fontWeight: FontWeight.bold),
+          ),
+        );
+      }
+    );
+  }
+
+  void _showLanguagePicker(LanguageStore languageStore) {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: NutrifyTheme.lightCard,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (ctx) => SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 24),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Container(
+                width: 40,
+                height: 4,
+                decoration: BoxDecoration(
+                  color: NutrifyTheme.darkCard.withOpacity(0.3),
+                  borderRadius: BorderRadius.circular(2),
+                ),
+              ),
+              const SizedBox(height: 20),
+              Text(AppStrings.chooseLanguage,
+                  style: const TextStyle(
+                      color: NutrifyTheme.darkCard,
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold)),
+              const SizedBox(height: 20),
+              _buildLanguageOption(ctx, languageStore, flag: '🇮🇩', label: 'Bahasa Indonesia', locale: 'id'),
+              const SizedBox(height: 12),
+              _buildLanguageOption(ctx, languageStore, flag: '🇺🇸', label: 'English', locale: 'en'),
+              const SizedBox(height: 16),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildLanguageOption(BuildContext ctx, LanguageStore languageStore,
+      {required String flag, required String label, required String locale}) {
+    final isSelected = AppStrings.currentLocale == locale;
+    return GestureDetector(
+      onTap: () {
+        languageStore.changeLanguage(locale);
+        Navigator.pop(ctx);
+        setState(() {}); // refresh the whole screen to apply AppStrings
+      },
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+        decoration: BoxDecoration(
+          color: isSelected ? NutrifyTheme.darkCard : Colors.white,
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(
+            color: isSelected ? NutrifyTheme.darkCard : NutrifyTheme.darkCard.withOpacity(0.1),
+          ),
+        ),
+        child: Row(
+          children: [
+            Text(flag, style: const TextStyle(fontSize: 24)),
+            const SizedBox(width: 16),
+            Text(
+              label,
+              style: TextStyle(
+                color: isSelected ? Colors.white : NutrifyTheme.darkCard,
+                fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+                fontSize: 16,
+              ),
+            ),
+            const Spacer(),
+            if (isSelected)
+              const Icon(Icons.check_circle, color: Colors.white, size: 20),
+          ],
+        ),
+      ),
+    );
   }
 
   // dispose:-------------------------------------------------------------------

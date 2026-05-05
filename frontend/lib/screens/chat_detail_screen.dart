@@ -1,3 +1,4 @@
+import 'package:nutrify/utils/locale/app_strings.dart';
 import 'dart:async';
 import 'dart:io';
 import 'package:flutter/material.dart';
@@ -119,7 +120,7 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
       if (mounted) {
         setState(() => _isSending = false);
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Gagal mengirim pesan'), backgroundColor: Colors.red),
+          SnackBar(content: Text(AppStrings.failedToSendMsg), backgroundColor: Colors.red),
         );
       }
     }
@@ -158,7 +159,7 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
                   ),
                   child: const Icon(Icons.camera_alt, color: AppColors.navy),
                 ),
-                title: const Text('Kamera', style: TextStyle(color: AppColors.navy, fontWeight: FontWeight.w600)),
+                title: Text(AppStrings.camera, style: const TextStyle(color: AppColors.navy, fontWeight: FontWeight.w600)),
                 onTap: () { Navigator.pop(ctx); _pickImage(ImageSource.camera); },
               ),
               ListTile(
@@ -170,7 +171,7 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
                   ),
                   child: const Icon(Icons.photo_library, color: AppColors.navy),
                 ),
-                title: const Text('Galeri', style: TextStyle(color: AppColors.navy, fontWeight: FontWeight.w600)),
+                title: Text(AppStrings.gallery, style: const TextStyle(color: AppColors.navy, fontWeight: FontWeight.w600)),
                 onTap: () { Navigator.pop(ctx); _pickImage(ImageSource.gallery); },
               ),
               const SizedBox(height: 8),
@@ -268,7 +269,7 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
                 : _messages.isEmpty
                     ? Center(
                         child: Text(
-                          'Mulai percakapan!',
+                          AppStrings.startConversation,
                           style: TextStyle(color: AppColors.navy.withValues(alpha: 0.4), fontSize: 15),
                         ),
                       )
@@ -440,7 +441,7 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
                   maxLines: 3,
                   minLines: 1,
                   decoration: InputDecoration(
-                    hintText: 'Pesan...',
+                    hintText: AppStrings.message,
                     hintStyle: TextStyle(color: AppColors.navy.withValues(alpha: 0.4)),
                     filled: true,
                     fillColor: AppColors.cream,

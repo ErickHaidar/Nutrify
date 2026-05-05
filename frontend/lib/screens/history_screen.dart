@@ -273,7 +273,7 @@ class HistoryScreenState extends State<HistoryScreen> with WidgetsBindingObserve
             Padding(
               padding: const EdgeInsets.only(top: 12),
               child: Text(
-                'Belum ada catatan',
+                AppStrings.noRecordYet,
                 style: TextStyle(color: AppColors.navy.withOpacity(0.3), fontSize: 13),
               ),
             )

@@ -271,13 +271,13 @@ class KomunitasScreenState extends State<KomunitasScreen> with TickerProviderSta
               color: AppColors.navy,
               borderRadius: BorderRadius.circular(20),
             ),
-            child: const Row(
+            child: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
                 Icon(Icons.add, color: Colors.white, size: 18),
                 SizedBox(width: 4),
                 Text(
-                  'Posting',
+                  AppStrings.post,
                   style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 13),
                 ),
               ],
@@ -504,7 +504,7 @@ class KomunitasScreenState extends State<KomunitasScreen> with TickerProviderSta
                           post.isFollowed
                               ? AppStrings.following
                               : post.isRequested
-                                  ? (AppStrings.isId ? 'Diminta' : 'Requested')
+                                  ? AppStrings.requestedStatus
                                   : AppStrings.follow,
                           style: TextStyle(
                             color: post.isFollowed || post.isRequested ? Colors.white : AppColors.navy,
@@ -728,7 +728,7 @@ class _UserSearchSheetState extends State<_UserSearchSheet> {
             padding: const EdgeInsets.fromLTRB(20, 8, 20, 12),
             child: Row(
               children: [
-                const Text('Cari User', style: TextStyle(color: AppColors.navy, fontSize: 18, fontWeight: FontWeight.bold)),
+                Text(AppStrings.searchUser, style: const TextStyle(color: AppColors.navy, fontSize: 18, fontWeight: FontWeight.bold)),
                 const Spacer(),
                 GestureDetector(
                   onTap: () => Navigator.pop(context),
@@ -747,7 +747,7 @@ class _UserSearchSheetState extends State<_UserSearchSheet> {
               controller: _searchCtrl,
               autofocus: true,
               decoration: InputDecoration(
-                hintText: 'Cari nama atau username...',
+                hintText: AppStrings.searchNameOrUsername,
                 hintStyle: TextStyle(color: AppColors.navy.withValues(alpha: 0.4)),
                 prefixIcon: const Icon(Icons.search, color: AppColors.navy, size: 20),
                 filled: true,
@@ -764,11 +764,11 @@ class _UserSearchSheetState extends State<_UserSearchSheet> {
                 ? const Center(child: CircularProgressIndicator(color: AppColors.navy))
                 : !_hasSearched
                     ? Center(
-                        child: Text('Ketik minimal 2 karakter untuk mencari',
+                        child: Text(AppStrings.typeAtLeast2Chars,
                             style: TextStyle(color: AppColors.navy.withValues(alpha: 0.4), fontSize: 13)))
                     : _results.isEmpty
                         ? Center(
-                            child: Text('User tidak ditemukan',
+                            child: Text(AppStrings.userNotFound,
                                 style: TextStyle(color: AppColors.navy.withValues(alpha: 0.4), fontSize: 13)))
                         : ListView.separated(
                             padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -829,7 +829,7 @@ class _UserSearchSheetState extends State<_UserSearchSheet> {
             borderRadius: BorderRadius.circular(16),
           ),
           child: Text(
-            isFollowing ? 'Diikuti' : isRequested ? 'Diminta' : 'Ikuti',
+            isFollowing ? AppStrings.followingStatus : isRequested ? AppStrings.requestedStatus : AppStrings.followStatus,
             style: TextStyle(color: isFollowing || isRequested ? Colors.white : AppColors.navy, fontWeight: FontWeight.bold, fontSize: 12),
           ),
         ),
@@ -1078,7 +1078,7 @@ class _CommentSheetState extends State<_CommentSheet> {
     String headerName = c.userName;
     String displayContent = c.content;
     if (isReply && replyToName != null) {
-      headerName = 'Membalas $replyToName';
+      headerName = '${c.userName}' + AppStrings.tiktokReplyIndicator + '$replyToName';
       final mentionPrefix = '@$replyToName';
       if (c.content.startsWith(mentionPrefix)) {
         displayContent = c.content.substring(mentionPrefix.length).trimLeft();
@@ -1149,7 +1149,7 @@ class _CommentSheetState extends State<_CommentSheet> {
                           _commentFocusNode.requestFocus();
                         });
                       },
-                      child: Text('Balas',
+                      child: Text(AppStrings.reply,
                           style: TextStyle(color: AppColors.navy.withValues(alpha: 0.5), fontSize: 11, fontWeight: FontWeight.w600)),
                     ),
                   ],
@@ -1185,7 +1185,7 @@ class _CommentSheetState extends State<_CommentSheet> {
                   : GestureDetector(
                       onTap: () => _loadMoreReplies(c, parentIndex),
                       child: Text(
-                        'Lihat ${c.repliesCount - c.replies.length} balasan lainnya',
+                        AppStrings.viewMoreReplies(c.repliesCount - c.replies.length),
                         style: TextStyle(color: AppColors.navy.withValues(alpha: 0.6), fontSize: 12, fontWeight: FontWeight.w600),
                       ),
                     ),
@@ -1199,7 +1199,7 @@ class _CommentSheetState extends State<_CommentSheet> {
                 : GestureDetector(
                     onTap: () => _loadMoreReplies(c, parentIndex),
                     child: Text(
-                      'Lihat ${c.repliesCount} balasan',
+                      AppStrings.viewReplies(c.repliesCount),
                       style: TextStyle(color: AppColors.navy.withValues(alpha: 0.6), fontSize: 12, fontWeight: FontWeight.w600),
                     ),
                   ),
@@ -1239,8 +1239,8 @@ class _CommentSheetState extends State<_CommentSheet> {
             padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
             child: Row(
               children: [
-                const Text(
-                  'Komentar',
+                Text(
+                  AppStrings.commentsTitle,
                   style: TextStyle(
                     color: AppColors.navy,
                     fontSize: 18,
@@ -1266,7 +1266,7 @@ class _CommentSheetState extends State<_CommentSheet> {
                 : _comments.isEmpty
                     ? Center(
                         child: Text(
-                          'Belum ada komentar',
+                          AppStrings.noComments,
                           style: TextStyle(color: AppColors.navy.withOpacity(0.5), fontSize: 14),
                         ),
                       )
@@ -1300,7 +1300,7 @@ class _CommentSheetState extends State<_CommentSheet> {
                         children: [
                           Expanded(
                             child: Text(
-                              'Membalas @${_replyTarget!.userName}',
+                              AppStrings.replyingTo(_replyTarget!.userName),
                               style: TextStyle(color: AppColors.navy.withValues(alpha: 0.6), fontSize: 12),
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
@@ -1322,7 +1322,7 @@ class _CommentSheetState extends State<_CommentSheet> {
                           focusNode: _commentFocusNode,
                           enabled: !_isSending,
                           decoration: InputDecoration(
-                            hintText: _replyTarget != null ? 'Balas @${_replyTarget!.userName}...' : 'Tulis komentar...',
+                            hintText: _replyTarget != null ? 'Balas @${_replyTarget!.userName}...' : AppStrings.writeComment,
                             hintStyle: TextStyle(color: AppColors.navy.withValues(alpha: 0.4)),
                             filled: true,
                             fillColor: Colors.white,

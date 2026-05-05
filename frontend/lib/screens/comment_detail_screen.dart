@@ -1,3 +1,4 @@
+import 'package:nutrify/utils/locale/app_strings.dart';
 import 'package:flutter/material.dart';
 import 'package:nutrify/constants/colors.dart';
 import 'package:nutrify/screens/user_profile_screen.dart';
@@ -137,7 +138,7 @@ class _CommentDetailScreenState extends State<CommentDetailScreen> {
           icon: const Icon(Icons.arrow_back, color: AppColors.navy),
           onPressed: () => Navigator.pop(context),
         ),
-        title: const Text('Komentar', style: TextStyle(color: AppColors.navy, fontWeight: FontWeight.bold, fontSize: 18)),
+        title: Text(AppStrings.commentsTitle, style: const TextStyle(color: AppColors.navy, fontWeight: FontWeight.bold, fontSize: 18)),
       ),
       body: Column(
         children: [
@@ -151,7 +152,7 @@ class _CommentDetailScreenState extends State<CommentDetailScreen> {
                   const Divider(height: 1, color: Colors.black12),
                   Padding(
                     padding: const EdgeInsets.fromLTRB(24, 16, 24, 8),
-                    child: Text('Balasan (${_replies.length})',
+                    child: Text(AppStrings.repliesCount(_replies.length),
                         style: TextStyle(color: AppColors.navy, fontSize: 14, fontWeight: FontWeight.bold)),
                   ),
                   if (_isLoading)
@@ -163,7 +164,7 @@ class _CommentDetailScreenState extends State<CommentDetailScreen> {
                     Padding(
                       padding: const EdgeInsets.all(32),
                       child: Center(
-                        child: Text('Belum ada balasan',
+                        child: Text(AppStrings.noRepliesYet,
                             style: TextStyle(color: AppColors.navy.withValues(alpha: 0.5), fontSize: 14)),
                       ),
                     )
@@ -213,7 +214,7 @@ class _CommentDetailScreenState extends State<CommentDetailScreen> {
                 RichText(
                   text: TextSpan(children: [
                     TextSpan(
-                      text: c.userName,
+                      text: isParent ? c.userName : '${c.userName}' + AppStrings.tiktokReplyIndicator + '${_parent.userName}',
                       style: TextStyle(color: AppColors.navy, fontWeight: FontWeight.bold, fontSize: isParent ? 14 : 13),
                     ),
                     TextSpan(
@@ -253,7 +254,7 @@ class _CommentDetailScreenState extends State<CommentDetailScreen> {
                           _replyFocusNode.requestFocus();
                         });
                       },
-                      child: Text('Balas',
+                      child: Text(AppStrings.reply,
                           style: TextStyle(color: AppColors.navy.withValues(alpha: 0.5), fontSize: 12, fontWeight: FontWeight.w600)),
                     ),
                   ],
@@ -314,7 +315,7 @@ class _CommentDetailScreenState extends State<CommentDetailScreen> {
                       focusNode: _replyFocusNode,
                       enabled: !_isSending,
                       decoration: InputDecoration(
-                        hintText: _replyTarget != null ? 'Balas @${_replyTarget!.userName}...' : 'Tulis balasan...',
+                        hintText: _replyTarget != null ? AppStrings.replyToUser(_replyTarget!.userName) : AppStrings.writeReply,
                         hintStyle: TextStyle(color: AppColors.navy.withValues(alpha: 0.4)),
                         filled: true,
                         fillColor: AppColors.cream,

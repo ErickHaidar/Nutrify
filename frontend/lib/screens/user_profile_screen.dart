@@ -1,3 +1,4 @@
+import 'package:nutrify/utils/locale/app_strings.dart';
 import 'package:flutter/material.dart';
 import 'package:nutrify/constants/colors.dart';
 import 'package:nutrify/domain/entity/post/community_post.dart';
@@ -157,7 +158,7 @@ class _UserProfileScreenState extends State<UserProfileScreen> with SingleTicker
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Gagal membuka chat: $e'), backgroundColor: Colors.red),
+          SnackBar(content: Text(AppStrings.failedToOpenChat(e.toString())), backgroundColor: Colors.red),
         );
       }
     }
@@ -268,19 +269,19 @@ class _UserProfileScreenState extends State<UserProfileScreen> with SingleTicker
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              _buildStatItem('Postingan', _postsCount),
+              _buildStatItem(AppStrings.posts, _postsCount),
               Container(
                 width: 1, height: 30,
                 color: AppColors.navy.withValues(alpha: 0.1),
                 margin: const EdgeInsets.symmetric(horizontal: 24),
               ),
-              _buildStatItem('Mengikuti', _followingCount),
+              _buildStatItem(AppStrings.followingCountLabel, _followingCount),
               Container(
                 width: 1, height: 30,
                 color: AppColors.navy.withValues(alpha: 0.1),
                 margin: const EdgeInsets.symmetric(horizontal: 24),
               ),
-              _buildStatItem('Pengikut', _followerCount),
+              _buildStatItem(AppStrings.followersCountLabel, _followerCount),
             ],
           ),
           const SizedBox(height: 20),
@@ -307,7 +308,7 @@ class _UserProfileScreenState extends State<UserProfileScreen> with SingleTicker
                 child: _isFollowLoading
                     ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white))
                     : Text(
-                        _isFollowing ? 'Diikuti' : _isRequested ? 'Diminta' : 'Ikuti',
+                        _isFollowing ? AppStrings.followingStatus : _isRequested ? AppStrings.requestedStatus : AppStrings.followStatus,
                         style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
                       ),
               ),
@@ -323,7 +324,7 @@ class _UserProfileScreenState extends State<UserProfileScreen> with SingleTicker
               child: OutlinedButton.icon(
                 onPressed: _openChat,
                 icon: const Icon(Icons.chat_bubble_outline, size: 18),
-                label: const Text('Kirim Pesan', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15)),
+                label: Text(AppStrings.sendMessage, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15)),
                 style: OutlinedButton.styleFrom(
                   foregroundColor: AppColors.navy,
                   side: BorderSide(color: AppColors.navy.withValues(alpha: 0.3)),
@@ -370,12 +371,12 @@ class _UserProfileScreenState extends State<UserProfileScreen> with SingleTicker
               Icon(Icons.lock_outline, size: 48, color: AppColors.navy.withValues(alpha: 0.3)),
               const SizedBox(height: 12),
               Text(
-                'Akun Privat',
+                AppStrings.privateAccount,
                 style: TextStyle(color: AppColors.navy, fontSize: 16, fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 4),
               Text(
-                'Ikuti akun ini untuk melihat postingan.',
+                AppStrings.followToSeePosts,
                 style: TextStyle(color: AppColors.navy.withValues(alpha: 0.5), fontSize: 13),
                 textAlign: TextAlign.center,
               ),
@@ -390,7 +391,7 @@ class _UserProfileScreenState extends State<UserProfileScreen> with SingleTicker
       children: [
         Padding(
           padding: const EdgeInsets.fromLTRB(24, 16, 24, 8),
-          child: Text('Postingan', style: TextStyle(color: AppColors.navy, fontSize: 16, fontWeight: FontWeight.bold)),
+          child: Text(AppStrings.posts, style: TextStyle(color: AppColors.navy, fontSize: 16, fontWeight: FontWeight.bold)),
         ),
         if (_userPosts.isEmpty)
           Padding(
@@ -400,7 +401,7 @@ class _UserProfileScreenState extends State<UserProfileScreen> with SingleTicker
                 children: [
                   Icon(Icons.article_outlined, size: 48, color: AppColors.navy.withValues(alpha: 0.2)),
                   const SizedBox(height: 12),
-                  Text('Belum ada postingan', style: TextStyle(color: AppColors.navy.withValues(alpha: 0.5), fontSize: 14)),
+                  Text(AppStrings.noPostsYet, style: TextStyle(color: AppColors.navy.withValues(alpha: 0.5), fontSize: 14)),
                 ],
               ),
             ),

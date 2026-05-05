@@ -61,6 +61,12 @@ class AppStrings {
   static String get signUp => _t('Daftar', 'Sign Up');
   static String get comingSoon => _t('Segera hadir 🚀', 'Coming soon 🚀');
   static String get fillAllFields => _t('Harap isi semua field', 'Please fill in all fields');
+  static String get usernameLabel => _t('Username', 'Username');
+  static String get usernameTaken => _t('Username sudah digunakan', 'Username is already taken');
+  static String get failedToSaveWithParams => _t('Gagal menyimpan', 'Failed to save');
+  static String failedToSaveError(String e) => _t('Gagal menyimpan: $e', 'Failed to save: $e');
+  static String failedWithError(String e) => _t('Gagal: $e', 'Failed: $e');
+
 
   // ─── Sign Up ─────────────────────────────────────────────────────────────
   static String get createNewAccount => _t('Buat Akun Baru', 'Create New Account');
@@ -250,6 +256,16 @@ class AppStrings {
   static String get loseFat => _t('Turunkan Lemak', 'Lose Fat');
   static String get stayFit => _t('Tetap Bugar', 'Stay Fit');
   static String get gainMuscle => _t('Tambah Otot', 'Gain Muscle');
+  static String get ageValidation => _t('Usia harus antara 13-100 tahun', 'Age must be between 13-100 years');
+  static String get weightValidation => _t('Berat badan harus antara 25-300 kg', 'Weight must be between 25-300 kg');
+  static String get heightValidation => _t('Tinggi badan harus antara 100-250 cm', 'Height must be between 100-250 cm');
+  static String get failedToSaveProfile => _t('Gagal menyimpan profil. Silakan coba lagi.', 'Failed to save profile. Please try again.');
+  static String get photoSizeTooLarge => _t('Ukuran foto terlalu besar. Maksimal 10 MB.', 'Photo size too large. Maximum 10 MB.');
+  static String get failedToPickPhoto => _t('Gagal memilih foto. Silakan coba lagi.', 'Failed to pick photo. Please try again.');
+  static String get cuttingLabel => _t('Cutting (Defisit)', 'Cutting (Deficit)');
+  static String get maintenanceLabel => _t('Maintenance', 'Maintenance');
+  static String get bulkingLabel => _t('Bulking (Surplus)', 'Bulking (Surplus)');
+
 
   // ─── Body Data & Goals Screen ────────────────────────────────────────────
   static String get bodyDataGoals => _t('Data Tubuh & Target', 'Body Data & Goals');
@@ -396,4 +412,91 @@ class AppStrings {
   static String get faqA4 => _t('Tidak, Anda perlu membuat akun agar data kalori tersimpan dan bisa diakses di perangkat mana pun.', 'No, you need to create an account so calorie data is saved and accessible from any device.');
   static String get faqQ5 => _t('Bagaimana formula perhitungan kalori?', 'How is the calorie calculation formula?');
   static String get faqA5 => _t('Nutrify menggunakan formula Mifflin-St Jeor untuk menghitung BMR, dikalikan dengan faktor aktivitas (TDEE), lalu disesuaikan dengan target Anda.', 'Nutrify uses the Mifflin-St Jeor formula to calculate BMR, multiplied by activity factor (TDEE), then adjusted to your target.');
+  // ─── Chat & Community Extensions ─────────────────────────────────────────
+  static String get post => _t('Posting', 'Post');
+  static String get searchUser => _t('Cari User', 'Search User');
+  static String get searchNameOrUsername => _t('Cari nama atau username...', 'Search name or username...');
+  static String get typeAtLeast2Chars => _t('Ketik minimal 2 karakter untuk mencari', 'Type at least 2 characters to search');
+  static String get typeAtLeast2CharsChat => _t('Ketik minimal 2 karakter', 'Type at least 2 characters');
+  static String get startConversation => _t('Mulai percakapan!', 'Start a conversation!');
+
+  static String get userNotFound => _t('User tidak ditemukan', 'User not found');
+  static String get followingStatus => _t('Diikuti', 'Following');
+  static String get requestedStatus => _t('Diminta', 'Requested');
+  static String get followStatus => _t('Ikuti', 'Follow');
+  static String get commentsTitle => _t('Komentar', 'Comments');
+  static String get noComments => _t('Belum ada komentar', 'No comments yet');
+  static String get writeComment => _t('Tulis komentar...', 'Write a comment...');
+  static String get reply => _t('Balas', 'Reply');
+  static String replyingTo(String name) => _t('Membalas @$name', 'Replying to @$name');
+  static String viewMoreReplies(int count) => _t('Lihat $count balasan lainnya', 'View $count more replies');
+  static String viewReplies(int count) => _t('Lihat $count balasan', 'View $count replies');
+  static String get commentDetail => _t('Detail Komentar', 'Comment Detail');
+
+  // ─── Chat ────────────────────────────────────────────────────────────────
+  static String get chat => _t('Chat', 'Chat');
+  static String get all => _t('Semua', 'All');
+  static String get unread => _t('Belum Dibaca', 'Unread');
+  static String get markAllRead => _t('Tandai Semua Dibaca', 'Mark All Read');
+  static String get searchConversation => _t('Cari percakapan...', 'Search conversation...');
+  static String get noConversations => _t('Belum ada percakapan', 'No conversations yet');
+  static String get startChat => _t('Mulai Obrolan', 'Start Chat');
+  static String failedToStartChat(String e) => _t('Gagal memulai obrolan: $e', 'Failed to start chat: $e');
+  static String get imageStr => _t('[Gambar]', '[Image]');
+  static String get typeMessage => _t('Ketik pesan...', 'Type a message...');
+  static String get now => _t('Sekarang', 'Now');
+  static String get message => _t('Pesan...', 'Message...');
+
+  // ─── Chat Detail & Comment Detail ────────────────────────────────────────
+  static String get failedToSendMsg => _t('Gagal mengirim pesan', 'Failed to send message');
+  static String get camera => _t('Kamera', 'Camera');
+  static String get gallery => _t('Galeri', 'Gallery');
+  static String repliesCount(int count) => _t('Balasan ($count)', 'Replies ($count)');
+  static String get noRepliesYet => _t('Belum ada balasan', 'No replies yet');
+  static String replyToUser(String name) => _t('Balas @$name...', 'Reply to @$name...');
+  static String get writeReply => _t('Tulis balasan...', 'Write a reply...');
+
+  // ─── Post Detail & User Profile & Profile Tabs ─────────────────────────
+  static String get posts => _t('Postingan', 'Posts');
+  static String get like => _t('Suka', 'Like');
+  static String get liked => _t('Disukai', 'Liked');
+  static String get noCommentsBeFirst => _t('Belum ada komentar. Jadilah yang pertama!', 'No comments yet. Be the first!');
+  static String get deletePostPrompt => _t('Hapus Postingan?', 'Delete Post?');
+  static String get deletePostWarning => _t('Postingan ini akan dihapus secara permanen.', 'This post will be permanently deleted.');
+  static String get failedToDeletePost => _t('Gagal menghapus postingan', 'Failed to delete post');
+  static String failedToOpenChat(String e) => _t('Gagal membuka chat: $e', 'Failed to open chat: $e');
+  static String get followingCountLabel => _t('Mengikuti', 'Following');
+  static String get followersCountLabel => _t('Pengikut', 'Followers');
+  static String get sendMessage => _t('Kirim Pesan', 'Send Message');
+  static String get privateAccount => _t('Akun Privat', 'Private Account');
+  static String get followToSeePosts => _t('Ikuti akun ini untuk melihat postingan.', 'Follow this account to see posts.');
+  static String get noPostsYet => _t('Belum ada postingan', 'No posts yet');
+  static String get generalTab => _t('Umum', 'General');
+  static String get socialTab => _t('Sosial', 'Social');
+  static String get tiktokReplyIndicator => _t(' ‣ ', ' ‣ ');
+
+  // ─── Profile Extensions ────────────────────────────────────────────────
+  static String get editPost => _t('Edit Postingan', 'Edit Post');
+  static String get postEditedSuccessfully => _t('Postingan berhasil diedit', 'Post edited successfully');
+  static String get createPost => _t('Buat Postingan', 'Create Post');
+  static String get privateLabel => _t('Privat', 'Private');
+  static String get publicLabel => _t('Publik', 'Public');
+  static String get pinned => _t('Disematkan', 'Pinned');
+  static String get pinPost => _t('Sematkan', 'Pin');
+  static String get unpinPost => _t('Lepas Sematan', 'Unpin');
+  static String get completeProfileTitle => _t('Lengkapi Profil Anda', 'Complete Your Profile');
+  static String get completeProfileBannerDesc =>
+      _t('Isi data tinggi, berat, dan usia untuk mendapatkan rekomendasi kalori yang dipersonalisasi.',
+         'Fill in your height, weight, and age to get personalized calorie recommendations.');
+  static String get fillNow => _t('Isi Sekarang', 'Fill Now');
+  static String get profilePhotoUpdated => _t('Foto profil berhasil diperbarui', 'Profile photo updated successfully');
+  static String failedToUploadPhoto(String e) => _t('Gagal upload foto: $e', 'Failed to upload photo: $e');
+  static String get changeProfilePhoto => _t('Ubah Foto Profil', 'Change Profile Photo');
+  static String minLabel(dynamic val, [String? unit]) =>
+      _t('Minimal $val${unit != null ? ' $unit' : ''}', 'Minimum $val${unit != null ? ' $unit' : ''}');
+  static String maxLabel(dynamic val, [String? unit]) =>
+      _t('Maksimal $val${unit != null ? ' $unit' : ''}', 'Maximum $val${unit != null ? ' $unit' : ''}');
+
+
+
 }

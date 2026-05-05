@@ -1,3 +1,4 @@
+import 'package:nutrify/utils/locale/app_strings.dart';
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:nutrify/constants/colors.dart';
@@ -72,7 +73,7 @@ class _ChatListScreenState extends State<ChatListScreen> {
   String _formatTime(DateTime dt) {
     final now = DateTime.now();
     final diff = now.difference(dt);
-    if (diff.inMinutes < 1) return 'Sekarang';
+    if (diff.inMinutes < 1) return AppStrings.now;
     if (diff.inMinutes < 60) return '${diff.inMinutes}m';
     if (diff.inHours < 24) return '${diff.inHours}j';
     if (diff.inDays < 7) return '${diff.inDays}h';
@@ -105,20 +106,20 @@ class _ChatListScreenState extends State<ChatListScreen> {
               ),
               ListTile(
                 leading: Icon(Icons.list, color: AppColors.navy),
-                title: Text('Semua', style: TextStyle(color: AppColors.navy, fontWeight: _filter == 'all' ? FontWeight.bold : FontWeight.normal)),
+                title: Text(AppStrings.all, style: TextStyle(color: AppColors.navy, fontWeight: _filter == 'all' ? FontWeight.bold : FontWeight.normal)),
                 trailing: _filter == 'all' ? Icon(Icons.check, color: AppColors.navy) : null,
                 onTap: () { Navigator.pop(ctx); setState(() => _filter = 'all'); _loadConversations(); },
               ),
               ListTile(
                 leading: Icon(Icons.markunread, color: AppColors.navy),
-                title: Text('Belum Dibaca', style: TextStyle(color: AppColors.navy, fontWeight: _filter == 'unread' ? FontWeight.bold : FontWeight.normal)),
+                title: Text(AppStrings.unread, style: TextStyle(color: AppColors.navy, fontWeight: _filter == 'unread' ? FontWeight.bold : FontWeight.normal)),
                 trailing: _filter == 'unread' ? Icon(Icons.check, color: AppColors.navy) : null,
                 onTap: () { Navigator.pop(ctx); setState(() => _filter = 'unread'); _loadConversations(); },
               ),
               const Divider(height: 1),
               ListTile(
                 leading: Icon(Icons.done_all, color: AppColors.navy),
-                title: Text('Tandai Semua Dibaca', style: TextStyle(color: AppColors.navy)),
+                title: Text(AppStrings.markAllRead, style: TextStyle(color: AppColors.navy)),
                 onTap: () async {
                   Navigator.pop(ctx);
                   await _chatApi.markAllRead();
@@ -167,7 +168,7 @@ class _ChatListScreenState extends State<ChatListScreen> {
                 padding: const EdgeInsets.fromLTRB(20, 8, 20, 12),
                 child: Row(
                   children: [
-                    const Text('Mulai Obrolan', style: TextStyle(color: AppColors.navy, fontSize: 18, fontWeight: FontWeight.bold)),
+                    Text(AppStrings.startChat, style: const TextStyle(color: AppColors.navy, fontSize: 18, fontWeight: FontWeight.bold)),
                     const Spacer(),
                     GestureDetector(
                       onTap: () => Navigator.pop(ctx),
@@ -186,7 +187,7 @@ class _ChatListScreenState extends State<ChatListScreen> {
                   controller: searchCtrl,
                   autofocus: true,
                   decoration: InputDecoration(
-                    hintText: 'Cari nama atau username...',
+                    hintText: AppStrings.searchNameOrUsername,
                     hintStyle: TextStyle(color: AppColors.navy.withValues(alpha: 0.4)),
                     prefixIcon: const Icon(Icons.search, color: AppColors.navy, size: 20),
                     filled: true,
@@ -208,9 +209,9 @@ class _ChatListScreenState extends State<ChatListScreen> {
                 child: isSearching
                     ? const Center(child: CircularProgressIndicator(color: AppColors.navy))
                     : !hasSearched
-                        ? Center(child: Text('Ketik minimal 2 karakter', style: TextStyle(color: AppColors.navy.withValues(alpha: 0.4), fontSize: 13)))
+                        ? Center(child: Text(AppStrings.typeAtLeast2CharsChat, style: TextStyle(color: AppColors.navy.withValues(alpha: 0.4), fontSize: 13)))
                         : results.isEmpty
-                            ? Center(child: Text('User tidak ditemukan', style: TextStyle(color: AppColors.navy.withValues(alpha: 0.4), fontSize: 13)))
+                            ? Center(child: Text(AppStrings.userNotFound, style: TextStyle(color: AppColors.navy.withValues(alpha: 0.4), fontSize: 13)))
                             : ListView.separated(
                                 padding: const EdgeInsets.symmetric(horizontal: 20),
                                 itemCount: results.length,
@@ -249,7 +250,7 @@ class _ChatListScreenState extends State<ChatListScreen> {
                                       } catch (e) {
                                         if (mounted) {
                                           ScaffoldMessenger.of(context).showSnackBar(
-                                            SnackBar(content: Text('Gagal memulai obrolan: $e'), backgroundColor: Colors.red),
+                                            SnackBar(content: Text(AppStrings.failedToStartChat(e.toString())), backgroundColor: Colors.red),
                                           );
                                         }
                                       }
@@ -276,8 +277,8 @@ class _ChatListScreenState extends State<ChatListScreen> {
           icon: const Icon(Icons.arrow_back, color: AppColors.navy),
           onPressed: () => Navigator.pop(context),
         ),
-        title: const Text(
-          'Chat',
+        title: Text(
+          AppStrings.chat,
           style: TextStyle(color: AppColors.navy, fontWeight: FontWeight.bold, fontSize: 20),
         ),
         actions: [
@@ -300,7 +301,7 @@ class _ChatListScreenState extends State<ChatListScreen> {
                 child: Row(children: [
                   Icon(Icons.list, color: AppColors.navy, size: 20),
                   const SizedBox(width: 8),
-                  Text('Semua', style: TextStyle(color: AppColors.navy, fontWeight: _filter == 'all' ? FontWeight.bold : FontWeight.normal)),
+                  Text(AppStrings.all, style: TextStyle(color: AppColors.navy, fontWeight: _filter == 'all' ? FontWeight.bold : FontWeight.normal)),
                 ]),
               ),
               PopupMenuItem(
@@ -308,15 +309,15 @@ class _ChatListScreenState extends State<ChatListScreen> {
                 child: Row(children: [
                   Icon(Icons.markunread, color: AppColors.navy, size: 20),
                   const SizedBox(width: 8),
-                  Text('Belum Dibaca', style: TextStyle(color: AppColors.navy, fontWeight: _filter == 'unread' ? FontWeight.bold : FontWeight.normal)),
+                  Text(AppStrings.unread, style: TextStyle(color: AppColors.navy, fontWeight: _filter == 'unread' ? FontWeight.bold : FontWeight.normal)),
                 ]),
               ),
-              const PopupMenuItem(
+              PopupMenuItem(
                 value: 'mark_all_read',
                 child: Row(children: [
                   Icon(Icons.done_all, color: AppColors.navy, size: 20),
-                  SizedBox(width: 8),
-                  Text('Tandai Semua Dibaca', style: TextStyle(color: AppColors.navy)),
+                  const SizedBox(width: 8),
+                  Text(AppStrings.markAllRead, style: TextStyle(color: AppColors.navy)),
                 ]),
               ),
             ],
@@ -329,7 +330,7 @@ class _ChatListScreenState extends State<ChatListScreen> {
             child: TextField(
               controller: _searchCtrl,
               decoration: InputDecoration(
-                hintText: 'Cari percakapan...',
+                hintText: AppStrings.searchConversation,
                 hintStyle: TextStyle(color: AppColors.navy.withValues(alpha: 0.4)),
                 prefixIcon: const Icon(Icons.search, color: AppColors.navy, size: 20),
                 filled: true,
@@ -354,7 +355,7 @@ class _ChatListScreenState extends State<ChatListScreen> {
                         Icon(Icons.chat_bubble_outline, size: 64, color: AppColors.navy.withValues(alpha: 0.15)),
                         const SizedBox(height: 16),
                         Text(
-                          'Belum ada percakapan',
+                          AppStrings.noConversations,
                           style: TextStyle(color: AppColors.navy.withValues(alpha: 0.5), fontSize: 16),
                         ),
                         const SizedBox(height: 20),
@@ -364,7 +365,7 @@ class _ChatListScreenState extends State<ChatListScreen> {
                           child: ElevatedButton.icon(
                             onPressed: _showNewChatSheet,
                             icon: const Icon(Icons.add, size: 20),
-                            label: const Text('Mulai Obrolan', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15)),
+                            label: Text(AppStrings.startChat, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15)),
                             style: ElevatedButton.styleFrom(
                               backgroundColor: AppColors.navy,
                               foregroundColor: Colors.white,
@@ -442,7 +443,7 @@ class _ChatListScreenState extends State<ChatListScreen> {
         children: [
           Expanded(
             child: Text(
-              conv.lastMessageContent ?? (conv.lastMessageImageUrl != null ? '[Gambar]' : ''),
+              conv.lastMessageContent ?? (conv.lastMessageImageUrl != null ? AppStrings.imageStr : ''),
               style: TextStyle(
                 color: conv.unreadCount > 0 ? AppColors.navy.withValues(alpha: 0.8) : AppColors.navy.withValues(alpha: 0.5),
                 fontSize: 13,

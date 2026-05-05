@@ -1,3 +1,4 @@
+import 'package:nutrify/utils/locale/app_strings.dart';
 import 'package:flutter/material.dart';
 import 'package:nutrify/constants/colors.dart';
 import 'package:nutrify/domain/entity/post/community_post.dart';
@@ -269,7 +270,7 @@ class _PostDetailScreenState extends State<PostDetailScreen> with SingleTickerPr
   String _formatTime(DateTime dt) {
     final now = DateTime.now();
     final diff = now.difference(dt);
-    if (diff.inMinutes < 1) return 'Baru saja';
+    if (diff.inMinutes < 1) return AppStrings.justNow;
     if (diff.inMinutes < 60) return '${diff.inMinutes}m';
     if (diff.inHours < 24) return '${diff.inHours}j';
     if (diff.inDays < 7) return '${diff.inDays}h';
@@ -296,9 +297,9 @@ class _PostDetailScreenState extends State<PostDetailScreen> with SingleTickerPr
           icon: const Icon(Icons.arrow_back, color: AppColors.navy),
           onPressed: () => Navigator.pop(context),
         ),
-        title: const Text(
-          'Postingan',
-          style: TextStyle(color: AppColors.navy, fontWeight: FontWeight.bold, fontSize: 18),
+        title: Text(
+          AppStrings.posts,
+          style: const TextStyle(color: AppColors.navy, fontWeight: FontWeight.bold, fontSize: 18),
         ),
       ),
       body: Column(
@@ -314,10 +315,10 @@ class _PostDetailScreenState extends State<PostDetailScreen> with SingleTickerPr
                     padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
                     child: Row(
                       children: [
-                        Text('${_formatCount(post.likes)} Suka',
+                        Text(AppStrings.likes(_formatCount(post.likes)),
                             style: TextStyle(color: AppColors.navy.withValues(alpha: 0.6), fontSize: 13, fontWeight: FontWeight.w600)),
                         const SizedBox(width: 16),
-                        Text('${_formatCount(post.comments)} Komentar',
+                        Text(AppStrings.comments(_formatCount(post.comments)),
                             style: TextStyle(color: AppColors.navy.withValues(alpha: 0.6), fontSize: 13, fontWeight: FontWeight.w600)),
                       ],
                     ),
@@ -335,7 +336,7 @@ class _PostDetailScreenState extends State<PostDetailScreen> with SingleTickerPr
                               child: Icon(post.isLiked ? Icons.favorite : Icons.favorite_border,
                                   color: post.isLiked ? Colors.red : AppColors.navy.withValues(alpha: 0.7), size: 22),
                             ),
-                            label: Text(post.isLiked ? 'Disukai' : 'Suka',
+                            label: Text(post.isLiked ? AppStrings.liked : AppStrings.like,
                                 style: TextStyle(color: post.isLiked ? Colors.red : AppColors.navy.withValues(alpha: 0.7), fontWeight: FontWeight.w600)),
                           ),
                         ),
@@ -343,7 +344,7 @@ class _PostDetailScreenState extends State<PostDetailScreen> with SingleTickerPr
                           child: TextButton.icon(
                             onPressed: () => FocusScope.of(context).requestFocus(FocusNode()),
                             icon: Icon(Icons.chat_bubble_outline, color: AppColors.navy.withValues(alpha: 0.7), size: 20),
-                            label: Text('Komentar',
+                            label: Text(AppStrings.commentsTitle,
                                 style: TextStyle(color: AppColors.navy.withValues(alpha: 0.7), fontWeight: FontWeight.w600)),
                           ),
                         ),
@@ -353,7 +354,7 @@ class _PostDetailScreenState extends State<PostDetailScreen> with SingleTickerPr
                   const Divider(height: 1, color: Colors.black12),
                   Padding(
                     padding: const EdgeInsets.fromLTRB(24, 16, 24, 8),
-                    child: Text('Komentar', style: TextStyle(color: AppColors.navy, fontSize: 16, fontWeight: FontWeight.bold)),
+                    child: Text(AppStrings.commentsTitle, style: TextStyle(color: AppColors.navy, fontSize: 16, fontWeight: FontWeight.bold)),
                   ),
                   if (_isLoadingComments)
                     const Padding(
@@ -364,7 +365,7 @@ class _PostDetailScreenState extends State<PostDetailScreen> with SingleTickerPr
                     Padding(
                       padding: const EdgeInsets.all(32),
                       child: Center(
-                        child: Text('Belum ada komentar. Jadilah yang pertama!',
+                        child: Text(AppStrings.noCommentsBeFirst,
                             style: TextStyle(color: AppColors.navy.withValues(alpha: 0.5), fontSize: 14)),
                       ),
                     )
@@ -415,7 +416,7 @@ class _PostDetailScreenState extends State<PostDetailScreen> with SingleTickerPr
                   : GestureDetector(
                       onTap: () => _loadMoreReplies(c, parentIndex),
                       child: Text(
-                        'Lihat ${c.repliesCount - c.replies.length} balasan lainnya',
+                        AppStrings.viewMoreReplies(c.repliesCount - c.replies.length),
                         style: TextStyle(color: AppColors.navy.withValues(alpha: 0.6), fontSize: 12, fontWeight: FontWeight.w600),
                       ),
                     ),
@@ -429,7 +430,7 @@ class _PostDetailScreenState extends State<PostDetailScreen> with SingleTickerPr
                 : GestureDetector(
                     onTap: () => _loadMoreReplies(c, parentIndex),
                     child: Text(
-                      'Lihat ${c.repliesCount} balasan',
+                      AppStrings.viewReplies(c.repliesCount),
                       style: TextStyle(color: AppColors.navy.withValues(alpha: 0.6), fontSize: 12, fontWeight: FontWeight.w600),
                     ),
                   ),
@@ -468,7 +469,7 @@ class _PostDetailScreenState extends State<PostDetailScreen> with SingleTickerPr
     String headerName = c.userName;
     String displayContent = c.content;
     if (isReply && replyToName != null) {
-      headerName = 'Membalas $replyToName';
+      headerName = '${c.userName}' + AppStrings.tiktokReplyIndicator + '$replyToName';
       final mentionPrefix = '@$replyToName';
       if (c.content.startsWith(mentionPrefix)) {
         displayContent = c.content.substring(mentionPrefix.length).trimLeft();
@@ -541,7 +542,7 @@ class _PostDetailScreenState extends State<PostDetailScreen> with SingleTickerPr
                           _commentFocusNode.requestFocus();
                         });
                       },
-                      child: Text('Balas',
+                      child: Text(AppStrings.reply,
                           style: TextStyle(color: AppColors.navy.withValues(alpha: 0.5), fontSize: 11, fontWeight: FontWeight.w600)),
                     ),
                   ],
@@ -580,7 +581,7 @@ class _PostDetailScreenState extends State<PostDetailScreen> with SingleTickerPr
                     children: [
                       Expanded(
                         child: Text(
-                          'Membalas @${_replyTarget!.userName}',
+                          AppStrings.replyingTo(_replyTarget!.userName),
                           style: TextStyle(color: AppColors.navy.withValues(alpha: 0.6), fontSize: 12),
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
@@ -602,7 +603,7 @@ class _PostDetailScreenState extends State<PostDetailScreen> with SingleTickerPr
                       focusNode: _commentFocusNode,
                       enabled: !_isSending,
                       decoration: InputDecoration(
-                        hintText: _replyTarget != null ? 'Balas @${_replyTarget!.userName}...' : 'Tulis komentar...',
+                        hintText: _replyTarget != null ? AppStrings.replyToUser(_replyTarget!.userName) : AppStrings.writeComment,
                         hintStyle: TextStyle(color: AppColors.navy.withValues(alpha: 0.4)),
                         filled: true,
                         fillColor: AppColors.cream,
@@ -679,11 +680,11 @@ class _PostDetailScreenState extends State<PostDetailScreen> with SingleTickerPr
                           builder: (ctx) => AlertDialog(
                             backgroundColor: Colors.white,
                             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-                            title: const Text('Hapus Postingan?', style: TextStyle(color: AppColors.navy)),
-                            content: const Text('Postingan ini akan dihapus secara permanen.'),
+                            title: Text(AppStrings.deletePostPrompt, style: TextStyle(color: AppColors.navy)),
+                            content: Text(AppStrings.deletePostWarning),
                             actions: [
                               TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text('Batal')),
-                              TextButton(onPressed: () => Navigator.pop(ctx, true), child: const Text('Hapus', style: TextStyle(color: Colors.red))),
+                              TextButton(onPressed: () => Navigator.pop(ctx, true), child: Text(AppStrings.delete, style: TextStyle(color: Colors.red))),
                             ],
                           ),
                         );
@@ -693,19 +694,19 @@ class _PostDetailScreenState extends State<PostDetailScreen> with SingleTickerPr
                             if (mounted) Navigator.pop(context, true);
                           } catch (_) {
                             if (mounted) {
-                              ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Gagal menghapus postingan')));
+                              ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(AppStrings.failedToDeletePost)));
                             }
                           }
                         }
                       }
                     },
                     itemBuilder: (_) => [
-                      const PopupMenuItem(
+                      PopupMenuItem(
                         value: 'delete',
                         child: Row(children: [
-                          Icon(Icons.delete_outline, color: Colors.red, size: 20),
-                          SizedBox(width: 8),
-                          Text('Hapus', style: TextStyle(color: Colors.red)),
+                          const Icon(Icons.delete_outline, color: Colors.red, size: 20),
+                          const SizedBox(width: 8),
+                          Text(AppStrings.delete, style: const TextStyle(color: Colors.red)),
                         ]),
                       ),
                     ],

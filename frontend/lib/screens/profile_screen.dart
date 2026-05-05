@@ -257,7 +257,7 @@ class ProfileScreenState extends State<ProfileScreen>
                     TextField(
                       controller: nameCtrl,
                       decoration: InputDecoration(
-                        labelText: 'Nama',
+                        labelText: AppStrings.fullName,
                         labelStyle: const TextStyle(color: AppColors.navy),
                         filled: true,
                         fillColor: Colors.white,
@@ -280,13 +280,13 @@ class ProfileScreenState extends State<ProfileScreen>
                           final results = await _communityApi.searchUsers(trimmed);
                           final taken = results.any((u) =>
                               (u['username'] as String? ?? '').toLowerCase() == trimmed.toLowerCase());
-                          setDialogState(() { usernameError = taken ? 'Username sudah digunakan' : null; isChecking = false; });
+                          setDialogState(() { usernameError = taken ? AppStrings.usernameTaken : null; isChecking = false; });
                         } catch (_) {
                           setDialogState(() { isChecking = false; });
                         }
                       },
                       decoration: InputDecoration(
-                        labelText: 'Username',
+                        labelText: AppStrings.usernameLabel,
                         labelStyle: const TextStyle(color: AppColors.navy),
                         prefixText: '@',
                         filled: true,
@@ -328,7 +328,7 @@ class ProfileScreenState extends State<ProfileScreen>
                             if (mounted) {
                               ScaffoldMessenger.of(context).showSnackBar(
                                 SnackBar(
-                                    content: Text('Gagal menyimpan: $e'),
+                                    content: Text(AppStrings.failedToSaveError(e.toString())),
                                     backgroundColor: Colors.red),
                               );
                             }
@@ -340,8 +340,8 @@ class ProfileScreenState extends State<ProfileScreen>
                           shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(24)),
                         ),
-                        child: const Text('Simpan',
-                            style: TextStyle(
+                        child: Text(AppStrings.save,
+                            style: const TextStyle(
                                 fontWeight: FontWeight.bold, fontSize: 16)),
                       ),
                     ),
@@ -393,14 +393,14 @@ class ProfileScreenState extends State<ProfileScreen>
         loadProfile();
         _loadSocialProfile();
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Foto profil berhasil diperbarui')),
+          SnackBar(content: Text(AppStrings.profilePhotoUpdated)),
         );
       }
     } catch (e) {
       if (mounted) {
         setState(() => _isPhotoChanged = false);
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Gagal upload foto: $e'), backgroundColor: Colors.red),
+          SnackBar(content: Text(AppStrings.failedToUploadPhoto(e.toString())), backgroundColor: Colors.red),
         );
       }
     }
@@ -430,17 +430,17 @@ class ProfileScreenState extends State<ProfileScreen>
                 ),
               ),
               const SizedBox(height: 12),
-              const Text('Ubah Foto Profil',
-                  style: TextStyle(color: AppColors.navy, fontSize: 16, fontWeight: FontWeight.bold)),
+              Text(AppStrings.changeProfilePhoto,
+                  style: const TextStyle(color: AppColors.navy, fontSize: 16, fontWeight: FontWeight.bold)),
               const SizedBox(height: 16),
               ListTile(
                 leading: const Icon(Icons.photo_library, color: Color(0xFFFFCC80)),
-                title: const Text('Galeri'),
+                title: Text(AppStrings.gallery),
                 onTap: () { Navigator.pop(ctx); _pickAndUploadPhoto(ImageSource.gallery); },
               ),
               ListTile(
                 leading: const Icon(Icons.camera_alt, color: Color(0xFFFFCC80)),
-                title: const Text('Kamera'),
+                title: Text(AppStrings.camera),
                 onTap: () { Navigator.pop(ctx); _pickAndUploadPhoto(ImageSource.camera); },
               ),
               const SizedBox(height: 8),
@@ -494,7 +494,7 @@ class ProfileScreenState extends State<ProfileScreen>
               padding: const EdgeInsets.fromLTRB(20, 8, 20, 16),
               child: Row(
                 children: [
-                  const Text('Edit Postingan',
+                  Text(AppStrings.editPost,
                       style: TextStyle(
                           color: AppColors.navy,
                           fontSize: 18,
@@ -542,8 +542,8 @@ class ProfileScreenState extends State<ProfileScreen>
                             Navigator.pop(ctx);
                             _loadSocialProfile();
                             ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                  content: Text('Postingan berhasil diedit')),
+                              SnackBar(
+                                  content: Text(AppStrings.postEditedSuccessfully)),
                             );
                           }
                         } catch (e) {
@@ -551,7 +551,7 @@ class ProfileScreenState extends State<ProfileScreen>
                             Navigator.pop(ctx);
                             ScaffoldMessenger.of(context).showSnackBar(
                               SnackBar(
-                                  content: Text('Gagal: $e'),
+                                  content: Text(AppStrings.failedWithError(e.toString())),
                                   backgroundColor: Colors.red),
                             );
                           }
@@ -563,8 +563,8 @@ class ProfileScreenState extends State<ProfileScreen>
                         shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(24)),
                       ),
-                      child: const Text('Simpan',
-                          style: TextStyle(
+                      child: Text(AppStrings.save,
+                          style: const TextStyle(
                               fontWeight: FontWeight.bold, fontSize: 16)),
                     ),
                   ),
@@ -582,19 +582,19 @@ class ProfileScreenState extends State<ProfileScreen>
       context: context,
       builder: (ctx) => AlertDialog(
         backgroundColor: AppColors.cream,
-        title: const Text('Hapus Postingan?',
+        title: Text(AppStrings.deletePostPrompt,
             style: TextStyle(color: AppColors.navy)),
-        content: const Text(
-            'Postingan ini akan dihapus secara permanen.',
-            style: TextStyle(color: AppColors.navy)),
+        content: Text(
+            AppStrings.deletePostWarning,
+            style: const TextStyle(color: AppColors.navy)),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx, false),
-            child: const Text('Batal'),
+            child: Text(AppStrings.cancel),
           ),
           TextButton(
             onPressed: () => Navigator.pop(ctx, true),
-            child: const Text('Hapus', style: TextStyle(color: Colors.red)),
+            child: Text(AppStrings.delete, style: const TextStyle(color: Colors.red)),
           ),
         ],
       ),
@@ -667,8 +667,6 @@ class ProfileScreenState extends State<ProfileScreen>
       onTap: () {
         languageStore.changeLanguage(locale);
         Navigator.pop(ctx);
-        Navigator.of(context).pushNamedAndRemoveUntil(
-            Routes.home, (route) => false);
       },
       child: Container(
         padding:
@@ -750,9 +748,9 @@ class ProfileScreenState extends State<ProfileScreen>
                     fontWeight: FontWeight.bold, fontSize: 14),
                 unselectedLabelStyle: const TextStyle(
                     fontWeight: FontWeight.normal, fontSize: 14),
-                tabs: const [
-                  Tab(text: 'Umum'),
-                  Tab(text: 'Sosial'),
+                tabs: [
+                  Tab(text: AppStrings.generalTab),
+                  Tab(text: AppStrings.socialTab),
                 ],
               ),
             ),
@@ -989,21 +987,21 @@ class ProfileScreenState extends State<ProfileScreen>
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                _buildStatItem('Postingan', _postsCount),
+                _buildStatItem(AppStrings.posts, _postsCount),
                 Container(
                   width: 1,
                   height: 30,
                   color: AppColors.navy.withValues(alpha: 0.1),
                   margin: const EdgeInsets.symmetric(horizontal: 24),
                 ),
-                _buildStatItem('Pengikut', _followersCount),
+                _buildStatItem(AppStrings.followersCountLabel, _followersCount),
                 Container(
                   width: 1,
                   height: 30,
                   color: AppColors.navy.withValues(alpha: 0.1),
                   margin: const EdgeInsets.symmetric(horizontal: 24),
                 ),
-                _buildStatItem('Mengikuti', _followingsCount),
+                _buildStatItem(AppStrings.followingCountLabel, _followingsCount),
               ],
             ),
             const SizedBox(height: 20),
@@ -1017,7 +1015,7 @@ class ProfileScreenState extends State<ProfileScreen>
                     child: OutlinedButton.icon(
                       onPressed: _showEditProfileDialog,
                       icon: const Icon(Icons.edit, size: 18),
-                      label: const Text('Edit Profil'),
+                      label: Text(AppStrings.editProfile),
                       style: OutlinedButton.styleFrom(
                         foregroundColor: AppColors.navy,
                         side: BorderSide(
@@ -1042,7 +1040,7 @@ class ProfileScreenState extends State<ProfileScreen>
             // Posts section
             Row(
               children: [
-                const Text('Postingan',
+                Text(AppStrings.posts,
                     style: TextStyle(
                         color: AppColors.navy,
                         fontSize: 16,
@@ -1064,7 +1062,7 @@ class ProfileScreenState extends State<ProfileScreen>
                             size: 48,
                             color: AppColors.navy.withValues(alpha: 0.2)),
                         const SizedBox(height: 12),
-                        Text('Belum ada postingan',
+                        Text(AppStrings.noPostsYet,
                             style: TextStyle(
                                 color: AppColors.navy.withValues(alpha: 0.5),
                                 fontSize: 14)),
@@ -1077,7 +1075,7 @@ class ProfileScreenState extends State<ProfileScreen>
                               widget.onNavigateToCreatePost?.call();
                             },
                             icon: const Icon(Icons.edit_note, size: 20),
-                            label: const Text('Buat Postingan',
+                            label: Text(AppStrings.createPost,
                                 style: TextStyle(
                                     fontWeight: FontWeight.bold, fontSize: 14)),
                             style: ElevatedButton.styleFrom(
@@ -1132,7 +1130,7 @@ class ProfileScreenState extends State<ProfileScreen>
                     size: 14,
                     color: AppColors.navy.withValues(alpha: 0.6)),
                 const SizedBox(width: 4),
-                Text('Disematkan',
+                Text(AppStrings.pinned,
                     style: TextStyle(
                         color: AppColors.navy.withValues(alpha: 0.6),
                         fontSize: 11,
@@ -1153,14 +1151,14 @@ class ProfileScreenState extends State<ProfileScreen>
                 },
                 itemBuilder: (_) => [
                   if (post.canEdit)
-                    const PopupMenuItem(
+                    PopupMenuItem(
                       value: 'edit',
                       child: Row(children: [
-                        Icon(Icons.edit_outlined,
+                        const Icon(Icons.edit_outlined,
                             color: AppColors.navy, size: 20),
-                        SizedBox(width: 8),
-                        Text('Edit',
-                            style: TextStyle(color: AppColors.navy)),
+                        const SizedBox(width: 8),
+                        Text(AppStrings.edit,
+                            style: const TextStyle(color: AppColors.navy)),
                       ]),
                     ),
                   PopupMenuItem(
@@ -1173,17 +1171,17 @@ class ProfileScreenState extends State<ProfileScreen>
                           color: AppColors.navy,
                           size: 20),
                       const SizedBox(width: 8),
-                      Text(post.isPinned ? 'Lepas Sematan' : 'Sematkan',
+                      Text(post.isPinned ? AppStrings.unpinPost : AppStrings.pinPost,
                           style: const TextStyle(color: AppColors.navy)),
                     ]),
                   ),
-                  const PopupMenuItem(
+                  PopupMenuItem(
                     value: 'delete',
                     child: Row(children: [
-                      Icon(Icons.delete_outline,
+                      const Icon(Icons.delete_outline,
                           color: Colors.red, size: 20),
-                      SizedBox(width: 8),
-                      Text('Hapus', style: TextStyle(color: Colors.red)),
+                      const SizedBox(width: 8),
+                      Text(AppStrings.delete, style: const TextStyle(color: Colors.red)),
                     ]),
                   ),
                 ],
@@ -1276,7 +1274,7 @@ class ProfileScreenState extends State<ProfileScreen>
             ),
             const SizedBox(width: 6),
             Text(
-              isPrivate ? 'Privat' : 'Publik',
+              isPrivate ? AppStrings.privateLabel : AppStrings.publicLabel,
               style: TextStyle(
                 color: isPrivate ? Colors.white : AppColors.navy,
                 fontWeight: FontWeight.bold,
@@ -1375,9 +1373,7 @@ class ProfileScreenState extends State<ProfileScreen>
                 color: AppColors.amber, size: 40),
             const SizedBox(height: 12),
             Text(
-              AppStrings.isId
-                  ? 'Lengkapi Profil Anda'
-                  : 'Complete Your Profile',
+              AppStrings.completeProfileTitle,
               style: const TextStyle(
                   color: Colors.white,
                   fontSize: 18,
@@ -1385,9 +1381,7 @@ class ProfileScreenState extends State<ProfileScreen>
             ),
             const SizedBox(height: 8),
             Text(
-              AppStrings.isId
-                  ? 'Isi data tinggi, berat, dan usia untuk mendapatkan rekomendasi kalori personalized.'
-                  : 'Fill in your height, weight, and age to get personalized calorie recommendations.',
+              AppStrings.completeProfileBannerDesc,
               textAlign: TextAlign.center,
               style: TextStyle(color: Colors.white.withValues(alpha: 0.7), fontSize: 13),
             ),
@@ -1400,7 +1394,7 @@ class ProfileScreenState extends State<ProfileScreen>
                 borderRadius: BorderRadius.circular(20),
               ),
               child: Text(
-                AppStrings.isId ? 'Isi Sekarang' : 'Fill Now',
+                AppStrings.fillNow,
                 style: const TextStyle(
                     color: AppColors.navy, fontWeight: FontWeight.bold),
               ),
