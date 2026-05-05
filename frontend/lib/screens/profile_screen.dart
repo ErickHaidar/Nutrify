@@ -14,6 +14,7 @@ import 'package:nutrify/domain/entity/post/community_post.dart';
 import 'package:nutrify/screens/post_detail_screen.dart';
 import 'package:nutrify/services/community_post_api_service.dart';
 import 'edit_profile_screen.dart';
+import 'image_preview_screen.dart';
 import '../services/profile_api_service.dart';
 import '../services/notification_service.dart';
 import '../constants/colors.dart';
@@ -39,6 +40,9 @@ class ProfileScreenState extends State<ProfileScreen>
   bool _isTogglingNotif = false; // Guard against spam-clicking
   XFile? _profileImage;
   bool _isPhotoChanged = false;
+  File? _localPhotoFile; // shown instantly after pick, before API refresh
+  int _photoVersion = 0; // cache-buster for NetworkImage URL
+  bool _isLocalAvatarNew = false;
   final ImagePicker _picker = getIt<ImagePicker>();
 
   // Social tab
@@ -150,9 +154,20 @@ class ProfileScreenState extends State<ProfileScreen>
   }
 
   ImageProvider? _buildProfileImageProvider() {
-    if (_profile?.photoUrl != null && _profile!.photoUrl!.isNotEmpty) {
-      return NetworkImage(_profile!.photoUrl!);
+    // 1. Show local file immediately after picking (optimistic UI)
+    if (_localPhotoFile != null) {
+      return FileImage(_localPhotoFile!);
     }
+    // 2. Show network photo from API (with cache-buster after upload)
+    if (_profile?.photoUrl != null && _profile!.photoUrl!.isNotEmpty) {
+      final rawUrl = _profile!.photoUrl!;
+      final fullUrl = rawUrl.startsWith('http')
+          ? rawUrl
+          : 'https://nutrify-app.my.id$rawUrl';
+      final bustedUrl = '$fullUrl?v=$_photoVersion';
+      return NetworkImage(bustedUrl);
+    }
+    // 3. Fallback: locally cached path from SharedPreferences
     if (_profileImagePath != null) {
       if (kIsWeb) return NetworkImage(_profileImagePath!);
       return FileImage(File(_profileImagePath!));
@@ -369,36 +384,62 @@ class ProfileScreenState extends State<ProfileScreen>
     try {
       final picked = await _picker.pickImage(
         source: source,
-        maxWidth: 512,
-        maxHeight: 512,
-        imageQuality: 80,
+        maxWidth: 1024,
+        maxHeight: 1024,
+        imageQuality: 85,
       );
       if (picked == null) return;
 
+      // Route through ImagePreviewScreen for preview + optional crop (same as add_post)
+      if (!mounted) return;
+      final String? finalImagePath = await Navigator.push<String>(
+        context,
+        MaterialPageRoute(
+          builder: (context) => ImagePreviewScreen(imagePath: picked.path),
+        ),
+      );
+      if (finalImagePath == null) return; // user cancelled preview
+
+      final finalFile = File(finalImagePath);
+
+      // Optimistic UI: show local file instantly before API responds
       setState(() {
-        _profileImage = picked;
+        _localPhotoFile = finalFile;
+        _profileImage = XFile(finalImagePath);
         _isPhotoChanged = true;
       });
 
-      await _profileApiService.uploadProfilePhoto(File(picked.path));
+      await _profileApiService.uploadProfilePhoto(finalFile);
 
-      // Clear Flutter image cache so old avatar doesn't linger
+      // Clear Flutter image decode cache so NetworkImage re-fetches
       PaintingBinding.instance.imageCache.clear();
       PaintingBinding.instance.imageCache.clearLiveImages();
 
-      await getIt<SharedPreferences>().setString('profile_image', picked.path);
+      await getIt<SharedPreferences>().setString('profile_image', finalImagePath);
 
       if (mounted) {
-        setState(() => _isPhotoChanged = false);
-        loadProfile();
-        _loadSocialProfile();
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(AppStrings.profilePhotoUpdated)),
-        );
+        setState(() {
+          _isPhotoChanged = false;
+          _photoVersion++; // bust cached NetworkImage URL
+        });
+        // Reload from API; once _profile.photoUrl is updated, _localPhotoFile is cleared
+        await loadProfile();
+        await _loadSocialProfile();
+        if (mounted) {
+          // Jangan null-kan _localPhotoFile — biarkan foto lokal tampil
+          // karena NetworkImage bisa saja masih cache URL lama meski sudah bust.
+          // _localPhotoFile akan otomatis diganti saat user pick foto baru.
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text(AppStrings.profilePhotoUpdated)),
+          );
+        }
       }
     } catch (e) {
       if (mounted) {
-        setState(() => _isPhotoChanged = false);
+        setState(() {
+          _isPhotoChanged = false;
+          _localPhotoFile = null; // revert optimistic UI on error
+        });
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text(AppStrings.failedToUploadPhoto(e.toString())), backgroundColor: Colors.red),
         );
