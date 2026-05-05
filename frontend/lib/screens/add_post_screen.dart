@@ -78,7 +78,7 @@ class _AddPostScreenState extends State<AddPostScreen> {
           children: [
             ListTile(
               leading: const Icon(Icons.photo_library, color: Color(0xFFFFCC80)),
-              title: const Text('Galeri', style: TextStyle(color: Colors.white)),
+              title: Text(AppStrings.gallery, style: const TextStyle(color: Colors.white)),
               onTap: () {
                 Navigator.pop(ctx);
                 _pickImage(ImageSource.gallery);
@@ -86,7 +86,7 @@ class _AddPostScreenState extends State<AddPostScreen> {
             ),
             ListTile(
               leading: const Icon(Icons.camera_alt, color: Color(0xFFFFCC80)),
-              title: const Text('Kamera', style: TextStyle(color: Colors.white)),
+              title: Text(AppStrings.camera, style: const TextStyle(color: Colors.white)),
               onTap: () {
                 Navigator.pop(ctx);
                 _pickImage(ImageSource.camera);
@@ -282,27 +282,39 @@ class _AddPostScreenState extends State<AddPostScreen> {
                   color: AppColors.peach,
                   borderRadius: BorderRadius.circular(16),
                 ),
-                child: Column(
+                child: Stack(
                   children: [
-                    TextField(
-                      controller: _descController,
-                      maxLength: _maxChars,
-                      maxLines: 5,
-                      minLines: 3,
-                      style: const TextStyle(color: AppColors.navy),
-                      decoration: InputDecoration(
-                        hintText: AppStrings.writeDescription,
-                        hintStyle: TextStyle(
-                          color: AppColors.navy.withOpacity(0.4),
+                    Padding(
+                      padding: const EdgeInsets.only(bottom: 20),
+                      child: TextField(
+                        controller: _descController,
+                        maxLength: _maxChars,
+                        maxLines: 5,
+                        minLines: 3,
+                        style: const TextStyle(color: AppColors.navy),
+                        decoration: InputDecoration(
+                          hintText: AppStrings.writeDescription,
+                          hintStyle: TextStyle(
+                            color: AppColors.navy.withValues(alpha: 0.4),
+                          ),
+                          border: InputBorder.none,
+                          contentPadding: const EdgeInsets.all(16),
+                          counterText: '', // Hide default counter
                         ),
-                        border: InputBorder.none,
-                        contentPadding: const EdgeInsets.all(16),
-                        counterStyle: TextStyle(
-                          color: AppColors.navy.withOpacity(0.4),
-                          fontSize: 12,
+                        onChanged: (_) => setState(() {}),
+                      ),
+                    ),
+                    Positioned(
+                      bottom: 12,
+                      right: 16,
+                      child: Text(
+                        '${_descController.text.length}/$_maxChars',
+                        style: TextStyle(
+                          color: AppColors.navy.withValues(alpha: 0.4),
+                          fontSize: 11,
+                          fontWeight: FontWeight.w600,
                         ),
                       ),
-                      onChanged: (_) => setState(() {}),
                     ),
                   ],
                 ),

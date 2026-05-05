@@ -67,7 +67,8 @@ class CommunityPostApiService {
   Future<List<CommentItem>> getCommentReplies(int commentId, {int page = 1}) async {
     final res = await _dio.dio.get('comments/$commentId/replies', queryParameters: {'page': page});
     final List<dynamic> data = res.data['data']['data'] ?? res.data['data'] ?? [];
-    return data.map((e) => CommentItem.fromJson(e as Map<String, dynamic>)).toList();
+    final list = data.map((e) => CommentItem.fromJson(e as Map<String, dynamic>)).toList();
+    return list..sort((a, b) => a.createdAt.compareTo(b.createdAt));
   }
 
   Future<Map<String, dynamic>> toggleFollow(int userId) async {
@@ -160,10 +161,10 @@ class CommentItem {
       likesCount: json['likes_count'] as int? ?? 0,
       isLiked: json['is_liked'] as bool? ?? false,
       repliesCount: json['replies_count'] as int? ?? 0,
-      replies: (json['replies'] as List<dynamic>?)
+      replies: ((json['replies'] as List<dynamic>?)
               ?.map((e) => CommentItem.fromJson(e as Map<String, dynamic>))
-              .toList() ??
-          [],
+              .toList() ?? [])
+            ..sort((a, b) => a.createdAt.compareTo(b.createdAt)),
       createdAt: DateTime.parse(json['created_at'] as String).toLocal(),
     );
   }

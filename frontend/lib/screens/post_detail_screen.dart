@@ -242,6 +242,7 @@ class _PostDetailScreenState extends State<PostDetailScreen> with SingleTickerPr
           for (var r in newReplies) {
             if (!existingIds.contains(r.id)) merged.add(r);
           }
+          merged.sort((a, b) => a.createdAt.compareTo(b.createdAt));
           
           final updated = CommentItem(
             id: c.id, content: c.content, userId: c.userId, userName: c.userName, userUsername: c.userUsername, userAvatarUrl: c.userAvatarUrl, parentId: c.parentId, likesCount: c.likesCount, isLiked: c.isLiked, repliesCount: c.repliesCount, replies: merged, createdAt: c.createdAt,

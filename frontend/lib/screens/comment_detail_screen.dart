@@ -49,7 +49,7 @@ class _CommentDetailScreenState extends State<CommentDetailScreen> {
       final replies = await widget.api.getCommentReplies(_parent.id);
       if (mounted) {
         setState(() {
-          _replies = replies;
+          _replies = replies..sort((a, b) => a.createdAt.compareTo(b.createdAt));
           _isLoading = false;
         });
       }
