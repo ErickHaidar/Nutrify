@@ -84,6 +84,18 @@ class NotificationService {
         .resolvePlatformSpecificImplementation<AndroidFlutterLocalNotificationsPlugin>()
         ?.createNotificationChannel(channel);
 
+    // Create Meal Reminders channel (used by scheduled meal notifications)
+    const AndroidNotificationChannel mealChannel = AndroidNotificationChannel(
+      'meal_reminders',
+      'Meal Reminders',
+      description: 'Notifications for daily meal times',
+      importance: Importance.max,
+    );
+
+    await _notificationsPlugin
+        .resolvePlatformSpecificImplementation<AndroidFlutterLocalNotificationsPlugin>()
+        ?.createNotificationChannel(mealChannel);
+
     // 3. Initialize Firebase Messaging Features (Only if Firebase was initialized in main.dart)
     if (_isFirebaseReady) {
       try {
@@ -296,5 +308,32 @@ class NotificationService {
 
   Future<void> cancelAllNotifications() async {
     await _notificationsPlugin.cancelAll();
+  }
+
+  /// TEST ONLY — shows a meal reminder notification 1 minute from now.
+  /// Delete this method after testing.
+  Future<void> testShowReminderNow() async {
+    final now = tz.TZDateTime.now(tz.local);
+    final scheduled = now.add(const Duration(minutes: 1));
+
+    await _notificationsPlugin.zonedSchedule(
+      id: 99,
+      title: 'Makan Pagi Yuk! (07.00 - 08.00)',
+      body: 'Waktunya sarapan sehat untuk memulai harimu dengan energi!',
+      scheduledDate: scheduled,
+      payload: 'meal:Breakfast',
+      notificationDetails: NotificationDetails(
+        android: AndroidNotificationDetails(
+          'meal_reminders',
+          'Meal Reminders',
+          channelDescription: 'Notifications for daily meal times',
+          importance: Importance.max,
+          priority: Priority.high,
+        ),
+        iOS: const DarwinNotificationDetails(),
+      ),
+      androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
+    );
+    print('Test notification scheduled at $scheduled');
   }
 }

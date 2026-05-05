@@ -897,15 +897,7 @@ class ProfileScreenState extends State<ProfileScreen>
                   fontSize: 16,
                   fontWeight: FontWeight.bold)),
           const SizedBox(height: 12),
-          _buildMenuButton(context,
-              icon: Icons.notifications_rounded,
-              label: AppStrings.notification,
-              onPressed: () => _toggleNotifications(!_notificationsEnabled),
-              trailing: Switch.adaptive(
-                value: _notificationsEnabled,
-                onChanged: null,
-                activeColor: AppColors.navy,
-              )),
+          _buildNotificationToggle(),
           const SizedBox(height: 12),
           _buildMenuButton(context,
               icon: Icons.language_rounded,
@@ -1441,6 +1433,69 @@ class ProfileScreenState extends State<ProfileScreen>
               ),
             ),
           ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildNotificationToggle() {
+    return Container(
+      decoration: BoxDecoration(
+        color: NutrifyTheme.lightCard,
+        borderRadius: BorderRadius.circular(35),
+      ),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: _isTogglingNotif
+              ? null
+              : () => _toggleNotifications(!_notificationsEnabled),
+          onLongPress: () {
+            // TODO: HAPUS setelah test — kirim notif test 1 menit dari sekarang
+            getIt<NotificationService>().testShowReminderNow();
+            ScaffoldMessenger.of(context)
+              ..clearSnackBars()
+              ..showSnackBar(const SnackBar(
+                  content: Text('Test notif akan muncul dalam 1 menit')));
+          },
+          borderRadius: BorderRadius.circular(35),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 4),
+            child: Row(
+              children: [
+                Container(
+                  width: 44,
+                  height: 44,
+                  decoration: BoxDecoration(
+                    color: AppColors.navy.withValues(alpha: 0.2),
+                    shape: BoxShape.circle,
+                  ),
+                  child: Icon(Icons.notifications_rounded,
+                      color: AppColors.navy.withValues(alpha: 0.6),
+                      size: 22),
+                ),
+                const SizedBox(width: 15),
+                Text(AppStrings.notification,
+                    style: const TextStyle(
+                      color: AppColors.navy,
+                      fontSize: 15,
+                      fontWeight: FontWeight.w600,
+                    )),
+                const Spacer(),
+                Switch(
+                  value: _notificationsEnabled,
+                  onChanged: _isTogglingNotif
+                      ? null
+                      : (v) => _toggleNotifications(v),
+                  activeThumbColor: Colors.white,
+                  activeTrackColor: AppColors.navy,
+                  inactiveThumbColor: Colors.grey.shade400,
+                  inactiveTrackColor: Colors.grey.shade300,
+                ),
+                const SizedBox(width: 8),
+              ],
+            ),
+          ),
         ),
       ),
     );

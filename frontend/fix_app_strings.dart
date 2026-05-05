@@ -3,11 +3,11 @@ import 'dart:io';
 void main() {
   final file = File('lib/utils/locale/app_strings.dart');
   var content = file.readAsStringSync();
-  
+
   // Clean up the wrongly placed additions
-  content = content.replaceAll(RegExp(r'// ─── Chat & Community Extensions .*?static String get now => _t\(\'Sekarang\', \'Now\'\);', dotAll: true), '');
-  content = content.replaceAll(RegExp(r'// ─── Chat Detail & Comment Detail .*?static String get writeReply => _t\(\'Tulis balasan\.\.\.\', \'Write a reply\.\.\.\'\);', dotAll: true), '');
-  
+  content = content.replaceAll(RegExp(r"// ─── Chat & Community Extensions .*?static String get now => _t\('Sekarang', 'Now'\);", dotAll: true), '');
+  content = content.replaceAll(RegExp(r"// ─── Chat Detail & Comment Detail .*?static String get writeReply => _t\('Tulis balasan\.\.\.', 'Write a reply\.\.\.'\);", dotAll: true), '');
+
   final additions = """
   // ─── Chat & Community Extensions ─────────────────────────────────────────
   static String get post => _t('Posting', 'Post');
@@ -53,9 +53,10 @@ void main() {
 
   content = content.replaceFirst(
     "  // ─── Helper ──────────────────────────────────────────────────────────────",
-    additions + "\n  // ─── Helper ──────────────────────────────────────────────────────────────"
+    "$additions\n  // ─── Helper ──────────────────────────────────────────────────────────────"
   );
-  
+
   file.writeAsStringSync(content);
+  // ignore: avoid_print
   print('Fixed app_strings.dart');
 }
