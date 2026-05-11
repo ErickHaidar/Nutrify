@@ -1,4 +1,3 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:nutrify/core/data/network/dio/dio_client.dart';
 import 'package:nutrify/data/network/constants/endpoints.dart';

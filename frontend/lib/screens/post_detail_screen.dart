@@ -213,12 +213,14 @@ class _PostDetailScreenState extends State<PostDetailScreen> with SingleTickerPr
             }
           } else {
             final idx = _comments.indexWhere((x) => x.id == c.id);
-            if (idx != -1) _comments[idx] = CommentItem(
+            if (idx != -1) {
+              _comments[idx] = CommentItem(
               id: c.id, content: c.content, userId: c.userId, userName: c.userName,
               userUsername: c.userUsername, userAvatarUrl: c.userAvatarUrl, parentId: c.parentId,
               likesCount: wasLiked ? c.likesCount + 1 : c.likesCount - 1,
               isLiked: wasLiked, repliesCount: c.repliesCount, replies: c.replies, createdAt: c.createdAt,
             );
+            }
           }
         });
       }
@@ -376,7 +378,7 @@ class _PostDetailScreenState extends State<PostDetailScreen> with SingleTickerPr
                       physics: const NeverScrollableScrollPhysics(),
                       padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 4),
                       itemCount: _comments.length,
-                      separatorBuilder: (_, __) => const SizedBox(height: 16),
+                      separatorBuilder: (_, _) => const SizedBox(height: 16),
                       itemBuilder: (context, index) {
                         final c = _comments[index];
                         return _buildCommentTile(c, index);
@@ -470,7 +472,7 @@ class _PostDetailScreenState extends State<PostDetailScreen> with SingleTickerPr
     String headerName = c.userName;
     String displayContent = c.content;
     if (isReply && replyToName != null) {
-      headerName = '${c.userName}' + AppStrings.tiktokReplyIndicator + '$replyToName';
+      headerName = '${c.userName}${AppStrings.tiktokReplyIndicator}$replyToName';
       final mentionPrefix = '@$replyToName';
       if (c.content.startsWith(mentionPrefix)) {
         displayContent = c.content.substring(mentionPrefix.length).trimLeft();
@@ -725,7 +727,7 @@ class _PostDetailScreenState extends State<PostDetailScreen> with SingleTickerPr
                 post.imagePath!.startsWith('http') ? post.imagePath! : 'https://nutrify-app.my.id${post.imagePath!}',
                 width: double.infinity,
                 fit: BoxFit.cover,
-                errorBuilder: (_, __, ___) => const SizedBox.shrink(),
+                errorBuilder: (_, _, _) => const SizedBox.shrink(),
               ),
             ),
           ],

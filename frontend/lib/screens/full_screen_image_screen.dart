@@ -31,7 +31,7 @@ class FullScreenImageScreen extends StatelessWidget {
             child: Image.network(
               imageUrl.startsWith('http') ? imageUrl : 'https://nutrify-app.my.id$imageUrl',
               fit: BoxFit.contain,
-              errorBuilder: (_, __, ___) => const Center(
+              errorBuilder: (_, _, _) => const Center(
                 child: Icon(Icons.broken_image, color: Colors.white54, size: 64),
               ),
             ),

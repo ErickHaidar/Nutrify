@@ -104,8 +104,9 @@ class _CommentDetailScreenState extends State<CommentDetailScreen> {
             likesCount: wasLiked ? c.likesCount + 1 : c.likesCount - 1,
             isLiked: wasLiked, repliesCount: c.repliesCount, replies: c.replies, createdAt: c.createdAt,
           );
-          if (isParent) _parent = reverted;
-          else if (replyIndex != null && replyIndex < _replies.length) _replies[replyIndex] = reverted;
+          if (isParent) {
+            _parent = reverted;
+          } else if (replyIndex != null && replyIndex < _replies.length) _replies[replyIndex] = reverted;
         });
       }
     }
@@ -174,7 +175,7 @@ class _CommentDetailScreenState extends State<CommentDetailScreen> {
                       physics: const NeverScrollableScrollPhysics(),
                       padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 4),
                       itemCount: _replies.length,
-                      separatorBuilder: (_, __) => const SizedBox(height: 12),
+                      separatorBuilder: (_, _) => const SizedBox(height: 12),
                       itemBuilder: (_, i) => _buildCommentCard(_replies[i], replyIndex: i),
                     ),
                   const SizedBox(height: 80),
@@ -214,7 +215,7 @@ class _CommentDetailScreenState extends State<CommentDetailScreen> {
                 RichText(
                   text: TextSpan(children: [
                     TextSpan(
-                      text: isParent ? c.userName : '${c.userName}' + AppStrings.tiktokReplyIndicator + '${_parent.userName}',
+                      text: isParent ? c.userName : '${c.userName}${AppStrings.tiktokReplyIndicator}${_parent.userName}',
                       style: TextStyle(color: AppColors.navy, fontWeight: FontWeight.bold, fontSize: isParent ? 14 : 13),
                     ),
                     TextSpan(

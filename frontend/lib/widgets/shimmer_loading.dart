@@ -136,8 +136,8 @@ class KomunitasShimmer extends StatelessWidget {
       child: ListView.separated(
         padding: const EdgeInsets.symmetric(vertical: 16),
         itemCount: 4,
-        separatorBuilder: (_, __) => const SizedBox(height: 24),
-        itemBuilder: (_, __) => Padding(
+        separatorBuilder: (_, _) => const SizedBox(height: 24),
+        itemBuilder: (_, _) => Padding(
           padding: const EdgeInsets.symmetric(horizontal: 24),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -176,8 +176,8 @@ class ChatListShimmer extends StatelessWidget {
       child: ListView.separated(
         padding: const EdgeInsets.symmetric(vertical: 8),
         itemCount: 6,
-        separatorBuilder: (_, __) => const SizedBox(height: 4),
-        itemBuilder: (_, __) => Padding(
+        separatorBuilder: (_, _) => const SizedBox(height: 4),
+        itemBuilder: (_, _) => Padding(
           padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
           child: Row(
             children: [

@@ -215,7 +215,7 @@ class _ChatListScreenState extends State<ChatListScreen> {
                             : ListView.separated(
                                 padding: const EdgeInsets.symmetric(horizontal: 20),
                                 itemCount: results.length,
-                                separatorBuilder: (_, __) => const Divider(height: 1),
+                                separatorBuilder: (_, _) => const Divider(height: 1),
                                 itemBuilder: (ctx, i) {
                                   final u = results[i];
                                   final name = u['name'] as String? ?? '';
@@ -384,7 +384,7 @@ class _ChatListScreenState extends State<ChatListScreen> {
                   child: ListView.separated(
                     padding: const EdgeInsets.only(top: 8, bottom: 80),
                     itemCount: _filtered.length,
-                    separatorBuilder: (_, __) => Divider(color: AppColors.navy.withValues(alpha: 0.06), height: 1),
+                    separatorBuilder: (_, _) => Divider(color: AppColors.navy.withValues(alpha: 0.06), height: 1),
                     itemBuilder: (_, i) => _buildConversationTile(_filtered[i]),
                   ),
                 ),

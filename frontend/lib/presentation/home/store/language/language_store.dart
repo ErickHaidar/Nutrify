@@ -47,7 +47,7 @@ abstract class _LanguageStore with Store {
 
   @action
   String getCode() {
-    var code;
+    String? code;
 
     if (_locale == 'id') {
       code = "ID";
@@ -55,7 +55,7 @@ abstract class _LanguageStore with Store {
       code = "US";
     }
 
-    return code;
+    return code ?? "ID";
   }
 
   @action
@@ -78,5 +78,5 @@ abstract class _LanguageStore with Store {
 
   // dispose:-------------------------------------------------------------------
   @override
-  dispose() {}
+  void dispose() {}
 }

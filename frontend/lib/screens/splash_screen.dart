@@ -71,7 +71,7 @@ class _SplashScreenState extends State<SplashScreen> {
               Assets.nutrifyLogo,
               width: 100,
               height: 100,
-              errorBuilder: (_, __, ___) => Icon(
+              errorBuilder: (_, _, _) => Icon(
                 Icons.pie_chart_outline,
                 color: NutrifyTheme.accentOrange,
                 size: 80,

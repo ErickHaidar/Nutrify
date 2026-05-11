@@ -399,9 +399,9 @@ class FollowController extends Controller
     public function updateProfile(Request $request)
     {
         $request->validate([
-            'name'          => 'nullable|string|min:2|max:50',
-            'username'      => 'nullable|string|min:3|max:30|alpha_num|unique:users,username,' . Auth::id(),
-            'account_type'  => 'nullable|in:public,private',
+            'name'          => 'sometimes|nullable|string|min:1|max:50',
+            'username'      => 'sometimes|nullable|string|min:3|max:30|alpha_num|unique:users,username,' . Auth::id(),
+            'account_type'  => 'sometimes|nullable|in:public,private',
         ]);
 
         $user = User::find(Auth::id());

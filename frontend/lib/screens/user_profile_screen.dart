@@ -237,7 +237,7 @@ class _UserProfileScreenState extends State<UserProfileScreen> with SingleTicker
                     child: Image.network(
                       _avatarUrl.startsWith('http') ? _avatarUrl : 'https://nutrify-app.my.id$_avatarUrl',
                       width: 90, height: 90, fit: BoxFit.cover,
-                      errorBuilder: (_, __, ___) => _buildInitialsAvatar(),
+                      errorBuilder: (_, _, _) => _buildInitialsAvatar(),
                     ),
                   )
                 : _buildInitialsAvatar(),
@@ -412,7 +412,7 @@ class _UserProfileScreenState extends State<UserProfileScreen> with SingleTicker
             physics: const NeverScrollableScrollPhysics(),
             padding: const EdgeInsets.only(bottom: 16),
             itemCount: _userPosts.length,
-            separatorBuilder: (_, __) => Divider(color: AppColors.navy.withValues(alpha: 0.1), thickness: 1, height: 24),
+            separatorBuilder: (_, _) => Divider(color: AppColors.navy.withValues(alpha: 0.1), thickness: 1, height: 24),
             itemBuilder: (context, index) => _buildPostCard(_userPosts[index]),
           ),
       ],
@@ -444,7 +444,7 @@ class _UserProfileScreenState extends State<UserProfileScreen> with SingleTicker
                 child: Image.network(
                   post.imagePath!.startsWith('http') ? post.imagePath! : 'https://nutrify-app.my.id${post.imagePath!}',
                   width: double.infinity, height: 160, fit: BoxFit.cover,
-                  errorBuilder: (_, __, ___) => const SizedBox.shrink(),
+                  errorBuilder: (_, _, _) => const SizedBox.shrink(),
                 ),
               ),
             ],

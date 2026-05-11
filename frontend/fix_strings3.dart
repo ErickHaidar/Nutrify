@@ -53,7 +53,7 @@ void main() {
   if (lastIndex != -1) {
     final before = content.substring(0, lastIndex);
     final after = content.substring(lastIndex);
-    final newContent = before + additions + "\n" + after;
+    final newContent = "$before$additions\n$after";
     file.writeAsStringSync(newContent);
     print('Updated app_strings.dart correctly');
   } else {

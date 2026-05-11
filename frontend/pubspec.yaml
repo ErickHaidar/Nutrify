@@ -54,6 +54,7 @@ dependencies:
   # S
   shared_preferences: ^2.1.0
   shimmer: ^3.0.0
+  shorebird_code_push: ^1.0.0
   sembast_web: ^2.4.4
   sembast: ^3.4.4
   # T
@@ -104,6 +105,7 @@ flutter:
     - assets/images/
     - assets/icons/
     - assets/lang/
+    - shorebird.yaml
 
   fonts:
     - family: ProductSans

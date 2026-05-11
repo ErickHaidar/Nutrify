@@ -18,5 +18,32 @@ return Application::configure(basePath: dirname(__DIR__))
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
-        //
+        // Mask database errors so public users never see raw SQL/stack traces
+        $exceptions->render(function (\Illuminate\Database\QueryException $e, $request) {
+            \Illuminate\Support\Facades\Log::error('Database QueryException: ' . $e->getMessage(), [
+                'sql' => $e->getSql(),
+                'bindings' => $e->getBindings(),
+                'trace' => $e->getTraceAsString(),
+            ]);
+
+            if ($request->expectsJson() || $request->is('api/*')) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Terjadi kesalahan pada server. Silakan coba lagi nanti.',
+                ], 500);
+            }
+        });
+
+        $exceptions->render(function (\PDOException $e, $request) {
+            \Illuminate\Support\Facades\Log::error('PDOException: ' . $e->getMessage(), [
+                'trace' => $e->getTraceAsString(),
+            ]);
+
+            if ($request->expectsJson() || $request->is('api/*')) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Terjadi kesalahan pada server. Silakan coba lagi nanti.',
+                ], 500);
+            }
+        });
     })->create();

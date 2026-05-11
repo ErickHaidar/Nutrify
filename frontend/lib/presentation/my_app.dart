@@ -25,6 +25,8 @@ class MyApp extends StatefulWidget {
   // it sets this flag so the auth listener doesn't also navigate.
   static bool isHandlingLoginNavigation = false;
 
+  const MyApp({super.key});
+
   @override
   State<MyApp> createState() => _MyAppState();
 }
@@ -68,7 +70,7 @@ class _MyAppState extends State<MyApp> {
           }
           _prefs.saveIsLoggedIn(true);
           try {
-            final notifEnabled = await getIt<SharedPreferences>().getBool('notifications_enabled') ?? true;
+            final notifEnabled = getIt<SharedPreferences>().getBool('notifications_enabled') ?? true;
             if (notifEnabled) {
               getIt<NotificationService>().scheduleMealReminders();
             }
@@ -138,10 +140,13 @@ class _MyAppState extends State<MyApp> {
           builder: (context, child) {
             return Container(
               color: const Color(0xFF2D2A4A), // Deep blue background for the deadzone
-              child: Center(
-                child: ConstrainedBox(
-                  constraints: const BoxConstraints(maxWidth: 600),
-                  child: child!,
+              child: SafeArea(
+                top: false, // Don't add top padding - let individual screens handle that
+                child: Center(
+                  child: ConstrainedBox(
+                    constraints: const BoxConstraints(maxWidth: 600),
+                    child: child!,
+                  ),
                 ),
               ),
             );

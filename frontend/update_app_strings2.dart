@@ -16,7 +16,7 @@ void main() {
 """;
 
   if (!content.contains('failedToSendMsg')) {
-    content = content.replaceFirst('}', additions + '\n}');
+    content = content.replaceFirst('}', '$additions\n}');
     file.writeAsStringSync(content);
     print('Added Chat Detail & Comment Detail to AppStrings');
   }

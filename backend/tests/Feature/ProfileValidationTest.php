@@ -270,5 +270,67 @@ class ProfileValidationTest extends TestCase
 
         $this->assertTrue($validator3->fails());
     }
+    public function test_nickname_accepts_single_character()
+    {
+        $response = $this->withoutMiddleware()->putJson('/api/users/profile', [
+            'name' => 'A',
+        ]);
+
+        $response->assertStatus(200);
+        $this->assertDatabaseHas('users', [
+            'id' => $this->user->id,
+            'name' => 'A',
+        ]);
+    }
+
+    public function test_name_only_update_without_username()
+    {
+        $newName = 'Updated Name';
+        $response = $this->withoutMiddleware()->putJson('/api/users/profile', [
+            'name' => $newName,
+        ]);
+
+        $response->assertStatus(200);
+        $this->assertDatabaseHas('users', [
+            'id' => $this->user->id,
+            'name' => $newName,
+        ]);
+    }
+
+    public function test_username_only_update_without_name()
+    {
+        $newUsername = 'newuser123';
+        $response = $this->withoutMiddleware()->putJson('/api/users/profile', [
+            'username' => $newUsername,
+        ]);
+
+        $response->assertStatus(200);
+        $this->assertDatabaseHas('users', [
+            'id' => $this->user->id,
+            'username' => $newUsername,
+        ]);
+    }
+
+    public function test_name_rejects_over_50_chars()
+    {
+        $longName = str_repeat('a', 51);
+        $response = $this->withoutMiddleware()->putJson('/api/users/profile', [
+            'name' => $longName,
+        ]);
+
+        $response->assertStatus(422)
+            ->assertJsonValidationErrors(['name']);
+    }
+
+    public function test_username_rejects_non_alphanumeric()
+    {
+        $response = $this->withoutMiddleware()->putJson('/api/users/profile', [
+            'username' => 'bad-user!',
+        ]);
+
+        $response->assertStatus(422)
+            ->assertJsonValidationErrors(['username']);
+    }
+
 }
 

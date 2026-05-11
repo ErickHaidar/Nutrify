@@ -53,7 +53,7 @@ class PostDataSource {
     // Loading from database
 
     // post list
-    var postsList;
+    PostList? postsList;
 
     // fetching data
     final recordSnapshots = await _postsStore.find(
@@ -61,7 +61,7 @@ class PostDataSource {
     );
 
     // Making a List<Post> out of List<RecordSnapshot>
-    if(recordSnapshots.length > 0) {
+    if(recordSnapshots.isNotEmpty) {
       postsList = PostList(
           posts: recordSnapshots.map((snapshot) {
             final post = Post.fromMap(snapshot.value);
@@ -71,7 +71,7 @@ class PostDataSource {
           }).toList());
     }
 
-    return postsList;
+    return postsList!;
   }
 
   Future<int> update(Post post) async {

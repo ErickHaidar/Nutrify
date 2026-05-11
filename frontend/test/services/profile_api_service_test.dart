@@ -2,7 +2,6 @@ import 'dart:io';
 import 'package:dio/dio.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
-import 'package:get_it/get_it.dart';
 import 'package:nutrify/core/data/network/dio/dio_client.dart';
 import 'package:nutrify/services/profile_api_service.dart';
 import 'package:nutrify/data/network/constants/endpoints.dart';

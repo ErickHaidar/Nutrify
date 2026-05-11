@@ -571,13 +571,13 @@ class MealTile extends StatelessWidget {
   final VoidCallback onTap;
 
   const MealTile({
-    Key? key,
+    super.key,
     required this.title,
     required this.imagePath,
     required this.color,
     required this.calories,
     required this.onTap,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

@@ -1,0 +1,4 @@
+# Shorebird Configuration
+# Run 'shorebird init' to generate a real app_id
+# See: https://docs.shorebird.dev/
+app_id: YOUR_APP_ID_HERE

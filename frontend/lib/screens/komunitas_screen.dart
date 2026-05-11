@@ -550,7 +550,7 @@ class KomunitasScreenState extends State<KomunitasScreen> with TickerProviderSta
                     width: double.infinity,
                     height: 200,
                     fit: BoxFit.cover,
-                    errorBuilder: (_, __, ___) => const SizedBox.shrink(),
+                    errorBuilder: (_, _, _) => const SizedBox.shrink(),
                   ),
                 ),
               ),
@@ -773,7 +773,7 @@ class _UserSearchSheetState extends State<_UserSearchSheet> {
                         : ListView.separated(
                             padding: const EdgeInsets.symmetric(horizontal: 20),
                             itemCount: _results.length,
-                            separatorBuilder: (_, __) => const Divider(height: 1),
+                            separatorBuilder: (_, _) => const Divider(height: 1),
                             itemBuilder: (ctx, i) {
                               final u = _results[i];
                               return _buildUserTile(u);
@@ -1078,7 +1078,7 @@ class _CommentSheetState extends State<_CommentSheet> {
     String headerName = c.userName;
     String displayContent = c.content;
     if (isReply && replyToName != null) {
-      headerName = '${c.userName}' + AppStrings.tiktokReplyIndicator + '$replyToName';
+      headerName = '${c.userName}${AppStrings.tiktokReplyIndicator}$replyToName';
       final mentionPrefix = '@$replyToName';
       if (c.content.startsWith(mentionPrefix)) {
         displayContent = c.content.substring(mentionPrefix.length).trimLeft();
@@ -1273,7 +1273,7 @@ class _CommentSheetState extends State<_CommentSheet> {
                     : ListView.separated(
                         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
                         itemCount: _comments.length,
-                        separatorBuilder: (_, __) => const SizedBox(height: 16),
+                        separatorBuilder: (_, _) => const SizedBox(height: 16),
                         itemBuilder: (context, index) {
                           final c = _comments[index];
                           return _buildCommentTile(c, index);

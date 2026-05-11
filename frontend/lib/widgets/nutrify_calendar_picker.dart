@@ -240,11 +240,15 @@ class _NutrifyCalendarPickerState extends State<NutrifyCalendarPicker> {
     final daysInMonth = lastDayOfMonth.day;
 
     final List<DateTime?> calendarDays = [];
-    for (int i = 0; i < startWeekday; i++) calendarDays.add(null);
+    for (int i = 0; i < startWeekday; i++) {
+      calendarDays.add(null);
+    }
     for (int i = 1; i <= daysInMonth; i++) {
       calendarDays.add(DateTime(_displayedMonth.year, _displayedMonth.month, i));
     }
-    while (calendarDays.length % 7 != 0) calendarDays.add(null);
+    while (calendarDays.length % 7 != 0) {
+      calendarDays.add(null);
+    }
 
     return GridView.count(
       crossAxisCount: 7,

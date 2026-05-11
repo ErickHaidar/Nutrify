@@ -6,7 +6,7 @@ void main() {
   var chatContent = chatFile.readAsStringSync();
   
   if (!chatContent.contains("import 'package:nutrify/utils/locale/app_strings.dart';")) {
-    chatContent = "import 'package:nutrify/utils/locale/app_strings.dart';\n" + chatContent;
+    chatContent = "import 'package:nutrify/utils/locale/app_strings.dart';\n$chatContent";
   }
   
   chatContent = chatContent.replaceAll("'Gagal mengirim pesan'", "AppStrings.failedToSendMsg");
@@ -22,7 +22,7 @@ void main() {
   var commentContent = commentFile.readAsStringSync();
   
   if (!commentContent.contains("import 'package:nutrify/utils/locale/app_strings.dart';")) {
-    commentContent = "import 'package:nutrify/utils/locale/app_strings.dart';\n" + commentContent;
+    commentContent = "import 'package:nutrify/utils/locale/app_strings.dart';\n$commentContent";
   }
   
   commentContent = commentContent.replaceAll("'Komentar'", "AppStrings.commentsTitle");

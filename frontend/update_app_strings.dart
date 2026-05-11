@@ -39,7 +39,7 @@ void main() {
 """;
 
   if (!content.contains('Chat & Community Extensions')) {
-    content = content.replaceFirst('}', additions + '\n}');
+    content = content.replaceFirst('}', '$additions\n}');
     file.writeAsStringSync(content);
     print('Added Chat & Community Extensions to AppStrings');
   } else {

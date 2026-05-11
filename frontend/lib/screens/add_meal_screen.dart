@@ -31,14 +31,14 @@ class _AddMealScreenState extends State<AddMealScreen> {
   Map<int, int> _initialLoggedIds = {}; // foodId -> logId at start
   Map<int, DraftSelection> _draftSelections = {}; // foodId -> draft info
   bool _isSavingBatch = false;
-  String _selectedCategory = ''; // empty = all categories
+  final String _selectedCategory = ''; // empty = all categories
 
   List<FoodItem> _results = [];
   List<FoodLogEntry> _allLogsForMeal = []; // Add this to cache full entries
   bool _isSearching = false;
   String _filterMode = 'all'; // 'all', 'favorites', 'recommendations'
   Set<int> _favoriteIds = {};
-  bool _isLoadingFavorites = false;
+  final bool _isLoadingFavorites = false;
   Timer? _debounce;
   bool _isDirty = false; // Flag to indicate if something changed
 
@@ -817,7 +817,7 @@ class _AddMealScreenState extends State<AddMealScreen> {
                 );
 
                 if (confirm == true) {
-                  await _foodLogApi.deleteLog(logId!);
+                  await _foodLogApi.deleteLog(logId);
                   _isDirty = true;
                   await getIt<NotificationService>().scheduleMealReminders();
                   _loadMealLogs();
@@ -845,8 +845,8 @@ class _AddMealScreenState extends State<AddMealScreen> {
             });
           },
           // Custom checkbox style to match new palette
-          fillColor: MaterialStateProperty.resolveWith<Color?>((Set<MaterialState> states) {
-            if (states.contains(MaterialState.selected)) {
+          fillColor: WidgetStateProperty.resolveWith<Color?>((Set<WidgetState> states) {
+            if (states.contains(WidgetState.selected)) {
               return AppColors.navy; // Navy fill when selected
             }
             return AppColors.peach; // Peach background when not selected

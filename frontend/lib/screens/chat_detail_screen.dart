@@ -385,7 +385,7 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
                           msg.imageUrl!,
                           width: double.infinity,
                           fit: BoxFit.cover,
-                          errorBuilder: (_, __, ___) => const SizedBox.shrink(),
+                          errorBuilder: (_, _, _) => const SizedBox.shrink(),
                         ),
                       ),
                     ),

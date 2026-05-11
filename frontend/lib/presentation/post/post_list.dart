@@ -7,6 +7,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 
 class PostListScreen extends StatefulWidget {
+  const PostListScreen({super.key});
+
   @override
   _PostListScreenState createState() => _PostListScreenState();
 }
@@ -101,14 +103,14 @@ class _PostListScreenState extends State<PostListScreen> {
   }
 
   // General Methods:-----------------------------------------------------------
-  _showErrorMessage(String message) {
+  SizedBox _showErrorMessage(String message) {
     Future.delayed(Duration(milliseconds: 0), () {
       if (message.isNotEmpty) {
         FlushbarHelper.createError(
           message: message,
           title: AppLocalizations.of(context).translate('home_tv_error'),
           duration: Duration(seconds: 3),
-        )..show(context);
+        ).show(context);
       }
     });
 

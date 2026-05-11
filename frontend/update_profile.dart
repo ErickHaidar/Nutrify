@@ -5,7 +5,7 @@ void main() {
   var content = file.readAsStringSync();
   
   if (!content.contains("import 'package:nutrify/utils/locale/app_strings.dart';")) {
-    content = "import 'package:nutrify/utils/locale/app_strings.dart';\n" + content;
+    content = "import 'package:nutrify/utils/locale/app_strings.dart';\n$content";
   }
   
   content = content.replaceAll("Tab(text: 'Umum')", "Tab(text: AppStrings.generalTab)");

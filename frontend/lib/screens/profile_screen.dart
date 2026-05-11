@@ -42,7 +42,7 @@ class ProfileScreenState extends State<ProfileScreen>
   bool _isPhotoChanged = false;
   File? _localPhotoFile; // shown instantly after pick, before API refresh
   int _photoVersion = 0; // cache-buster for NetworkImage URL
-  bool _isLocalAvatarNew = false;
+  final bool _isLocalAvatarNew = false;
   final ImagePicker _picker = getIt<ImagePicker>();
 
   // Social tab
@@ -328,9 +328,11 @@ class ProfileScreenState extends State<ProfileScreen>
                       child: ElevatedButton(
                         onPressed: usernameError != null || isChecking ? null : () async {
                           try {
+                            final newName = nameCtrl.text.trim();
+                            final newUsername = usernameCtrl.text.trim();
                             await _communityApi.updateProfile(
-                              name: nameCtrl.text.trim(),
-                              username: usernameCtrl.text.trim(),
+                              name: newName != _socName ? newName : null,
+                              username: newUsername != _socUsername ? newUsername : null,
                             );
                             if (mounted) {
                               Navigator.pop(ctx);
@@ -1127,7 +1129,7 @@ class ProfileScreenState extends State<ProfileScreen>
                     physics: const NeverScrollableScrollPhysics(),
                     padding: const EdgeInsets.only(bottom: 16),
                     itemCount: _posts.length,
-                    separatorBuilder: (_, __) => Divider(
+                    separatorBuilder: (_, _) => Divider(
                         color: AppColors.navy.withValues(alpha: 0.1),
                         thickness: 1,
                         height: 24),
@@ -1239,7 +1241,7 @@ class ProfileScreenState extends State<ProfileScreen>
                 width: double.infinity,
                 height: 160,
                 fit: BoxFit.cover,
-                errorBuilder: (_, __, ___) => const SizedBox.shrink(),
+                errorBuilder: (_, _, _) => const SizedBox.shrink(),
               ),
             ),
           ],

@@ -24,14 +24,16 @@ import 'package:nutrify/presentation/my_app.dart';
 import '../../di/service_locator.dart';
 
 class LoginScreen extends StatefulWidget {
+  const LoginScreen({super.key});
+
   @override
   _LoginScreenState createState() => _LoginScreenState();
 }
 
 class _LoginScreenState extends State<LoginScreen> {
   //text controllers:-----------------------------------------------------------
-  TextEditingController _userEmailController = TextEditingController();
-  TextEditingController _passwordController = TextEditingController();
+  final TextEditingController _userEmailController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
 
   //stores:---------------------------------------------------------------------
   final FormStore _formStore = getIt<FormStore>();
@@ -345,7 +347,7 @@ color: Colors.white,
   }
 
   Widget _buildSignInButton() {
-    return Container(
+    return SizedBox(
       height: 60,
       child: ElevatedButton(
         onPressed: () async {
@@ -398,7 +400,7 @@ color: Colors.white,
   }
 
   Widget _buildSocialButtons() {
-    void _comingSoon() {
+    void comingSoon() {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(AppStrings.comingSoon),
@@ -431,7 +433,7 @@ color: Colors.white,
                 } else {
                   // Jika pesan error terlalu panjang dan tidak ada spasinya, kita bisa memotongnya agar tidak membuat dialog jelek
                   if (errorMsg.length > 100) {
-                     errorMsg = errorMsg.substring(0, 100) + '...';
+                     errorMsg = '${errorMsg.substring(0, 100)}...';
                   }
                 }
                 _showErrorMessage('${AppStrings.googleLoginFailed}:\n$errorMsg');
@@ -458,7 +460,7 @@ color: Colors.white,
                   Image.asset(Assets.iconGoogle, height: 24),
                   const SizedBox(width: 12),
                   Text(
-                    "${AppStrings.signInWithGoogle}",
+                    AppStrings.signInWithGoogle,
                     style: GoogleFonts.montserrat(
                       color: Colors.grey[700],
                       fontWeight: FontWeight.w600,
@@ -566,7 +568,7 @@ color: Colors.white,
   }
 
   // General Methods:-----------------------------------------------------------
-  _showErrorMessage(String message) {
+  SizedBox _showErrorMessage(String message) {
     if (message.isNotEmpty) {
       showDialog(
         context: context,
@@ -619,12 +621,12 @@ color: Colors.white,
     Widget _buildLanguageToggle() {
     return Observer(
       builder: (_) {
-        final _langStore = getIt<LanguageStore>();
+        final langStore = getIt<LanguageStore>();
         return TextButton.icon(
-          onPressed: () => _showLanguagePicker(_langStore),
+          onPressed: () => _showLanguagePicker(langStore),
           icon: const Icon(Icons.language, color: NutrifyTheme.darkCard, size: 20),
           label: Text(
-            _langStore.locale == 'id' ? 'ID' : 'EN',
+            langStore.locale == 'id' ? 'ID' : 'EN',
             style: const TextStyle(color: NutrifyTheme.darkCard, fontWeight: FontWeight.bold),
           ),
         );
@@ -978,7 +980,7 @@ class _SignUpModalContentState extends State<_SignUpModalContent> {
                 height: MediaQuery.of(context).size.height * 0.25,
                 width: double.infinity,
                 fit: BoxFit.cover,
-                errorBuilder: (_, __, ___) => Container(
+                errorBuilder: (_, _, _) => Container(
                   height: MediaQuery.of(context).size.height * 0.25,
                   color: NutrifyTheme.darkCard,
                 ),
@@ -1033,7 +1035,7 @@ class _SignUpModalContentState extends State<_SignUpModalContent> {
                         Assets.nutrifyLogo,
                         height: 70,
                         fit: BoxFit.contain,
-                        errorBuilder: (_, __, ___) => const Icon(
+                        errorBuilder: (_, _, _) => const Icon(
                           Icons.pie_chart_outline,
                           color: NutrifyTheme.accentOrange,
                           size: 60,
