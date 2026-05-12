@@ -8,6 +8,7 @@ import 'package:nutrify/domain/usecase/post/get_post_usecase.dart';
 import 'package:nutrify/domain/usecase/user/is_logged_in_usecase.dart';
 import 'package:nutrify/domain/usecase/user/login_usecase.dart';
 import 'package:nutrify/domain/usecase/user/save_login_in_status_usecase.dart';
+import 'package:nutrify/presentation/home/store/home_store.dart';
 import 'package:nutrify/presentation/home/store/language/language_store.dart';
 import 'package:nutrify/presentation/home/store/theme/theme_store.dart';
 import 'package:nutrify/presentation/login/store/login_store.dart';
@@ -47,5 +48,7 @@ class StoreModule {
     getIt.registerSingleton<LanguageStore>(
       LanguageStore(getIt<SettingRepository>(), getIt<ErrorStore>()),
     );
+
+    getIt.registerSingleton<HomeStore>(HomeStore());
   }
 }

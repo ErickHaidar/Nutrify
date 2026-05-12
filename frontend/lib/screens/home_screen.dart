@@ -1,15 +1,16 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:nutrify/constants/assets.dart';
+import 'package:nutrify/di/service_locator.dart';
+import 'package:nutrify/presentation/home/store/home_store.dart';
 import 'add_meal_screen.dart';
 import 'body_data_goals_screen.dart';
-import 'tracking_kalori_screen.dart';
+import 'calorie_tracking_screen.dart';
 import 'help_screen.dart';
 import 'package:nutrify/constants/colors.dart';
 import 'package:nutrify/utils/locale/app_strings.dart';
-import '../services/food_log_api_service.dart';
-import '../services/profile_api_service.dart';
-import '../services/notification_api_service.dart';
+import 'package:nutrify/presentation/home/store/language/language_store.dart';
 import '../widgets/notification_modal.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -20,82 +21,16 @@ class HomeScreen extends StatefulWidget {
 }
 
 class HomeScreenState extends State<HomeScreen> {
-  int totalCalories = 0;
-  int targetCalories = 0;
-  bool _isLoadingData = false;
-  final FoodLogApiService _foodLogApi = FoodLogApiService();
-  final ProfileApiService _profileApi = ProfileApiService();
-  final NotificationApiService _notifApi = NotificationApiService();
-  ApiProfileData? _profile;
-  int _unreadCount = 0;
+  final HomeStore _homeStore = getIt<HomeStore>();
   bool _isShowingNotifications = false;
-  double totalProtein = 0;
-  double totalCarbs = 0;
-  double totalFat = 0;
-  Map<String, int> caloriesByType = {
-    AppStrings.breakfast: 0,
-    AppStrings.lunch: 0,
-    AppStrings.dinner: 0,
-    AppStrings.snack: 0,
-  };
-
-  Offset? _notificationTapStart;
+  void loadDailyData() {
+    _homeStore.loadDailyData();
+  }
 
   @override
   void initState() {
     super.initState();
-    loadDailyData();
-  }
-
-  void loadDailyData({bool forceRefresh = false}) async {
-    if (_isLoadingData) return;
-    _isLoadingData = true;
-    final now = DateTime.now();
-
-    try {
-      final results = await Future.wait([
-        _foodLogApi.getSummary(now).catchError((_) => null),
-        _profileApi.getProfile(forceRefresh: forceRefresh).catchError((_) => null),
-        _notifApi.getUnreadCount().catchError((_) => 0),
-      ]);
-
-      final summary = results[0] as DailySummary?;
-      final profile = results[1] as ApiProfileData?;
-      final unread = results[2] as int;
-
-      if (mounted) {
-        setState(() {
-          _unreadCount = unread;
-          if (profile != null) {
-            _profile = profile;
-          }
-
-          if (summary != null) {
-            totalCalories = summary.totalCaloriesInt;
-            totalProtein = summary.totals.protein;
-            totalCarbs = summary.totals.carbohydrates;
-            totalFat = summary.totals.fat;
-            targetCalories = (summary.targetCalories > 0)
-                ? summary.targetCalories
-                : (profile?.targetCalories ?? 0);
-            caloriesByType = {
-              AppStrings.breakfast: summary.caloriesForMeal('Breakfast'),
-              AppStrings.lunch: summary.caloriesForMeal('Lunch'),
-              AppStrings.dinner: summary.caloriesForMeal('Dinner'),
-              AppStrings.snack: summary.caloriesForMeal('Snack'),
-            };
-          } else if (profile != null) {
-            targetCalories = profile.targetCalories;
-          }
-        });
-      }
-    } finally {
-      if (mounted) {
-        setState(() {
-          _isLoadingData = false;
-        });
-      }
-    }
+    _homeStore.loadDailyData();
   }
 
   static String formatCalories(int calories) {
@@ -122,7 +57,7 @@ class HomeScreenState extends State<HomeScreen> {
     );
 
     if (result == true) {
-      loadDailyData();
+      _homeStore.loadDailyData();
     }
   }
 
@@ -136,15 +71,21 @@ class HomeScreenState extends State<HomeScreen> {
       builder: (context) => const NotificationModal(),
     );
     _isShowingNotifications = false;
+    _homeStore.loadDailyData(); // Refresh after notifications
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    final languageStore = getIt<LanguageStore>();
+    return Observer(
+      builder: (_) {
+        // Reference locale to trigger rebuild on language change
+        final _ = languageStore.locale;
+        return Scaffold(
       backgroundColor: AppColors.cream,
       body: SafeArea(
         child: RefreshIndicator(
-          onRefresh: () async => loadDailyData(),
+          onRefresh: () async => _homeStore.loadDailyData(forceRefresh: true),
           color: AppColors.amber,
           backgroundColor: AppColors.navy,
           child: SingleChildScrollView(
@@ -203,15 +144,7 @@ class HomeScreenState extends State<HomeScreen> {
                         ),
                         const SizedBox(width: 8),
                         GestureDetector(
-                          onTap: () async {
-                            _showNotifications();
-                            // Refresh unread count after viewing
-                            await Future.delayed(const Duration(seconds: 1));
-                            if (mounted) {
-                              final count = await _notifApi.getUnreadCount().catchError((_) => _unreadCount);
-                              if (mounted) setState(() => _unreadCount = count);
-                            }
-                          },
+                          onTap: _showNotifications,
                           child: Stack(
                             clipBehavior: Clip.none,
                             children: [
@@ -219,24 +152,27 @@ class HomeScreenState extends State<HomeScreen> {
                                 backgroundColor: AppColors.navy.withOpacity(0.1),
                                 child: const Icon(Icons.notifications, color: AppColors.navy),
                               ),
-                              if (_unreadCount > 0)
-                                Positioned(
-                                  right: -2,
-                                  top: -2,
-                                  child: Container(
-                                    padding: const EdgeInsets.all(4),
-                                    decoration: const BoxDecoration(
-                                      color: Colors.red,
-                                      shape: BoxShape.circle,
-                                    ),
-                                    constraints: const BoxConstraints(minWidth: 16, minHeight: 16),
-                                    child: Text(
-                                      _unreadCount > 99 ? '99+' : '$_unreadCount',
-                                      style: const TextStyle(color: Colors.white, fontSize: 9, fontWeight: FontWeight.bold),
-                                      textAlign: TextAlign.center,
-                                    ),
-                                  ),
-                                ),
+                              Observer(
+                                builder: (_) => _homeStore.unreadCount > 0
+                                    ? Positioned(
+                                        right: -2,
+                                        top: -2,
+                                        child: Container(
+                                          padding: const EdgeInsets.all(4),
+                                          decoration: const BoxDecoration(
+                                            color: Colors.red,
+                                            shape: BoxShape.circle,
+                                          ),
+                                          constraints: const BoxConstraints(minWidth: 16, minHeight: 16),
+                                          child: Text(
+                                            _homeStore.unreadCount > 99 ? '99+' : '${_homeStore.unreadCount}',
+                                            style: const TextStyle(color: Colors.white, fontSize: 9, fontWeight: FontWeight.bold),
+                                            textAlign: TextAlign.center,
+                                          ),
+                                        ),
+                                      )
+                                    : const SizedBox.shrink(),
+                              ),
                             ],
                           ),
                         ),
@@ -247,8 +183,14 @@ class HomeScreenState extends State<HomeScreen> {
                 const SizedBox(height: 25),
 
                 // Card/banner
-                if (_profile == null || _profile!.age == 0 || _profile!.weight == 0 || _profile!.height == 0)
-                  _buildCompleteProfileBanner(),
+                Observer(
+                  builder: (_) => (_homeStore.profile == null || 
+                                   _homeStore.profile!.age == 0 || 
+                                   _homeStore.profile!.weight == 0 || 
+                                   _homeStore.profile!.height == 0)
+                      ? _buildCompleteProfileBanner()
+                      : const SizedBox.shrink(),
+                ),
 
                 // Tracking Kalori Harian Card
                 Container(
@@ -258,7 +200,7 @@ class HomeScreenState extends State<HomeScreen> {
                     color: NutrifyTheme.lightCard,
                     borderRadius: BorderRadius.circular(30),
                     image: const DecorationImage(
-                      image: AssetImage(Assets.makananRegister),
+                      image: AssetImage(Assets.foodRegister),
                       fit: BoxFit.cover,
                       opacity: 0.15,
                     ),
@@ -290,7 +232,7 @@ class HomeScreenState extends State<HomeScreen> {
                           ),
                           Text(
                             AppStrings.dailyCalorieTracking,
-                            style: TextStyle(
+                            style: const TextStyle(
                               color: AppColors.navy,
                               fontSize: 14,
                               fontWeight: FontWeight.bold,
@@ -299,38 +241,45 @@ class HomeScreenState extends State<HomeScreen> {
                         ],
                       ),
                       const SizedBox(height: 20),
-                      Text(
-                        '${_formatCalories(totalCalories)} ${AppStrings.cal}',
-                        style: const TextStyle(
-                          fontSize: 36,
-                          fontWeight: FontWeight.w900,
-                          color: AppColors.navy,
-                          letterSpacing: 1.2,
+                      Observer(
+                        builder: (_) => Text(
+                          '${_formatCalories(_homeStore.totalCalories)} ${AppStrings.cal}',
+                          style: const TextStyle(
+                            fontSize: 36,
+                            fontWeight: FontWeight.w900,
+                            color: AppColors.navy,
+                            letterSpacing: 1.2,
+                          ),
                         ),
                       ),
                       const SizedBox(height: 20),
-                      ClipRRect(
-                        borderRadius: BorderRadius.circular(10),
-                        child: LinearProgressIndicator(
-                          value: targetCalories > 0
-                              ? (totalCalories / targetCalories).clamp(0.0, 1.0)
-                              : 0,
-                          backgroundColor: AppColors.navy.withOpacity(0.1),
-                          valueColor: const AlwaysStoppedAnimation<Color>(
-                              AppColors.navy),
-                          minHeight: 10,
+                      Observer(
+                        builder: (_) => ClipRRect(
+                          borderRadius: BorderRadius.circular(10),
+                          child: LinearProgressIndicator(
+                            value: _homeStore.targetCalories > 0
+                                ? (_homeStore.totalCalories / _homeStore.targetCalories).clamp(0.0, 1.0)
+                                : 0,
+                            backgroundColor: AppColors.navy.withOpacity(0.1),
+                            valueColor: const AlwaysStoppedAnimation<Color>(AppColors.navy),
+                            minHeight: 10,
+                          ),
                         ),
                       ),
                       const SizedBox(height: 25),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Text(
-                            AppStrings.percentOfTarget(targetCalories > 0 ? (totalCalories / targetCalories * 100).toInt() : 0),
-                            style: TextStyle(
-                              color: AppColors.navy.withOpacity(0.8),
-                              fontSize: 13,
-                              fontWeight: FontWeight.w600,
+                          Observer(
+                            builder: (_) => Text(
+                              AppStrings.percentOfTarget(_homeStore.targetCalories > 0 
+                                  ? (_homeStore.totalCalories / _homeStore.targetCalories * 100).toInt() 
+                                  : 0),
+                              style: TextStyle(
+                                color: AppColors.navy.withOpacity(0.8),
+                                fontSize: 13,
+                                fontWeight: FontWeight.w600,
+                              ),
                             ),
                           ),
                           ElevatedButton(
@@ -338,7 +287,7 @@ class HomeScreenState extends State<HomeScreen> {
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                  builder: (context) => const TrackingKaloriScreen(),
+                                  builder: (context) => const CalorieTrackingScreen(),
                                 ),
                               );
                             },
@@ -349,12 +298,11 @@ class HomeScreenState extends State<HomeScreen> {
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(15),
                               ),
-                              padding: const EdgeInsets.symmetric(
-                                  horizontal: 20, vertical: 12),
+                              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
                             ),
                             child: Text(
                               AppStrings.details,
-                              style: TextStyle(
+                              style: const TextStyle(
                                 fontWeight: FontWeight.bold,
                               ),
                             ),
@@ -376,7 +324,7 @@ class HomeScreenState extends State<HomeScreen> {
                       ),
                     );
                     if (result == true) {
-                      loadDailyData(forceRefresh: true);
+                      _homeStore.loadDailyData(forceRefresh: true);
                     }
                   },
                   borderRadius: BorderRadius.circular(25),
@@ -408,12 +356,14 @@ class HomeScreenState extends State<HomeScreen> {
                               ),
                             ),
                             const SizedBox(height: 6),
-                            Text(
-                              '${_formatCalories(targetCalories)} kCal',
-                              style: const TextStyle(
-                                color: AppColors.navy,
-                                fontWeight: FontWeight.bold,
-                                fontSize: 18,
+                            Observer(
+                              builder: (_) => Text(
+                                '${_formatCalories(_homeStore.targetCalories)} ${AppStrings.kcal}',
+                                style: const TextStyle(
+                                  color: AppColors.navy,
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 18,
+                                ),
                               ),
                             ),
                           ],
@@ -435,33 +385,41 @@ class HomeScreenState extends State<HomeScreen> {
                   mainAxisSpacing: 15,
                   childAspectRatio: 1.1,
                   children: [
-                    MealTile(
-                      title: AppStrings.breakfast,
-                      imagePath: Assets.iconPagi,
-                      color: AppColors.peach,
-                      calories: caloriesByType[AppStrings.breakfast] ?? 0,
-                      onTap: () => _navigateToAddMeal(AppStrings.breakfast),
+                    Observer(
+                      builder: (_) => MealTile(
+                        title: AppStrings.breakfast,
+                        imagePath: Assets.breakfastIcon,
+                        color: AppColors.peach,
+                        calories: _homeStore.caloriesByType[AppStrings.breakfast] ?? 0,
+                        onTap: () => _navigateToAddMeal(AppStrings.breakfast),
+                      ),
                     ),
-                    MealTile(
-                      title: AppStrings.lunch,
-                      imagePath: Assets.iconSiang,
-                      color: AppColors.peach,
-                      calories: caloriesByType[AppStrings.lunch] ?? 0,
-                      onTap: () => _navigateToAddMeal(AppStrings.lunch),
+                    Observer(
+                      builder: (_) => MealTile(
+                        title: AppStrings.lunch,
+                        imagePath: Assets.lunchIcon,
+                        color: AppColors.peach,
+                        calories: _homeStore.caloriesByType[AppStrings.lunch] ?? 0,
+                        onTap: () => _navigateToAddMeal(AppStrings.lunch),
+                      ),
                     ),
-                    MealTile(
-                      title: AppStrings.dinner,
-                      imagePath: Assets.iconMalam,
-                      color: AppColors.peach,
-                      calories: caloriesByType[AppStrings.dinner] ?? 0,
-                      onTap: () => _navigateToAddMeal(AppStrings.dinner),
+                    Observer(
+                      builder: (_) => MealTile(
+                        title: AppStrings.dinner,
+                        imagePath: Assets.dinnerIcon,
+                        color: AppColors.peach,
+                        calories: _homeStore.caloriesByType[AppStrings.dinner] ?? 0,
+                        onTap: () => _navigateToAddMeal(AppStrings.dinner),
+                      ),
                     ),
-                    MealTile(
-                      title: AppStrings.snack,
-                      imagePath: Assets.iconCemilan,
-                      color: AppColors.peach,
-                      calories: caloriesByType[AppStrings.snack] ?? 0,
-                      onTap: () => _navigateToAddMeal(AppStrings.snack),
+                    Observer(
+                      builder: (_) => MealTile(
+                        title: AppStrings.snack,
+                        imagePath: Assets.snackIcon,
+                        color: AppColors.peach,
+                        calories: _homeStore.caloriesByType[AppStrings.snack] ?? 0,
+                        onTap: () => _navigateToAddMeal(AppStrings.snack),
+                      ),
                     ),
                   ],
                 ),
@@ -472,8 +430,9 @@ class HomeScreenState extends State<HomeScreen> {
         ),
       ),
     );
+      },
+    );
   }
-
   Widget _buildCompleteProfileBanner() {
     return Container(
       width: double.infinity,
@@ -507,7 +466,7 @@ class HomeScreenState extends State<HomeScreen> {
               Expanded(
                 child: Text(
                   AppStrings.helloJourneyStarts,
-                  style: TextStyle(
+                  style: const TextStyle(
                     color: AppColors.navy,
                     fontSize: 16,
                     fontWeight: FontWeight.bold,
@@ -519,7 +478,7 @@ class HomeScreenState extends State<HomeScreen> {
           const SizedBox(height: 12),
           Text(
             AppStrings.completeProfileDesc,
-            style: TextStyle(
+            style: const TextStyle(
               color: AppColors.navy,
               fontSize: 13,
               height: 1.5,
@@ -537,7 +496,7 @@ class HomeScreenState extends State<HomeScreen> {
                   ),
                 );
                 if (result == true) {
-                  loadDailyData(forceRefresh: true);
+                  _homeStore.loadDailyData(forceRefresh: true);
                 }
               },
               style: ElevatedButton.styleFrom(
@@ -552,7 +511,7 @@ class HomeScreenState extends State<HomeScreen> {
               ),
               child: Text(
                 AppStrings.completeProfileNow,
-                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
               ),
             ),
           ),
@@ -562,7 +521,6 @@ class HomeScreenState extends State<HomeScreen> {
   }
 }
 
-// Komponen Kecil untuk Kotak Makan
 class MealTile extends StatelessWidget {
   final String title;
   final String imagePath;
@@ -631,7 +589,7 @@ class MealTile extends StatelessWidget {
             Align(
               alignment: Alignment.bottomRight,
               child: Text(
-                calories > 0 ? '${HomeScreenState.formatCalories(calories)} Kal' : '- Kal',
+                calories > 0 ? '${HomeScreenState.formatCalories(calories)} ${AppStrings.kal}' : '- ${AppStrings.kal}',
                 style: TextStyle(
                   fontSize: 12,
                   fontWeight: FontWeight.bold,

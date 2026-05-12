@@ -190,6 +190,26 @@ mixin _$UserStore on _UserStore, Store {
     return _$forgotPasswordAsyncAction.run(() => super.forgotPassword(email));
   }
 
+  late final _$verifyEmailAsyncAction = AsyncAction(
+    '_UserStore.verifyEmail',
+    context: context,
+  );
+
+  @override
+  Future<void> verifyEmail(String email, String token) {
+    return _$verifyEmailAsyncAction.run(() => super.verifyEmail(email, token));
+  }
+
+  late final _$resendOtpAsyncAction = AsyncAction(
+    '_UserStore.resendOtp',
+    context: context,
+  );
+
+  @override
+  Future<void> resendOtp(String email) {
+    return _$resendOtpAsyncAction.run(() => super.resendOtp(email));
+  }
+
   late final _$logoutAsyncAction = AsyncAction(
     '_UserStore.logout',
     context: context,

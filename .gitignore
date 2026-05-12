@@ -55,3 +55,8 @@ backend/bootstrap/cache/
 .claude
 .claude/*
 CLAUDE.md
+
+# Opencode
+.ruff_cache
+.sisyphus
+.understand-anything

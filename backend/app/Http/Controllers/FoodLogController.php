@@ -4,12 +4,20 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use App\Models\FoodLog;
+use App\Services\NutritionService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 
 class FoodLogController extends Controller
 {
+    protected $nutritionService;
+
+    public function __construct(NutritionService $nutritionService)
+    {
+        $this->nutritionService = $nutritionService;
+    }
+
     // POST /api/food-logs
     public function store(Request $request)
     {
@@ -47,7 +55,7 @@ class FoodLogController extends Controller
 
         return response()->json([
             'success' => true,
-            'message' => 'Makanan berhasil dicatat!',
+            'message' => 'Food logged successfully!',
             'data'    => [
                 'log'               => $log,
                 'calories_consumed' => $totalCalories,
@@ -98,10 +106,7 @@ class FoodLogController extends Controller
             'total_fat'           => round($logs->sum(fn($l) => $l->food->fat           * $l->serving_multiplier), 2),
         ];
 
-        // Tambahkan target kalori dari profile (ID 13)
-        $user = User::with('profile')->find($userId);
-        $targetCalories = 0;
-        
+        // Get target calories from profile using NutritionService
         $user = User::with('profile')->find($userId);
         $targetCalories = 0;
         
@@ -109,17 +114,9 @@ class FoodLogController extends Controller
             $p = $user->profile;
             
             if ($p->height > 0 && $p->weight > 0 && $p->age > 0) {
-                if ($p->gender == 'male') {
-                    $bmr = (10 * $p->weight) + (6.25 * $p->height) - (5 * $p->age) + 5;
-                } else {
-                    $bmr = (10 * $p->weight) + (6.25 * $p->height) - (5 * $p->age) - 161;
-                }
-                $factors = ['sedentary' => 1.2, 'light' => 1.375, 'moderate' => 1.55, 'active' => 1.725, 'very_active' => 1.9];
-                $tdee = $bmr * ($factors[$p->activity_level] ?? 1.2);
-                $targetCalories = $tdee;
-                if ($p->goal == 'cutting') $targetCalories -= 500;
-                if ($p->goal == 'bulking') $targetCalories += 500;
-                $targetCalories = round($targetCalories);
+                $bmr = $this->nutritionService->calculateBmr($p->weight, $p->height, $p->age, $p->gender);
+                $tdee = $this->nutritionService->calculateTdee($bmr, $p->activity_level);
+                $targetCalories = round($this->nutritionService->calculateTargetCalories($tdee, $p->goal));
             }
         }
 
@@ -138,7 +135,7 @@ class FoodLogController extends Controller
         $log = FoodLog::with('food')->where('id', $id)->where('user_id', Auth::id())->first();
 
         if (!$log) {
-            return response()->json(['success' => false, 'message' => 'Log tidak ditemukan'], 404);
+            return response()->json(['success' => false, 'message' => 'Log not found'], 404);
         }
 
         return response()->json(['success' => true, 'data' => $log]);
@@ -147,10 +144,10 @@ class FoodLogController extends Controller
     // PUT /api/food-logs/{id}
     public function update(Request $request, $id)
     {
-        $log = FoodLog::where('id', $id)->where('user_id', Auth::id())->first();
+        $log = FoodLog::with('food')->where('id', $id)->where('user_id', Auth::id())->first();
 
         if (!$log) {
-            return response()->json(['success' => false, 'message' => 'Log tidak ditemukan'], 404);
+            return response()->json(['success' => false, 'message' => 'Log not found'], 404);
         }
 
         $validated = $request->validate([
@@ -164,7 +161,7 @@ class FoodLogController extends Controller
 
         return response()->json([
             'success' => true,
-            'message' => 'Log berhasil diperbarui',
+            'message' => 'Log updated successfully',
             'data'    => $log
         ]);
     }
@@ -175,11 +172,11 @@ class FoodLogController extends Controller
         $log = FoodLog::where('id', $id)->where('user_id', Auth::id())->first();
 
         if (!$log) {
-            return response()->json(['success' => false, 'message' => 'Log tidak ditemukan'], 404);
+            return response()->json(['success' => false, 'message' => 'Log not found'], 404);
         }
 
         $log->delete();
 
-        return response()->json(['success' => true, 'message' => 'Log berhasil dihapus']);
+        return response()->json(['success' => true, 'message' => 'Log deleted successfully']);
     }
 }

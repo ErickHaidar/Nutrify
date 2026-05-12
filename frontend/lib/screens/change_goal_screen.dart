@@ -1,7 +1,8 @@
 // lib/screens/change_goal_screen.dart
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import '../services/profile_api_service.dart';
+import 'package:nutrify/domain/repository/profile/profile_repository.dart';
+import 'package:nutrify/di/service_locator.dart';
 import 'package:nutrify/constants/colors.dart';
 import 'package:nutrify/utils/locale/app_strings.dart';
 
@@ -13,7 +14,7 @@ class ChangeGoalScreen extends StatefulWidget {
 }
 
 class _ChangeGoalScreenState extends State<ChangeGoalScreen> {
-  final _profileApi = ProfileApiService();
+  final _profileApi = getIt<ProfileRepository>();
   bool _isLoading = true;
   bool _isSaving = false;
 

@@ -2,9 +2,12 @@ import 'package:flutter/material.dart';
 import 'home_screen.dart';
 import 'profile_screen.dart';
 import 'history_screen.dart';
-import 'komunitas_screen.dart';
+import 'community_screen.dart';
 import 'package:nutrify/constants/colors.dart';
 import 'package:nutrify/utils/locale/app_strings.dart';
+import 'package:flutter_mobx/flutter_mobx.dart';
+import 'package:nutrify/presentation/home/store/language/language_store.dart';
+import 'package:nutrify/di/service_locator.dart';
 
 class MainNavigationScreen extends StatefulWidget {
   const MainNavigationScreen({super.key});
@@ -27,12 +30,12 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
       _historyKey.currentState?.refreshData();
     }
     if (index == 2) {
-      _komunitasKey.currentState?.refreshPosts();
+      _communityKey.currentState?.refreshPosts();
     }
     if (index == 3) {
       _profileKey.currentState?.loadProfile();
       _profileKey.currentState?.refreshSocialData();
-      _profileKey.currentState?.switchToUmumTab();
+      _profileKey.currentState?.switchToGeneralTab();
     }
   }
 
@@ -45,13 +48,13 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
 
   void _switchToProfileAndCreatePost() {
     setState(() => _selectedIndex = 2);
-    _komunitasKey.currentState?.navigateToAddPost();
+    _communityKey.currentState?.navigateToAddPost();
   }
 
   final GlobalKey<HomeScreenState> _homeKey = GlobalKey<HomeScreenState>();
   final GlobalKey<HistoryScreenState> _historyKey = GlobalKey<HistoryScreenState>();
-  final GlobalKey<KomunitasScreenState> _komunitasKey =
-      GlobalKey<KomunitasScreenState>();
+  final GlobalKey<CommunityScreenState> _communityKey =
+      GlobalKey<CommunityScreenState>();
   final GlobalKey<ProfileScreenState> _profileKey =
       GlobalKey<ProfileScreenState>();
 
@@ -63,13 +66,17 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
     _pages = [
       HomeScreen(key: _homeKey),
       HistoryScreen(key: _historyKey),
-      KomunitasScreen(key: _komunitasKey, onNavigateToProfile: _switchToProfileTab),
+      CommunityScreen(key: _communityKey, onNavigateToProfile: _switchToProfileTab),
       ProfileScreen(key: _profileKey, onNavigateToCreatePost: _switchToProfileAndCreatePost),
     ];
   }
 
   @override
   Widget build(BuildContext context) {
+    final languageStore = getIt<LanguageStore>();
+    return Observer(
+      builder: (_) {
+        final _ = languageStore.locale;
     return Scaffold(
       backgroundColor: NutrifyTheme.background,
       body: IndexedStack(
@@ -102,6 +109,8 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
           ),
         ],
       ),
+    );
+      },
     );
   }
 }

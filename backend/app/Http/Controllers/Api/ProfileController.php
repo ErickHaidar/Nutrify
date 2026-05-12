@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Models\Profile;
 use App\Models\User;
+use App\Services\NutritionService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
@@ -12,7 +13,14 @@ use Illuminate\Support\Facades\Validator;
 
 class ProfileController extends Controller
 {
-    // Menyimpan atau Update data fisik User
+    protected $nutritionService;
+
+    public function __construct(NutritionService $nutritionService)
+    {
+        $this->nutritionService = $nutritionService;
+    }
+
+    // Save or Update user's physical data
     public function store(Request $request)
     {
         $request->validate([
@@ -22,38 +30,38 @@ class ProfileController extends Controller
             'gender' => 'required|in:male,female',
             'activity_level' => 'required|in:sedentary,light,moderate,active,very_active',
             'goal' => 'required|in:cutting,maintenance,bulking',
-            'target_weight' => 'nullable|integer|min:25|max:300', // Target berat badan
-            'photo' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:10240', // Opsional: max 10MB
-            'fcm_token' => 'nullable|string', // FCM token untuk push notification
+            'target_weight' => 'nullable|integer|min:25|max:300', // Target body weight
+            'photo' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:10240', // Optional: max 10MB
+            'fcm_token' => 'nullable|string', // FCM token for push notifications
         ]);
 
-        // Ambil data profile tanpa photo
+        // Get profile data without photo
         $profileData = $request->only(['age', 'weight', 'height', 'gender', 'activity_level', 'goal', 'target_weight']);
 
-        // Update atau buat profile
+        // Update or create profile
         $profile = Profile::updateOrCreate(
             ['user_id' => Auth::id()],
             $profileData
         );
 
-        // Handle photo upload jika ada
+        // Handle photo upload if any
         if ($request->hasFile('photo')) {
-            // Hapus foto lama jika ada
+            // Delete old photo if exists
             if ($profile->photo) {
                 Storage::disk('public')->delete($profile->photo);
             }
 
-            // Simpan foto baru
+            // Save new photo
             $file = $request->file('photo');
             $extension = $file->getClientOriginalExtension();
-            $filename = Auth::id() . '_' . time() . '.' . $extension;
+            $filename = Auth::id() . '_' . str_replace('.', '', microtime(true)) . '.' . $extension;
             $path = $file->storeAs('profile-photos', $filename, 'public');
 
-            // Update database dengan path foto
+            // Update database with photo path
             $profile->update(['photo' => $path]);
         }
 
-        // Handle FCM token update jika ada
+        // Handle FCM token update if any
         if ($request->has('fcm_token')) {
             $user = User::find(Auth::id());
             if ($user) {
@@ -67,12 +75,12 @@ class ProfileController extends Controller
         ]);
     }
 
-    // Upload dan update foto profil — PUT /api/profile/photo
+    // Upload and update profile photo — PUT /api/profile/photo
     public function photo(Request $request)
     {
-        // Validasi file yang diunggah
+        // Validate uploaded file
         $validator = Validator::make($request->all(), [
-            'photo' => 'required|image|mimes:jpg,jpeg,png,webp|max:10240', // Maksimal 10 MB
+            'photo' => 'required|image|mimes:jpg,jpeg,png,webp|max:10240', // Maximum 10 MB
         ]);
 
         if ($validator->fails()) {
@@ -82,7 +90,7 @@ class ProfileController extends Controller
             ], 422);
         }
 
-        // Cari atau buat profile baru jika belum ada
+        // Find or create profile if not exists
         $profile = Profile::firstOrCreate(
             ['user_id' => Auth::id()],
             [
@@ -96,15 +104,15 @@ class ProfileController extends Controller
             ]
         );
 
-        // Hapus foto lama jika ada
+        // Delete old photo if exists
         if ($profile->photo) {
             Storage::disk('public')->delete($profile->photo);
         }
 
-        // Simpan foto baru
+        // Save new photo
         $file = $request->file('photo');
         $extension = $file->getClientOriginalExtension();
-        $filename = Auth::id() . '_' . time() . '.' . $extension;
+        $filename = Auth::id() . '_' . str_replace('.', '', microtime(true)) . '.' . $extension;
 
         $path = $file->storeAs('profile-photos', $filename, 'public');
 
@@ -115,14 +123,14 @@ class ProfileController extends Controller
 
         return response()->json([
             'success' => true,
-            'message' => 'Foto profil berhasil diperbarui.',
+            'message' => 'Profile photo updated successfully.',
             'data' => [
-                'photo_url' => 'https://nutrify-app.my.id/storage/' . $path
+                'photo_url' => url('storage/' . $path)
             ]
         ], 200);
     }
 
-    // Mengambil data profile & Kalkulasi BMI serta TDEE
+    // Get profile data & calculate BMI and TDEE
     public function show()
     {
         $user = User::with('profile')->find(Auth::id());
@@ -133,34 +141,20 @@ class ProfileController extends Controller
 
         $profile = $user->profile;
 
-        // 1. Kalkulasi BMI
-        $heightInMeter = $profile->height / 100;
-        $bmiScore = $profile->weight / ($heightInMeter * $heightInMeter);
+        // 1. BMI Calculation
+        $bmiScore = $this->nutritionService->calculateBmi($profile->weight, $profile->height);
 
-        // 2. Kalkulasi BMR (Mifflin-St Jeor)
-        if ($profile->gender == 'male') {
-            $bmr = (10 * $profile->weight) + (6.25 * $profile->height) - (5 * $profile->age) + 5;
-        } else {
-            $bmr = (10 * $profile->weight) + (6.25 * $profile->height) - (5 * $profile->age) - 161;
-        }
+        // 2. BMR Calculation (Mifflin-St Jeor)
+        $bmr = $this->nutritionService->calculateBmr($profile->weight, $profile->height, $profile->age, $profile->gender);
 
-        // 3. Faktor Aktivitas untuk TDEE
-        $factors = [
-            'sedentary' => 1.2,
-            'light' => 1.375,
-            'moderate' => 1.55,
-            'active' => 1.725,
-            'very_active' => 1.9
-        ];
-        $tdee = $bmr * ($factors[$profile->activity_level] ?? 1.2);
+        // 3. Activity Factor for TDEE
+        $tdee = $this->nutritionService->calculateTdee($bmr, $profile->activity_level);
 
-        // 4. Penyesuaian Target Kalori
-        $targetCalories = $tdee;
-        if ($profile->goal == 'cutting') $targetCalories -= 500;
-        if ($profile->goal == 'bulking') $targetCalories += 500;
+        // 4. Target Calories Adjustment
+        $targetCalories = $this->nutritionService->calculateTargetCalories($tdee, $profile->goal);
 
-        // 5. Rekomendasi Makronutrien
-        $macros = $this->calculateMacros(round($targetCalories), $profile->weight, $profile->goal);
+        // 5. Macronutrient Recommendations
+        $macros = $this->nutritionService->calculateMacros($targetCalories, $profile->weight, $profile->goal);
 
         return response()->json([
             'status' => 'success',
@@ -174,10 +168,10 @@ class ProfileController extends Controller
                 'goal' => $profile->goal,
                 'activity_level' => $profile->activity_level,
                 'target_weight' => $profile->target_weight,
-                'photo_url' => $profile->photo ? 'https://nutrify-app.my.id/storage/' . $profile->photo : null,
+                'photo_url' => $profile->photo ? url('storage/' . $profile->photo) : null,
             ],
             'bmi' => round($bmiScore, 2),
-            'bmi_status' => $this->getBmiStatus($bmiScore),
+            'bmi_status' => $this->nutritionService->getBmiStatus($bmiScore),
             'target_calories' => round($targetCalories),
             'maintenance_calories' => round($tdee),
             'macronutrients' => $macros,
@@ -186,7 +180,7 @@ class ProfileController extends Controller
                 'weight' => $profile->weight . ' kg',
                 'height' => $profile->height . ' cm',
                 'bmi_score' => round($bmiScore, 2),
-                'bmi_status' => $this->getBmiStatus($bmiScore),
+                'bmi_status' => $this->nutritionService->getBmiStatus($bmiScore),
             ],
             'nutrition_plan' => [
                 'maintenance_calories' => round($tdee) . ' kcal',
@@ -197,75 +191,7 @@ class ProfileController extends Controller
         ]);
     }
 
-    // Helper untuk menentukan status BMI (WHO Classification)
-    private function getBmiStatus($bmi)
-    {
-        if ($bmi < 16.0) return 'Severely Underweight';
-        if ($bmi < 18.5) return 'Underweight';
-        if ($bmi < 25.0) return 'Normal';
-        if ($bmi < 30.0) return 'Overweight';
-        if ($bmi < 35.0) return 'Obesity Class I';
-        if ($bmi < 40.0) return 'Obesity Class II';
-        return 'Obesity Class III';
-    }
-
-    // Helper untuk kalkulasi rekomendasi makronutrien
-    private function calculateMacros($calories, $weightKg, $goal)
-    {
-        if ($calories <= 0) {
-            return [
-                'protein' => ['grams' => 0, 'percent' => 0],
-                'carbohydrates' => ['grams' => 0, 'percent' => 0],
-                'fat' => ['grams' => 0, 'percent' => 0],
-            ];
-        }
-
-        // Rasio makronutrien berdasarkan goal (evidence-based)
-        $proteinRatio = match ($goal) {
-            'cutting' => 0.35,
-            'bulking' => 0.28,
-            default => 0.28,
-        };
-        $carbRatio = match ($goal) {
-            'cutting' => 0.38,
-            'bulking' => 0.48,
-            default => 0.45,
-        };
-        $fatRatio = 1.0 - $proteinRatio - $carbRatio;
-
-        $proteinG = ($calories * $proteinRatio) / 4;
-        $carbsG = ($calories * $carbRatio) / 4;
-
-        // Minimum protein berdasarkan berat badan dan goal
-        $minProtein = match ($goal) {
-            'cutting' => $weightKg * 1.8,  // 1.6-2.2 g/kg for cutting
-            'bulking' => $weightKg * 1.6,  // 1.4-2.0 g/kg for bulking
-            default => $weightKg * 1.0,    // 0.8-1.2 g/kg RDA
-        };
-
-        $finalProteinG = max($proteinG, $minProtein);
-
-        // Recalculate fat with remaining calories
-        $remainingCal = $calories - ($finalProteinG * 4) - ($carbsG * 4);
-        $finalFatG = max($remainingCal / 9, ($calories * 0.15) / 9);
-
-        return [
-            'protein' => [
-                'grams' => round($finalProteinG),
-                'percent' => round(($finalProteinG * 4 / $calories) * 100),
-            ],
-            'carbohydrates' => [
-                'grams' => round($carbsG),
-                'percent' => round(($carbsG * 4 / $calories) * 100),
-            ],
-            'fat' => [
-                'grams' => round($finalFatG),
-                'percent' => round(($finalFatG * 9 / $calories) * 100),
-            ],
-        ];
-    }
-
-    // Update FCM token untuk push notifications
+    // Update FCM token for push notifications
     public function updateFcmToken(Request $request)
     {
         $request->validate([

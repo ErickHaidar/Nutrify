@@ -5,7 +5,9 @@ class DioClient {
   final Dio _dio;
 
   // injecting dio instance
-  DioClient(this._dio);
+  DioClient(this._dio) {
+    _dio.options.headers['Accept'] = 'application/json';
+  }
 
   // Get:-----------------------------------------------------------------------
   Future<dynamic> get(

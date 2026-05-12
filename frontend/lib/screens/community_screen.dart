@@ -10,23 +10,26 @@ import 'package:nutrify/screens/chat_list_screen.dart';
 import 'package:nutrify/services/community_post_api_service.dart';
 import 'package:nutrify/services/chat_api_service.dart';
 import 'package:nutrify/services/notification_api_service.dart';
+import 'package:nutrify/di/service_locator.dart';
 import 'package:nutrify/widgets/notification_modal.dart';
 import 'package:nutrify/widgets/shimmer_loading.dart';
 import 'package:nutrify/utils/locale/app_strings.dart';
+import 'package:flutter_mobx/flutter_mobx.dart';
+import 'package:nutrify/presentation/home/store/language/language_store.dart';
 import 'package:intl/intl.dart';
 
-class KomunitasScreen extends StatefulWidget {
+class CommunityScreen extends StatefulWidget {
   final VoidCallback? onNavigateToProfile;
-  const KomunitasScreen({super.key, this.onNavigateToProfile});
+  const CommunityScreen({super.key, this.onNavigateToProfile});
 
   @override
-  State<KomunitasScreen> createState() => KomunitasScreenState();
+  State<CommunityScreen> createState() => CommunityScreenState();
 }
 
-class KomunitasScreenState extends State<KomunitasScreen> with TickerProviderStateMixin {
+class CommunityScreenState extends State<CommunityScreen> with TickerProviderStateMixin {
   late TabController _tabController;
-  final _api = CommunityPostApiService();
-  final _notifApi = NotificationApiService();
+  final _api = getIt<CommunityPostApiService>();
+  final _notifApi = getIt<NotificationApiService>();
   List<CommunityPost> _posts = [];
   bool _isLoading = true;
   int _unreadCount = 0;
@@ -55,7 +58,7 @@ class KomunitasScreenState extends State<KomunitasScreen> with TickerProviderSta
 
   Future<void> _loadChatUnreadCount() async {
     try {
-      final chatApi = ChatApiService();
+      final chatApi = getIt<ChatApiService>();
       final count = await chatApi.getUnreadCount();
       if (mounted) setState(() => _chatUnreadCount = count);
     } catch (_) {}
@@ -256,9 +259,12 @@ class KomunitasScreenState extends State<KomunitasScreen> with TickerProviderSta
 
   @override
   Widget build(BuildContext context) {
-    final followingPosts = _posts.where((p) => p.isFollowed).toList();
-
-    return Scaffold(
+    final languageStore = getIt<LanguageStore>();
+    return Observer(
+      builder: (_) {
+        final _ = languageStore.locale;
+        final followingPosts = _posts.where((p) => p.isFollowed).toList();
+        return Scaffold(
       backgroundColor: AppColors.cream,
       appBar: AppBar(
         backgroundColor: AppColors.cream,
@@ -378,7 +384,7 @@ class KomunitasScreenState extends State<KomunitasScreen> with TickerProviderSta
         ),
       ),
       body: _isLoading
-          ? const KomunitasShimmer()
+          ? const CommunityShimmer()
           : TabBarView(
               controller: _tabController,
               children: [
@@ -398,6 +404,8 @@ class KomunitasScreenState extends State<KomunitasScreen> with TickerProviderSta
                 ),
               ],
             ),
+    );
+      },
     );
   }
 

@@ -9,7 +9,6 @@ import 'package:nutrify/screens/full_screen_image_screen.dart';
 import 'package:nutrify/services/chat_api_service.dart';
 import 'package:nutrify/services/community_post_api_service.dart';
 import 'package:nutrify/di/service_locator.dart';
-import 'package:supabase_flutter/supabase_flutter.dart' as sb;
 
 class ChatDetailScreen extends StatefulWidget {
   final int conversationId;
@@ -28,8 +27,8 @@ class ChatDetailScreen extends StatefulWidget {
 }
 
 class _ChatDetailScreenState extends State<ChatDetailScreen> {
-  final _chatApi = ChatApiService();
-  final _communityApi = CommunityPostApiService();
+  final _chatApi = getIt<ChatApiService>();
+  final _communityApi = getIt<CommunityPostApiService>();
   final _msgCtrl = TextEditingController();
   final _scrollCtrl = ScrollController();
   List<MessageItem> _messages = [];

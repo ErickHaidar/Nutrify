@@ -13,18 +13,18 @@ use Firebase\JWT\JWT;
 use Firebase\JWT\JWK;
 
 /**
- * Middleware untuk memverifikasi JWT token dari Supabase Auth.
+ * Middleware to verify JWT token from Supabase Auth.
  *
- * Project ini menggunakan ES256 (ECDSA P-256) — kunci publik diambil dari
- * JWKS endpoint Supabase dan di-cache selama 1 jam untuk efisiensi.
+ * This project uses ES256 (ECDSA P-256) — the public key is retrieved from
+ * the Supabase JWKS endpoint and cached for 1 hour for efficiency.
  *
- * Cara kerja:
- * 1. Flutter login via supabase_flutter → Supabase kembalikan JWT access token
- * 2. Flutter kirim token ke Laravel sebagai "Authorization: Bearer {token}"
- * 3. Middleware fetch JWKS dari Supabase (cached 1 jam), verifikasi signature
- * 4. Jika valid, user diidentifikasi dari supabase_id dan di-bind ke request
+ * Workflow:
+ * 1. Flutter login via supabase_flutter → Supabase returns JWT access token
+ * 2. Flutter sends token to Laravel as "Authorization: Bearer {token}"
+ * 3. Middleware fetches JWKS from Supabase (cached 1 hour), verifies signature
+ * 4. If valid, the user is identified from supabase_id and bound to the request
  *
- * Dependensi: composer require firebase/php-jwt
+ * Dependency: composer require firebase/php-jwt
  */
 class VerifySupabaseToken
 {
@@ -45,21 +45,21 @@ class VerifySupabaseToken
             $email      = $decoded->email ?? null;
 
             if (!$supabaseId) {
-                return response()->json(['message' => 'Token tidak valid: sub claim tidak ditemukan.'], 401);
+                return response()->json(['message' => 'Invalid token: sub claim not found.'], 401);
             }
 
-            // Cari user berdasarkan supabase_id
+            // Find user based on supabase_id
             $user = User::where('supabase_id', $supabaseId)->first();
 
             if (!$user && $email) {
-                // Cari by email jika by supabase_id tidak ketemu
+                // Find by email if by supabase_id not found
                 $user = User::where('email', $email)->first();
                 
                 if ($user) {
-                    // Update user existing dengan supabase_id yang baru (Backlog ID 13 Fix)
+                    // Update existing user with new supabase_id
                     $user->update(['supabase_id' => $supabaseId]);
                 } else {
-                    // Buat user baru jika benar-benar tidak ada
+                    // Create new user if they truly don't exist
                     $user = User::create([
                         'email' => $email,
                         'supabase_id' => $supabaseId,
@@ -72,37 +72,39 @@ class VerifySupabaseToken
             }
 
             if (!$user) {
-                return response()->json(['message' => 'User tidak ditemukan.'], 401);
+                return response()->json(['message' => 'User not found.'], 401);
             }
 
-            // Bind user ke request agar Auth::user() dapat digunakan di controller
+            // Bind user to request so Auth::user() can be used in controllers
             $request->setUserResolver(fn () => $user);
             Auth::setUser($user);
 
         } catch (\Firebase\JWT\ExpiredException $e) {
-            return response()->json(['message' => 'Token sudah kadaluarsa. Silakan login ulang.'], 401);
+            return response()->json(['message' => 'Token expired. Please login again.'], 401);
         } catch (\Firebase\JWT\SignatureInvalidException $e) {
-            return response()->json(['message' => 'Signature token tidak valid.'], 401);
+            return response()->json(['message' => 'Invalid token signature.'], 401);
         } catch (\Exception $e) {
             Log::warning('Supabase JWT verification failed: ' . $e->getMessage());
-            return response()->json(['message' => 'Token tidak valid.'], 401);
+            return response()->json(['message' => 'Invalid token.'], 401);
         }
 
         return $next($request);
     }
 
     /**
-     * Ambil key set dari JWKS endpoint Supabase, di-cache 1 jam.
-     * Mengembalikan array Key yang siap dipakai oleh JWT::decode().
+     * Get key set from Supabase JWKS endpoint, cached for 1 hour.
+     * Returns a Key array ready to be used by JWT::decode().
      */
     private function getKeySet(): array
     {
         $jwksData = Cache::remember('supabase_jwks', 3600, function () {
             $url = config('supabase.url') . '/auth/v1/.well-known/jwks.json';
-            $response = Http::withoutVerifying()->get($url);
+            $response = Http::get($url);
+
+
 
             if (!$response->successful()) {
-                throw new \RuntimeException('Gagal mengambil JWKS dari Supabase: HTTP ' . $response->status());
+                throw new \RuntimeException('Failed to fetch JWKS from Supabase: HTTP ' . $response->status());
             }
 
             return $response->json();

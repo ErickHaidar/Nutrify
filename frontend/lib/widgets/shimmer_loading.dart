@@ -127,8 +127,8 @@ class ProfileShimmer extends StatelessWidget {
   }
 }
 
-class KomunitasShimmer extends StatelessWidget {
-  const KomunitasShimmer({super.key});
+class CommunityShimmer extends StatelessWidget {
+  const CommunityShimmer({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -201,8 +201,8 @@ class ChatListShimmer extends StatelessWidget {
   }
 }
 
-class TrackingShimmer extends StatelessWidget {
-  const TrackingShimmer({super.key});
+class CalorieTrackingShimmer extends StatelessWidget {
+  const CalorieTrackingShimmer({super.key});
 
   @override
   Widget build(BuildContext context) {

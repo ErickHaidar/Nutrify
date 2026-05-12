@@ -174,7 +174,7 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
         backgroundColor: Colors.white,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
         title: Text(
-          'Konfirmasi',
+          AppStrings.confirm,
           style: GoogleFonts.montserrat(
             fontWeight: FontWeight.bold,
             color: AppColors.navy,
@@ -187,7 +187,7 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx, false),
-            child: Text('Batal', style: TextStyle(color: AppColors.navy)),
+            child: Text(AppStrings.cancel, style: TextStyle(color: AppColors.navy)),
           ),
           ElevatedButton(
             onPressed: () => Navigator.pop(ctx, true),
@@ -195,7 +195,7 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
               backgroundColor: AppColors.navy,
               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
             ),
-            child: const Text('Keluar', style: TextStyle(color: Colors.white)),
+            child: Text(AppStrings.logout, style: TextStyle(color: Colors.white)),
           ),
         ],
       ),

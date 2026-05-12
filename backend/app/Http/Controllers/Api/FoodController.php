@@ -7,6 +7,7 @@ use App\Models\Food;
 use App\Models\FoodLog;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class FoodController extends Controller
 {
@@ -16,7 +17,7 @@ class FoodController extends Controller
 
         if ($request->filled('search')) {
             $search = $request->query('search');
-            $query->where('name', 'ilike', "%{$search}%");
+            $query->whereRaw('LOWER(name) LIKE ?', [strtolower("%{$search}%")]);
         }
 
         $foods = $query->orderBy('name')->paginate(20);
@@ -45,9 +46,16 @@ class FoodController extends Controller
             ->pluck('food_id');
 
         if ($topFoodIds->isEmpty()) {
-            $fallbackFoods = Food::inRandomOrder()
-                ->limit($limit)
-                ->get();
+            $fallbackFoods = Food::inRandomOrder()->limit($limit)->get();
+            
+            if ($fallbackFoods->isEmpty()) {
+                return response()->json([
+                    'success' => true,
+                    'data' => [],
+                    'message' => 'Belum ada riwayat makanan.',
+                ]);
+            }
+
             return response()->json([
                 'success' => true,
                 'data' => $fallbackFoods,
@@ -60,6 +68,10 @@ class FoodController extends Controller
             ->sortBy(fn($food) => $topFoodIds->search($food->id))
             ->values();
 
-        return response()->json(['success' => true, 'data' => $foods]);
+        return response()->json([
+            'success' => true,
+            'data' => $foods,
+            'message' => 'Rekomendasi berdasarkan riwayat Anda.',
+        ]);
     }
 }

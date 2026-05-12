@@ -3,9 +3,9 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:nutrify/constants/colors.dart';
 import 'package:nutrify/screens/chat_detail_screen.dart';
-import 'package:nutrify/screens/user_profile_screen.dart';
 import 'package:nutrify/services/chat_api_service.dart';
 import 'package:nutrify/services/community_post_api_service.dart';
+import 'package:nutrify/di/service_locator.dart';
 import 'package:nutrify/widgets/shimmer_loading.dart';
 import 'package:intl/intl.dart';
 
@@ -17,8 +17,8 @@ class ChatListScreen extends StatefulWidget {
 }
 
 class _ChatListScreenState extends State<ChatListScreen> {
-  final _chatApi = ChatApiService();
-  final _communityApi = CommunityPostApiService();
+  final _chatApi = getIt<ChatApiService>();
+  final _communityApi = getIt<CommunityPostApiService>();
   final _searchCtrl = TextEditingController();
   List<ConversationItem> _conversations = [];
   List<ConversationItem> _filtered = [];

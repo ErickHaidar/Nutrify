@@ -1,26 +1,16 @@
 # Miscellaneous
 *.class
-<<<<<<< HEAD
-*.lock
-=======
->>>>>>> origin/farid
 *.log
 *.pyc
 *.swp
 .DS_Store
 .atom/
-<<<<<<< HEAD
-.buildlog/
-.history
-.svn/
-=======
 .build/
 .buildlog/
 .history
 .svn/
 .swiftpm/
 migrate_working_dir/
->>>>>>> origin/farid
 
 # IntelliJ related
 *.iml
@@ -28,7 +18,6 @@ migrate_working_dir/
 *.iws
 .idea/
 
-<<<<<<< HEAD
 # Visual Studio Code related
 .vscode/
 
@@ -40,6 +29,7 @@ migrate_working_dir/
 .pub-cache/
 .pub/
 build/
+/coverage/
 
 # Android related
 **/android/**/gradle-wrapper.jar
@@ -49,6 +39,9 @@ build/
 **/android/gradlew.bat
 **/android/local.properties
 **/android/**/GeneratedPluginRegistrant.java
+/android/app/debug
+/android/app/profile
+/android/app/release
 
 # iOS/XCode related
 **/ios/**/*.mode1v3
@@ -73,8 +66,10 @@ build/
 **/ios/Flutter/app.flx
 **/ios/Flutter/app.zip
 **/ios/Flutter/flutter_assets/
+**/ios/Flutter/.last_build_id
 **/ios/ServiceDefinitions.json
 **/ios/Runner/GeneratedPluginRegistrant.*
+ios/Flutter/flutter_export_environment.sh
 
 # Exceptions to above rules.
 !**/ios/**/default.mode1v3
@@ -83,22 +78,6 @@ build/
 !**/ios/**/default.perspectivev3
 !/packages/flutter_tools/test/data/dart_dependencies_test/**/.packages
 .flutter-plugins-dependencies
-ios/Flutter/flutter_export_environment.sh
-=======
-# The .vscode folder contains launch configuration and tasks you configure in
-# VS Code which you may wish to be included in version control, so this line
-# is commented out by default.
-#.vscode/
-
-# Flutter/Dart/Pub related
-**/doc/api/
-**/ios/Flutter/.last_build_id
-.dart_tool/
-.flutter-plugins-dependencies
-.pub-cache/
-.pub/
-/build/
-/coverage/
 
 # Symbolication related
 app.*.symbols
@@ -106,14 +85,9 @@ app.*.symbols
 # Obfuscation related
 app.*.map.json
 
-# Android Studio will place build artifacts here
-/android/app/debug
-/android/app/profile
-/android/app/release
->>>>>>> origin/farid
-
 # Secrets
 .env
+
 # Signed Bundle/APK
 *.jks
 *.keystore
