@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import '../constants/colors.dart';
-import '../services/food_log_api_service.dart';
+import 'package:nutrify/domain/repository/food_log/food_log_repository.dart';
+import 'package:nutrify/services/food_log_api_service.dart';
+import 'package:nutrify/di/service_locator.dart';
+
 import '../services/notification_api_service.dart';
 import '../screens/post_detail_screen.dart';
 import '../screens/user_profile_screen.dart';
@@ -9,7 +12,6 @@ import '../screens/chat_detail_screen.dart';
 import '../screens/add_meal_screen.dart';
 import '../services/chat_api_service.dart';
 import '../services/community_post_api_service.dart';
-import '../domain/entity/post/community_post.dart';
 import 'package:nutrify/utils/locale/app_strings.dart';
 
 class NotificationModal extends StatefulWidget {
@@ -20,8 +22,8 @@ class NotificationModal extends StatefulWidget {
 }
 
 class _NotificationModalState extends State<NotificationModal> {
-  final _notifApi = NotificationApiService();
-  final _foodLogApi = FoodLogApiService();
+  final _notifApi = getIt<NotificationApiService>();
+  final _foodLogApi = getIt<FoodLogRepository>();
   bool _isLoading = true;
   bool _isNavigating = false;
   List<_UnifiedNotification> _allNotifications = [];
@@ -208,7 +210,7 @@ class _NotificationModalState extends State<NotificationModal> {
     // Community notifications
     if (notif.type == 'message' && notif.actorId != null) {
       try {
-        final chatApi = ChatApiService();
+        final chatApi = getIt<ChatApiService>();
         final conv = await chatApi.createConversation(notif.actorId!);
         if (mounted) {
           Navigator.pop(context);
@@ -227,7 +229,7 @@ class _NotificationModalState extends State<NotificationModal> {
       }
     } else if (notif.type == 'reply' && notif.postId != null) {
       try {
-        final api = CommunityPostApiService();
+        final api = getIt<CommunityPostApiService>();
         final posts = await api.getPosts();
         final post = posts.where((p) => p.id == notif.postId.toString()).firstOrNull;
         if (post != null && mounted) {
@@ -244,7 +246,7 @@ class _NotificationModalState extends State<NotificationModal> {
         builder: (_) => UserProfileScreen(
           userId: notif.actorId!,
           userName: notif.actorName ?? '',
-          api: CommunityPostApiService(),
+          api: getIt<CommunityPostApiService>(),
         ),
       );
       Navigator.pop(context);
@@ -252,7 +254,7 @@ class _NotificationModalState extends State<NotificationModal> {
     } else if ((notif.type == 'like' || notif.type == 'comment') && notif.postId != null) {
       // Fetch post BEFORE closing modal to avoid context issues
       try {
-        final api = CommunityPostApiService();
+        final api = getIt<CommunityPostApiService>();
         final posts = await api.getPosts();
         final post = posts.where((p) => p.id == notif.postId.toString()).firstOrNull;
         if (post != null && mounted) {
@@ -491,7 +493,7 @@ class _NotificationModalState extends State<NotificationModal> {
   Future<void> _handleFollowRequest(int? actorId, bool approve) async {
     if (actorId == null) return;
     try {
-      final api = CommunityPostApiService();
+      final api = getIt<CommunityPostApiService>();
       if (approve) {
         await api.approveFollowRequest(actorId);
       } else {

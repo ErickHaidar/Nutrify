@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Auth\LoginRequest;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Auth;
 
 class AuthenticatedSessionController extends Controller
@@ -19,13 +20,17 @@ class AuthenticatedSessionController extends Controller
 
         $request->session()->regenerate();
 
-        $user = $request->user();
-        $token = $user->createToken('auth_token')->plainTextToken;
+        if ($request->wantsJson()) {
+            $user = $request->user();
+            $token = $user->createToken('auth_token')->plainTextToken;
 
-        return response()->json([
-            'access_token' => $token,
-        'token_type' => 'Bearer',
-        ]);
+            return response()->json([
+                'access_token' => $token,
+                'token_type' => 'Bearer',
+            ]);
+        }
+
+        return response()->noContent();
     }
 
     /**

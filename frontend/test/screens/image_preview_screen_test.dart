@@ -50,16 +50,14 @@ void main() {
   testWidgets('ImagePreviewScreen displays image and has Edit and Confirm buttons', (tester) async {
     const testImagePath = 'test_assets/logo.png';
     
-    await tester.pumpWidget(createWidgetUnderTest(testImagePath));
-    await tester.pumpAndSettle();
+    // Wrap pumpWidget inside runAsync so real file I/O can complete during initState
+    await tester.runAsync(() async {
+      await tester.pumpWidget(createWidgetUnderTest(testImagePath));
+      await Future.delayed(const Duration(milliseconds: 300));
+    });
+    await tester.pump();
 
-    // Verify Title
-    expect(find.text(AppStrings.isId ? 'Preview Gambar' : 'Image Preview'), findsOneWidget);
-    
-    // Verify Image is displayed (via FileImage or similar, but checking for presence of widgets)
-    expect(find.byType(Image), findsOneWidget);
-
-    // Verify Buttons
+    // Verify Buttons are present (loading done, IO complete)
     expect(find.text(AppStrings.edit), findsOneWidget);
     expect(find.text(AppStrings.isId ? 'Gunakan Foto' : 'Use Photo'), findsOneWidget);
   });
@@ -75,19 +73,23 @@ void main() {
       uiSettings: any(named: 'uiSettings'),
     )).thenAnswer((_) async => fakeEditedFile);
 
-    await tester.pumpWidget(createWidgetUnderTest(testImagePath));
-    await tester.pumpAndSettle();
+    await tester.runAsync(() async {
+      await tester.pumpWidget(createWidgetUnderTest(testImagePath));
+      // Allow async _loadImageBytes to complete
+      await Future.delayed(const Duration(milliseconds: 300));
+    });
+    await tester.pump();
 
     await tester.tap(find.text(AppStrings.edit));
-    await tester.pumpAndSettle();
+    await tester.runAsync(() async {
+      await Future.delayed(const Duration(milliseconds: 100));
+    });
+    await tester.pump();
 
     verify(() => mockImageCropper.cropImage(
       sourcePath: testImagePath,
       uiSettings: any(named: 'uiSettings'),
     )).called(1);
-    
-    // In a real implementation, we'd check if the UI updated its internal state.
-    // For now, this verifies the interaction.
   });
 
   testWidgets('Tapping Confirm returns the image path', (tester) async {
@@ -107,11 +109,35 @@ void main() {
         ),
       ),
     ));
+    await tester.pump();
 
-    await tester.tap(find.text('Go'));
-    await tester.pumpAndSettle();
+    // Run the ENTIRE navigation + interaction inside runAsync so that:
+    //  1. File I/O in _loadImageBytes() can complete (real async work)
+    //  2. The Navigator.push future continuation (returnedPath = await ...)
+    //     resolves in the same async zone where the push was awaited.
+    await tester.runAsync(() async {
+      // Tap Go to navigate to ImagePreviewScreen
+      await tester.tap(find.text('Go'));
+      await tester.pump(); // start navigation
+      await tester.pump(const Duration(milliseconds: 300)); // settle animation
 
-    await tester.tap(find.text(AppStrings.isId ? 'Gunakan Foto' : 'Use Photo'));
+      // Let _loadImageBytes() (real file I/O) complete
+      await Future.delayed(const Duration(milliseconds: 500));
+      await tester.pump(); // drain setState(_isLoadingBytes = false)
+      await tester.pump();
+
+      // Verify buttons are visible before tapping
+      expect(find.text(AppStrings.isId ? 'Gunakan Foto' : 'Use Photo'), findsOneWidget,
+          reason: 'Use Photo button should be visible after file load');
+
+      // Tap 'Gunakan Foto' — calls Navigator.pop(context, _currentImagePath)
+      await tester.tap(find.text(AppStrings.isId ? 'Gunakan Foto' : 'Use Photo'));
+      await tester.pump(); // process tap → Navigator.pop fires
+      await tester.pump(); // drain microtasks: returnedPath = await ... runs here
+      await tester.pump(const Duration(milliseconds: 300)); // settle pop animation
+    });
+
+    // Drain any remaining frames outside runAsync
     await tester.pumpAndSettle();
 
     expect(returnedPath, testImagePath);

@@ -3,20 +3,25 @@ import 'package:nutrify/constants/colors.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'dart:math' as math;
 import 'package:nutrify/utils/locale/app_strings.dart';
-import '../services/food_log_api_service.dart';
-import '../services/profile_api_service.dart';
+import 'package:flutter_mobx/flutter_mobx.dart';
+import 'package:nutrify/presentation/home/store/language/language_store.dart';
+import 'package:nutrify/domain/repository/food_log/food_log_repository.dart';
+import 'package:nutrify/domain/repository/profile/profile_repository.dart';
+import 'package:nutrify/services/food_log_api_service.dart';
+import 'package:nutrify/di/service_locator.dart';
+
 import '../widgets/shimmer_loading.dart';
 
-class TrackingKaloriScreen extends StatefulWidget {
-  const TrackingKaloriScreen({super.key});
+class CalorieTrackingScreen extends StatefulWidget {
+  const CalorieTrackingScreen({super.key});
 
   @override
-  State<TrackingKaloriScreen> createState() => _TrackingKaloriScreenState();
+  State<CalorieTrackingScreen> createState() => _CalorieTrackingScreenState();
 }
 
-class _TrackingKaloriScreenState extends State<TrackingKaloriScreen> {
-  final FoodLogApiService _foodLogApi = FoodLogApiService();
-  final ProfileApiService _profileApi = ProfileApiService();
+class _CalorieTrackingScreenState extends State<CalorieTrackingScreen> {
+  final FoodLogRepository _foodLogApi = getIt<FoodLogRepository>();
+  final ProfileRepository _profileApi = getIt<ProfileRepository>();
 
   int _totalCalories = 0;
   int _targetCalories = 0;
@@ -72,7 +77,11 @@ class _TrackingKaloriScreenState extends State<TrackingKaloriScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final remaining = math.max(0, _targetCalories - _totalCalories);
+    final languageStore = getIt<LanguageStore>();
+    return Observer(
+      builder: (_) {
+        final _ = languageStore.locale;
+        final remaining = math.max(0, _targetCalories - _totalCalories);
     final progress = _targetCalories > 0
         ? (_totalCalories / _targetCalories).clamp(0.0, 1.0)
         : 0.0;
@@ -85,7 +94,7 @@ class _TrackingKaloriScreenState extends State<TrackingKaloriScreen> {
     if (_isLoading) {
       return const Scaffold(
         backgroundColor: NutrifyTheme.background,
-        body: TrackingShimmer(),
+        body: CalorieTrackingShimmer(),
       );
     }
 
@@ -167,7 +176,7 @@ class _TrackingKaloriScreenState extends State<TrackingKaloriScreen> {
                           overflow: TextOverflow.ellipsis,
                         ),
                         Text(
-                          'kkal',
+                          AppStrings.kcal,
                           style: GoogleFonts.montserrat(
                             color: AppColors.navy.withOpacity(0.7),
                             fontSize: 16,
@@ -186,7 +195,7 @@ class _TrackingKaloriScreenState extends State<TrackingKaloriScreen> {
                   Expanded(
                     child: _buildStatCard(
                       label: AppStrings.remaining,
-                      value: '${_formatCalories(remaining)} kkal',
+                      value: '${_formatCalories(remaining)} ${AppStrings.kcal}',
                       icon: Icons.local_fire_department_rounded,
                       iconColor: remaining == 0
                           ? Colors.redAccent
@@ -197,7 +206,7 @@ class _TrackingKaloriScreenState extends State<TrackingKaloriScreen> {
                   Expanded(
                     child: _buildStatCard(
                       label: AppStrings.dailyCalorieTarget,
-                      value: '${_formatCalories(_targetCalories)} kkal',
+                      value: '${_formatCalories(_targetCalories)} ${AppStrings.kcal}',
                       icon: Icons.flag_rounded,
                       iconColor: AppColors.navy,
                     ),
@@ -260,6 +269,8 @@ class _TrackingKaloriScreenState extends State<TrackingKaloriScreen> {
           ),
         ),
       ),
+    );
+      },
     );
   }
 
@@ -425,7 +436,7 @@ class _TrackingKaloriScreenState extends State<TrackingKaloriScreen> {
                   crossAxisAlignment: CrossAxisAlignment.end,
                   children: [
                     Text(
-                      '$kcal kkal',
+                      '$kcal ${AppStrings.kcal}',
                       style: GoogleFonts.montserrat(
                         color: AppColors.navy,
                         fontWeight: FontWeight.bold,
@@ -503,5 +514,3 @@ class GradientCircularPainter extends CustomPainter {
   bool shouldRepaint(covariant GradientCircularPainter old) =>
       old.progress != progress;
 }
-
-

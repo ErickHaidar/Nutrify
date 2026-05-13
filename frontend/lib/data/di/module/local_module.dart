@@ -4,6 +4,8 @@ import 'dart:io';
 import 'package:nutrify/core/data/local/sembast/sembast_client.dart';
 import 'package:nutrify/data/local/constants/db_constants.dart';
 import 'package:nutrify/data/local/datasources/post/post_datasource.dart';
+import 'package:nutrify/data/local/datasources/profile/profile_datasource.dart';
+import 'package:nutrify/data/local/datasources/food_log/food_log_datasource.dart';
 import 'package:nutrify/data/sharedpref/shared_preference_helper.dart';
 import 'package:flutter/foundation.dart';
 import 'package:path_provider/path_provider.dart';
@@ -36,7 +38,9 @@ class LocalModule {
     getIt.registerSingleton<SembastClient>(sembastClient);
 
     // data sources:------------------------------------------------------------
-    getIt.registerSingleton(PostDataSource(sembastClient));
+getIt.registerSingleton(PostDataSource(sembastClient));
+    getIt.registerSingleton(ProfileDataSource(sembastClient));
+    getIt.registerSingleton(FoodLogDataSource(sembastClient));
 
     // image:-------------------------------------------------------------------
     getIt.registerSingleton<ImagePicker>(ImagePicker());

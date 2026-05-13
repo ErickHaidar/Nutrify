@@ -5,8 +5,12 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:nutrify/constants/colors.dart';
 import 'package:nutrify/utils/meal_type_mapper.dart';
 import 'package:nutrify/utils/locale/app_strings.dart';
+import 'package:flutter_mobx/flutter_mobx.dart';
+import 'package:nutrify/presentation/home/store/language/language_store.dart';
 import 'package:nutrify/services/food_api_service.dart';
 import 'package:nutrify/services/food_log_api_service.dart';
+import 'package:nutrify/domain/repository/food_log/food_log_repository.dart';
+
 import 'package:nutrify/di/service_locator.dart';
 import 'package:flutter/services.dart';
 import 'package:nutrify/services/notification_service.dart';
@@ -33,7 +37,7 @@ class FoodDetailScreen extends StatefulWidget {
 
 class _FoodDetailScreenState extends State<FoodDetailScreen> {
   final _amountController = TextEditingController();
-  final _foodLogApi = FoodLogApiService();
+  final _foodLogApi = getIt<FoodLogRepository>();
   
   String _selectedUnit = AppStrings.serving; // Use AppStrings for units
   bool _isSaving = false;
@@ -94,10 +98,10 @@ class _FoodDetailScreenState extends State<FoodDetailScreen> {
 
   String get _amountErrorText {
     if (_amountController.text.isEmpty || !_isAmountInvalid) return '';
-    if (_currentAmount <= 0) return 'Jumlah harus lebih dari 0';
+    if (_currentAmount <= 0) return AppStrings.amountMustBePositive;
     if (_currentAmount > _maxAmount) {
       final unitLabel = _selectedUnit;
-      return 'Maksimal ${_maxAmount.toStringAsFixed(0)} $unitLabel';
+      return AppStrings.maxAmountExceeded(_maxAmount.toStringAsFixed(0), unitLabel);
     }
     return '';
   }
@@ -114,7 +118,7 @@ class _FoodDetailScreenState extends State<FoodDetailScreen> {
 
     if (_currentAmount <= 0) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Masukkan jumlah yang valid')),
+        SnackBar(content: Text(AppStrings.enterValidAmount)),
       );
       return;
     }
@@ -122,7 +126,7 @@ class _FoodDetailScreenState extends State<FoodDetailScreen> {
     if (_currentAmount > _maxAmount) {
       final unitLabel = _selectedUnit;
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Maksimal $_maxAmount $unitLabel')),
+        SnackBar(content: Text(AppStrings.maxAmountExceeded(_maxAmount.toStringAsFixed(0), _selectedUnit))),
       );
       return;
     }
@@ -177,7 +181,11 @@ class _FoodDetailScreenState extends State<FoodDetailScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    final languageStore = getIt<LanguageStore>();
+    return Observer(
+      builder: (_) {
+        final _ = languageStore.locale;
+        return Scaffold(
       backgroundColor: NutrifyTheme.background,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
@@ -234,7 +242,7 @@ class _FoodDetailScreenState extends State<FoodDetailScreen> {
                             decoration: InputDecoration(
                               border: InputBorder.none,
                               counterText: '',
-                              hintText: 'Maks ${_maxAmount.toStringAsFixed(0)} $_selectedUnit',
+                              hintText: AppStrings.maxLimitHint(_maxAmount.toStringAsFixed(0), _selectedUnit),
                               hintStyle: TextStyle(color: AppColors.navy.withOpacity(0.3), fontSize: 13),
                             ),
                             onChanged: (_) => setState(() {}),
@@ -286,7 +294,7 @@ class _FoodDetailScreenState extends State<FoodDetailScreen> {
                   ),
                   const SizedBox(height: 20),
                   _buildNutritionRow(AppStrings.size, '${_currentAmount.toStringAsFixed(0)} $_selectedUnit'),
-                  _buildNutritionRow(AppStrings.calories, '${(_baseCalories * _multiplier).toStringAsFixed(0)} kkal'),
+                  _buildNutritionRow(AppStrings.calories, '${(_baseCalories * _multiplier).toStringAsFixed(0)} ${AppStrings.kcal}'),
                   _buildNutritionRow(AppStrings.protein, '${(_baseProtein * _multiplier).toStringAsFixed(2)}g'),
                   _buildNutritionRow(AppStrings.carbs, '${(_baseCarbos * _multiplier).toStringAsFixed(2)}g'),
                   _buildNutritionRow(AppStrings.totalFat, '${(_baseFat * _multiplier).toStringAsFixed(2)}g'),
@@ -323,6 +331,8 @@ class _FoodDetailScreenState extends State<FoodDetailScreen> {
           ],
         ),
       ),
+    );
+      },
     );
   }
 

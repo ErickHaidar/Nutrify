@@ -2,10 +2,16 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../constants/colors.dart';
-import '../services/food_log_api_service.dart';
+import 'package:nutrify/domain/repository/food_log/food_log_repository.dart';
+import 'package:nutrify/domain/repository/profile/profile_repository.dart';
+import 'package:nutrify/services/food_log_api_service.dart';
+import 'package:nutrify/services/profile_api_service.dart';
+import 'package:nutrify/di/service_locator.dart';
+
 import 'package:nutrify/constants/assets.dart';
 import 'package:nutrify/utils/locale/app_strings.dart';
-import '../services/profile_api_service.dart';
+import 'package:flutter_mobx/flutter_mobx.dart';
+import 'package:nutrify/presentation/home/store/language/language_store.dart';
 import '../widgets/nutrify_calendar_picker.dart' show showNutrifyDatePicker, SelectionMode;
 import 'food_detail_screen.dart';
 import '../widgets/nutrify_calendar_picker.dart';
@@ -18,8 +24,8 @@ class HistoryScreen extends StatefulWidget {
 }
 
 class HistoryScreenState extends State<HistoryScreen> with WidgetsBindingObserver {
-  final _foodLogApi = FoodLogApiService();
-  final _profileApi = ProfileApiService();
+  final _foodLogApi = getIt<FoodLogRepository>();
+  final _profileApi = getIt<ProfileRepository>();
 
   DateTime _selectedDate = DateTime.now();
   bool _isLoading = true;
@@ -95,133 +101,139 @@ class HistoryScreenState extends State<HistoryScreen> with WidgetsBindingObserve
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: AppColors.cream,
-      body: SafeArea(
-        child: Column(
-          children: [
-            // Branded Header
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+    final languageStore = getIt<LanguageStore>();
+    return Observer(
+      builder: (_) {
+        final _ = languageStore.locale;
+        return Scaffold(
+          backgroundColor: AppColors.cream,
+          body: SafeArea(
+            child: Column(
+              children: [
+                // Branded Header
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Row(
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Image.asset(
-                            Assets.nutrifyLogo,
-                            height: 40,
-                            width: 40,
+                          Row(
+                            children: [
+                              Image.asset(
+                                Assets.nutrifyLogo,
+                                height: 40,
+                                width: 40,
+                              ),
+                              const SizedBox(width: 8),
+                              Text(
+                                'Nutrify',
+                                style: GoogleFonts.inter(
+                                  fontSize: 30,
+                                  fontWeight: FontWeight.w900,
+                                  color: const Color(0xFFFFB26B),
+                                ),
+                              ),
+                            ],
                           ),
-                          const SizedBox(width: 8),
                           Text(
-                            'Nutrify',
-                            style: GoogleFonts.inter(
-                              fontSize: 30,
-                              fontWeight: FontWeight.w900,
-                              color: const Color(0xFFFFB26B),
+                            AppStrings.nutritionHistory,
+                            style: const TextStyle(
+                              color: AppColors.navy,
+                              fontSize: 12,
                             ),
                           ),
                         ],
                       ),
-                      Text(
-                        AppStrings.nutritionHistory,
-                        style: TextStyle(
-                          color: AppColors.navy,
-                          fontSize: 12,
+                      Container(
+                        decoration: BoxDecoration(
+                          color: Colors.grey.withOpacity(0.1),
+                          shape: BoxShape.circle,
+                        ),
+                        child: IconButton(
+                          icon: const Icon(Icons.calendar_month, color: AppColors.navy),
+                          onPressed: _showCalendarPicker,
                         ),
                       ),
                     ],
                   ),
-                  Container(
-                    decoration: BoxDecoration(
-                      color: Colors.grey.withOpacity(0.1),
-                      shape: BoxShape.circle,
-                    ),
-                    child: IconButton(
-                      icon: const Icon(Icons.calendar_month, color: AppColors.navy),
-                      onPressed: _showCalendarPicker,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            
-            // Content Section
-            Expanded(
-              child: _isLoading
-                  ? const Center(child: CircularProgressIndicator())
-                  : RefreshIndicator(
-                      onRefresh: _loadData,
-                      color: NutrifyTheme.accentOrange,
-                      backgroundColor: AppColors.cream,
-                      child: SingleChildScrollView(
-                        physics: const AlwaysScrollableScrollPhysics(),
-                        padding: const EdgeInsets.all(20),
-                        child: Column(
-                          children: [
-                            // Summary Cards
-                            Row(
+                ),
+                
+                // Content Section
+                Expanded(
+                  child: _isLoading
+                      ? const Center(child: CircularProgressIndicator())
+                      : RefreshIndicator(
+                          onRefresh: _loadData,
+                          color: NutrifyTheme.accentOrange,
+                          backgroundColor: AppColors.cream,
+                          child: SingleChildScrollView(
+                            physics: const AlwaysScrollableScrollPhysics(),
+                            padding: const EdgeInsets.all(20),
+                            child: Column(
                               children: [
-                                Expanded(
-                                  child: _buildSummaryCard(
-                                    AppStrings.targetCalorie,
-                                    _formatNumber(_targetCalories),
-                                    'kkal',
-                                  ),
-                                ),
-                                const SizedBox(width: 15),
-                                Expanded(
-                                  child: _buildSummaryCard(
-                                    AppStrings.dailyCalorie,
-                                    _formatNumber(_summary.totalCaloriesInt),
-                                    'kkal',
-                                  ),
-                                ),
-                              ],
-                            ),
-                            const SizedBox(height: 25),
-
-                            // Meal Categories
-                            _buildMealSection(
-                                AppStrings.breakfast, 'Breakfast', Assets.iconPagi),
-                            const SizedBox(height: 15),
-                            _buildMealSection(
-                                AppStrings.lunch, 'Lunch', Assets.iconSiang),
-                            const SizedBox(height: 15),
-                            _buildMealSection(
-                                AppStrings.dinner, 'Dinner', Assets.iconMalam),
-                            const SizedBox(height: 15),
-                            _buildMealSection(
-                                AppStrings.snack, 'Snack', Assets.iconCemilan),
-
-                            if (_logs.isEmpty)
-                              Padding(
-                                padding: const EdgeInsets.only(top: 40),
-                                child: Column(
+                                // Summary Cards
+                                Row(
                                   children: [
-                                    const Icon(Icons.restaurant_menu,
-                                        color: Colors.white24, size: 48),
-                                    const SizedBox(height: 12),
-                                    Text(
-                                      AppStrings.noFoodRecordsToday,
-                                      style: TextStyle(
-                                          color: Colors.white38, fontSize: 14),
+                                    Expanded(
+                                      child: _buildSummaryCard(
+                                        AppStrings.targetCalorie,
+                                        _formatNumber(_targetCalories),
+                                        AppStrings.kcal,
+                                      ),
+                                    ),
+                                    const SizedBox(width: 15),
+                                    Expanded(
+                                      child: _buildSummaryCard(
+                                        AppStrings.dailyCalorie,
+                                        _formatNumber(_summary.totalCaloriesInt),
+                                        AppStrings.kcal,
+                                      ),
                                     ),
                                   ],
                                 ),
-                              ),
-                          ],
+                                const SizedBox(height: 25),
+
+                                // Meal Categories
+                                _buildMealSection(
+                                    AppStrings.breakfast, 'Breakfast', Assets.breakfastIcon),
+                                const SizedBox(height: 15),
+                                _buildMealSection(
+                                    AppStrings.lunch, 'Lunch', Assets.lunchIcon),
+                                const SizedBox(height: 15),
+                                _buildMealSection(
+                                    AppStrings.dinner, 'Dinner', Assets.dinnerIcon),
+                                const SizedBox(height: 15),
+                                _buildMealSection(
+                                    AppStrings.snack, 'Snack', Assets.snackIcon),
+
+                                if (_logs.isEmpty)
+                                  Padding(
+                                    padding: const EdgeInsets.only(top: 40),
+                                    child: Column(
+                                      children: [
+                                        const Icon(Icons.restaurant_menu,
+                                            color: Colors.white24, size: 48),
+                                        const SizedBox(height: 12),
+                                        Text(
+                                          AppStrings.noFoodRecordsToday,
+                                          style: const TextStyle(
+                                              color: Colors.white38, fontSize: 14),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                              ],
+                            ),
+                          ),
                         ),
-                      ),
-                    ),
+                ),
+              ],
             ),
-          ],
-        ),
-      ),
+          ),
+        );
+      },
     );
   }
 
@@ -259,7 +271,7 @@ class HistoryScreenState extends State<HistoryScreen> with WidgetsBindingObserve
               ),
               const Spacer(),
               Text(
-                '$totalKcal kcal',
+                '$totalKcal ${AppStrings.kcal}',
                 style: const TextStyle(
                   color: AppColors.navy,
                   fontSize: 16,
@@ -309,7 +321,7 @@ class HistoryScreenState extends State<HistoryScreen> with WidgetsBindingObserve
                             ),
                           ),
                           Text(
-                            '${entry.calories.round()} kcal',
+                            '${entry.calories.round()} ${AppStrings.kcal}',
                             style: TextStyle(
                                 color: AppColors.navy.withOpacity(0.7), fontSize: 14),
                           ),
@@ -377,6 +389,5 @@ class HistoryScreenState extends State<HistoryScreen> with WidgetsBindingObserve
         ],
       ),
     );
-}
-
+  }
 }

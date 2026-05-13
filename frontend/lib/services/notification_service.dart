@@ -8,6 +8,8 @@ import 'package:permission_handler/permission_handler.dart';
 import 'package:nutrify/di/service_locator.dart';
 import 'package:nutrify/services/profile_api_service.dart';
 import 'package:nutrify/services/food_log_api_service.dart';
+import 'package:nutrify/domain/repository/food_log/food_log_repository.dart';
+
 import 'package:nutrify/presentation/my_app.dart';
 import 'package:nutrify/screens/add_meal_screen.dart';
 import 'dart:io';
@@ -31,7 +33,7 @@ class NotificationService {
   NotificationService._internal();
 
   final FlutterLocalNotificationsPlugin _notificationsPlugin = FlutterLocalNotificationsPlugin();
-  final FoodLogApiService _foodLogApi = FoodLogApiService();
+  final FoodLogRepository _foodLogApi = getIt<FoodLogRepository>();
   
   // Helper to check if Firebase is ready
   bool get _isFirebaseReady => Firebase.apps.isNotEmpty;

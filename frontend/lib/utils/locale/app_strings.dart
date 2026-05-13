@@ -41,6 +41,10 @@ class AppStrings {
   static String get failedToSave => _t('Gagal menyimpan', 'Failed to save');
   static String get understand => _t('Mengerti', 'Got it');
   static String get or_ => _t('Atau', 'Or');
+  static String get kkal => _t('kkal', 'kcal');
+  static String get kCal => _t('kCal', 'kcal');
+  static String get kal => _t('Kal', 'Cal');
+  static String get kcal => _t('kkal', 'kcal');
 
   // ─── Splash ──────────────────────────────────────────────────────────────
   static String get splashSubtitle =>
@@ -131,8 +135,6 @@ class AppStrings {
   static String get dinner => _t('Makan Malam', 'Dinner');
   static String get snack => _t('Cemilan', 'Snack');
   static String get cal => _t('KAL', 'CAL');
-  static String get kcal => _t('kkal', 'kcal');
-  static String get kCal => _t('kCal', 'kCal');
   static String percentOfTarget(int percent) =>
       _t('$percent% dari target', '$percent% of target');
   static String get helloJourneyStarts =>
@@ -168,6 +170,15 @@ class AppStrings {
   static String get deleteFoodConfirm =>
       _t('Apakah Anda yakin ingin menghapus makanan ini dari riwayat?',
          'Are you sure you want to remove this food from history?');
+  static String get oftenEaten => _t('Sering dimakan', 'Often eaten');
+  static String get startLoggingForRecs => _t('Mulai catat makanan untuk mendapatkan rekomendasi!', 'Start logging food to get recommendations!');
+  static String get noFavFoods => _t('Belum ada makanan favorit.', 'No favorite foods yet.');
+  static String get amountMustBePositive => _t('Jumlah harus lebih dari 0', 'Amount must be greater than 0');
+  static String maxAmountExceeded(dynamic max, String unit) => _t('Maksimal $max $unit', 'Maximum $max $unit');
+  static String get enterValidAmount => _t('Masukkan jumlah yang valid', 'Enter a valid amount');
+  static String maxLimitHint(dynamic max, String unit) => _t('Maks $max $unit', 'Max $max $unit');
+  static String get recommendationsFilter => _t('Rekomendasi', 'Recommendations');
+  static String get favoritesFilter => _t('Favorit', 'Favorites');
 
   // ─── Tutorial ────────────────────────────────────────────────────────────
   static String get tutorialTitle => _t('Panduan Menambah Makanan', 'Food Adding Guide');

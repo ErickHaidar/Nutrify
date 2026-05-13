@@ -244,8 +244,9 @@ class ProfileValidationTest extends TestCase
     {
         // Test that photo field accepts valid image files
         // We'll test the validation rules for photo upload
+        $pngContent = base64_decode('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8/5+hHgAHggJ/PchI7wAAAABJRU5ErkJggg==');
         $validator = \Illuminate\Support\Facades\Validator::make([
-            'photo' => \Illuminate\Http\UploadedFile::fake()->image('photo.jpg', 400, 400)->size(1024),
+            'photo' => \Illuminate\Http\UploadedFile::fake()->createWithContent('photo.png', $pngContent)->size(1024),
         ], [
             'photo' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:10240',
         ]);
@@ -263,7 +264,7 @@ class ProfileValidationTest extends TestCase
 
         // Test with file too large (> 10MB)
         $validator3 = \Illuminate\Support\Facades\Validator::make([
-            'photo' => \Illuminate\Http\UploadedFile::fake()->image('large.jpg', 400, 400)->size(11264), // 11MB
+            'photo' => \Illuminate\Http\UploadedFile::fake()->createWithContent('large.jpg', str_repeat('A', 11264 * 1024))->size(11264), // 11MB
         ], [
             'photo' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:10240',
         ]);

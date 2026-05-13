@@ -2,11 +2,14 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import '../services/profile_api_service.dart';
+import 'package:nutrify/domain/repository/profile/profile_repository.dart';
+import 'package:nutrify/di/service_locator.dart';
 import '../widgets/nutrify_calendar_picker.dart';
 import 'package:nutrify/constants/colors.dart';
 import 'package:nutrify/utils/locale/app_strings.dart';
 
+import 'package:flutter_mobx/flutter_mobx.dart';
+import 'package:nutrify/presentation/home/store/language/language_store.dart';
 class BodyDataGoalsScreen extends StatefulWidget {
   const BodyDataGoalsScreen({super.key});
 
@@ -15,7 +18,7 @@ class BodyDataGoalsScreen extends StatefulWidget {
 }
 
 class _BodyDataGoalsScreenState extends State<BodyDataGoalsScreen> {
-  final _profileApi = ProfileApiService();
+  final _profileApi = getIt<ProfileRepository>();
   final _heightController = TextEditingController();
   final _weightController = TextEditingController();
   DateTime? _birthDate;
@@ -90,6 +93,9 @@ class _BodyDataGoalsScreenState extends State<BodyDataGoalsScreen> {
 
     if (age < 13 || age > 100) {
       ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(AppStrings.ageValidation)),
+      );
+      ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Usia harus antara 13-100 tahun')),
       );
       return;
@@ -97,12 +103,18 @@ class _BodyDataGoalsScreenState extends State<BodyDataGoalsScreen> {
 
     if (weight < 25 || weight > 300) {
       ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(AppStrings.weightValidation)),
+      );
+      ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Berat badan harus antara 25-300 kg')),
       );
       return;
     }
 
     if (height < 100 || height > 250) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(AppStrings.heightValidation)),
+      );
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Tinggi badan harus antara 100-250 cm')),
       );
@@ -173,7 +185,11 @@ class _BodyDataGoalsScreenState extends State<BodyDataGoalsScreen> {
 
   @override
   Widget build(BuildContext context) {
-    if (_isLoading) {
+    final languageStore = getIt<LanguageStore>();
+    return Observer(
+      builder: (_) {
+        final _ = languageStore.locale;
+        if (_isLoading) {
       return const Scaffold(
         backgroundColor: AppColors.cream,
         body: Center(child: CircularProgressIndicator(color: AppColors.navy)),
@@ -351,6 +367,8 @@ class _BodyDataGoalsScreenState extends State<BodyDataGoalsScreen> {
           ],
         ),
       ),
+    );
+      },
     );
   }
 
@@ -540,7 +558,7 @@ class _BodyDataGoalsScreenState extends State<BodyDataGoalsScreen> {
           ),
           const SizedBox(height: 8),
           Text(
-            '$formatted kCal',
+            '$formatted ${AppStrings.kcal}',
             style: const TextStyle(
               color: AppColors.navy,
               fontSize: 32,

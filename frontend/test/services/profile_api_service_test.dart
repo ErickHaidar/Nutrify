@@ -34,10 +34,10 @@ void main() {
     await getIt.reset();
   });
 
-  test('uploadProfilePhoto sends a PUT request with multipart form data', () async {
+  test('uploadProfilePhoto sends a POST request with multipart form data', () async {
     // Arrange
     final file = File('test_assets/logo.png');
-    when(() => mockDio.put(
+    when(() => mockDio.post(
       any(),
       data: any(named: 'data'),
       options: any(named: 'options'),
@@ -51,7 +51,7 @@ void main() {
     await profileApiService.uploadProfilePhoto(file);
 
     // Assert
-    final captured = verify(() => mockDio.put(
+    final captured = verify(() => mockDio.post(
       Endpoints.profilePhoto,
       data: captureAny(named: 'data'),
     )).captured;

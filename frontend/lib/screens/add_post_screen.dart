@@ -1,6 +1,5 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:nutrify/constants/colors.dart';
 import 'package:nutrify/di/service_locator.dart';
@@ -22,7 +21,7 @@ class _AddPostScreenState extends State<AddPostScreen> {
   bool _isPickingImage = false;
 
   final ImagePicker _picker = getIt<ImagePicker>();
-  final CommunityPostApiService _api = CommunityPostApiService();
+  final CommunityPostApiService _api = getIt<CommunityPostApiService>();
 
   static const int _maxChars = 1000;
   static const int _maxImageBytes = 5 * 1024 * 1024; // 5MB target after compression
@@ -210,7 +209,7 @@ class _AddPostScreenState extends State<AddPostScreen> {
         ),
         title: Text(
           AppStrings.addNewPost,
-          style: GoogleFonts.montserrat(
+          style: const TextStyle(
             color: AppColors.navy,
             fontWeight: FontWeight.bold,
             fontSize: 18,

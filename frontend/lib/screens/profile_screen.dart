@@ -10,6 +10,8 @@ import 'package:nutrify/presentation/home/store/language/language_store.dart';
 import 'package:nutrify/utils/routes/routes.dart';
 import 'package:nutrify/constants/assets.dart';
 import 'package:nutrify/utils/locale/app_strings.dart';
+import 'package:nutrify/domain/repository/profile/profile_repository.dart';
+import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:nutrify/domain/entity/post/community_post.dart';
 import 'package:nutrify/screens/post_detail_screen.dart';
 import 'package:nutrify/services/community_post_api_service.dart';
@@ -31,8 +33,8 @@ class ProfileScreen extends StatefulWidget {
 class ProfileScreenState extends State<ProfileScreen>
     with SingleTickerProviderStateMixin {
   // General tab
-  final _profileApiService = ProfileApiService();
-  final _communityApi = CommunityPostApiService();
+  final ProfileRepository _profileApiService = getIt<ProfileRepository>();
+  final CommunityPostApiService _communityApi = getIt<CommunityPostApiService>();
   ApiProfileData? _profile;
   bool _isLoading = true;
   String? _profileImagePath;
@@ -86,7 +88,7 @@ class ProfileScreenState extends State<ProfileScreen>
     _tabController.animateTo(1);
   }
 
-  void switchToUmumTab() {
+  void switchToGeneralTab() {
     _tabController.animateTo(0);
   }
 
@@ -247,7 +249,7 @@ class ProfileScreenState extends State<ProfileScreen>
                 padding: const EdgeInsets.fromLTRB(20, 8, 20, 16),
                 child: Row(
                   children: [
-                    const Text('Edit Profil',
+                    Text(AppStrings.editProfile,
                         style: TextStyle(
                             color: AppColors.navy,
                             fontSize: 18,
@@ -338,7 +340,7 @@ class ProfileScreenState extends State<ProfileScreen>
                               Navigator.pop(ctx);
                               _loadSocialProfile();
                               // BUG 6 FIX: Also refresh body profile and invalidate cache
-                              ProfileApiService.invalidateCache();
+                              _profileApiService.invalidateCache();
                               loadProfile();
                             }
                           } catch (e) {
@@ -744,14 +746,17 @@ class ProfileScreenState extends State<ProfileScreen>
 
   @override
   Widget build(BuildContext context) {
-    if (_isLoading) {
-      return const Scaffold(
-        backgroundColor: AppColors.cream,
-        body: SafeArea(child: ProfileShimmer()),
-      );
-    }
-
-    return Scaffold(
+    final languageStore = getIt<LanguageStore>();
+    return Observer(
+      builder: (_) {
+        final _ = languageStore.locale;
+        if (_isLoading) {
+          return const Scaffold(
+            backgroundColor: AppColors.cream,
+            body: SafeArea(child: ProfileShimmer()),
+          );
+        }
+        return Scaffold(
       backgroundColor: AppColors.cream,
       body: SafeArea(
         child: Column(
@@ -804,8 +809,8 @@ class ProfileScreenState extends State<ProfileScreen>
               child: TabBarView(
                 controller: _tabController,
                 children: [
-                  _buildUmumTab(),
-                  _buildSosialTab(),
+                  _buildGeneralTab(),
+                  _buildSocialTab(),
                 ],
               ),
             ),
@@ -813,13 +818,15 @@ class ProfileScreenState extends State<ProfileScreen>
         ),
       ),
     );
+      },
+    );
   }
 
   // ========================
   // UMUM TAB
   // ========================
 
-  Widget _buildUmumTab() {
+  Widget _buildGeneralTab() {
     return SingleChildScrollView(
       padding: const EdgeInsets.symmetric(horizontal: 24),
       child: Column(
@@ -859,7 +866,7 @@ class ProfileScreenState extends State<ProfileScreen>
                 _buildInfoBox(
                   AppStrings.target,
                   _profile != null
-                      ? '${_profile!.targetCalories} kcal'
+                      ? '${_profile!.targetCalories} ${AppStrings.kcal}'
                       : '-',
                 ),
               ],
@@ -935,7 +942,7 @@ class ProfileScreenState extends State<ProfileScreen>
   // SOSIAL TAB
   // ========================
 
-  Widget _buildSosialTab() {
+  Widget _buildSocialTab() {
     if (_socialLoading) {
       return const Center(
           child: CircularProgressIndicator(color: AppColors.navy));

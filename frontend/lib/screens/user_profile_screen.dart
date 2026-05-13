@@ -7,6 +7,7 @@ import 'package:nutrify/screens/post_detail_screen.dart';
 import 'package:nutrify/services/chat_api_service.dart';
 import 'package:nutrify/services/community_post_api_service.dart';
 import 'package:supabase_flutter/supabase_flutter.dart' as sb;
+import 'package:nutrify/di/service_locator.dart';
 
 class UserProfileScreen extends StatefulWidget {
   final int userId;
@@ -139,7 +140,7 @@ class _UserProfileScreenState extends State<UserProfileScreen> with SingleTicker
 
   void _openChat() async {
     try {
-      final chatApi = ChatApiService();
+      final chatApi = getIt<ChatApiService>();
       final conv = await chatApi.createConversation(widget.userId);
       if (mounted) {
         Navigator.push(

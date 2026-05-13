@@ -4,12 +4,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import '../services/profile_api_service.dart';
+import 'package:nutrify/domain/repository/profile/profile_repository.dart';
 import '../utils/age_calculator.dart';
 import '../widgets/nutrify_calendar_picker.dart';
 import '../constants/colors.dart';
 import 'package:nutrify/utils/locale/app_strings.dart';
 import 'image_preview_screen.dart';
+import 'package:flutter_mobx/flutter_mobx.dart';
+import 'package:nutrify/presentation/home/store/language/language_store.dart';
 
 import '../../di/service_locator.dart';
 
@@ -21,7 +23,7 @@ class EditProfileScreen extends StatefulWidget {
 }
 
 class _EditProfileScreenState extends State<EditProfileScreen> {
-  final _profileApiService = getIt<ProfileApiService>();
+  final ProfileRepository _profileApiService = getIt<ProfileRepository>();
   final _heightController = TextEditingController();
   final _weightController = TextEditingController();
   final _ageController = TextEditingController();
@@ -344,7 +346,11 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
 
   @override
   Widget build(BuildContext context) {
-    if (_isLoading) {
+    final languageStore = getIt<LanguageStore>();
+    return Observer(
+      builder: (_) {
+        final _ = languageStore.locale;
+        if (_isLoading) {
       return const Scaffold(
         backgroundColor: AppColors.cream,
         body: Center(child: CircularProgressIndicator()),
@@ -505,6 +511,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
           ],
         ),
       ),
+    );
+      },
     );
   }
 
@@ -732,8 +740,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
           const SizedBox(height: 8),
           Text(
             target > 0
-                ? '${target.toString().replaceAllMapped(RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (Match m) => '${m[1]}.')} kCal'
-                : '- kCal',
+                ? '${target.toString().replaceAllMapped(RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (Match m) => '${m[1]}.')} ${AppStrings.kcal}'
+                : '- ${AppStrings.kcal}',
             style: const TextStyle(
               color: AppColors.navy,
               fontSize: 32,

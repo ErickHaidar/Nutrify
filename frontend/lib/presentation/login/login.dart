@@ -8,7 +8,6 @@ import 'package:nutrify/data/sharedpref/constants/preferences.dart';
 import 'package:nutrify/presentation/login/store/login_store.dart';
 import 'package:nutrify/presentation/home/store/language/language_store.dart';
 import 'package:nutrify/utils/device/device_utils.dart';
-import 'package:nutrify/utils/locale/app_localization.dart';
 import 'package:nutrify/utils/locale/app_strings.dart';
 import 'package:nutrify/utils/routes/routes.dart';
 import 'package:flutter/material.dart';
@@ -976,7 +975,7 @@ class _SignUpModalContentState extends State<_SignUpModalContent> {
                 topRight: Radius.circular(40),
               ),
               child: Image.asset(
-                Assets.makananRegister,
+                Assets.foodRegister,
                 height: MediaQuery.of(context).size.height * 0.25,
                 width: double.infinity,
                 fit: BoxFit.cover,

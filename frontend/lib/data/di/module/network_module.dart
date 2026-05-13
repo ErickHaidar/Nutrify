@@ -7,6 +7,11 @@ import 'package:nutrify/data/network/constants/endpoints.dart';
 import 'package:nutrify/data/network/interceptors/error_interceptor.dart';
 import 'package:nutrify/data/network/rest_client.dart';
 import 'package:nutrify/services/profile_api_service.dart';
+import 'package:nutrify/services/food_log_api_service.dart';
+import 'package:nutrify/services/notification_api_service.dart';
+import 'package:nutrify/services/community_post_api_service.dart';
+import 'package:nutrify/services/food_api_service.dart';
+import 'package:nutrify/services/favorite_api_service.dart';
 import 'package:event_bus/event_bus.dart';
 import 'package:supabase_flutter/supabase_flutter.dart' as sb;
 
@@ -54,5 +59,10 @@ class NetworkModule {
     // api's:-------------------------------------------------------------------
     getIt.registerSingleton(PostApi(getIt<DioClient>(), getIt<RestClient>()));
     getIt.registerSingleton(ProfileApiService());
-}
+    getIt.registerSingleton(FoodLogApiService());
+    getIt.registerSingleton(NotificationApiService());
+    getIt.registerSingleton(CommunityPostApiService());
+    getIt.registerSingleton(FoodApiService());
+    getIt.registerSingleton<FavoriteApiService>(FavoriteApiService());
+  }
 }

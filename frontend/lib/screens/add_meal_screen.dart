@@ -3,8 +3,11 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:nutrify/constants/colors.dart';
 import 'package:nutrify/utils/locale/app_strings.dart';
+import 'package:flutter_mobx/flutter_mobx.dart';
+import 'package:nutrify/presentation/home/store/language/language_store.dart';
 import 'package:nutrify/services/food_api_service.dart';
 import 'package:nutrify/services/favorite_api_service.dart';
+import 'package:nutrify/domain/repository/food_log/food_log_repository.dart';
 import 'package:nutrify/services/food_log_api_service.dart';
 import 'package:nutrify/utils/meal_type_mapper.dart';
 import 'food_detail_screen.dart';
@@ -24,9 +27,9 @@ class AddMealScreen extends StatefulWidget {
 
 class _AddMealScreenState extends State<AddMealScreen> {
   final _searchController = TextEditingController();
-  final _foodApi = FoodApiService();
-  final _favApi = FavoriteApiService();
-  final _foodLogApi = FoodLogApiService();
+  final _foodApi = getIt<FoodApiService>();
+  final _favApi = getIt<FavoriteApiService>();
+  final _foodLogApi = getIt<FoodLogRepository>();
   late String _currentMealType;
   Map<int, int> _initialLoggedIds = {}; // foodId -> logId at start
   Map<int, DraftSelection> _draftSelections = {}; // foodId -> draft info
@@ -194,7 +197,7 @@ class _AddMealScreenState extends State<AddMealScreen> {
       if (mounted) {
         setState(() => _isSavingBatch = false);
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Gagal menyimpan: $e')),
+        SnackBar(content: Text(AppStrings.failedToSaveError(e.toString()))),
         );
       }
     }
@@ -496,7 +499,11 @@ class _AddMealScreenState extends State<AddMealScreen> {
   }
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    final languageStore = getIt<LanguageStore>();
+    return Observer(
+      builder: (_) {
+        final _ = languageStore.locale;
+        return Scaffold(
       backgroundColor: NutrifyTheme.background,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
@@ -564,7 +571,11 @@ class _AddMealScreenState extends State<AddMealScreen> {
             padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 8),
             child: Row(
               children: [
-                _buildFilterChip('Semua', 'all'),
+                _buildFilterChip(AppStrings.all, 'all'),
+                const SizedBox(width: 8),
+                _buildFilterChip(AppStrings.recommendationsFilter, 'recommendations'),
+                const SizedBox(width: 8),
+                _buildFilterChip(AppStrings.favoritesFilter, 'favorites'),
                 const SizedBox(width: 8),
                 _buildFilterChip('Rekomendasi', 'recommendations'),
                 const SizedBox(width: 8),
@@ -594,9 +605,9 @@ class _AddMealScreenState extends State<AddMealScreen> {
                           const SizedBox(height: 12),
                           Text(
                             _filterMode == 'recommendations'
-                                ? 'Mulai catat makanan untuk mendapatkan rekomendasi!'
+                                ? AppStrings.startLoggingForRecs
                                 : _filterMode == 'favorites'
-                                    ? 'Belum ada makanan favorit.'
+                                    ? AppStrings.noFavFoods
                                     : AppStrings.noResultsFound,
                             textAlign: TextAlign.center,
                             style: TextStyle(
@@ -632,6 +643,8 @@ class _AddMealScreenState extends State<AddMealScreen> {
                   backgroundColor: AppColors.navy,
                   child: const Icon(Icons.check, color: Colors.white),
                 )),
+    );
+      },
     );
   }
 
@@ -740,7 +753,7 @@ class _AddMealScreenState extends State<AddMealScreen> {
                             children: [
                               Icon(Icons.auto_awesome, size: 11, color: AppColors.navy.withOpacity(0.6)),
                               const SizedBox(width: 3),
-                              Text('Sering dimakan',
+                              Text(AppStrings.oftenEaten,
                                   style: TextStyle(
                                     color: AppColors.navy.withOpacity(0.6),
                                     fontSize: 9,
@@ -753,7 +766,7 @@ class _AddMealScreenState extends State<AddMealScreen> {
                   ),
                   const SizedBox(height: 2),
                   Text(
-                    '${food.calories.toStringAsFixed(0)} kcal · ${food.servingSize}',
+                    '${food.calories.toStringAsFixed(0)} ${AppStrings.kcal} · ${food.servingSize}',
                     style: TextStyle(color: AppColors.navy.withOpacity(0.6), fontSize: 12),
                   ),
                 ],
@@ -798,9 +811,10 @@ class _AddMealScreenState extends State<AddMealScreen> {
                   context: context,
                   builder: (ctx) => AlertDialog(
                     backgroundColor: AppColors.cream,
-                    title: const Text('Hapus Makanan', style: TextStyle(color: AppColors.navy)),
+                    title: Text(AppStrings.deleteFoodTitle, style: const TextStyle(color: AppColors.navy)),
                     content: Text(
-                        'Apakah Anda yakin ingin menghapus makanan ini dari riwayat?', style: TextStyle(color: AppColors.navy.withOpacity(0.7))),
+                        AppStrings.deleteFoodConfirm,
+                        style: const TextStyle(color: AppColors.navy)),
                     actions: [
                       TextButton(
                         onPressed: () => Navigator.pop(ctx, false),
@@ -809,13 +823,12 @@ class _AddMealScreenState extends State<AddMealScreen> {
                       ),
                       TextButton(
                         onPressed: () => Navigator.pop(ctx, true),
-                        child: const Text('Hapus',
-                            style: TextStyle(color: Colors.redAccent)),
+                        child: Text(AppStrings.delete,
+                            style: const TextStyle(color: Colors.redAccent)),
                       ),
                     ],
                   ),
                 );
-
                 if (confirm == true) {
                   await _foodLogApi.deleteLog(logId);
                   _isDirty = true;
@@ -825,6 +838,7 @@ class _AddMealScreenState extends State<AddMealScreen> {
               }
             },
           ),
+
         // Always show checkbox for batch selection
         Checkbox(
           value: isSelected,
@@ -851,7 +865,7 @@ class _AddMealScreenState extends State<AddMealScreen> {
             }
             return AppColors.peach; // Peach background when not selected
           }),
-          side: BorderSide(color: AppColors.navy),
+          side: const BorderSide(color: AppColors.navy),
           checkColor: Colors.white,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(4),

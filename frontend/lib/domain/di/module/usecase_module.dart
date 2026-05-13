@@ -6,7 +6,7 @@ import 'package:nutrify/domain/usecase/post/delete_post_usecase.dart';
 import 'package:nutrify/domain/usecase/post/find_post_by_id_usecase.dart';
 import 'package:nutrify/domain/usecase/post/get_post_usecase.dart';
 import 'package:nutrify/domain/usecase/post/insert_post_usecase.dart';
-import 'package:nutrify/domain/usecase/post/udpate_post_usecase.dart';
+import 'package:nutrify/domain/usecase/post/update_post_usecase.dart';
 import 'package:nutrify/domain/usecase/user/is_logged_in_usecase.dart';
 import 'package:nutrify/domain/usecase/user/login_usecase.dart';
 import 'package:nutrify/domain/usecase/user/save_login_in_status_usecase.dart';

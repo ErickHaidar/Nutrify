@@ -20,12 +20,12 @@ class CustomProgressIndicatorWidget extends StatelessWidget {
             height: 100,
             width: 100,
             child: Card(
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10.0)),
               child: Padding(
                 padding: const EdgeInsets.all(25.0),
                 child: CircularProgressIndicator(),
               ),
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10.0)),
             ),
           ),
         ),
