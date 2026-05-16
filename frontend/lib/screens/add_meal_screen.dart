@@ -568,19 +568,19 @@ class _AddMealScreenState extends State<AddMealScreen> {
 
           // Filter chips: Semua | Rekomendasi | Favorit
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 8),
-            child: Row(
-              children: [
-                _buildFilterChip(AppStrings.all, 'all'),
-                const SizedBox(width: 8),
-                _buildFilterChip(AppStrings.recommendationsFilter, 'recommendations'),
-                const SizedBox(width: 8),
-                _buildFilterChip(AppStrings.favoritesFilter, 'favorites'),
-                const SizedBox(width: 8),
-                _buildFilterChip('Rekomendasi', 'recommendations'),
-                const SizedBox(width: 8),
-                _buildFilterChip('Favorit', 'favorites'),
-              ],
+            padding: const EdgeInsets.symmetric(vertical: 8),
+            child: SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              padding: const EdgeInsets.symmetric(horizontal: 24),
+              child: Row(
+                children: [
+                  _buildFilterChip(AppStrings.all, 'all'),
+                  const SizedBox(width: 8),
+                  _buildFilterChip(AppStrings.recommendationsFilter, 'recommendations'),
+                  const SizedBox(width: 8),
+                  _buildFilterChip(AppStrings.favoritesFilter, 'favorites'),
+                ],
+              ),
             ),
           ),
 

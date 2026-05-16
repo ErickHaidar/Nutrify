@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:nutrify/utils/locale/app_strings.dart';
 import 'package:supabase_flutter/supabase_flutter.dart' as sb;
 
 class CommunityPost {
@@ -83,10 +84,10 @@ class CommunityPost {
     try {
       final dt = DateTime.parse(isoDate).toLocal();
       final diff = DateTime.now().difference(dt);
-      if (diff.inMinutes < 1) return 'Baru saja';
-      if (diff.inHours < 1) return '${diff.inMinutes}m lalu';
-      if (diff.inDays < 1) return '${diff.inHours}j lalu';
-      if (diff.inDays < 7) return '${diff.inDays}h lalu';
+      if (diff.inMinutes < 1) return AppStrings.justNow;
+      if (diff.inHours < 1) return AppStrings.minutesAgo(diff.inMinutes);
+      if (diff.inDays < 1) return AppStrings.hoursAgo(diff.inHours);
+      if (diff.inDays < 7) return AppStrings.daysAgo(diff.inDays);
       return '${dt.day}/${dt.month}/${dt.year}';
     } catch (_) {
       return '';

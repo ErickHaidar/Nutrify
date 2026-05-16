@@ -65,6 +65,7 @@ dependencies:
   # X
   xxtea: ^2.1.0
   fluid_bottom_nav_bar: ^1.4.0
+  fl_chart: ^0.70.2
   # (belum digunakan) image_picker: ^1.2.1
   supabase_flutter: ^2.9.0
   flutter_dotenv: ^6.0.0

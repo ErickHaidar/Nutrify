@@ -73,11 +73,11 @@ class _ChatListScreenState extends State<ChatListScreen> {
   String _formatTime(DateTime dt) {
     final now = DateTime.now();
     final diff = now.difference(dt);
-    if (diff.inMinutes < 1) return AppStrings.now;
-    if (diff.inMinutes < 60) return '${diff.inMinutes}m';
-    if (diff.inHours < 24) return '${diff.inHours}j';
-    if (diff.inDays < 7) return '${diff.inDays}h';
-    if (diff.inDays < 30) return '${(diff.inDays / 7).floor()}mg';
+    if (diff.inMinutes < 1) return AppStrings.justNow;
+    if (diff.inMinutes < 60) return AppStrings.minutesAgo(diff.inMinutes);
+    if (diff.inHours < 24) return AppStrings.hoursAgo(diff.inHours);
+    if (diff.inDays < 7) return AppStrings.daysAgo(diff.inDays);
+    if (diff.inDays < 30) return AppStrings.weeksAgo((diff.inDays / 7).floor());
     return DateFormat('dd/MM/yy').format(dt);
   }
 

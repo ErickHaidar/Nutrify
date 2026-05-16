@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:nutrify/constants/assets.dart';
@@ -8,6 +9,7 @@ import 'add_meal_screen.dart';
 import 'body_data_goals_screen.dart';
 import 'calorie_tracking_screen.dart';
 import 'help_screen.dart';
+import 'progress_screen.dart';
 import 'package:nutrify/constants/colors.dart';
 import 'package:nutrify/utils/locale/app_strings.dart';
 import 'package:nutrify/presentation/home/store/language/language_store.dart';
@@ -369,6 +371,112 @@ class HomeScreenState extends State<HomeScreen> {
                           ],
                         ),
                         const Icon(Icons.chevron_right, color: AppColors.navy),
+                      ],
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 15),
+                // Weight Progress Card
+                InkWell(
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const ProgressScreen(),
+                      ),
+                    );
+                  },
+                  borderRadius: BorderRadius.circular(25),
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 22),
+                    decoration: BoxDecoration(
+                      color: NutrifyTheme.lightCard,
+                      borderRadius: BorderRadius.circular(25),
+                      boxShadow: [
+                        BoxShadow(
+                          color: NutrifyTheme.lightCard.withOpacity(0.4),
+                          blurRadius: 15,
+                          offset: const Offset(0, 8),
+                        ),
+                      ],
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Text(
+                          "Grafik Perkembangan Berat Badan",
+                          style: TextStyle(
+                            color: AppColors.navy,
+                            fontSize: 14,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        const SizedBox(height: 12),
+                        Container(height: 1, color: AppColors.navy.withValues(alpha: 0.1)),
+                        const SizedBox(height: 12),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          crossAxisAlignment: CrossAxisAlignment.end,
+                          children: [
+                            Observer(
+                              builder: (_) => Text(
+                                "${_homeStore.profile?.weight ?? 70} kg",
+                                style: const TextStyle(
+                                  color: AppColors.navy,
+                                  fontSize: 32,
+                                  fontWeight: FontWeight.w900,
+                                ),
+                              ),
+                            ),
+                            SizedBox(
+                              width: 80,
+                              height: 40,
+                              child: IgnorePointer(
+                                child: LineChart(
+                                  LineChartData(
+                                    gridData: FlGridData(show: false),
+                                    titlesData: FlTitlesData(
+                                      leftTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
+                                      topTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
+                                      rightTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
+                                      bottomTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
+                                    ),
+                                    borderData: FlBorderData(show: false),
+                                    lineBarsData: [
+                                      LineChartBarData(
+                                        spots: const [
+                                          FlSpot(0, 1),
+                                          FlSpot(1, 1.5),
+                                          FlSpot(2, 1.4),
+                                          FlSpot(3, 3.4),
+                                          FlSpot(4, 2),
+                                          FlSpot(5, 2.2),
+                                          FlSpot(6, 1.8),
+                                        ],
+                                        isCurved: true,
+                                        color: AppColors.navy,
+                                        barWidth: 3,
+                                        isStrokeCapRound: true,
+                                        dotData: FlDotData(show: false),
+                                        belowBarData: BarAreaData(
+                                          show: true,
+                                          gradient: LinearGradient(
+                                            colors: [
+                                              AppColors.navy.withValues(alpha: 0.2),
+                                              AppColors.navy.withValues(alpha: 0.0),
+                                            ],
+                                            begin: Alignment.topCenter,
+                                            end: Alignment.bottomCenter,
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
                       ],
                     ),
                   ),

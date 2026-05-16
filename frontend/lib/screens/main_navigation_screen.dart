@@ -53,6 +53,7 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
 
   final GlobalKey<HomeScreenState> _homeKey = GlobalKey<HomeScreenState>();
   final GlobalKey<HistoryScreenState> _historyKey = GlobalKey<HistoryScreenState>();
+
   final GlobalKey<CommunityScreenState> _communityKey =
       GlobalKey<CommunityScreenState>();
   final GlobalKey<ProfileScreenState> _profileKey =
@@ -77,39 +78,40 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
     return Observer(
       builder: (_) {
         final _ = languageStore.locale;
-    return Scaffold(
-      backgroundColor: NutrifyTheme.background,
-      body: IndexedStack(
-        index: _selectedIndex,
-        children: _pages,
-      ),
-      bottomNavigationBar: BottomNavigationBar(
-        backgroundColor: NutrifyTheme.darkCard,
-        selectedItemColor: NutrifyTheme.accentOrange,
-        unselectedItemColor: NutrifyTheme.background.withOpacity(0.5),
-        currentIndex: _selectedIndex,
-        onTap: _onItemTapped,
-        type: BottomNavigationBarType.fixed,
-        items: [
-          BottomNavigationBarItem(
-            icon: const Icon(Icons.restaurant),
-            label: AppStrings.navCalorie,
+        return Scaffold(
+          backgroundColor: NutrifyTheme.background,
+          body: IndexedStack(
+            index: _selectedIndex,
+            children: _pages,
           ),
-          BottomNavigationBarItem(
-            icon: const Icon(Icons.history),
-            label: AppStrings.navHistory,
+          bottomNavigationBar: BottomNavigationBar(
+            backgroundColor: NutrifyTheme.darkCard,
+            selectedItemColor: NutrifyTheme.accentOrange,
+            unselectedItemColor: NutrifyTheme.background.withOpacity(0.5),
+            currentIndex: _selectedIndex,
+            onTap: _onItemTapped,
+            type: BottomNavigationBarType.fixed,
+            items: [
+              BottomNavigationBarItem(
+                icon: const Icon(Icons.restaurant),
+                label: AppStrings.navCalorie,
+              ),
+              BottomNavigationBarItem(
+                icon: const Icon(Icons.history),
+                label: AppStrings.navHistory,
+              ),
+
+              BottomNavigationBarItem(
+                icon: const Icon(Icons.forum),
+                label: AppStrings.navCommunity,
+              ),
+              BottomNavigationBarItem(
+                icon: const Icon(Icons.person),
+                label: AppStrings.navProfile,
+              ),
+            ],
           ),
-          BottomNavigationBarItem(
-            icon: const Icon(Icons.forum),
-            label: AppStrings.navCommunity,
-          ),
-          BottomNavigationBarItem(
-            icon: const Icon(Icons.person),
-            label: AppStrings.navProfile,
-          ),
-        ],
-      ),
-    );
+        );
       },
     );
   }
