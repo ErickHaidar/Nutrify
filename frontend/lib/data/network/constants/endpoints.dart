@@ -25,6 +25,8 @@ class Endpoints {
   static const String foodLogsSummary = 'food-logs/summary';
   static const String foodFavorites = 'food/favorites';
   static const String foodRecommendations = 'food/recommendations';
+  static const String progressCalories = 'progress/calories';
+  static const String progressWeight = 'progress/weight';
   static const String posts = 'posts';
   static const String notifications = 'notifications';
   static const String chatConversations = 'chat/conversations';

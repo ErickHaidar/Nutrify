@@ -208,6 +208,13 @@ class ProfileScreenState extends State<ProfileScreen>
       if (mounted) {
         setState(() {
           _posts = posts.where((p) => p.isOwnPost).toList();
+          _posts.sort((a, b) {
+            if (a.isPinned && !b.isPinned) return -1;
+            if (!a.isPinned && b.isPinned) return 1;
+            final dateA = a.pinnedAt ?? a.createdAt ?? DateTime.now();
+            final dateB = b.pinnedAt ?? b.createdAt ?? DateTime.now();
+            return dateB.compareTo(dateA);
+          });
         });
       }
     } catch (_) {}

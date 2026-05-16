@@ -274,9 +274,9 @@ class _PostDetailScreenState extends State<PostDetailScreen> with SingleTickerPr
     final now = DateTime.now();
     final diff = now.difference(dt);
     if (diff.inMinutes < 1) return AppStrings.justNow;
-    if (diff.inMinutes < 60) return '${diff.inMinutes}m';
-    if (diff.inHours < 24) return '${diff.inHours}j';
-    if (diff.inDays < 7) return '${diff.inDays}h';
+    if (diff.inMinutes < 60) return AppStrings.minutesAgo(diff.inMinutes);
+    if (diff.inHours < 24) return AppStrings.hoursAgo(diff.inHours);
+    if (diff.inDays < 7) return AppStrings.daysAgo(diff.inDays);
     return DateFormat('dd MMM').format(dt);
   }
 

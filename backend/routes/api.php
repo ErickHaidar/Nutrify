@@ -11,6 +11,7 @@ use App\Http\Controllers\Api\FollowController;
 use App\Http\Controllers\Api\NotificationController;
 use App\Http\Controllers\Api\ChatController;
 use App\Http\Controllers\FoodLogController;
+use App\Http\Controllers\Api\ProgressController;
 
 // OTP Verification (public, no auth required)
 Route::post('/auth/send-otp', [OtpController::class, 'send']);
@@ -43,6 +44,10 @@ Route::middleware(['supabase.auth'])->group(function () {
     Route::get('/food-logs/{id}', [FoodLogController::class, 'show']);
     Route::put('/food-logs/{id}', [FoodLogController::class, 'update']);
     Route::delete('/food-logs/{id}', [FoodLogController::class, 'destroy']);
+
+    // Progress
+    Route::get('/progress/calories', [ProgressController::class, 'calories']);
+    Route::get('/progress/weight', [ProgressController::class, 'weight']);
 
     // Community Posts
     Route::get('/posts', [PostController::class, 'index']);

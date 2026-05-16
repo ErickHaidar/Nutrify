@@ -89,6 +89,13 @@ class _UserProfileScreenState extends State<UserProfileScreen> with SingleTicker
 
           final postsData = data['posts'] as List<dynamic>? ?? [];
           _userPosts = postsData.map((e) => CommunityPost.fromJson(e as Map<String, dynamic>)).toList();
+          _userPosts.sort((a, b) {
+            if (a.isPinned && !b.isPinned) return -1;
+            if (!a.isPinned && b.isPinned) return 1;
+            final dateA = a.pinnedAt ?? a.createdAt ?? DateTime.now();
+            final dateB = b.pinnedAt ?? b.createdAt ?? DateTime.now();
+            return dateB.compareTo(dateA);
+          });
           _isLoading = false;
         });
       }
@@ -100,6 +107,13 @@ class _UserProfileScreenState extends State<UserProfileScreen> with SingleTicker
         if (mounted) {
           setState(() {
             _userPosts = userPosts;
+            _userPosts.sort((a, b) {
+              if (a.isPinned && !b.isPinned) return -1;
+              if (!a.isPinned && b.isPinned) return 1;
+              final dateA = a.pinnedAt ?? a.createdAt ?? DateTime.now();
+              final dateB = b.pinnedAt ?? b.createdAt ?? DateTime.now();
+              return dateB.compareTo(dateA);
+            });
             if (userPosts.isNotEmpty) {
               _isFollowing = userPosts.first.isFollowed;
               _isRequested = userPosts.first.isRequested;

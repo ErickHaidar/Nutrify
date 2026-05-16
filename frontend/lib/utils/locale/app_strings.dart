@@ -123,6 +123,7 @@ class AppStrings {
   // ─── Bottom Navigation ───────────────────────────────────────────────────
   static String get navCalorie => _t('Kalori', 'Calories');
   static String get navHistory => _t('Riwayat', 'History');
+  static String get navProgress => _t('Grafik', 'Chart');
   static String get navCommunity => _t('Komunitas', 'Community');
   static String get navProfile => _t('Profil', 'Profile');
 
@@ -315,7 +316,6 @@ class AppStrings {
          'No posts from accounts you follow yet.');
   static String likes(String count) => _t('Suka $count', 'Like $count');
   static String comments(String count) => _t('Komentar $count', 'Comment $count');
-  static String get justNow => _t('Baru saja', 'Just now');
   static String get showMore => _t('lihat selengkapnya...', 'show more...');
 
   // ─── Add Post Screen ─────────────────────────────────────────────────────
@@ -382,6 +382,10 @@ class AppStrings {
   static List<String> get dayLabels => isId
       ? ['MIN', 'SEN', 'SEL', 'RAB', 'KAM', 'JUM', 'SAB']
       : ['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT'];
+  
+  static List<String> get dayNamesShort => isId
+      ? ['Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab', 'Min']
+      : ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
 
   // ─── Language picker ─────────────────────────────────────────────────────
   static String get chooseLanguage => _t('Pilih Bahasa', 'Choose Language');
@@ -389,6 +393,17 @@ class AppStrings {
   static String get english => _t('Bahasa Inggris', 'English');
   static String get imagePreview => _t('Preview Gambar', 'Image Preview');
   static String get usePhoto => _t('Gunakan Foto', 'Use Photo');
+
+  // ─── Progress Screen ──────────────────────────────────────────────────────────
+  static String get progressTitle => _t('Grafik Progres', 'Progress Chart');
+  static String get calorieProgress => _t('Progres Kalori', 'Calorie Progress');
+  static String get weightProgress => _t('Progres Berat Badan', 'Weight Progress');
+  static String get averageCalories => _t('Rata-rata Kalori', 'Average Calories');
+  static String get weightTrend => _t('Tren Berat', 'Weight Trend');
+  static String get needMoreData => _t('Butuh data minimal 3 hari untuk menampilkan grafik', 'Need at least 3 days of data to show the chart');
+  static String get weightTrendUp => _t('Naik', 'Up');
+  static String get weightTrendDown => _t('Turun', 'Down');
+  static String get weightTrendStable => _t('Stabil', 'Stable');
 
   // ─── Help Screen ──────────────────────────────────────────────────────────
   static String get helpTitle => _t('Bantuan', 'Help');
@@ -466,6 +481,14 @@ class AppStrings {
   static String get noRepliesYet => _t('Belum ada balasan', 'No replies yet');
   static String replyToUser(String name) => _t('Balas @$name...', 'Reply to @$name...');
   static String get writeReply => _t('Tulis balasan...', 'Write a reply...');
+
+  // ─── Time Ago ─────────────────────────────────────────────────────────────
+  static String get justNow => _t('Baru saja', 'Just now');
+  static String minutesAgo(int m) => _t('${m}m lalu', '${m}m ago');
+  static String hoursAgo(int h) => _t('${h}j lalu', '${h}h ago');
+  static String daysAgo(int d) => _t('${d}h lalu', '${d}d ago');
+  static String weeksAgo(int w) => _t('${w}mg lalu', '${w}w ago');
+
 
   // ─── Post Detail & User Profile & Profile Tabs ─────────────────────────
   static String get posts => _t('Postingan', 'Posts');

@@ -36,7 +36,7 @@ class PostController extends Controller
                     })
                     ->orWhereIn('user_id', $followingIds); // Followed users (any account type)
             })
-            ->orderByRaw('is_pinned DESC, pinned_at DESC NULLS LAST, created_at DESC')
+            ->orderBy('created_at', 'desc')
             ->paginate(15);
 
         $data = $posts->through(function ($post) use ($userId) {
