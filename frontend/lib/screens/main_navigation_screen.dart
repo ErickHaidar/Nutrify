@@ -100,13 +100,10 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
 
       // User baru (atau lama yang belum lengkap)
       if (!mounted) return;
-      final result = await Navigator.push(
+      await Navigator.pushReplacement(
         context,
         MaterialPageRoute(builder: (_) => const OnboardingScreen()),
       );
-      if (result == true) {
-        _homeKey.currentState?.loadDailyData(forceRefresh: true);
-      }
     } catch (e) {
       // Abaikan jika gagal koneksi
     }

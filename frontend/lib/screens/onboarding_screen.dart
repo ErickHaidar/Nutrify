@@ -5,6 +5,7 @@ import 'package:nutrify/constants/assets.dart';
 import 'package:nutrify/data/sharedpref/shared_preference_helper.dart';
 import 'package:nutrify/di/service_locator.dart';
 import 'body_data_goals_screen.dart';
+import 'main_navigation_screen.dart';
 import 'package:fl_chart/fl_chart.dart';
 class OnboardingScreen extends StatefulWidget {
   const OnboardingScreen({super.key});
@@ -39,10 +40,17 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
     if (!mounted) return;
     
     // Push BodyDataGoalsScreen to fill profile
-    await Navigator.pushReplacement(
+    final result = await Navigator.push(
       context,
       MaterialPageRoute(builder: (_) => const BodyDataGoalsScreen()),
     );
+    
+    if (result == true && mounted) {
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (_) => const MainNavigationScreen()),
+      );
+    }
   }
 
   Widget _buildDot(int index) {
@@ -61,10 +69,22 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: AppColors.cream,
-      body: SafeArea(
-        child: Column(
+    return PopScope(
+      canPop: _currentPage == 0,
+      onPopInvokedWithResult: (bool didPop, dynamic result) {
+        if (didPop) return;
+        
+        if (_currentPage > 0) {
+          _pageController.previousPage(
+            duration: const Duration(milliseconds: 300),
+            curve: Curves.easeInOut,
+          );
+        }
+      },
+      child: Scaffold(
+        backgroundColor: AppColors.cream,
+        body: SafeArea(
+          child: Column(
           children: [
             Expanded(
               child: PageView(
@@ -149,6 +169,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
           ],
         ),
       ),
+    ),
     );
   }
 
@@ -206,6 +227,28 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
               padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 16.0),
               child: Column(
                 children: [
+                  const SizedBox(height: 20),
+                  Text(
+                    "Kenali Dasbor & Lokasi Card",
+                    textAlign: TextAlign.center,
+                    style: GoogleFonts.montserrat(
+                      fontSize: 22,
+                      fontWeight: FontWeight.bold,
+                      color: AppColors.navy,
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+                  Text(
+                    "Pahami letak fitur utama Anda untuk memudahkan pemantauan harian.",
+                    textAlign: TextAlign.center,
+                    style: GoogleFonts.montserrat(
+                      fontSize: 14,
+                      height: 1.5,
+                      color: AppColors.navy.withValues(alpha: 0.8),
+                    ),
+                  ),
+                  const SizedBox(height: 32),
+                  
                   // Actual Tracking Card
                   Text("📍 Dasbor Atas", style: GoogleFonts.montserrat(fontSize: 12, fontWeight: FontWeight.bold, color: AppColors.navy.withValues(alpha: 0.6))),
                   const SizedBox(height: 8),
@@ -455,26 +498,6 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                       ],
                     ),
                   ),
-                  const SizedBox(height: 32),
-                  Text(
-                    "Kenali Dasbor & Lokasi Card",
-                    textAlign: TextAlign.center,
-                    style: GoogleFonts.montserrat(
-                      fontSize: 22,
-                      fontWeight: FontWeight.bold,
-                      color: AppColors.navy,
-                    ),
-                  ),
-                  const SizedBox(height: 12),
-                  Text(
-                    "Pahami letak fitur utama Anda untuk memudahkan pemantauan harian.",
-                    textAlign: TextAlign.center,
-                    style: GoogleFonts.montserrat(
-                      fontSize: 14,
-                      height: 1.5,
-                      color: AppColors.navy.withValues(alpha: 0.8),
-                    ),
-                  ),
                 ],
               ),
             ),
@@ -494,6 +517,28 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
               padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 16.0),
               child: Column(
                 children: [
+                  const SizedBox(height: 20),
+                  Text(
+                    "Catat Asupan Mudah",
+                    textAlign: TextAlign.center,
+                    style: GoogleFonts.montserrat(
+                      fontSize: 22,
+                      fontWeight: FontWeight.bold,
+                      color: AppColors.navy,
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+                  Text(
+                    "Ketuk menu di bawah untuk menambah makanan harianmu dengan cepat atau mengatur sesuai porsi.",
+                    textAlign: TextAlign.center,
+                    style: GoogleFonts.montserrat(
+                      fontSize: 14,
+                      height: 1.5,
+                      color: AppColors.navy.withValues(alpha: 0.8),
+                    ),
+                  ),
+                  const SizedBox(height: 32),
+
                   // Mockup Meal Card
                   Row(
                     children: [
