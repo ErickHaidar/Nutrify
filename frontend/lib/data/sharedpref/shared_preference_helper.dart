@@ -59,4 +59,13 @@ class SharedPreferenceHelper {
   Future<void> changeLanguage(String language) {
     return _sharedPreference.setString(Preferences.current_language, language);
   }
+
+  // Onboarding:-------------------------------------------------
+  Future<bool> get hasSeenOnboarding async {
+    return _sharedPreference.getBool(Preferences.has_seen_onboarding) ?? false;
+  }
+
+  Future<bool> saveHasSeenOnboarding(bool value) async {
+    return _sharedPreference.setBool(Preferences.has_seen_onboarding, value);
+  }
 }

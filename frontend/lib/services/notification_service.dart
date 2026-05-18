@@ -12,6 +12,8 @@ import 'package:nutrify/domain/repository/food_log/food_log_repository.dart';
 
 import 'package:nutrify/presentation/my_app.dart';
 import 'package:nutrify/screens/add_meal_screen.dart';
+import 'package:nutrify/screens/body_data_goals_screen.dart';
+import 'package:nutrify/presentation/home/store/home_store.dart';
 import 'dart:io';
 
 // Step 2 & 4: Top-level background message handler
@@ -64,11 +66,29 @@ class NotificationService {
         final payload = response.payload;
         if (payload != null && payload.startsWith('meal:')) {
           final mealType = payload.replaceFirst('meal:', '');
-          MyApp.navigatorKey.currentState?.push(
-            MaterialPageRoute(
-              builder: (_) => AddMealScreen(mealType: mealType),
-            ),
-          );
+          final homeStore = getIt<HomeStore>();
+          final bool isProfileIncomplete = homeStore.profile == null || 
+                                           homeStore.profile!.age == 0 || 
+                                           homeStore.profile!.weight == 0 || 
+                                           homeStore.profile!.height == 0;
+                                           
+          if (isProfileIncomplete) {
+            MyApp.navigatorKey.currentState?.push(
+              MaterialPageRoute(
+                builder: (_) => const BodyDataGoalsScreen(),
+              ),
+            ).then((_) {
+              homeStore.loadDailyData(forceRefresh: true);
+            });
+          } else {
+            MyApp.navigatorKey.currentState?.push(
+              MaterialPageRoute(
+                builder: (_) => AddMealScreen(mealType: mealType),
+              ),
+            ).then((_) {
+              homeStore.loadDailyData(forceRefresh: true);
+            });
+          }
         }
       },
     );

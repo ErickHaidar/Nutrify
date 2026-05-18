@@ -13,6 +13,8 @@ import '../screens/add_meal_screen.dart';
 import '../services/chat_api_service.dart';
 import '../services/community_post_api_service.dart';
 import 'package:nutrify/utils/locale/app_strings.dart';
+import 'package:nutrify/presentation/home/store/home_store.dart';
+import '../screens/body_data_goals_screen.dart';
 
 class NotificationModal extends StatefulWidget {
   const NotificationModal({super.key});
@@ -198,12 +200,41 @@ class _NotificationModalState extends State<NotificationModal> {
     // Meal reminder → navigate to AddMealScreen
     if (notif.type == 'meal' && notif.mealType != null) {
       Navigator.pop(context);
+      
+      final homeStore = getIt<HomeStore>();
+      final bool isProfileIncomplete = homeStore.profile == null || 
+                                       homeStore.profile!.age == 0 || 
+                                       homeStore.profile!.weight == 0 || 
+                                       homeStore.profile!.height == 0;
+                                       
+      if (isProfileIncomplete) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text("Silakan lengkapi profil Anda terlebih dahulu untuk mengatur target nutrisi."),
+            backgroundColor: Colors.redAccent,
+          ),
+        );
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (_) => const BodyDataGoalsScreen(),
+          ),
+        ).then((_) {
+          _isNavigating = false;
+          homeStore.loadDailyData(forceRefresh: true);
+        });
+        return;
+      }
+
       Navigator.push(
         context,
         MaterialPageRoute(
           builder: (_) => AddMealScreen(mealType: notif.mealType!),
         ),
-      ).then((_) => _isNavigating = false);
+      ).then((_) {
+        _isNavigating = false;
+        homeStore.loadDailyData(forceRefresh: true);
+      });
       return;
     }
 

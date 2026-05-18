@@ -25,8 +25,8 @@ class HomeScreen extends StatefulWidget {
 class HomeScreenState extends State<HomeScreen> {
   final HomeStore _homeStore = getIt<HomeStore>();
   bool _isShowingNotifications = false;
-  void loadDailyData() {
-    _homeStore.loadDailyData();
+  void loadDailyData({bool forceRefresh = false}) {
+    _homeStore.loadDailyData(forceRefresh: forceRefresh);
   }
 
   @override
@@ -51,6 +51,30 @@ class HomeScreenState extends State<HomeScreen> {
   }
 
   void _navigateToAddMeal(String mealType) async {
+    final bool isProfileIncomplete = _homeStore.profile == null || 
+                                     _homeStore.profile!.age == 0 || 
+                                     _homeStore.profile!.weight == 0 || 
+                                     _homeStore.profile!.height == 0;
+    
+    if (isProfileIncomplete) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text("Silakan lengkapi profil Anda terlebih dahulu untuk mengatur target nutrisi."),
+          backgroundColor: Colors.redAccent,
+        ),
+      );
+      final result = await Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => const BodyDataGoalsScreen(),
+        ),
+      );
+      if (result == true) {
+        _homeStore.loadDailyData(forceRefresh: true);
+      }
+      return;
+    }
+
     final result = await Navigator.push(
       context,
       MaterialPageRoute(

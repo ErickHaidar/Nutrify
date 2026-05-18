@@ -4,7 +4,6 @@ import 'package:nutrify/constants/colors.dart';
 import 'package:nutrify/services/progress_api_service.dart';
 import 'package:nutrify/di/service_locator.dart';
 import 'package:nutrify/utils/locale/app_strings.dart';
-import 'package:intl/intl.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'body_data_goals_screen.dart';
 
@@ -19,8 +18,10 @@ class ProgressScreenState extends State<ProgressScreen> {
   final ProgressApiService _apiService = getIt<ProgressApiService>();
   
   List<WeightProgress> _weightData = [];
+  List<CalorieProgress> _calorieData = [];
   bool _isLoading = true;
   String? _error;
+  int _selectedTab = 0; // 0 for Kalori, 1 for Berat Badan
 
   @override
   void initState() {
@@ -36,10 +37,11 @@ class ProgressScreenState extends State<ProgressScreen> {
     });
     try {
       final weight = await _apiService.getWeightProgress();
+      final calories = await _apiService.getCalorieProgress();
       if (!mounted) return;
       setState(() {
-        // Sort weight data by date descending for the list
         _weightData = weight..sort((a, b) => b.date.compareTo(a.date));
+        _calorieData = calories..sort((a, b) => b.date.compareTo(a.date));
         _isLoading = false;
       });
     } catch (e) {
@@ -59,6 +61,22 @@ class ProgressScreenState extends State<ProgressScreen> {
     final dayStr = AppStrings.dayNamesShort[date.weekday - 1];
     final monthStr = AppStrings.monthNamesShort[date.month - 1];
     return "$dayStr ${date.day.toString().padLeft(2, '0')} $monthStr";
+  }
+
+  String _getWeightTrend() {
+    if (_weightData.length < 2) return "-";
+    final latest = _weightData.first.weight;
+    final oldest = _weightData.last.weight;
+    final diff = latest - oldest;
+    if (diff > 0) return "+${diff.toStringAsFixed(1)} kg";
+    if (diff < 0) return "${diff.toStringAsFixed(1)} kg";
+    return "Tetap";
+  }
+
+  String _getAverageCalories() {
+    if (_calorieData.isEmpty) return "-";
+    final sum = _calorieData.fold(0.0, (prev, e) => prev + e.calories);
+    return "${(sum / _calorieData.length).toStringAsFixed(0)} kcal";
   }
 
   @override
@@ -116,7 +134,7 @@ class ProgressScreenState extends State<ProgressScreen> {
           onPressed: () => Navigator.pop(context),
         ),
         title: Text(
-          "Riwayat Berat Badan",
+          "Grafik Progres",
           style: GoogleFonts.inter(
             color: AppColors.navy,
             fontWeight: FontWeight.bold,
@@ -133,12 +151,18 @@ class ProgressScreenState extends State<ProgressScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              _buildWeightChartCard(),
+              _buildTabSelector(),
+              const SizedBox(height: 20),
+              _buildSummaryCard(),
+              const SizedBox(height: 20),
+              _buildChartCard(),
               const SizedBox(height: 25),
-              _buildAddWeightButton(),
-              const SizedBox(height: 35),
+              if (_selectedTab == 1) ...[
+                _buildAddWeightButton(),
+                const SizedBox(height: 35),
+              ],
               Text(
-                "Riwayat Berat Badan",
+                _selectedTab == 0 ? "Riwayat Kalori" : "Riwayat Berat Badan",
                 style: GoogleFonts.inter(
                   color: AppColors.navy,
                   fontSize: 16,
@@ -154,10 +178,143 @@ class ProgressScreenState extends State<ProgressScreen> {
     );
   }
 
-  Widget _buildWeightChartCard() {
-    // Sort data for chart (ascending)
-    final chartData = List<WeightProgress>.from(_weightData)..sort((a, b) => a.date.compareTo(b.date));
+  Widget _buildTabSelector() {
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(30),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.05),
+            blurRadius: 10,
+            offset: const Offset(0, 5),
+          ),
+        ],
+      ),
+      child: Row(
+        children: [
+          Expanded(
+            child: GestureDetector(
+              onTap: () => setState(() => _selectedTab = 0),
+              child: Container(
+                padding: const EdgeInsets.symmetric(vertical: 12),
+                decoration: BoxDecoration(
+                  color: _selectedTab == 0 ? AppColors.navy : Colors.transparent,
+                  borderRadius: BorderRadius.circular(30),
+                ),
+                child: Text(
+                  "Kalori",
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    color: _selectedTab == 0 ? Colors.white : AppColors.navy,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+            ),
+          ),
+          Expanded(
+            child: GestureDetector(
+              onTap: () => setState(() => _selectedTab = 1),
+              child: Container(
+                padding: const EdgeInsets.symmetric(vertical: 12),
+                decoration: BoxDecoration(
+                  color: _selectedTab == 1 ? AppColors.navy : Colors.transparent,
+                  borderRadius: BorderRadius.circular(30),
+                ),
+                child: Text(
+                  "Berat Badan",
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    color: _selectedTab == 1 ? Colors.white : AppColors.navy,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildSummaryCard() {
+    return Container(
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: AppColors.peach,
+        borderRadius: BorderRadius.circular(24),
+        boxShadow: [
+          BoxShadow(
+            color: AppColors.peach.withValues(alpha: 0.4),
+            blurRadius: 15,
+            offset: const Offset(0, 5),
+          ),
+        ],
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceAround,
+        children: [
+          Column(
+            children: [
+              Text(
+                "Rata-rata Kalori",
+                style: TextStyle(
+                  color: AppColors.navy.withValues(alpha: 0.8),
+                  fontSize: 13,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              const SizedBox(height: 8),
+              Text(
+                _getAverageCalories(),
+                style: const TextStyle(
+                  color: AppColors.navy,
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ],
+          ),
+          Container(width: 1, height: 40, color: AppColors.navy.withValues(alpha: 0.2)),
+          Column(
+            children: [
+              Text(
+                "Trend BB",
+                style: TextStyle(
+                  color: AppColors.navy.withValues(alpha: 0.8),
+                  fontSize: 13,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              const SizedBox(height: 8),
+              Text(
+                _getWeightTrend(),
+                style: const TextStyle(
+                  color: AppColors.navy,
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildChartCard() {
+    final bool isCalorie = _selectedTab == 0;
     
+    // Sort data for chart (ascending)
+    final weightChartData = List<WeightProgress>.from(_weightData)..sort((a, b) => a.date.compareTo(b.date));
+    final calorieChartData = List<CalorieProgress>.from(_calorieData)..sort((a, b) => a.date.compareTo(b.date));
+    
+    final bool hasEnoughData = isCalorie ? calorieChartData.length >= 3 : weightChartData.length >= 3;
+    final List<DateTime> dates = isCalorie 
+        ? calorieChartData.map((e) => e.date).toList()
+        : weightChartData.map((e) => e.date).toList();
+
     return Container(
       height: 300,
       padding: const EdgeInsets.fromLTRB(10, 20, 20, 10),
@@ -166,33 +323,44 @@ class ProgressScreenState extends State<ProgressScreen> {
         borderRadius: BorderRadius.circular(24),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.05),
+            color: Colors.black.withValues(alpha: 0.05),
             blurRadius: 15,
             offset: const Offset(0, 5),
           ),
         ],
       ),
-      child: chartData.length < 2 
-        ? Center(child: Text(AppStrings.needMoreData, textAlign: TextAlign.center))
+      child: !hasEnoughData 
+        ? Center(
+            child: Padding(
+              padding: const EdgeInsets.all(20.0),
+              child: Text(
+                "Butuh minimal 3 hari data untuk melihat grafik ${isCalorie ? 'kalori' : 'berat badan'}", 
+                textAlign: TextAlign.center,
+                style: TextStyle(color: AppColors.navy.withValues(alpha: 0.6)),
+              ),
+            ),
+          )
         : LineChart(
             LineChartData(
               gridData: FlGridData(
                 show: false,
               ),
-              titlesData: _buildTitlesData(chartData.map((e) => e.date).toList()),
+              titlesData: _buildTitlesData(dates, isCalorie),
               borderData: FlBorderData(
                 show: true,
                 border: Border(
-                  bottom: BorderSide(color: AppColors.navy.withOpacity(0.15), width: 2),
-                  left: BorderSide(color: AppColors.navy.withOpacity(0.15), width: 2),
+                  bottom: BorderSide(color: AppColors.navy.withValues(alpha: 0.15), width: 2),
+                  left: BorderSide(color: AppColors.navy.withValues(alpha: 0.15), width: 2),
                   right: BorderSide.none,
                   top: BorderSide.none,
                 ),
               ),
               lineBarsData: [
                 LineChartBarData(
-                  spots: chartData.asMap().entries.map((e) => FlSpot(e.key.toDouble(), e.value.weight)).toList(),
-                  isCurved: false,
+                  spots: isCalorie 
+                      ? calorieChartData.asMap().entries.map((e) => FlSpot(e.key.toDouble(), e.value.calories)).toList()
+                      : weightChartData.asMap().entries.map((e) => FlSpot(e.key.toDouble(), e.value.weight)).toList(),
+                  isCurved: true,
                   color: AppColors.navy,
                   barWidth: 4,
                   isStrokeCapRound: true,
@@ -208,7 +376,7 @@ class ProgressScreenState extends State<ProgressScreen> {
                   belowBarData: BarAreaData(
                     show: true,
                     gradient: LinearGradient(
-                      colors: [AppColors.navy.withOpacity(0.15), AppColors.navy.withOpacity(0.0)],
+                      colors: [AppColors.navy.withValues(alpha: 0.15), AppColors.navy.withValues(alpha: 0.0)],
                       begin: Alignment.topCenter,
                       end: Alignment.bottomCenter,
                     ),
@@ -220,18 +388,21 @@ class ProgressScreenState extends State<ProgressScreen> {
                   getTooltipColor: (touchedSpot) => AppColors.navy,
                   getTooltipItems: (touchedSpots) {
                     return touchedSpots.map((spot) {
-                      final date = chartData[spot.x.toInt()].date;
+                      final date = dates[spot.x.toInt()];
                       final dayStr = AppStrings.dayNamesShort[date.weekday - 1];
                       final monthStr = AppStrings.monthNamesShort[date.month - 1];
                       final dateStr = "$dayStr, ${date.day.toString().padLeft(2, '0')} $monthStr ${date.year}";
+                      final valueStr = isCalorie 
+                          ? "${spot.y.toStringAsFixed(0)} kcal"
+                          : "${spot.y.toStringAsFixed(1)} kg";
 
                       return LineTooltipItem(
-                        "${spot.y.toStringAsFixed(1)} kg\n",
+                        "$valueStr\n",
                         const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 13),
                         children: [
                           TextSpan(
                             text: dateStr,
-                            style: TextStyle(color: Colors.white.withOpacity(0.8), fontWeight: FontWeight.normal, fontSize: 10),
+                            style: TextStyle(color: Colors.white.withValues(alpha: 0.8), fontWeight: FontWeight.normal, fontSize: 10),
                           ),
                         ],
                       );
@@ -240,6 +411,8 @@ class ProgressScreenState extends State<ProgressScreen> {
                 ),
               ),
             ),
+            duration: const Duration(milliseconds: 500), // swapAnimationDuration
+            curve: Curves.easeInOut,
           ),
     );
   }
@@ -278,11 +451,14 @@ class ProgressScreenState extends State<ProgressScreen> {
   }
 
   Widget _buildHistoryList() {
-    if (_weightData.isEmpty) {
-      return const Center(
+    final bool isCalorie = _selectedTab == 0;
+    final int itemCount = isCalorie ? _calorieData.length : _weightData.length;
+
+    if (itemCount == 0) {
+      return Center(
         child: Padding(
-          padding: EdgeInsets.only(top: 20),
-          child: Text("Belum ada riwayat berat badan"),
+          padding: const EdgeInsets.only(top: 20),
+          child: Text("Belum ada riwayat ${isCalorie ? 'kalori' : 'berat badan'}"),
         ),
       );
     }
@@ -290,10 +466,14 @@ class ProgressScreenState extends State<ProgressScreen> {
     return ListView.separated(
       shrinkWrap: true,
       physics: const NeverScrollableScrollPhysics(),
-      itemCount: _weightData.length,
+      itemCount: itemCount,
       separatorBuilder: (context, index) => const SizedBox(height: 10),
       itemBuilder: (context, index) {
-        final item = _weightData[index];
+        final DateTime date = isCalorie ? _calorieData[index].date : _weightData[index].date;
+        final String valueStr = isCalorie 
+            ? "${_calorieData[index].calories.toStringAsFixed(0)} kcal"
+            : "${_weightData[index].weight.toStringAsFixed(1)} kg";
+
         return Container(
           padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 15),
           decoration: BoxDecoration(
@@ -301,7 +481,7 @@ class ProgressScreenState extends State<ProgressScreen> {
             borderRadius: BorderRadius.circular(15),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withOpacity(0.02),
+                color: Colors.black.withValues(alpha: 0.02),
                 blurRadius: 5,
                 offset: const Offset(0, 2),
               ),
@@ -311,14 +491,14 @@ class ProgressScreenState extends State<ProgressScreen> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                _formatFluidDate(item.date),
+                _formatFluidDate(date),
                 style: GoogleFonts.inter(
-                  color: AppColors.navy.withOpacity(0.7),
+                  color: AppColors.navy.withValues(alpha: 0.7),
                   fontWeight: FontWeight.w500,
                 ),
               ),
               Text(
-                "${item.weight.toStringAsFixed(1)} kg",
+                valueStr,
                 style: GoogleFonts.inter(
                   color: AppColors.navy,
                   fontWeight: FontWeight.bold,
@@ -331,7 +511,7 @@ class ProgressScreenState extends State<ProgressScreen> {
     );
   }
 
-  FlTitlesData _buildTitlesData(List<DateTime> dates) {
+  FlTitlesData _buildTitlesData(List<DateTime> dates, bool isCalorie) {
     return FlTitlesData(
       bottomTitles: AxisTitles(
         sideTitles: SideTitles(
@@ -346,7 +526,7 @@ class ProgressScreenState extends State<ProgressScreen> {
                 padding: const EdgeInsets.only(top: 8.0),
                 child: Text(
                   AppStrings.dayNamesShort[dates[index].weekday - 1],
-                  style: GoogleFonts.notoSansMono(fontSize: 12, color: AppColors.navy.withOpacity(0.8)),
+                  style: GoogleFonts.notoSansMono(fontSize: 12, color: AppColors.navy.withValues(alpha: 0.8)),
                 ),
               );
             }
@@ -357,14 +537,14 @@ class ProgressScreenState extends State<ProgressScreen> {
       leftTitles: AxisTitles(
         sideTitles: SideTitles(
           showTitles: true,
-          reservedSize: 40,
-          interval: 2,
+          reservedSize: isCalorie ? 50 : 40,
+          interval: isCalorie ? 500 : 2,
           getTitlesWidget: (value, meta) {
             return Padding(
               padding: const EdgeInsets.only(right: 8.0),
               child: Text(
-                value.toInt().toString(),
-                style: GoogleFonts.notoSansMono(fontSize: 12, color: AppColors.navy.withOpacity(0.8)),
+                isCalorie ? (value.toInt() >= 1000 ? "${(value / 1000).toStringAsFixed(1)}k" : value.toInt().toString()) : value.toInt().toString(),
+                style: GoogleFonts.notoSansMono(fontSize: 12, color: AppColors.navy.withValues(alpha: 0.8)),
                 textAlign: TextAlign.right,
               ),
             );
