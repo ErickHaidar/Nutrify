@@ -49,4 +49,29 @@ class FavoriteApiService {
     }
   }
 
+  Future<List<FoodItem>> getRecentFoods({int limit = 5}) async {
+    try {
+      final res = await _dio.dio.get(
+        Endpoints.foodRecent,
+        queryParameters: {'limit': limit},
+      );
+
+      if (res.data == null || res.data is! Map) {
+        return [];
+      }
+
+      final rawData = res.data['data'];
+      if (rawData == null || rawData is! List) {
+        return [];
+      }
+
+      return rawData
+          .whereType<Map<String, dynamic>>()
+          .map((e) => FoodItem.fromJson(e))
+          .toList();
+    } catch (e) {
+      return [];
+    }
+  }
+
 }

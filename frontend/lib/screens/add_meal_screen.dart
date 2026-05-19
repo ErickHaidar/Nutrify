@@ -75,7 +75,7 @@ class _AddMealScreenState extends State<AddMealScreen> {
     setState(() => _isLoadingDefaults = true);
     try {
       final futures = await Future.wait([
-        _favApi.getRecommendations(limit: 5),
+        _favApi.getRecentFoods(limit: 5),
         _favApi.getFavorites(),
         _foodApi.searchFoods(''),
       ]);
