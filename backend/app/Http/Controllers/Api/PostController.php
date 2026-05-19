@@ -53,11 +53,23 @@ class PostController extends Controller
             'image'   => 'nullable|image|mimes:jpeg,png,jpg,webp|max:10240',
         ]);
 
+        // Content filter - blokir kata terlarang
+        $bannedWords = ['judi', 'togel', 'slot online', 'bokep', 'porn', 'xxx', 'viagra', 'casino', 'toto', 'gacor'];
+        $contentLower = strtolower($request->input('content'));
+        foreach ($bannedWords as $word) {
+            if (str_contains($contentLower, $word)) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Konten mengandung kata yang tidak diperbolehkan.',
+                ], 422);
+            }
+        }
+
         $imageUrl = null;
 
         if ($request->hasFile('image')) {
             $path = $request->file('image')->store('posts', 'public');
-            $imageUrl = Storage::url($path);
+            $imageUrl = Storage::disk('public')->url($path);
         }
 
         $post = Post::create([
@@ -198,7 +210,7 @@ class PostController extends Controller
 
         $comments = Comment::where('post_id', $id)
             ->topLevel()
-            ->with(['user', 'replies.user', 'replies.likes'])
+            ->with(['user.profile', 'replies.user.profile', 'replies.likes'])
             ->withCount(['likes', 'replies'])
             ->orderBy('created_at', 'asc')
             ->paginate(20);
@@ -250,7 +262,7 @@ class PostController extends Controller
             'content'   => $request->input('content'),
         ]);
 
-        $comment->load('user');
+        $comment->load('user.profile');
         $userId = Auth::id();
         $actor = User::find($userId);
 
@@ -478,7 +490,7 @@ class PostController extends Controller
         $userId = Auth::id();
 
         $replies = Comment::where('parent_id', $id)
-            ->with('user')
+            ->with('user.profile')
             ->withCount('likes')
             ->orderBy('created_at', 'asc')
             ->paginate(20);

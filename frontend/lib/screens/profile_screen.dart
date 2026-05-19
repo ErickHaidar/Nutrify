@@ -1166,13 +1166,14 @@ class ProfileScreenState extends State<ProfileScreen>
   Widget _buildPostCard(CommunityPost post) {
     return GestureDetector(
       behavior: HitTestBehavior.opaque,
-      onTap: () {
-        Navigator.push(
+      onTap: () async {
+        await Navigator.push(
           context,
           MaterialPageRoute(
               builder: (_) => PostDetailScreen(
                   post: post, api: _communityApi)),
         );
+        if (mounted) setState(() {});
       },
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,

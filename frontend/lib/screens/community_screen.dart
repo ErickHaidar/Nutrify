@@ -13,6 +13,7 @@ import 'package:nutrify/services/notification_api_service.dart';
 import 'package:nutrify/di/service_locator.dart';
 import 'package:nutrify/widgets/notification_modal.dart';
 import 'package:nutrify/widgets/shimmer_loading.dart';
+import 'package:nutrify/data/network/constants/endpoints.dart';
 import 'package:nutrify/utils/locale/app_strings.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:nutrify/presentation/home/store/language/language_store.dart';
@@ -554,7 +555,7 @@ class CommunityScreenState extends State<CommunityScreen> with TickerProviderSta
                 child: ClipRRect(
                   borderRadius: BorderRadius.circular(16),
                   child: Image.network(
-                    post.imagePath!.startsWith('http') ? post.imagePath! : 'https://nutrify-app.my.id${post.imagePath!}',
+                    post.imagePath!.startsWith('http') ? post.imagePath! : '${Endpoints.baseUrl.replaceAll(RegExp(r'api/?$'), '')}${post.imagePath!.startsWith('/') ? post.imagePath!.substring(1) : post.imagePath!}',
                     width: double.infinity,
                     height: 200,
                     fit: BoxFit.cover,
@@ -997,7 +998,7 @@ class _CommentSheetState extends State<_CommentSheet> {
     setState(() => _loadingReplies.add(c.id));
 
     try {
-      final page = (c.replies.length ~/ 10) + 1;
+      final page = (c.replies.length ~/ 20) + 1;
       final newReplies = await widget.api.getCommentReplies(c.id, page: page);
       
       if (mounted) {

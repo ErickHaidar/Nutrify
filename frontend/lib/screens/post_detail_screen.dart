@@ -6,6 +6,7 @@ import 'package:nutrify/screens/comment_detail_screen.dart';
 import 'package:nutrify/screens/user_profile_screen.dart';
 import 'package:nutrify/services/community_post_api_service.dart';
 import 'package:intl/intl.dart';
+import 'package:nutrify/data/network/constants/endpoints.dart';
 
 class PostDetailScreen extends StatefulWidget {
   final CommunityPost post;
@@ -61,7 +62,8 @@ class _PostDetailScreenState extends State<PostDetailScreen> with SingleTickerPr
           _isLoadingComments = false;
         });
       }
-    } catch (_) {
+    } catch (e) {
+      debugPrint('Failed to fetch comments: $e');
       if (mounted) setState(() => _isLoadingComments = false);
     }
   }
@@ -232,7 +234,7 @@ class _PostDetailScreenState extends State<PostDetailScreen> with SingleTickerPr
     setState(() => _loadingReplies.add(c.id));
 
     try {
-      final page = (c.replies.length ~/ 10) + 1;
+      final page = (c.replies.length ~/ 20) + 1;
       final newReplies = await widget.api.getCommentReplies(c.id, page: page);
       
       if (mounted) {
@@ -724,7 +726,7 @@ class _PostDetailScreenState extends State<PostDetailScreen> with SingleTickerPr
             ClipRRect(
               borderRadius: BorderRadius.circular(16),
               child: Image.network(
-                post.imagePath!.startsWith('http') ? post.imagePath! : 'https://nutrify-app.my.id${post.imagePath!}',
+                post.imagePath!.startsWith('http') ? post.imagePath! : '${Endpoints.baseUrl.replaceAll(RegExp(r'api/?$'), '')}${post.imagePath!.startsWith('/') ? post.imagePath!.substring(1) : post.imagePath!}',
                 width: double.infinity,
                 fit: BoxFit.cover,
                 errorBuilder: (_, _, _) => const SizedBox.shrink(),
