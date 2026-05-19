@@ -442,8 +442,10 @@ class _UserProfileScreenState extends State<UserProfileScreen> with SingleTicker
           context,
           MaterialPageRoute(builder: (_) => PostDetailScreen(post: post, api: widget.api)),
         );
-        if (deleted == true && mounted) {
+        if (deleted == true) {
           _loadUserProfile();
+        } else {
+          setState(() {});
         }
       },
       child: Padding(

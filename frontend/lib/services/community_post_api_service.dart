@@ -155,7 +155,7 @@ class CommentItem {
       userName: user['name'] as String? ?? '',
       userUsername: user['username'] as String?,
       userAvatarUrl: avatarUrl != null && avatarUrl.isNotEmpty
-          ? (avatarUrl.startsWith('http') ? avatarUrl : 'https://nutrify-app.my.id/$avatarUrl')
+          ? (avatarUrl.startsWith('http') ? avatarUrl : '${Endpoints.baseUrl.replaceAll(RegExp(r'api/?$'), '')}${avatarUrl.startsWith('/') ? avatarUrl.substring(1) : avatarUrl}')
           : null,
       parentId: json['parent_id'] as int?,
       likesCount: json['likes_count'] as int? ?? 0,
