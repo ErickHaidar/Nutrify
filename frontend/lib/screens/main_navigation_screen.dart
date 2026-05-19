@@ -8,6 +8,9 @@ import 'package:nutrify/utils/locale/app_strings.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:nutrify/presentation/home/store/language/language_store.dart';
 import 'package:nutrify/di/service_locator.dart';
+import 'package:nutrify/domain/repository/profile/profile_repository.dart';
+import 'package:nutrify/data/sharedpref/shared_preference_helper.dart';
+import 'onboarding_screen.dart';
 
 class MainNavigationScreen extends StatefulWidget {
   const MainNavigationScreen({super.key});
@@ -70,6 +73,40 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
       CommunityScreen(key: _communityKey, onNavigateToProfile: _switchToProfileTab),
       ProfileScreen(key: _profileKey, onNavigateToCreatePost: _switchToProfileAndCreatePost),
     ];
+    
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _checkOnboarding();
+    });
+  }
+
+  Future<void> _checkOnboarding() async {
+    try {
+      final sharedPrefs = getIt<SharedPreferenceHelper>();
+      final profileApi = getIt<ProfileRepository>();
+      
+      // Ambil profile dengan forceRefresh: true agar tidak salah mengenali user lama/baru
+      final profile = await profileApi.getProfile(forceRefresh: true);
+      final isProfileIncomplete = profile == null || 
+                                  profile.age == 0 || 
+                                  profile.weight == 0 || 
+                                  profile.height == 0;
+                                  
+      if (!isProfileIncomplete) {
+        // User lama yang profilnya sudah lengkap. 
+        // Tandai onboarding sudah dilihat agar tidak pernah muncul.
+        await sharedPrefs.saveHasSeenOnboarding(true);
+        return; // Tidak perlu munculkan onboarding atau lengkapi profil
+      }
+
+      // User baru (atau lama yang belum lengkap)
+      if (!mounted) return;
+      await Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (_) => const OnboardingScreen()),
+      );
+    } catch (e) {
+      // Abaikan jika gagal koneksi
+    }
   }
 
   @override
@@ -87,7 +124,7 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
           bottomNavigationBar: BottomNavigationBar(
             backgroundColor: NutrifyTheme.darkCard,
             selectedItemColor: NutrifyTheme.accentOrange,
-            unselectedItemColor: NutrifyTheme.background.withOpacity(0.5),
+            unselectedItemColor: NutrifyTheme.background.withValues(alpha: 0.5),
             currentIndex: _selectedIndex,
             onTap: _onItemTapped,
             type: BottomNavigationBarType.fixed,

@@ -45,12 +45,41 @@ class _AddMealScreenState extends State<AddMealScreen> {
   Timer? _debounce;
   bool _isDirty = false; // Flag to indicate if something changed
 
+  List<FoodItem> _recentFoods = [];
+  List<FoodItem> _favoriteFoods = [];
+  List<FoodItem> _popularFoods = [];
+  bool _isLoadingDefaults = true;
   @override
   void initState() {
     super.initState();
     _currentMealType = widget.mealType;
     _loadMealLogs();
     _loadFavoriteIds();
+    _loadDefaults();
+  }
+
+  Future<void> _loadDefaults() async {
+    setState(() => _isLoadingDefaults = true);
+    try {
+      final futures = await Future.wait([
+        _favApi.getRecommendations(limit: 5),
+        _favApi.getFavorites(),
+        _foodApi.searchFoods(''),
+      ]);
+      
+      if (mounted) {
+        setState(() {
+          _recentFoods = futures[0] as List<FoodItem>;
+          _favoriteFoods = futures[1] as List<FoodItem>;
+          _popularFoods = (futures[2] as List<FoodItem>).take(5).toList();
+          _isLoadingDefaults = false;
+        });
+      }
+    } catch (_) {
+      if (mounted) {
+        setState(() => _isLoadingDefaults = false);
+      }
+    }
   }
 
   static const _apiMealTypes = {'Breakfast', 'Lunch', 'Dinner', 'Snack'};
@@ -120,16 +149,10 @@ class _AddMealScreenState extends State<AddMealScreen> {
               )
           };
 
-          // If search is empty, show logged foods as results
-          if (_searchController.text.isEmpty) {
-            final Set<int> seenIds = {};
-            _results = [];
-            for (var l in filteredList) {
-              if (l.food != null && !seenIds.contains(l.foodId)) {
-                _results.add(l.food!);
-                seenIds.add(l.foodId);
-              }
-            }
+          // We no longer populate _results with logged foods by default 
+          // because we will show 3 default sections instead.
+          if (_searchController.text.isEmpty && _filterMode != 'all') {
+             // If filter is not 'all', _setFilter already handles loading correctly
           }
         });
       }
@@ -215,8 +238,8 @@ class _AddMealScreenState extends State<AddMealScreen> {
     if (value.trim().isEmpty) {
       setState(() {
         _isSearching = false;
+        _results = [];
       });
-      _loadMealLogs(); // Restore logged foods list
       return;
     }
     _debounce = Timer(
@@ -273,7 +296,9 @@ class _AddMealScreenState extends State<AddMealScreen> {
       if (_searchController.text.isNotEmpty) {
         _search(_searchController.text.trim());
       } else {
-        _loadMealLogs();
+        setState(() {
+          _results = [];
+        });
       }
     }
   }
@@ -586,45 +611,47 @@ class _AddMealScreenState extends State<AddMealScreen> {
 
           // Results list
           Expanded(
-            child: (_results.isEmpty && !_isSearching)
-                ? Center(
-                    child: Padding(
-                      padding: const EdgeInsets.all(32),
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Icon(
-                            _filterMode == 'recommendations'
-                                ? Icons.recommend_outlined
-                                : _filterMode == 'favorites'
-                                    ? Icons.favorite_border
-                                    : Icons.search_off,
-                            size: 48,
-                            color: AppColors.navy.withOpacity(0.2),
-                          ),
-                          const SizedBox(height: 12),
-                          Text(
-                            _filterMode == 'recommendations'
-                                ? AppStrings.startLoggingForRecs
-                                : _filterMode == 'favorites'
-                                    ? AppStrings.noFavFoods
-                                    : AppStrings.noResultsFound,
-                            textAlign: TextAlign.center,
-                            style: TextStyle(
-                              color: AppColors.navy.withOpacity(0.5),
-                              fontSize: 14,
-                            ),
-                          ),
+            child: (_searchController.text.isEmpty && _filterMode == 'all')
+                ? _buildDefaultSections()
+                : (_results.isEmpty && !_isSearching)
+                    ? Center(
+                        child: Padding(
+                          padding: const EdgeInsets.all(32),
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Icon(
+                                _filterMode == 'recommendations'
+                                    ? Icons.recommend_outlined
+                                    : _filterMode == 'favorites'
+                                        ? Icons.favorite_border
+                                        : Icons.search_off,
+                                size: 48,
+                                color: AppColors.navy.withOpacity(0.2),
+                              ),
+                              const SizedBox(height: 12),
+                              Text(
+                                _filterMode == 'recommendations'
+                                    ? AppStrings.startLoggingForRecs
+                                    : _filterMode == 'favorites'
+                                        ? AppStrings.noFavFoods
+                                        : AppStrings.noResultsFound,
+                                textAlign: TextAlign.center,
+                                style: TextStyle(
+                                  color: AppColors.navy.withOpacity(0.5),
+                                  fontSize: 14,
+                                ),
+                              ),
 
-                        ],
+                            ],
+                          ),
+                        ),
+                      )
+                    : ListView.builder(
+                        padding: const EdgeInsets.fromLTRB(24, 12, 24, 80),
+                        itemCount: _results.length,
+                        itemBuilder: (_, i) => _buildFoodTile(_results[i]),
                       ),
-                    ),
-                  )
-                : ListView.builder(
-                    padding: const EdgeInsets.fromLTRB(24, 12, 24, 80),
-                    itemCount: _results.length,
-                    itemBuilder: (_, i) => _buildFoodTile(_results[i]),
-                  ),
           ),
         ],
       ),
@@ -679,6 +706,47 @@ class _AddMealScreenState extends State<AddMealScreen> {
               ),
             ),
           ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildDefaultSections() {
+    if (_isLoadingDefaults) {
+      return const Center(child: CircularProgressIndicator(color: AppColors.navy));
+    }
+
+    return ListView(
+      padding: const EdgeInsets.fromLTRB(24, 12, 24, 80),
+      children: [
+        if (_recentFoods.isNotEmpty) ...[
+          _buildSectionHeader('Terakhir Dimakan'),
+          ..._recentFoods.map((f) => _buildFoodTile(f)),
+          const SizedBox(height: 16),
+        ],
+        if (_favoriteFoods.isNotEmpty) ...[
+          _buildSectionHeader('Favoritmu'),
+          ..._favoriteFoods.take(10).map((f) => _buildFoodTile(f)),
+          const SizedBox(height: 16),
+        ],
+        if (_popularFoods.isNotEmpty) ...[
+          _buildSectionHeader('Makanan Populer'),
+          ..._popularFoods.map((f) => _buildFoodTile(f)),
+          const SizedBox(height: 16),
+        ],
+      ],
+    );
+  }
+
+  Widget _buildSectionHeader(String title) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 12),
+      child: Text(
+        title,
+        style: GoogleFonts.montserrat(
+          fontSize: 16,
+          fontWeight: FontWeight.bold,
+          color: AppColors.navy,
         ),
       ),
     );

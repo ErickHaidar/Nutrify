@@ -7,4 +7,5 @@ class Preferences {
   static const String current_language = "current_language";
   static const String user_profile = "user_profile";
   static const String meal_history = "meal_history";
+  static const String has_seen_onboarding = "has_seen_onboarding";
 }
