@@ -32,7 +32,7 @@ class HomeScreenState extends State<HomeScreen> {
   @override
   void initState() {
     super.initState();
-    _homeStore.loadDailyData();
+    _homeStore.loadDailyData(forceRefresh: true);
   }
 
   static String formatCalories(int calories) {

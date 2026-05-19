@@ -261,12 +261,15 @@ class HistoryScreenState extends State<HistoryScreen> with WidgetsBindingObserve
             children: [
               Image.asset(iconPath, width: 32, height: 32),
               const SizedBox(width: 12),
-              Text(
-                label,
-                style: const TextStyle(
-                  color: AppColors.navy,
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
+              Flexible(
+                child: Text(
+                  label,
+                  style: const TextStyle(
+                    color: AppColors.navy,
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                  ),
+                  overflow: TextOverflow.ellipsis,
                 ),
               ),
               const Spacer(),

@@ -53,10 +53,12 @@ class _MyAppState extends State<MyApp> {
           _userStore.clearSession();
           _prefs.removeAuthToken();
           _prefs.saveIsLoggedIn(false);
-          MyApp.navigatorKey.currentState?.pushNamedAndRemoveUntil(
-            Routes.login,
-            (route) => false,
-          );
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            MyApp.navigatorKey.currentState?.pushNamedAndRemoveUntil(
+              Routes.login,
+              (route) => false,
+            );
+          });
         } else if (data.event == AuthChangeEvent.signedIn) {
           final user = data.session?.user;
           // Skip auto-navigate jika email belum dikonfirmasi (registration + OTP flow).
@@ -80,10 +82,12 @@ class _MyAppState extends State<MyApp> {
           // Only navigate if we're NOT coming from the login flow (e.g., token refresh, session recovery)
           // We can detect this by checking if _userStore.success was recently set
           if (!_userStore.success && !MyApp.isHandlingLoginNavigation) {
-            MyApp.navigatorKey.currentState?.pushNamedAndRemoveUntil(
-              Routes.home,
-              (route) => false,
-            );
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+              MyApp.navigatorKey.currentState?.pushNamedAndRemoveUntil(
+                Routes.home,
+                (route) => false,
+              );
+            });
           }
         } else if (data.event == AuthChangeEvent.tokenRefreshed) {
           // Supabase auto-refresh token — simpan token baru ke SharedPrefs
@@ -95,10 +99,12 @@ class _MyAppState extends State<MyApp> {
         } else if (data.event == AuthChangeEvent.passwordRecovery) {
           // User membuka link reset password dari email — arahkan ke layar
           // ganti password.
-          MyApp.navigatorKey.currentState?.pushNamedAndRemoveUntil(
-            Routes.resetPassword,
-            (route) => false,
-          );
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            MyApp.navigatorKey.currentState?.pushNamedAndRemoveUntil(
+              Routes.resetPassword,
+              (route) => false,
+            );
+          });
         }
       });
     } catch (e) {

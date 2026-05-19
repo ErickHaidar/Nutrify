@@ -57,6 +57,7 @@ class ProfileScreenState extends State<ProfileScreen>
   int _followingsCount = 0;
   int _postsCount = 0;
   List<CommunityPost> _posts = [];
+  int? _myUserId;
 
   late TabController _tabController;
 
@@ -186,6 +187,7 @@ class ProfileScreenState extends State<ProfileScreen>
       final data = await _communityApi.getMyProfile();
       if (mounted) {
         setState(() {
+          _myUserId = data['id'] as int?;
           _socName = data['name'] as String? ?? '';
           _socUsername = data['username'] as String? ?? '';
           _socAvatarUrl = data['avatar_url'] as String? ?? '';
@@ -203,11 +205,15 @@ class ProfileScreenState extends State<ProfileScreen>
   }
 
   Future<void> _loadMyPosts() async {
+    if (_myUserId == null) return;
     try {
-      final posts = await _communityApi.getPosts();
+      final data = await _communityApi.getUserProfile(_myUserId!);
+      final List<dynamic> rawPosts = data['posts'] as List<dynamic>? ?? [];
       if (mounted) {
         setState(() {
-          _posts = posts.where((p) => p.isOwnPost).toList();
+          _posts = rawPosts
+              .map((e) => CommunityPost.fromJson(e as Map<String, dynamic>))
+              .toList();
           _posts.sort((a, b) {
             if (a.isPinned && !b.isPinned) return -1;
             if (!a.isPinned && b.isPinned) return 1;

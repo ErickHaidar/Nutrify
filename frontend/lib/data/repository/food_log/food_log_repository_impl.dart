@@ -66,4 +66,9 @@ class FoodLogRepositoryImpl implements FoodLogRepository {
       unit: unit,
     );
   }
+
+  @override
+  Future<void> invalidateCache() async {
+    await _foodLogDataSource.clearAll();
+  }
 }

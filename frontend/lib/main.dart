@@ -11,6 +11,7 @@ import 'package:intl/date_symbol_data_local.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:nutrify/utils/locale/app_strings.dart';
+import 'package:nutrify/core/data/local/secure_local_storage.dart';
 
 Future<void> main() async {
   await runZonedGuarded(() async {
@@ -41,6 +42,9 @@ Future<void> main() async {
       await Supabase.initialize(
         url: supabaseUrl,
         anonKey: supabaseAnonKey,
+        authOptions: FlutterAuthClientOptions(
+          localStorage: SecureLocalStorage(),
+        ),
       );
 
       // Step 3: Initializing local resources & dependencies...
@@ -53,14 +57,15 @@ Future<void> main() async {
 
       // Step 3b: Initialize NotificationService
       await getIt<NotificationService>().init();
-      await getIt<NotificationService>().registerPushNotifications();
+      // Jalankan secara asynchronous tanpa menunggu (jangan di-await)
+      // agar tidak memblokir runApp() jika network lambat atau hang
+      getIt<NotificationService>().registerPushNotifications();
 
       // Step 3c: Schedule notifications if enabled
       final prefs = getIt<SharedPreferences>();
       if (prefs.getBool('notifications_enabled') ?? true) {
-        await getIt<NotificationService>().scheduleMealReminders();
+        getIt<NotificationService>().scheduleMealReminders();
       }
-
       // Step 4: Initialize localization strings
       AppStrings.init();
 
@@ -83,7 +88,9 @@ Future<void> main() async {
       ));
     }
   }, (error, stack) {
-    // Global logging if needed
+    debugPrint('=== UNCAUGHT ZONE ERROR ===');
+    debugPrint('Error: $error');
+    debugPrint('Stack: $stack');
   });
 }
 

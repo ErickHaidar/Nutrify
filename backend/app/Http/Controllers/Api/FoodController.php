@@ -74,4 +74,45 @@ class FoodController extends Controller
             'message' => 'Rekomendasi berdasarkan riwayat Anda.',
         ]);
     }
+
+    public function recent(Request $request)
+    {
+        $limit = (int) $request->query('limit', 10);
+        $userId = Auth::id();
+
+        if (!$userId) {
+            return response()->json([
+                'success' => true,
+                'data' => [],
+                'message' => 'User tidak terautentikasi.'
+            ]);
+        }
+
+        // Get the most recently logged food_ids (distinct, by latest created_at)
+        $recentFoodIds = FoodLog::where('user_id', $userId)
+            ->select(DB::raw('food_id, MAX(created_at) as last_eaten'))
+            ->groupBy('food_id')
+            ->orderByDesc('last_eaten')
+            ->limit($limit)
+            ->pluck('food_id');
+
+        if ($recentFoodIds->isEmpty()) {
+            return response()->json([
+                'success' => true,
+                'data' => [],
+                'message' => 'Belum ada riwayat makanan.',
+            ]);
+        }
+
+        $foods = Food::whereIn('id', $recentFoodIds)
+            ->get()
+            ->sortBy(fn($food) => $recentFoodIds->search($food->id))
+            ->values();
+
+        return response()->json([
+            'success' => true,
+            'data' => $foods,
+            'message' => 'Makanan terakhir dimakan.',
+        ]);
+    }
 }

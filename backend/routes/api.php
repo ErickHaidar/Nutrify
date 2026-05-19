@@ -31,6 +31,7 @@ Route::middleware(['supabase.auth'])->group(function () {
     // Foods — GET /api/foods?search=&page=
     Route::get('/foods', [FoodController::class, 'index']);
     Route::get('/food/recommendations', [FoodController::class, 'recommendations']);
+    Route::get('/food/recent', [FoodController::class, 'recent']);
 
     // Favorites
     Route::get('/food/favorites', [FavoriteController::class, 'index']);

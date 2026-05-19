@@ -10,8 +10,11 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../../domain/entity/user/user.dart';
 import '../../../domain/usecase/user/login_usecase.dart';
-import '../../../../services/profile_api_service.dart';
 import '../../post/store/post_store.dart';
+import '../../home/store/home_store.dart';
+import '../../../domain/repository/profile/profile_repository.dart';
+import '../../../domain/repository/food_log/food_log_repository.dart';
+import '../../../data/sharedpref/shared_preference_helper.dart';
 
 part 'login_store.g.dart';
 
@@ -201,20 +204,28 @@ abstract class _UserStore with Store {
   Future<void> logout() async {
     await _userRepository.logout();
     await _saveLoginStatusUseCase.call(params: false);
-    ProfileApiService.invalidateCache(); // Invalidate cache on logout
-    getIt<PostStore>().reset(); // Reset post store on logout
+    // Clear all caches: profile (memory + Sembast), food log (Sembast), home store (MobX)
+    getIt<ProfileRepository>().invalidateCache();
+    await getIt<FoodLogRepository>().invalidateCache();
+    getIt<HomeStore>().reset();
+    getIt<PostStore>().reset();
     final prefs = getIt<SharedPreferences>();
     prefs.remove('profile_image');
+    await getIt<SharedPreferenceHelper>().clearUserData();
     isLoggedIn = false;
   }
 
   // Clear session (called when Supabase fires signedOut event externally):----
   @action
   void clearSession() {
-    ProfileApiService.invalidateCache(); // Invalidate cache on clear session
-    getIt<PostStore>().reset(); // Reset post store on clear session
+    // Clear all caches on external sign-out
+    getIt<ProfileRepository>().invalidateCache();
+    getIt<FoodLogRepository>().invalidateCache();
+    getIt<HomeStore>().reset();
+    getIt<PostStore>().reset();
     final prefs = getIt<SharedPreferences>();
     prefs.remove('profile_image');
+    getIt<SharedPreferenceHelper>().clearUserData();
     isLoggedIn = false;
   }
 

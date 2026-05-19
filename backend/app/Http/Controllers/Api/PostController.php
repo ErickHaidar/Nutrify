@@ -62,7 +62,7 @@ class PostController extends Controller
 
         $post = Post::create([
             'user_id'   => Auth::id(),
-            'content'   => $request->content,
+            'content'   => $request->input('content'),
             'image_url' => $imageUrl,
         ]);
 
@@ -226,7 +226,7 @@ class PostController extends Controller
             'parent_id' => 'nullable|integer|exists:comments,id',
         ]);
 
-        $parentId = $request->parent_id;
+        $parentId = $request->input('parent_id');
 
         // Validasi parent comment belongs to same post
         if ($parentId) {
@@ -247,7 +247,7 @@ class PostController extends Controller
             'user_id'   => Auth::id(),
             'post_id'   => $id,
             'parent_id' => $parentId,
-            'content'   => $request->content,
+            'content'   => $request->input('content'),
         ]);
 
         $comment->load('user');
@@ -357,7 +357,7 @@ class PostController extends Controller
             'content' => 'required|string|max:1000',
         ]);
 
-        $post->update(['content' => $request->content]);
+        $post->update(['content' => $request->input('content')]);
 
         $post->load(['user.profile', 'likes', 'comments.user']);
         $post->loadCount(['likes', 'comments']);
