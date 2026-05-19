@@ -118,15 +118,14 @@ class _LoginScreenState extends State<LoginScreen> {
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: <Widget>[
-                    const SizedBox(height: 16),
-                    Spacer(flex: 2),
+
+                    const SizedBox(height: 32),
                     _buildLogo(),
                     const SizedBox(height: 12),
                     _buildTitle(),
                     const SizedBox(height: 4),
                     _buildSubtitle(),
                     const SizedBox(height: 32),
-                    Spacer(flex: 2),
                     _buildEmailField(),
                     const SizedBox(height: 12),
                     _buildPasswordField(),
@@ -138,7 +137,6 @@ class _LoginScreenState extends State<LoginScreen> {
                     const SizedBox(height: 24),
                     _buildSocialButtons(),
                     const SizedBox(height: 32),
-                    Spacer(flex: 4),
                     _buildSignUpFooter(),
                     const SizedBox(height: 20),
                   ],
@@ -422,20 +420,9 @@ color: Colors.white,
                 MyApp.isHandlingLoginNavigation = true;
                 await _userStore.signInWithGoogle();
               } catch (e) {
-                String errorMsg = e.toString();
-                if (errorMsg.contains('ApiException: 10')) {
-                  errorMsg = 'Konfigurasi SHA-1 belum terdaftar di Google Cloud Console.';
-                } else if (errorMsg.contains('sign_in_canceled') || errorMsg.contains('canceled')) {
-                  errorMsg = 'Login Google dibatalkan.';
-                } else if (errorMsg.contains('network_error')) {
-                  errorMsg = 'Masalah jaringan. Periksa koneksi internet Anda.';
-                } else {
-                  // Jika pesan error terlalu panjang dan tidak ada spasinya, kita bisa memotongnya agar tidak membuat dialog jelek
-                  if (errorMsg.length > 100) {
-                     errorMsg = '${errorMsg.substring(0, 100)}...';
-                  }
-                }
-                _showErrorMessage('${AppStrings.googleLoginFailed}:\n$errorMsg');
+                // Error is already handled and mapped to errorStore by signInWithGoogle,
+                // which will trigger the MobX reaction and display _showErrorMessage.
+                // We just reset the flag.
                 MyApp.isHandlingLoginNavigation = false;
               }
             },

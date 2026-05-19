@@ -56,4 +56,8 @@ class FoodLogDataSource {
       fat: (map['total_fat'] as num).toDouble(),
     );
   }
+
+  Future<void> clearAll() async {
+    await _summaryStore.drop(_sembastClient.database);
+  }
 }

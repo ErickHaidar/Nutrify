@@ -18,4 +18,5 @@ abstract class FoodLogRepository {
     required String mealTime,
     String? unit,
   });
+  Future<void> invalidateCache();
 }

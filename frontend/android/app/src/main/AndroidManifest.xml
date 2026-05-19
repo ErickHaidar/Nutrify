@@ -15,8 +15,15 @@
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher"
         android:usesCleartextTraffic="true"
-        android:enableOnBackInvokedCallback="true">
-        android:requestLegacyExternalStorage="true"
+        android:enableOnBackInvokedCallback="true"
+        android:requestLegacyExternalStorage="true">
+        <!-- Force Impeller to use OpenGLES instead of Vulkan on Qualcomm Adreno (POCO F6 etc).
+             Vulkan on these devices fails to allocate pixel format 59 (RGBA_1010102) for
+             the stencil buffer, causing permanent black screen. OpenGLES backend avoids this. -->
+        <meta-data
+            android:name="io.flutter.embedding.android.ImpellerBackend"
+            android:value="opengles" />
+
         <activity
             android:name=".MainActivity"
             android:exported="true"

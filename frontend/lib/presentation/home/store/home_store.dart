@@ -111,4 +111,22 @@ abstract class _HomeStore with Store {
   void setUnreadCount(int count) {
     unreadCount = count;
   }
+
+  @action
+  void reset() {
+    totalCalories = 0;
+    targetCalories = 0;
+    isLoadingData = false;
+    profile = null;
+    unreadCount = 0;
+    totalProtein = 0;
+    totalCarbs = 0;
+    totalFat = 0;
+    caloriesByType = ObservableMap.of({
+      AppStrings.breakfast: 0,
+      AppStrings.lunch: 0,
+      AppStrings.dinner: 0,
+      AppStrings.snack: 0,
+    });
+  }
 }
