@@ -180,6 +180,11 @@ class AppStrings {
   static String maxLimitHint(dynamic max, String unit) => _t('Maks $max $unit', 'Max $max $unit');
   static String get recommendationsFilter => _t('Rekomendasi', 'Recommendations');
   static String get favoritesFilter => _t('Favorit', 'Favorites');
+  static String get recentlyEaten => _t('Terakhir Dimakan', 'Recently Eaten');
+  static String get yourFavorites => _t('Favoritmu', 'Your Favorites');
+  static String get popularFoods => _t('Makanan Populer', 'Popular Foods');
+  static String get searchFirstFood => _t('Cari makanan pertamamu untuk mulai mencatat!', 'Search your first food to start logging!');
+  static String get defaultFoodGuide => _t('Ketik nama makanan di kolom pencarian di atas, atau pilih dari daftar di bawah ini.', 'Type a food name in the search bar above, or pick from the list below.');
 
   // ─── Tutorial ────────────────────────────────────────────────────────────
   static String get tutorialTitle => _t('Panduan Menambah Makanan', 'Food Adding Guide');

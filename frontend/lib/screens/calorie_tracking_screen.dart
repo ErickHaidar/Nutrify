@@ -345,12 +345,15 @@ class _CalorieTrackingScreenState extends State<CalorieTrackingScreen> {
             children: [
               Icon(icon, color: color, size: 20),
               const SizedBox(width: 8),
-              Text(
-                label,
-                style: const TextStyle(
-                  color: AppColors.navy,
-                  fontWeight: FontWeight.w600,
-                  fontSize: 14,
+              Flexible(
+                child: Text(
+                  label,
+                  style: const TextStyle(
+                    color: AppColors.navy,
+                    fontWeight: FontWeight.w600,
+                    fontSize: 14,
+                  ),
+                  overflow: TextOverflow.ellipsis,
                 ),
               ),
               const Spacer(),
@@ -458,7 +461,7 @@ class _CalorieTrackingScreenState extends State<CalorieTrackingScreen> {
             ] else
               Text(
                 AppStrings.noRecordYet,
-                style: TextStyle(color: Colors.white30, fontSize: 12),
+                style: TextStyle(color: AppColors.navy.withOpacity(0.4), fontSize: 12),
               ),
           ],
         ),

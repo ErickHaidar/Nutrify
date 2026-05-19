@@ -49,6 +49,19 @@ class _AddMealScreenState extends State<AddMealScreen> {
   List<FoodItem> _favoriteFoods = [];
   List<FoodItem> _popularFoods = [];
   bool _isLoadingDefaults = true;
+
+  static final List<FoodItem> _fallbackPopularFoods = [
+    FoodItem(id: -1, name: 'Nasi Putih', servingSize: '100g', calories: 130, protein: 2.7, carbohydrates: 28.2, fat: 0.3),
+    FoodItem(id: -2, name: 'Telur Dadar', servingSize: '1 butir', calories: 154, protein: 10.6, carbohydrates: 1.6, fat: 11.7),
+    FoodItem(id: -3, name: 'Ayam Goreng', servingSize: '100g', calories: 260, protein: 27.0, carbohydrates: 8.0, fat: 14.0),
+    FoodItem(id: -4, name: 'Tempe Goreng', servingSize: '100g', calories: 225, protein: 14.0, carbohydrates: 15.0, fat: 13.0),
+    FoodItem(id: -5, name: 'Tahu Goreng', servingSize: '100g', calories: 115, protein: 8.0, carbohydrates: 5.0, fat: 7.0),
+    FoodItem(id: -6, name: 'Mie Goreng', servingSize: '100g', calories: 170, protein: 4.0, carbohydrates: 25.0, fat: 6.0),
+    FoodItem(id: -7, name: 'Pisang', servingSize: '1 buah', calories: 89, protein: 1.1, carbohydrates: 22.8, fat: 0.3),
+    FoodItem(id: -8, name: 'Roti Tawar', servingSize: '1 lembar', calories: 79, protein: 2.7, carbohydrates: 14.3, fat: 1.0),
+    FoodItem(id: -9, name: 'Susu', servingSize: '200ml', calories: 124, protein: 6.5, carbohydrates: 9.4, fat: 6.5),
+    FoodItem(id: -10, name: 'Sayur Bayam', servingSize: '100g', calories: 23, protein: 2.9, carbohydrates: 3.6, fat: 0.4),
+  ];
   @override
   void initState() {
     super.initState();
@@ -71,13 +84,21 @@ class _AddMealScreenState extends State<AddMealScreen> {
         setState(() {
           _recentFoods = futures[0] as List<FoodItem>;
           _favoriteFoods = futures[1] as List<FoodItem>;
-          _popularFoods = (futures[2] as List<FoodItem>).take(5).toList();
+          _popularFoods = (futures[2] as List<FoodItem>).take(10).toList();
+          if (_popularFoods.isEmpty) {
+            _popularFoods = _fallbackPopularFoods;
+          }
           _isLoadingDefaults = false;
         });
       }
     } catch (_) {
       if (mounted) {
-        setState(() => _isLoadingDefaults = false);
+        setState(() {
+          if (_popularFoods.isEmpty) {
+            _popularFoods = _fallbackPopularFoods;
+          }
+          _isLoadingDefaults = false;
+        });
       }
     }
   }
@@ -716,21 +737,54 @@ class _AddMealScreenState extends State<AddMealScreen> {
       return const Center(child: CircularProgressIndicator(color: AppColors.navy));
     }
 
+    if (_recentFoods.isEmpty && _favoriteFoods.isEmpty && _popularFoods.isEmpty) {
+      return Center(
+        child: Padding(
+          padding: const EdgeInsets.all(32),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(Icons.restaurant_menu, size: 48, color: AppColors.navy.withOpacity(0.2)),
+              const SizedBox(height: 12),
+              Text(
+                AppStrings.searchFirstFood,
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  color: AppColors.navy.withOpacity(0.5),
+                  fontSize: 14,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+              const SizedBox(height: 8),
+              Text(
+                AppStrings.defaultFoodGuide,
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  color: AppColors.navy.withOpacity(0.3),
+                  fontSize: 12,
+                ),
+              ),
+            ],
+          ),
+        ),
+      );
+    }
+
     return ListView(
       padding: const EdgeInsets.fromLTRB(24, 12, 24, 80),
       children: [
         if (_recentFoods.isNotEmpty) ...[
-          _buildSectionHeader('Terakhir Dimakan'),
+          _buildSectionHeader(AppStrings.recentlyEaten),
           ..._recentFoods.map((f) => _buildFoodTile(f)),
           const SizedBox(height: 16),
         ],
         if (_favoriteFoods.isNotEmpty) ...[
-          _buildSectionHeader('Favoritmu'),
+          _buildSectionHeader(AppStrings.yourFavorites),
           ..._favoriteFoods.take(10).map((f) => _buildFoodTile(f)),
           const SizedBox(height: 16),
         ],
         if (_popularFoods.isNotEmpty) ...[
-          _buildSectionHeader('Makanan Populer'),
+          _buildSectionHeader(AppStrings.popularFoods),
           ..._popularFoods.map((f) => _buildFoodTile(f)),
           const SizedBox(height: 16),
         ],
@@ -803,6 +857,8 @@ class _AddMealScreenState extends State<AddMealScreen> {
                       Expanded(
                         child: Text(
                           food.name,
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
                           style: const TextStyle(
                             color: AppColors.navy,
                             fontWeight: FontWeight.w500,
