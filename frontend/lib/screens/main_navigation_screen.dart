@@ -11,6 +11,7 @@ import 'package:nutrify/di/service_locator.dart';
 import 'package:nutrify/domain/repository/profile/profile_repository.dart';
 import 'package:nutrify/data/sharedpref/shared_preference_helper.dart';
 import 'onboarding_screen.dart';
+import 'chat_screen.dart';
 
 class MainNavigationScreen extends StatefulWidget {
   const MainNavigationScreen({super.key});
@@ -55,7 +56,8 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
   }
 
   final GlobalKey<HomeScreenState> _homeKey = GlobalKey<HomeScreenState>();
-  final GlobalKey<HistoryScreenState> _historyKey = GlobalKey<HistoryScreenState>();
+  final GlobalKey<HistoryScreenState> _historyKey =
+      GlobalKey<HistoryScreenState>();
 
   final GlobalKey<CommunityScreenState> _communityKey =
       GlobalKey<CommunityScreenState>();
@@ -70,10 +72,16 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
     _pages = [
       HomeScreen(key: _homeKey),
       HistoryScreen(key: _historyKey),
-      CommunityScreen(key: _communityKey, onNavigateToProfile: _switchToProfileTab),
-      ProfileScreen(key: _profileKey, onNavigateToCreatePost: _switchToProfileAndCreatePost),
+      CommunityScreen(
+        key: _communityKey,
+        onNavigateToProfile: _switchToProfileTab,
+      ),
+      ProfileScreen(
+        key: _profileKey,
+        onNavigateToCreatePost: _switchToProfileAndCreatePost,
+      ),
     ];
-    
+
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _checkOnboarding();
     });
@@ -83,16 +91,17 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
     try {
       final sharedPrefs = getIt<SharedPreferenceHelper>();
       final profileApi = getIt<ProfileRepository>();
-      
+
       // Ambil profile dengan forceRefresh: true agar tidak salah mengenali user lama/baru
       final profile = await profileApi.getProfile(forceRefresh: true);
-      final isProfileIncomplete = profile == null || 
-                                  profile.age == 0 || 
-                                  profile.weight == 0 || 
-                                  profile.height == 0;
-                                  
+      final isProfileIncomplete =
+          profile == null ||
+          profile.age == 0 ||
+          profile.weight == 0 ||
+          profile.height == 0;
+
       if (!isProfileIncomplete) {
-        // User lama yang profilnya sudah lengkap. 
+        // User lama yang profilnya sudah lengkap.
         // Tandai onboarding sudah dilihat agar tidak pernah muncul.
         await sharedPrefs.saveHasSeenOnboarding(true);
         return; // Tidak perlu munculkan onboarding atau lengkapi profil
@@ -117,9 +126,30 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
         final _ = languageStore.locale;
         return Scaffold(
           backgroundColor: NutrifyTheme.background,
-          body: IndexedStack(
-            index: _selectedIndex,
-            children: _pages,
+          body: IndexedStack(index: _selectedIndex, children: _pages),
+          floatingActionButton: FloatingActionButton(
+            backgroundColor: NutrifyTheme.darkCard,
+            onPressed: () async {
+              final result = await Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const ChatScreen()),
+              );
+              if (result != null && result is String) {
+                if (result == 'profile') {
+                  _onItemTapped(3);
+                } else if (result == 'home') {
+                  _onItemTapped(0);
+                } else if (result == 'history') {
+                  _onItemTapped(1);
+                } else if (result == 'community') {
+                  _onItemTapped(2);
+                }
+              }
+            },
+            child: const Icon(
+              Icons.chat_bubble,
+              color: NutrifyTheme.accentOrange,
+            ),
           ),
           bottomNavigationBar: BottomNavigationBar(
             backgroundColor: NutrifyTheme.darkCard,

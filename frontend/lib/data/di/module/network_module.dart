@@ -14,6 +14,7 @@ import 'package:nutrify/services/food_api_service.dart';
 import 'package:nutrify/services/favorite_api_service.dart';
 import 'package:nutrify/services/progress_api_service.dart';
 import 'package:nutrify/services/chat_api_service.dart';
+import 'package:nutrify/services/chatbot_service.dart';
 import 'package:event_bus/event_bus.dart';
 import 'package:supabase_flutter/supabase_flutter.dart' as sb;
 
@@ -68,5 +69,6 @@ class NetworkModule {
     getIt.registerSingleton<FavoriteApiService>(FavoriteApiService());
     getIt.registerSingleton(ProgressApiService());
     getIt.registerSingleton(ChatApiService());
+    getIt.registerSingleton(ChatbotService());
   }
 }
