@@ -15,6 +15,7 @@ import '../../home/store/home_store.dart';
 import '../../../domain/repository/profile/profile_repository.dart';
 import '../../../domain/repository/food_log/food_log_repository.dart';
 import '../../../data/sharedpref/shared_preference_helper.dart';
+import 'package:nutrify/services/chatbot_service.dart';
 
 part 'login_store.g.dart';
 
@@ -212,6 +213,7 @@ abstract class _UserStore with Store {
     final prefs = getIt<SharedPreferences>();
     prefs.remove('profile_image');
     await getIt<SharedPreferenceHelper>().clearUserData();
+    getIt<ChatbotService>().clearHistory();
     isLoggedIn = false;
   }
 

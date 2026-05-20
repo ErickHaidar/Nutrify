@@ -261,24 +261,23 @@ class HistoryScreenState extends State<HistoryScreen> with WidgetsBindingObserve
             children: [
               Image.asset(iconPath, width: 32, height: 32),
               const SizedBox(width: 12),
-              Flexible(
+              Expanded(
                 child: Text(
                   label,
                   style: const TextStyle(
                     color: AppColors.navy,
                     fontSize: 18,
-                    fontWeight: FontWeight.bold,
+                    fontWeight: FontWeight.w900,
                   ),
-                  overflow: TextOverflow.ellipsis,
                 ),
               ),
-              const Spacer(),
+              const SizedBox(width: 8),
               Text(
                 '$totalKcal ${AppStrings.kcal}',
                 style: const TextStyle(
                   color: AppColors.navy,
                   fontSize: 16,
-                  fontWeight: FontWeight.bold,
+                  fontWeight: FontWeight.w900,
                 ),
               ),
             ],
@@ -319,14 +318,15 @@ class HistoryScreenState extends State<HistoryScreen> with WidgetsBindingObserve
                             child: Text(
                               entry.foodName,
                               style: TextStyle(
-                                  color: AppColors.navy.withOpacity(0.7), fontSize: 14),
+                                  color: AppColors.navy.withValues(alpha: 0.8), fontSize: 14),
                               overflow: TextOverflow.ellipsis,
                             ),
                           ),
+                          const SizedBox(width: 12),
                           Text(
                             '${entry.calories.round()} ${AppStrings.kcal}',
                             style: TextStyle(
-                                color: AppColors.navy.withOpacity(0.7), fontSize: 14),
+                                color: AppColors.navy.withValues(alpha: 0.8), fontSize: 14),
                           ),
                         ],
                       ),
@@ -364,7 +364,7 @@ class HistoryScreenState extends State<HistoryScreen> with WidgetsBindingObserve
         children: [
           Text(
             title,
-            style: TextStyle(color: AppColors.navy.withOpacity(0.5), fontSize: 12),
+            style: const TextStyle(color: AppColors.navy, fontSize: 14, fontWeight: FontWeight.bold),
           ),
           const SizedBox(height: 8),
           Row(
@@ -385,7 +385,7 @@ class HistoryScreenState extends State<HistoryScreen> with WidgetsBindingObserve
               const SizedBox(width: 4),
               Text(
                 unit,
-                style: TextStyle(color: AppColors.navy.withOpacity(0.5), fontSize: 12),
+                style: const TextStyle(color: AppColors.navy, fontSize: 14, fontWeight: FontWeight.bold),
               ),
             ],
           ),

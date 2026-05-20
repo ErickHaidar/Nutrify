@@ -17,6 +17,11 @@ class ChatbotResponse {
 
 class ChatbotService {
   DioClient get _dio => getIt<DioClient>();
+  final List<Map<String, dynamic>> messages = [];
+
+  void clearHistory() {
+    messages.clear();
+  }
 
   Future<ChatbotResponse> sendMessage(String message) async {
     final response = await _dio.dio.post(

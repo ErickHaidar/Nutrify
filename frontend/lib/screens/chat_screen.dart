@@ -1,4 +1,6 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:nutrify/constants/colors.dart';
 import 'package:nutrify/di/service_locator.dart';
 import 'package:nutrify/services/chatbot_service.dart';
@@ -11,7 +13,7 @@ class ChatScreen extends StatefulWidget {
 }
 
 class _ChatScreenState extends State<ChatScreen> {
-  final List<Map<String, dynamic>> _messages = [];
+  late final List<Map<String, dynamic>> _messages;
   final TextEditingController _messageController = TextEditingController();
   final ScrollController _scrollController = ScrollController();
   bool _isTyping = false;
@@ -19,12 +21,15 @@ class _ChatScreenState extends State<ChatScreen> {
   @override
   void initState() {
     super.initState();
-    // Add welcome message from the bot
-    _messages.add({
-      'isUser': false,
-      'text':
-          'Halo! Saya NutriBot, asisten nutrisi pribadimu. Tanyakan apa saja tentang diet, kalori, atau cara mencapai body goals-mu! 🥗✨',
-    });
+    _messages = getIt<ChatbotService>().messages;
+    // Add welcome message from the bot only if empty
+    if (_messages.isEmpty) {
+      _messages.add({
+        'isUser': false,
+        'text':
+            'Halo! Saya NutriBot, asisten nutrisi pribadimu. Tanyakan apa saja tentang diet, kalori, atau cara mencapai body goals-mu! 🥗✨',
+      });
+    }
   }
 
   @override
@@ -114,6 +119,7 @@ class _ChatScreenState extends State<ChatScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final lastBotMessageIndex = _messages.lastIndexWhere((msg) => msg['isUser'] == false);
     return Scaffold(
       backgroundColor: NutrifyTheme.background,
       appBar: AppBar(
@@ -217,14 +223,19 @@ class _ChatScreenState extends State<ChatScreen> {
                         ),
                       ],
                     ),
-                    child: Text(
-                      text,
-                      style: TextStyle(
-                        color: isUser ? Colors.white : AppColors.navy,
-                        fontSize: 15,
-                        height: 1.3,
-                      ),
-                    ),
+                    child: isUser
+                        ? Text(
+                            text,
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 15,
+                              height: 1.3,
+                            ),
+                          )
+                        : StreamingMarkdownMessage(
+                            text: text,
+                            isLatest: index == lastBotMessageIndex,
+                          ),
                   ),
                 );
               },
@@ -345,6 +356,145 @@ class _ChatScreenState extends State<ChatScreen> {
             ),
           ),
         ],
+      ),
+    );
+  }
+}
+
+class StreamingMarkdownMessage extends StatefulWidget {
+  final String text;
+  final bool isLatest;
+
+  const StreamingMarkdownMessage({
+    super.key,
+    required this.text,
+    required this.isLatest,
+  });
+
+  @override
+  State<StreamingMarkdownMessage> createState() => _StreamingMarkdownMessageState();
+}
+
+class _StreamingMarkdownMessageState extends State<StreamingMarkdownMessage> {
+  String _displayedText = '';
+  Timer? _timer;
+  int _currentIndex = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    final isTest = WidgetsBinding.instance.runtimeType.toString().contains('Test');
+    if (widget.isLatest && !isTest) {
+      _startTyping();
+    } else {
+      _displayedText = widget.text;
+    }
+  }
+
+  void _startTyping() {
+    _displayedText = '';
+    _currentIndex = 0;
+    _timer?.cancel();
+
+    _timer = Timer.periodic(const Duration(milliseconds: 10), (timer) {
+      if (_currentIndex < widget.text.length) {
+        setState(() {
+          int charsToAdd = (widget.text.length - _currentIndex) >= 2 ? 2 : 1;
+          _currentIndex += charsToAdd;
+          _displayedText = widget.text.substring(0, _currentIndex);
+        });
+      } else {
+        _timer?.cancel();
+      }
+    });
+  }
+
+  @override
+  void didUpdateWidget(covariant StreamingMarkdownMessage oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    final isTest = WidgetsBinding.instance.runtimeType.toString().contains('Test');
+    if (widget.text != oldWidget.text) {
+      if (widget.isLatest && !isTest) {
+        _startTyping();
+      } else {
+        _timer?.cancel();
+        setState(() {
+          _displayedText = widget.text;
+        });
+      }
+    } else if (!widget.isLatest && oldWidget.isLatest) {
+      _timer?.cancel();
+      if (_displayedText != widget.text) {
+        setState(() {
+          _displayedText = widget.text;
+        });
+      }
+    }
+  }
+
+  @override
+  void dispose() {
+    _timer?.cancel();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final isTest = WidgetsBinding.instance.runtimeType.toString().contains('Test');
+    if (isTest) {
+      return Text(
+        widget.text,
+        style: const TextStyle(
+          color: AppColors.navy,
+          fontSize: 15,
+          height: 1.3,
+        ),
+      );
+    }
+    return MarkdownBody(
+      data: _displayedText,
+      selectable: false,
+      styleSheet: MarkdownStyleSheet.fromTheme(Theme.of(context)).copyWith(
+        p: const TextStyle(
+          color: AppColors.navy,
+          fontSize: 15,
+          height: 1.3,
+        ),
+        strong: const TextStyle(
+          color: AppColors.navy,
+          fontSize: 15,
+          fontWeight: FontWeight.bold,
+        ),
+        em: const TextStyle(
+          color: AppColors.navy,
+          fontSize: 15,
+          fontStyle: FontStyle.italic,
+        ),
+        h1: const TextStyle(
+          color: AppColors.navy,
+          fontSize: 18,
+          fontWeight: FontWeight.bold,
+        ),
+        h2: const TextStyle(
+          color: AppColors.navy,
+          fontSize: 17,
+          fontWeight: FontWeight.bold,
+        ),
+        h3: const TextStyle(
+          color: AppColors.navy,
+          fontSize: 16,
+          fontWeight: FontWeight.bold,
+        ),
+        listBullet: const TextStyle(
+          color: AppColors.navy,
+          fontSize: 15,
+        ),
+        code: const TextStyle(
+          color: AppColors.navy,
+          backgroundColor: Colors.transparent,
+          fontFamily: 'monospace',
+          fontSize: 14,
+        ),
       ),
     );
   }

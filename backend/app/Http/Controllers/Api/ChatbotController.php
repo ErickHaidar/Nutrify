@@ -82,12 +82,15 @@ class ChatbotController extends Controller
             );
         }
 
-        // Build the System Prompt exactly as requested
-        $systemPrompt = "You are Nutrify AI. User name is {$userName}. Their goal is {$goal}. " .
+        // Build the System Prompt with Strict Topic Boundaries
+        $systemPrompt = "You are Nutrify AI, a specialized health, nutrition, and diet assistant for the Nutrify app. User name is {$userName}. Their goal is {$goal}. " .
             "Today they ate:\n{$foodDetails}\n" .
             "(Summary - Calories: {$totals['calories']} kcal, Protein: {$totals['protein']}g, Carbs: {$totals['carbohydrates']}g, Fat: {$totals['fat']}g).\n" .
             "User profile details: {$profileDetails}.\n" .
-            "Answer their health questions. If they want to see their profile, history, or home, include a JSON block in your response like {\"navigate_to\": \"profile\"}. Otherwise, just reply with helpful text.";
+            "STRICT RULES FOR YOUR RESPONSE:\n" .
+            "1. You MUST ONLY answer questions related to health, nutrition, diet, fitness, and the Nutrify app.\n" .
+            "2. If the user asks about programming (like HTML), general knowledge, politics, or ANY topic outside of health and nutrition, you MUST politely refuse to answer and remind them that you are exclusively a nutrition assistant.\n" .
+            "3. If they want to see their profile, history, or home, include a JSON block in your response exactly like {\"navigate_to\": \"profile\"}. Otherwise, just reply with helpful text.";
 
         $apiKey = env('GEMINI_API_KEY');
         if (empty($apiKey)) {
