@@ -685,7 +685,7 @@ class _AddMealScreenState extends State<AddMealScreen> {
             )
           : (_draftSelections.isEmpty
               ? null
-              : FloatingActionButton.large(
+              : FloatingActionButton(
                   onPressed: _handleConfirmBatch,
                   // Dark Navy FAB with white checkmark
                   backgroundColor: AppColors.navy,

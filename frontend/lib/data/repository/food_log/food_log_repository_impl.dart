@@ -35,11 +35,13 @@ class FoodLogRepositoryImpl implements FoodLogRepository {
       unit: unit,
       date: date,
     );
+    await invalidateCache();
   }
 
   @override
   Future<void> deleteLog(int id) async {
     await _foodLogApi.deleteLog(id);
+    await invalidateCache();
   }
 
   @override
@@ -65,6 +67,7 @@ class FoodLogRepositoryImpl implements FoodLogRepository {
       mealTime: mealTime,
       unit: unit,
     );
+    await invalidateCache();
   }
 
   @override
