@@ -33,7 +33,7 @@ class ProgressController extends Controller
             $dayLogs = $grouped->get($dateStr, collect());
             
             $totalCalories = $dayLogs->sum(function($log) {
-                return $log->food->calories * $log->serving_multiplier;
+                return $log->food ? ($log->food->calories * $log->serving_multiplier) : 0;
             });
             
             $data[] = [
@@ -51,27 +51,76 @@ class ProgressController extends Controller
     public function weight(Request $request)
     {
         $userId = Auth::id();
-        $profile = Profile::where('user_id', $userId)->first();
+        
+        // Fetch weight logs for the last 7 days (wrap in try-catch for production safety)
+        try {
+            $logs = \App\Models\WeightLog::where('user_id', $userId)
+                ->where('created_at', '>=', Carbon::now()->subDays(6)->startOfDay())
+                ->orderBy('created_at', 'asc')
+                ->get();
+        } catch (\Exception $e) {
+            $logs = collect();
+        }
+
+        // Fallback: If no weight logs exist for the user at all, create one from their current profile weight
+        if ($logs->isEmpty()) {
+            $profile = Profile::where('user_id', $userId)->first();
+            if ($profile && $profile->weight > 0) {
+                try {
+                    $initialLog = \App\Models\WeightLog::create([
+                        'user_id' => $userId,
+                        'weight' => $profile->weight,
+                        'created_at' => Carbon::now(),
+                    ]);
+                    $logs = collect([$initialLog]);
+                } catch (\Exception $e) {
+                    // Ignore if insert fails due to missing table
+                }
+            }
+        }
+        
+        $grouped = $logs->groupBy(function($date) {
+            return Carbon::parse($date->created_at)->format('Y-m-d');
+        });
         
         $data = [];
         
-        if ($profile && $profile->weight > 0) {
-            $currentWeight = $profile->weight;
+        // Find the last known weight before the 7 days window (as a baseline)
+        $lastKnownWeight = null;
+        try {
+            $baselineLog = \App\Models\WeightLog::where('user_id', $userId)
+                ->where('created_at', '<', Carbon::now()->subDays(6)->startOfDay())
+                ->orderBy('created_at', 'desc')
+                ->first();
+            if ($baselineLog) {
+                $lastKnownWeight = $baselineLog->weight;
+            }
+        } catch (\Exception $e) {
+            // Table doesn't exist
+        }
+        
+        if ($lastKnownWeight === null) {
+            $profile = Profile::where('user_id', $userId)->first();
+            if ($profile) {
+                $lastKnownWeight = $profile->weight;
+            }
+        }
+        
+        // Fill last 7 days
+        for ($i = 6; $i >= 0; $i--) {
+            $dateStr = Carbon::now()->subDays($i)->format('Y-m-d');
+            $dayLogs = $grouped->get($dateStr, collect());
             
-            // To make the chart look nice and fulfill the frontend requirements,
-            // we will simulate weight progress based on current weight.
-            // In a real scenario, this would come from a weight_logs table.
-            for ($i = 6; $i >= 0; $i--) {
-                $dateStr = Carbon::now()->subDays($i)->format('Y-m-d');
-                $weight = $currentWeight + ($i * 0.1); 
-                
-                if ($i == 0) {
-                    $weight = $currentWeight;
-                }
-                
+            if ($dayLogs->isNotEmpty()) {
+                $lastKnownWeight = $dayLogs->last()->weight;
                 $data[] = [
                     'date' => $dateStr,
-                    'weight' => round($weight, 1)
+                    'weight' => round($lastKnownWeight, 1)
+                ];
+            } else if ($lastKnownWeight !== null) {
+                $data[] = [
+                    'date' => $dateStr,
+                    'weight' => round($lastKnownWeight, 1)
                 ];
             }
         }

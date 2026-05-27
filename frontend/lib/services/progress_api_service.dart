@@ -35,11 +35,7 @@ class ProgressApiService {
       final List<dynamic> data = res.data['data'] ?? [];
       return data.map((e) => CalorieProgress.fromJson(e as Map<String, dynamic>)).toList();
     } catch (e) {
-      // Fallback for demo when backend is not deployed
-      return List.generate(7, (index) => CalorieProgress(
-        date: DateTime.now().subtract(Duration(days: 6 - index)),
-        calories: 1800 + (index * 50).toDouble(),
-      ));
+      rethrow;
     }
   }
 
@@ -49,11 +45,7 @@ class ProgressApiService {
       final List<dynamic> data = res.data['data'] ?? [];
       return data.map((e) => WeightProgress.fromJson(e as Map<String, dynamic>)).toList();
     } catch (e) {
-      // Fallback for demo when backend is not deployed
-      return List.generate(7, (index) => WeightProgress(
-        date: DateTime.now().subtract(Duration(days: 6 - index)),
-        weight: 70.0 - (index * 0.2),
-      ));
+      rethrow;
     }
   }
 }

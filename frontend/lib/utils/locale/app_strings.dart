@@ -26,6 +26,53 @@ class AppStrings {
   // ─── Helper ──────────────────────────────────────────────────────────────
   static String _t(String id, String en) => isId ? id : en;
 
+  static String _cleanError(String e) {
+    final lower = e.toLowerCase();
+    
+    // Check if it contains technical details, exceptions, or status codes
+    if (lower.contains('dioexception') || 
+        lower.contains('exception:') || 
+        lower.contains('socketexception') || 
+        lower.contains('httpstatuscode') ||
+        lower.contains('bad response') ||
+        lower.contains('unhandled') ||
+        lower.contains('403') ||
+        lower.contains('500') ||
+        lower.contains('400') ||
+        lower.contains('401') ||
+        lower.contains('404') ||
+        lower.contains('api_error') ||
+        lower.contains('error_code')) {
+      if (lower.contains('network') || lower.contains('connection') || lower.contains('failed host')) {
+        return isId ? 'koneksi internet bermasalah.' : 'network connection issues.';
+      }
+      return isId ? 'terjadi kesalahan pada sistem.' : 'a system error occurred.';
+    }
+    
+    // Clean exception prefix
+    String cleaned = e;
+    if (cleaned.startsWith('Exception: ')) {
+      cleaned = cleaned.substring(11);
+    }
+    
+    // Map common technical phrases to friendly messages
+    final cleanedLower = cleaned.toLowerCase();
+    if (cleanedLower.contains('user not found') || cleanedLower.contains('user_not_found')) {
+      return isId ? 'pengguna tidak ditemukan.' : 'user not found.';
+    }
+    if (cleanedLower.contains('invalid login credentials') || cleanedLower.contains('invalid_credentials')) {
+      return isId ? 'email atau password salah.' : 'wrong email or password.';
+    }
+    if (cleanedLower.contains('rate limit') || cleanedLower.contains('too many requests')) {
+      return isId ? 'terlalu banyak percobaan. Coba lagi nanti.' : 'too many attempts. Try again later.';
+    }
+    if (cleanedLower.contains('already registered') || cleanedLower.contains('already exists')) {
+      return isId ? 'sudah terdaftar.' : 'already registered.';
+    }
+    
+    return cleaned;
+  }
+
   // ─── Common ──────────────────────────────────────────────────────────────
   static String get appName => 'Nutrify';
   static String get save => _t('Simpan', 'Save');
@@ -68,8 +115,8 @@ class AppStrings {
   static String get usernameLabel => _t('Username', 'Username');
   static String get usernameTaken => _t('Username sudah digunakan', 'Username is already taken');
   static String get failedToSaveWithParams => _t('Gagal menyimpan', 'Failed to save');
-  static String failedToSaveError(String e) => _t('Gagal menyimpan: $e', 'Failed to save: $e');
-  static String failedWithError(String e) => _t('Gagal: $e', 'Failed: $e');
+  static String failedToSaveError(String e) => _t('Gagal menyimpan: ${_cleanError(e)}', 'Failed to save: ${_cleanError(e)}');
+  static String failedWithError(String e) => _t('Gagal: ${_cleanError(e)}', 'Failed: ${_cleanError(e)}');
 
 
   // ─── Sign Up ─────────────────────────────────────────────────────────────
@@ -472,7 +519,7 @@ class AppStrings {
   static String get searchConversation => _t('Cari percakapan...', 'Search conversation...');
   static String get noConversations => _t('Belum ada percakapan', 'No conversations yet');
   static String get startChat => _t('Mulai Obrolan', 'Start Chat');
-  static String failedToStartChat(String e) => _t('Gagal memulai obrolan: $e', 'Failed to start chat: $e');
+  static String failedToStartChat(String e) => _t('Gagal memulai obrolan: ${_cleanError(e)}', 'Failed to start chat: ${_cleanError(e)}');
   static String get imageStr => _t('[Gambar]', '[Image]');
   static String get typeMessage => _t('Ketik pesan...', 'Type a message...');
   static String get now => _t('Sekarang', 'Now');
@@ -503,7 +550,7 @@ class AppStrings {
   static String get deletePostPrompt => _t('Hapus Postingan?', 'Delete Post?');
   static String get deletePostWarning => _t('Postingan ini akan dihapus secara permanen.', 'This post will be permanently deleted.');
   static String get failedToDeletePost => _t('Gagal menghapus postingan', 'Failed to delete post');
-  static String failedToOpenChat(String e) => _t('Gagal membuka chat: $e', 'Failed to open chat: $e');
+  static String failedToOpenChat(String e) => _t('Gagal membuka chat: ${_cleanError(e)}', 'Failed to open chat: ${_cleanError(e)}');
   static String get followingCountLabel => _t('Mengikuti', 'Following');
   static String get followersCountLabel => _t('Pengikut', 'Followers');
   static String get sendMessage => _t('Kirim Pesan', 'Send Message');
@@ -529,7 +576,7 @@ class AppStrings {
          'Fill in your height, weight, and age to get personalized calorie recommendations.');
   static String get fillNow => _t('Isi Sekarang', 'Fill Now');
   static String get profilePhotoUpdated => _t('Foto profil berhasil diperbarui', 'Profile photo updated successfully');
-  static String failedToUploadPhoto(String e) => _t('Gagal upload foto: $e', 'Failed to upload photo: $e');
+  static String failedToUploadPhoto(String e) => _t('Gagal upload foto: ${_cleanError(e)}', 'Failed to upload photo: ${_cleanError(e)}');
   static String get changeProfilePhoto => _t('Ubah Foto Profil', 'Change Profile Photo');
   static String minLabel(dynamic val, [String? unit]) =>
       _t('Minimal $val${unit != null ? ' $unit' : ''}', 'Minimum $val${unit != null ? ' $unit' : ''}');

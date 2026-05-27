@@ -1,5 +1,5 @@
 import 'dart:async';
-import 'package:google_sign_in/google_sign_in.dart' as auth;
+import 'package:google_sign_in/google_sign_in.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 import 'package:nutrify/data/sharedpref/shared_preference_helper.dart';
@@ -76,35 +76,34 @@ class UserRepositoryImpl extends UserRepository {
     );
   }
 
-  auth.GoogleSignIn? _googleSignIn;
-
-  auth.GoogleSignIn _getGoogleSignIn() {
-    if (_googleSignIn != null) return _googleSignIn!;
-
-    final webClientId = dotenv.env['GOOGLE_WEB_CLIENT_ID'] ?? '';
-    _googleSignIn = auth.GoogleSignIn(
-      serverClientId: webClientId,
-    );
-    return _googleSignIn!;
-  }
+  // Google Sign In (v7.x API - singleton pattern):-----------------------------
+  GoogleSignIn get _googleSignIn => GoogleSignIn.instance;
+  bool _googleSignInInitialized = false;
 
   @override
   Future<void> signInWithGoogle() async {
     try {
-      final auth.GoogleSignIn googleSignIn = _getGoogleSignIn();
-
-      final googleUser = await googleSignIn.signIn();
-
-      if (googleUser == null) {
-        return;
+      // Initialize GoogleSignIn only once (required in v7.x, must not be called twice)
+      if (!_googleSignInInitialized) {
+        await _googleSignIn.initialize(
+          serverClientId: dotenv.env['GOOGLE_WEB_CLIENT_ID'],
+        );
+        _googleSignInInitialized = true;
       }
 
-      final googleAuth = await googleUser.authentication;
-      final accessToken = googleAuth.accessToken;
+      // authenticate() replaces the old signIn() in v7.x (throws on failure, never null)
+      final googleUser = await _googleSignIn.authenticate();
+
+      // In v7.x, authentication (idToken) and authorization (accessToken) are separate
+      final googleAuth = googleUser.authentication;
       final idToken = googleAuth.idToken;
 
-      if (accessToken == null || idToken == null) {
-        throw Exception('Google Sign In gagal: token tidak tersedia');
+      // Get accessToken via authorizationClient
+      final authorization = await googleUser.authorizationClient.authorizeScopes(['email']);
+      final accessToken = authorization.accessToken;
+
+      if (idToken == null) {
+        throw Exception('Google Sign In gagal: idToken tidak tersedia');
       }
 
       final response = await sb.Supabase.instance.client.auth.signInWithIdToken(
@@ -119,6 +118,8 @@ class UserRepositoryImpl extends UserRepository {
         await _sharedPrefsHelper.saveIsLoggedIn(true);
       }
     } catch (e) {
+      // ignore: avoid_print
+      print('Google Sign In Error: $e');
       rethrow;
     }
   }
@@ -131,16 +132,11 @@ class UserRepositoryImpl extends UserRepository {
       await sb.Supabase.instance.client.auth.signOut();
 
       // 2. Logout dari Google (Menghapus cache akun di HP)
-      final auth.GoogleSignIn googleSignIn = _getGoogleSignIn();
-
-      // Cek apakah user sedang login lewat Google
-      if (await googleSignIn.isSignedIn()) {
-        // signOut() hanya menghapus session lokal
-        await googleSignIn.signOut();
-
-        // Opsional: Gunakan disconnect() jika ingin benar-benar menghapus
-        // izin aplikasi dari akun Google user (paksa login ulang total).
-        // await googleSignIn.disconnect();
+      // In v7.x, currentUser has been removed, so just call signOut directly
+      try {
+        await _googleSignIn.signOut();
+      } catch (_) {
+        // Ignore if not signed in with Google
       }
 
       // 3. Hapus data di Shared Preferences (Token, status login, dll)

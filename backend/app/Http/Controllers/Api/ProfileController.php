@@ -44,6 +44,14 @@ class ProfileController extends Controller
             $profileData
         );
 
+        // Record weight in history log
+        if (isset($profileData['weight'])) {
+            \App\Models\WeightLog::create([
+                'user_id' => Auth::id(),
+                'weight' => $profileData['weight'],
+            ]);
+        }
+
         // Handle photo upload if any
         if ($request->hasFile('photo')) {
             // Delete old photo if exists

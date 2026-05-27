@@ -325,12 +325,31 @@ class FollowController extends Controller
     public function updateUsername(Request $request)
     {
         $request->validate([
-            'username' => 'required|string|min:3|max:30|alpha_num|unique:users,username,' . Auth::id(),
+            'username' => 'required|string|min:3|max:20|regex:/^[a-zA-Z0-9_]+$/|unique:users,username,' . Auth::id(),
+        ], [
+            'username.required' => 'Username wajib diisi.',
+            'username.min' => 'Username minimal 3 karakter.',
+            'username.max' => 'Username maksimal 20 karakter.',
+            'username.regex' => 'Username hanya boleh berisi huruf, angka, dan underscore (_).',
+            'username.unique' => 'Username sudah digunakan oleh orang lain.',
         ]);
 
         $user = User::find(Auth::id());
-        $user->username = strtolower($request->username);
-        $user->save();
+        $newUsername = strtolower($request->username);
+
+        if ($newUsername !== $user->username) {
+            if (!$this->checkUsernameRateLimit($user->id)) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Anda telah mencapai batas maksimum perubahan username (3 kali per 24 jam).',
+                ], 429);
+            }
+
+            $user->username = $newUsername;
+            $user->save();
+
+            $this->recordUsernameChange($user->id);
+        }
 
         return response()->json([
             'success'  => true,
@@ -400,23 +419,43 @@ class FollowController extends Controller
     {
         $request->validate([
             'name'          => 'sometimes|nullable|string|min:1|max:50',
-            'username'      => 'sometimes|nullable|string|min:3|max:30|alpha_num|unique:users,username,' . Auth::id(),
+            'username'      => 'sometimes|nullable|string|min:3|max:20|regex:/^[a-zA-Z0-9_]+$/|unique:users,username,' . Auth::id(),
             'account_type'  => 'sometimes|nullable|in:public,private',
+        ], [
+            'username.min' => 'Username minimal 3 karakter.',
+            'username.max' => 'Username maksimal 20 karakter.',
+            'username.regex' => 'Username hanya boleh berisi huruf, angka, dan underscore (_).',
+            'username.unique' => 'Username sudah digunakan oleh orang lain.',
         ]);
 
         $user = User::find(Auth::id());
+        $usernameChanged = false;
 
         if ($request->has('name')) {
             $user->name = $request->name;
         }
         if ($request->has('username')) {
-            $user->username = strtolower($request->username);
+            $newUsername = strtolower($request->username);
+            if ($newUsername !== $user->username) {
+                if (!$this->checkUsernameRateLimit($user->id)) {
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'Anda telah mencapai batas maksimum perubahan username (3 kali per 24 jam).',
+                    ], 429);
+                }
+                $user->username = $newUsername;
+                $usernameChanged = true;
+            }
         }
         if ($request->has('account_type')) {
             $user->account_type = $request->account_type;
         }
 
         $user->save();
+
+        if ($usernameChanged) {
+            $this->recordUsernameChange($user->id);
+        }
 
         return response()->json([
             'success' => true,
@@ -427,5 +466,37 @@ class FollowController extends Controller
                 'account_type' => $user->account_type,
             ],
         ]);
+    }
+
+    private function checkUsernameRateLimit($userId)
+    {
+        $cacheKey = "username_changes_{$userId}";
+        $changes = \Illuminate\Support\Facades\Cache::get($cacheKey, []);
+
+        $now = time();
+        // Keep only changes within the last 24 hours
+        $changes = array_filter($changes, function ($timestamp) use ($now) {
+            return ($now - $timestamp) < 24 * 3600;
+        });
+
+        if (count($changes) >= 3) {
+            return false;
+        }
+
+        return true;
+    }
+
+    private function recordUsernameChange($userId)
+    {
+        $cacheKey = "username_changes_{$userId}";
+        $changes = \Illuminate\Support\Facades\Cache::get($cacheKey, []);
+
+        $now = time();
+        $changes = array_filter($changes, function ($timestamp) use ($now) {
+            return ($now - $timestamp) < 24 * 3600;
+        });
+
+        $changes[] = $now;
+        \Illuminate\Support\Facades\Cache::put($cacheKey, $changes, now()->addDays(1));
     }
 }

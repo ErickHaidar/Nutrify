@@ -6,6 +6,8 @@ import 'package:nutrify/di/service_locator.dart';
 import 'package:nutrify/utils/locale/app_strings.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'body_data_goals_screen.dart';
+import 'package:dio/dio.dart';
+import 'package:nutrify/utils/dio/dio_error_util.dart';
 
 class ProgressScreen extends StatefulWidget {
   const ProgressScreen({super.key});
@@ -46,9 +48,15 @@ class ProgressScreenState extends State<ProgressScreen> {
       });
     } catch (e) {
       if (!mounted) return;
+      String friendlyMessage = "Terjadi kesalahan. Silakan coba lagi nanti.";
+      if (e is DioException) {
+        friendlyMessage = DioExceptionUtil.handleError(e);
+      } else {
+        friendlyMessage = e.toString();
+      }
       setState(() {
         _isLoading = false;
-        _error = e.toString();
+        _error = friendlyMessage;
       });
     }
   }
