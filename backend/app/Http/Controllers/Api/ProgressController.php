@@ -15,10 +15,10 @@ class ProgressController extends Controller
     {
         $userId = Auth::id();
         
-        // Get last 7 days of calories
+        // Get last 7 days of calories using whereDate for database timezone safety
         $logs = FoodLog::with('food')
             ->where('user_id', $userId)
-            ->where('created_at', '>=', Carbon::now()->subDays(6)->startOfDay())
+            ->whereDate('created_at', '>=', Carbon::now()->subDays(6)->toDateString())
             ->get();
             
         $grouped = $logs->groupBy(function($date) {
@@ -55,7 +55,7 @@ class ProgressController extends Controller
         // Fetch weight logs for the last 7 days (wrap in try-catch for production safety)
         try {
             $logs = \App\Models\WeightLog::where('user_id', $userId)
-                ->where('created_at', '>=', Carbon::now()->subDays(6)->startOfDay())
+                ->whereDate('created_at', '>=', Carbon::now()->subDays(6)->toDateString())
                 ->orderBy('created_at', 'asc')
                 ->get();
         } catch (\Exception $e) {
@@ -89,7 +89,7 @@ class ProgressController extends Controller
         $lastKnownWeight = null;
         try {
             $baselineLog = \App\Models\WeightLog::where('user_id', $userId)
-                ->where('created_at', '<', Carbon::now()->subDays(6)->startOfDay())
+                ->whereDate('created_at', '<', Carbon::now()->subDays(6)->toDateString())
                 ->orderBy('created_at', 'desc')
                 ->first();
             if ($baselineLog) {
