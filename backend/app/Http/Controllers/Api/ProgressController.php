@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Models\FoodLog;
 use App\Models\Profile;
+use App\Models\User;
 use App\Models\WeightLog;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -66,45 +67,56 @@ class ProgressController extends Controller
             default => 7,
         };
 
+        $user = User::find($userId);
+        $userCreatedAt = $user ? $user->created_at->startOfDay() : Carbon::now()->subDays($days - 1)->startOfDay();
+        $windowStart = Carbon::now()->subDays($days - 1)->startOfDay();
+
+        // Jangan tampilkan data sebelum user terdaftar
+        $startDate = $userCreatedAt->gt($windowStart) ? $userCreatedAt->copy() : $windowStart->copy();
+
+        // Ambil semua weight log dari startDate
         $logs = WeightLog::where('user_id', $userId)
-            ->whereDate('created_at', '>=', Carbon::now()->subDays($days - 1)->toDateString())
+            ->whereDate('created_at', '>=', $startDate->toDateString())
             ->orderBy('created_at', 'asc')
             ->get();
 
-        $profile = Profile::where('user_id', $userId)->first();
-        $lastKnownWeight = null;
-
-        // Baseline: cari berat sebelum window
-        $baselineLog = WeightLog::where('user_id', $userId)
-            ->whereDate('created_at', '<', Carbon::now()->subDays($days - 1)->toDateString())
-            ->orderBy('created_at', 'desc')
-            ->first();
-
-        if ($baselineLog) {
-            $lastKnownWeight = $baselineLog->weight;
-        } elseif ($profile && $profile->weight > 0) {
-            $lastKnownWeight = $profile->weight;
+        // Tidak ada log sama sekali → return kosong (jangan fabricate dari profil)
+        if ($logs->isEmpty()) {
+            return response()->json([
+                'success' => true,
+                'data' => [],
+            ]);
         }
 
-        $grouped = $logs->groupBy(function ($date) {
-            return Carbon::parse($date->created_at)->format('Y-m-d');
+        $grouped = $logs->groupBy(function ($log) {
+            return Carbon::parse($log->created_at)->format('Y-m-d');
         });
 
+        // Forward-fill hanya mulai dari log pertama yang benar-benar ada
+        $firstLogDate = Carbon::parse($logs->first()->created_at)->startOfDay();
+        $lastKnownWeight = null;
+
         $data = [];
-        for ($i = $days - 1; $i >= 0; $i--) {
-            $dateStr = Carbon::now()->subDays($i)->format('Y-m-d');
+        $current = $startDate->copy();
+        $end = Carbon::now()->startOfDay();
+
+        while ($current->lte($end)) {
+            $dateStr = $current->format('Y-m-d');
             $dayLogs = $grouped->get($dateStr, collect());
 
             if ($dayLogs->isNotEmpty()) {
                 $lastKnownWeight = $dayLogs->last()->weight;
             }
 
-            if ($lastKnownWeight !== null) {
+            // Hanya isi data mulai dari log pertama yang ada
+            if ($lastKnownWeight !== null && $current->gte($firstLogDate)) {
                 $data[] = [
                     'date' => $dateStr,
                     'weight' => round((float) $lastKnownWeight, 1),
                 ];
             }
+
+            $current->addDay();
         }
 
         return response()->json([

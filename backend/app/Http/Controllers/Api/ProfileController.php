@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Profile;
 use App\Models\User;
 use App\Services\NutritionService;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
@@ -44,12 +45,17 @@ class ProfileController extends Controller
             $profileData
         );
 
-        // Record weight in history log
+        // Record weight in history log (updateOrCreate cegah duplikat per hari)
         if (isset($profileData['weight'])) {
-            \App\Models\WeightLog::create([
-                'user_id' => Auth::id(),
-                'weight' => $profileData['weight'],
-            ]);
+            \App\Models\WeightLog::updateOrCreate(
+                [
+                    'user_id' => Auth::id(),
+                    'created_at' => Carbon::now()->format('Y-m-d'),
+                ],
+                [
+                    'weight' => $profileData['weight'],
+                ]
+            );
         }
 
         // Handle photo upload if any
