@@ -29,9 +29,7 @@ class AuthInterceptor extends Interceptor {
 
     // Proactively refresh if the token is already expired locally
     if (session != null && session.isExpired) {
-      if (_refreshTask == null) {
-        _refreshTask = _refreshToken();
-      }
+      _refreshTask ??= _refreshToken();
       try {
         await _refreshTask;
       } catch (_) {
@@ -58,9 +56,7 @@ class AuthInterceptor extends Interceptor {
 
       try {
         // Session expired or invalid — try to refresh before signing out
-        if (_refreshTask == null) {
-          _refreshTask = _refreshToken();
-        }
+        _refreshTask ??= _refreshToken();
         await _refreshTask;
 
         final String newToken = await accessToken() ?? '';

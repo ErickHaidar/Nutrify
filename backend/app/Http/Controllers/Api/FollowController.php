@@ -257,6 +257,8 @@ class FollowController extends Controller
                     'avatar_url'  => $avatarUrl,
                 ],
                 'is_liked'       => $isLiked,
+                'is_pinned'      => $post->is_pinned,
+                'pinned_at'      => $post->pinned_at,
                 'is_followed'    => $isFollowed,
                 'likes_count'    => $post->likes_count,
                 'comments_count' => $post->comments_count,

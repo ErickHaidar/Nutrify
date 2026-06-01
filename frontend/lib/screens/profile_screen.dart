@@ -669,7 +669,16 @@ class ProfileScreenState extends State<ProfileScreen>
     try {
       await _communityApi.togglePin(int.parse(post.id));
       _loadSocialProfile();
-    } catch (_) {}
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(AppStrings.failedWithError(e.toString())),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    }
   }
 
   // ========================

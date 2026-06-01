@@ -21,6 +21,43 @@ class FoodLogController extends Controller
     // POST /api/food-logs
     public function store(Request $request)
     {
+        // Resolve negative food_id (frontend fallback popular foods)
+        $foodId = $request->input('food_id');
+        if ($foodId !== null && $foodId < 0) {
+            $fallbackNames = [
+                -1 => 'Nasi Putih',
+                -2 => 'Telur Dadar',
+                -3 => 'Ayam Goreng',
+                -4 => 'Tempe Goreng',
+                -5 => 'Tahu Goreng',
+                -6 => 'Mie Goreng',
+                -7 => 'Pisang',
+                -8 => 'Roti Tawar',
+                -9 => 'Susu',
+                -10 => 'Sayur Bayam'
+            ];
+            $name = $fallbackNames[$foodId] ?? null;
+            if ($name) {
+                // Find a food item containing this name
+                $realFood = \App\Models\Food::whereRaw('LOWER(name) LIKE ?', [strtolower("%{$name}%")])
+                    ->first();
+                if ($realFood) {
+                    $request->merge(['food_id' => $realFood->id]);
+                } else {
+                    // Create a food item if none matches
+                    $realFood = \App\Models\Food::create([
+                        'name' => $name,
+                        'serving_size' => $foodId == -2 ? '1 butir' : ($foodId == -7 ? '1 buah' : ($foodId == -8 ? '1 lembar' : ($foodId == -9 ? '200ml' : '100g'))),
+                        'calories' => $foodId == -1 ? 130 : ($foodId == -2 ? 154 : ($foodId == -3 ? 260 : ($foodId == -4 ? 225 : ($foodId == -5 ? 115 : ($foodId == -6 ? 170 : ($foodId == -7 ? 89 : ($foodId == -8 ? 79 : ($foodId == -9 ? 124 : 23)))))))),
+                        'protein' => $foodId == -1 ? 2.7 : ($foodId == -2 ? 10.6 : ($foodId == -3 ? 27.0 : ($foodId == -4 ? 14.0 : ($foodId == -5 ? 8.0 : ($foodId == -6 ? 4.0 : ($foodId == -7 ? 1.1 : ($foodId == -8 ? 2.7 : ($foodId == -9 ? 6.5 : 2.9)))))))),
+                        'carbohydrates' => $foodId == -1 ? 28.2 : ($foodId == -2 ? 1.6 : ($foodId == -3 ? 8.0 : ($foodId == -4 ? 15.0 : ($foodId == -5 ? 5.0 : ($foodId == -6 ? 25.0 : ($foodId == -7 ? 22.8 : ($foodId == -8 ? 14.3 : ($foodId == -9 ? 9.4 : 3.6)))))))),
+                        'fat' => $foodId == -1 ? 0.3 : ($foodId == -2 ? 11.7 : ($foodId == -3 ? 14.0 : ($foodId == -4 ? 13.0 : ($foodId == -5 ? 7.0 : ($foodId == -6 ? 6.0 : ($foodId == -7 ? 0.3 : ($foodId == -8 ? 1.0 : ($foodId == -9 ? 6.5 : 0.4)))))))),
+                    ]);
+                    $request->merge(['food_id' => $realFood->id]);
+                }
+            }
+        }
+
         $validated = $request->validate([
             'food_id'            => 'required|exists:foods,id',
             'serving_multiplier' => 'required|numeric|min:0.1|max:100',
@@ -113,7 +150,7 @@ class FoodLogController extends Controller
         if ($user && $user->profile) {
             $p = $user->profile;
             
-            if ($p->height > 0 && $p->weight > 0 && $p->age > 0) {
+            if ($p->height > 0 && $p->weight > 0 && $p->age > 0 && $p->gender && $p->activity_level && $p->goal) {
                 $bmr = $this->nutritionService->calculateBmr($p->weight, $p->height, $p->age, $p->gender);
                 $tdee = $this->nutritionService->calculateTdee($bmr, $p->activity_level);
                 $targetCalories = round($this->nutritionService->calculateTargetCalories($tdee, $p->goal));

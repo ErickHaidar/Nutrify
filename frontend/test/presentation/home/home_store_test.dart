@@ -2,7 +2,6 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:nutrify/presentation/home/store/home_store.dart';
 import 'package:nutrify/services/food_log_api_service.dart';
-import 'package:nutrify/services/profile_api_service.dart';
 import 'package:nutrify/services/notification_api_service.dart';
 import 'package:nutrify/domain/repository/food_log/food_log_repository.dart';
 import 'package:nutrify/domain/repository/profile/profile_repository.dart';
