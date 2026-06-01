@@ -1,0 +1,40 @@
+No,Role,Backlog,Core / Peripheral,Status,Keterangan
+1,Backend," Membuat Schema Database (User, Profile, Food Dataset, Tracking)",Core,TODO,"Membuat rancangan tabel (ERD) dan migrasi database untuk menyimpan data pengguna, makanan, dan catatan harian."
+2,Backend," Setup Authentication (Login & Register dengan nama, email, password)",Core,TODO,Membuat endpoint API (misal dengan JWT) agar pengguna bisa mendaftar akun baru dan masuk ke aplikasi.
+3,UI/UX," Merancang user flow, wireframe, dan UI page Splashscreen, Onboarding, Login, Register",Peripheral,TODO,"Mendesain tampilan di Figma untuk layar pembuka aplikasi, info singkat (onboarding), dan form login/register."
+,UI/UX,Wawancara/Interview (User Research),Core,TODO,
+4,Frontend," Slicing page Splashscreen, Onboarding, Login, Register",Peripheral,TODO,Mengubah desain Figma (poin 3) menjadi kode UI (misal: Flutter/React Native/Kotlin) yang bisa di-klik.
+5,Backend, Membuat bisnis logic perhitungan BMI dan TDEE berdasarkan Usia & Aktivitas,Core,TODO,Membuat rumus/fungsi di server untuk otomatis menghitung batas kalori harian saat pengguna baru mengisi profil.
+6,UI/UX," Merancang UI/UX page Setup Profile & Target (Cutting, Maintenance, Bulking)",Peripheral,TODO,"Mendesain form untuk mengisi berat badan, tinggi badan, usia, dan pilihan target diet pengguna."
+7,Frontend, Slicing page Setup Profile & Target,Peripheral,TODO,Mengoding tampilan UI form profil dan pilihan target sesuai desain Figma.
+8,Backend," Membuat Schema Table untuk riwayat makan berdasarkan waktu (Pagi, Siang, Malam, Cemilan)",Core,TODO,Membuat struktur database khusus untuk memisahkan catatan makan per sesi/waktu.
+9,Backend," Setup & Integrasi Dataset Kalori Makanan (Kalori, Protein, Karbohidrat, Gula)",Core,TODO,Memasukkan data nilai gizi berbagai jenis makanan ke database atau menyambungkan aplikasi dengan API pihak ketiga.
+10,Backend, Membuat API/Logic kalkulasi akumulasi kalori & makronutrisi harian,Core,TODO,Membuat endpoint yang menjumlahkan total kalori dan gizi dari semua makanan yang diinput pengguna dalam sehari.
+11,Backend, CRUD pencatatan kalori harian manual,Core,TODO,"Membuat API agar pengguna bisa menambah, melihat, mengedit, atau menghapus catatan makanan mereka."
+12,UI/UX, Merancang UI/UX page Home / Dashboard (Menampilkan akumulasi total kalori & makro vs target),Peripheral,TODO,"Mendesain halaman utama aplikasi yang menampilkan sisa kuota kalori harian dan ringkasan gizi (protein, karbo, dll)."
+13,Frontend, Slicing page Home / Dashboard,Peripheral,TODO,Mengoding halaman utama secara statis (UI saja) sebelum disambungkan ke data asli.
+14,UI/UX," Merancang UI/UX page ""Jurnal Makanan"" (Kategori: Sarapan, Makan Siang, Makan Malam, Cemilan)",Peripheral,TODO,"Mendesain halaman tempat pengguna bisa memilih ingin menambah makanan di sesi pagi, siang, atau malam."
+15,Frontend," Slicing page ""Jurnal Makanan""",Peripheral,TODO,Mengoding tampilan UI halaman pemilihan sesi makan.
+16,UI/UX," Merancang UI/UX page Pencarian Makanan & ""Detail Makanan"" (Info spesifik per makanan)",Peripheral,TODO,"Mendesain fitur search bar dan halaman detail (contoh: saat klik ""Ayam Goreng"" muncul info kalorinya dan input porsi)."
+17,Frontend," Slicing page Pencarian Makanan & ""Detail Makanan"" (beserta input porsi)",Peripheral,TODO,Mengoding interaksi pencarian makanan dan pop-up pengisian jumlah porsi/gram.
+18,Frontend, Integrasi API ke Dashboard Home agar angka total kalori & makro tampil real-time,Core,TODO,Menyambungkan kode Front-End halaman utama dengan API Back-End (poin 10) agar datanya hidup/dinamis.
+19,Frontend, Slicing Bottom Navigation Bar & Komponen Reusable,Peripheral,TODO,"Membuat menu navigasi bawah (Home, Jurnal, Chatbot, Profil) yang bisa dipakai berulang di setiap halaman."
+20,Backend, Membuat logic untuk grafik perkembangan nutrisi & berat badan,Peripheral,TODO,Membuat endpoint API yang mengembalikan data histori kalori/berat badan dalam format yang siap dijadikan grafik mingguan/bulanan.
+21,UI/UX, Merancang UI/UX page Grafik & Progress User,Peripheral,TODO,Mendesain bentuk diagram (bar chart / line chart) untuk memantau progres diet/bulking.
+22,Frontend, Slicing page Grafik & Progress User,Peripheral,TODO,Mengoding visualisasi grafik di aplikasi menggunakan library chart yang sesuai.
+23,Backend, Integrasi Model/API Image Processing untuk deteksi makanan otomatis,Core,TODO,Menyiapkan sistem AI (misalnya menggunakan Python/Flask) untuk mengenali foto makanan dan mengembalikan nilai kalorinya.
+24,UI/UX, Merancang UI/UX page Kamera / Scan Makanan untuk Image Processing,Peripheral,TODO,Mendesain antarmuka scanner atau kamera yang memiliki area fokus (frame) foto makanan.
+25,Frontend, Slicing page Kamera / Scan Makanan,Peripheral,TODO,Mengoding akses hardware kamera HP pada aplikasi dan menyambungkannya dengan fungsi ambil foto.
+26,Backend, Integrasi API (misal: OpenAI) untuk AI Chatbot (Rekomendasi Menu & Olahraga),Core,TODO,Menyambungkan server dengan layanan AI teks agar bot bisa memberi rekomendasi spesifik sesuai target kalori.
+27,UI/UX, Merancang UI/UX page AI Chatbot yang interaktif,Peripheral,TODO,Mendesain layar ruang obrolan (chat room) mirip seperti WhatsApp atau ChatGPT.
+28,Frontend, Slicing page AI Chatbot,Peripheral,TODO,Mengoding antarmuka ruang obrolan beserta logika kirim/terima pesan (chat bubble).
+29,Backend," Membuat logic & event trigger untuk Streak, Notifikasi, dan Achievement",Peripheral,TODO,Membuat fungsi yang melacak apakah pengguna absen (streak) setiap hari dan memberikan notifikasi pengingat.
+30,UI/UX, Merancang UI/UX page Profile & Achievement,Peripheral,TODO,Mendesain halaman profil pengguna beserta lencana/badge (achievement) yang berhasil dikumpulkan.
+31,Frontend, Slicing page Profile & Achievement,Peripheral,TODO,Mengoding halaman UI profil pengguna dan menampilkan badge pencapaian.
+32,Backend, CRUD Post & Komentar untuk halaman Komunitas Mahasiswa,Core,TODO,Membuat API forum diskusi sosial agar pengguna bisa mengunggah progres dan berkomentar.
+33,UI/UX, Merancang UI/UX page Komunitas (Integrasi info UKM Olahraga/Gym),Peripheral,TODO,Mendesain feed bergaya sosial media mini yang dirancang agar seluruh civitas mahasiswa bisa saling berinteraksi dan membagikan tips.
+34,Frontend, Slicing page Komunitas,Peripheral,TODO,Mengoding UI halaman feed komunitas beserta input teks untuk membuat postingan baru.
+35,UI/UX, Merancang UI/UX Web Landing Page Nutrify,Peripheral,TODO,Mendesain halaman web satu halaman (single page) untuk menjelaskan fitur aplikasi dan menaruh tombol download.
+36,Frontend, Slicing & Development Web Landing Page (HTML/CSS/JS atau Framework),Core,TODO,Mengubah desain web menjadi kode HTML/CSS/JS yang responsif dan mem- hosting halamannya agar bisa diakses online.
+37,QA," Testing Sprint 1 (Auth, Profile, Manual Tracking, Dashboard)",Peripheral,TODO,Melakukan pengujian (testing) menyeluruh untuk memastikan fitur dasar bebas dari bug atau error.
+38,QA," Testing Sprint 2 (AI, Komunitas, Web)",Peripheral,TODO,Melakukan pengujian (testing) untuk fitur-fitur tingkat lanjut.
