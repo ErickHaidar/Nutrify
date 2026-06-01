@@ -19,6 +19,11 @@ Route::post('/auth/verify-otp', [OtpController::class, 'verify']);
 
 Route::middleware(['supabase.auth'])->group(function () {
 
+    // Auth validation (lightweight check for frontend)
+    Route::get('/auth/validate', function () {
+        return response()->json(['success' => true, 'message' => 'Token valid.']);
+    });
+
     // Profile
     Route::post('/profile/store', [ProfileController::class, 'store']);
     Route::get('/profile', [ProfileController::class, 'show']);
@@ -49,6 +54,7 @@ Route::middleware(['supabase.auth'])->group(function () {
     // Progress
     Route::get('/progress/calories', [ProgressController::class, 'calories']);
     Route::get('/progress/weight', [ProgressController::class, 'weight']);
+    Route::post('/progress/weight', [ProgressController::class, 'storeWeight']);
 
     // Community Posts
     Route::get('/posts', [PostController::class, 'index']);
@@ -57,6 +63,7 @@ Route::middleware(['supabase.auth'])->group(function () {
     Route::delete('/posts/{id}', [PostController::class, 'destroy']);
     Route::post('/posts/{id}/pin', [PostController::class, 'togglePin']);
     Route::post('/posts/{id}/like', [PostController::class, 'toggleLike']);
+    Route::post('/posts/{id}/report', [PostController::class, 'report']);
     Route::get('/posts/{id}/comments', [PostController::class, 'comments']);
     Route::post('/posts/{id}/comments', [PostController::class, 'storeComment']);
 

@@ -19,6 +19,8 @@ class Food extends Model
         'sugar',
         'sodium',
         'fiber',
+        'food_type',
+        'source',
     ];
 
     protected $casts = [

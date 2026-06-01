@@ -419,11 +419,16 @@ color: Colors.white,
               try {
                 MyApp.isHandlingLoginNavigation = true;
                 await _userStore.signInWithGoogle();
+                // Success handled by MobX reaction → _handleNavigation()
+                // Flag reset inside _handleNavigation after 2s
               } catch (e) {
-                // Error is already handled and mapped to errorStore by signInWithGoogle,
-                // which will trigger the MobX reaction and display _showErrorMessage.
-                // We just reset the flag.
+                // Error is handled and mapped to errorStore by signInWithGoogle
                 MyApp.isHandlingLoginNavigation = false;
+              } finally {
+                // Ensure flag is reset if signInWithGoogle returned early (e.g. user cancelled)
+                if (!_userStore.success) {
+                  MyApp.isHandlingLoginNavigation = false;
+                }
               }
             },
             child: Container(

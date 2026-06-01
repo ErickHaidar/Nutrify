@@ -3,9 +3,10 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
 use App\Models\FoodLog;
 use App\Models\Profile;
+use App\Models\WeightLog;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Carbon\Carbon;
 
@@ -14,120 +15,147 @@ class ProgressController extends Controller
     public function calories(Request $request)
     {
         $userId = Auth::id();
-        
-        // Get last 7 days of calories using whereDate for database timezone safety
+        $range = $request->query('range', '7d');
+
+        $days = match ($range) {
+            '30d' => 30,
+            default => 7,
+        };
+
         $logs = FoodLog::with('food')
             ->where('user_id', $userId)
-            ->whereDate('created_at', '>=', Carbon::now()->subDays(6)->toDateString())
+            ->whereDate('created_at', '>=', Carbon::now()->subDays($days - 1)->toDateString())
             ->get();
-            
-        $grouped = $logs->groupBy(function($date) {
+
+        $grouped = $logs->groupBy(function ($date) {
             return Carbon::parse($date->created_at)->format('Y-m-d');
         });
-        
+
+        $profile = Profile::where('user_id', $userId)->first();
+        $target = $profile ? $profile->target_calories : null;
+
         $data = [];
-        
-        // Fill last 7 days
-        for ($i = 6; $i >= 0; $i--) {
+        for ($i = $days - 1; $i >= 0; $i--) {
             $dateStr = Carbon::now()->subDays($i)->format('Y-m-d');
             $dayLogs = $grouped->get($dateStr, collect());
-            
-            $totalCalories = $dayLogs->sum(function($log) {
+
+            $totalCalories = $dayLogs->sum(function ($log) {
                 return $log->food ? ($log->food->calories * $log->serving_multiplier) : 0;
             });
-            
+
             $data[] = [
                 'date' => $dateStr,
-                'calories' => round($totalCalories, 2)
+                'calories' => round($totalCalories, 2),
             ];
         }
-        
+
         return response()->json([
             'success' => true,
-            'data' => $data
+            'data' => $data,
+            'target' => $target,
         ]);
     }
-    
+
     public function weight(Request $request)
     {
         $userId = Auth::id();
-        
-        // Fetch weight logs for the last 7 days (wrap in try-catch for production safety)
-        try {
-            $logs = \App\Models\WeightLog::where('user_id', $userId)
-                ->whereDate('created_at', '>=', Carbon::now()->subDays(6)->toDateString())
-                ->orderBy('created_at', 'asc')
-                ->get();
-        } catch (\Exception $e) {
-            $logs = collect();
+        $range = $request->query('range', '7d');
+
+        $days = match ($range) {
+            '30d' => 30,
+            default => 7,
+        };
+
+        $logs = WeightLog::where('user_id', $userId)
+            ->whereDate('created_at', '>=', Carbon::now()->subDays($days - 1)->toDateString())
+            ->orderBy('created_at', 'asc')
+            ->get();
+
+        $profile = Profile::where('user_id', $userId)->first();
+        $lastKnownWeight = null;
+
+        // Baseline: cari berat sebelum window
+        $baselineLog = WeightLog::where('user_id', $userId)
+            ->whereDate('created_at', '<', Carbon::now()->subDays($days - 1)->toDateString())
+            ->orderBy('created_at', 'desc')
+            ->first();
+
+        if ($baselineLog) {
+            $lastKnownWeight = $baselineLog->weight;
+        } elseif ($profile && $profile->weight > 0) {
+            $lastKnownWeight = $profile->weight;
         }
 
-        // Fallback: If no weight logs exist for the user at all, create one from their current profile weight
-        if ($logs->isEmpty()) {
-            $profile = Profile::where('user_id', $userId)->first();
-            if ($profile && $profile->weight > 0) {
-                try {
-                    $initialLog = \App\Models\WeightLog::create([
-                        'user_id' => $userId,
-                        'weight' => $profile->weight,
-                        'created_at' => Carbon::now(),
-                    ]);
-                    $logs = collect([$initialLog]);
-                } catch (\Exception $e) {
-                    // Ignore if insert fails due to missing table
-                }
-            }
-        }
-        
-        $grouped = $logs->groupBy(function($date) {
+        $grouped = $logs->groupBy(function ($date) {
             return Carbon::parse($date->created_at)->format('Y-m-d');
         });
-        
+
         $data = [];
-        
-        // Find the last known weight before the 7 days window (as a baseline)
-        $lastKnownWeight = null;
-        try {
-            $baselineLog = \App\Models\WeightLog::where('user_id', $userId)
-                ->whereDate('created_at', '<', Carbon::now()->subDays(6)->toDateString())
-                ->orderBy('created_at', 'desc')
-                ->first();
-            if ($baselineLog) {
-                $lastKnownWeight = $baselineLog->weight;
-            }
-        } catch (\Exception $e) {
-            // Table doesn't exist
-        }
-        
-        if ($lastKnownWeight === null) {
-            $profile = Profile::where('user_id', $userId)->first();
-            if ($profile) {
-                $lastKnownWeight = $profile->weight;
-            }
-        }
-        
-        // Fill last 7 days
-        for ($i = 6; $i >= 0; $i--) {
+        for ($i = $days - 1; $i >= 0; $i--) {
             $dateStr = Carbon::now()->subDays($i)->format('Y-m-d');
             $dayLogs = $grouped->get($dateStr, collect());
-            
+
             if ($dayLogs->isNotEmpty()) {
                 $lastKnownWeight = $dayLogs->last()->weight;
+            }
+
+            if ($lastKnownWeight !== null) {
                 $data[] = [
                     'date' => $dateStr,
-                    'weight' => round($lastKnownWeight, 1)
-                ];
-            } else if ($lastKnownWeight !== null) {
-                $data[] = [
-                    'date' => $dateStr,
-                    'weight' => round($lastKnownWeight, 1)
+                    'weight' => round((float) $lastKnownWeight, 1),
                 ];
             }
         }
-        
+
         return response()->json([
             'success' => true,
-            'data' => $data
+            'data' => $data,
         ]);
+    }
+
+    public function storeWeight(Request $request)
+    {
+        $request->validate([
+            'weight' => 'required|numeric|min:20|max:500',
+            'date' => 'nullable|date|before_or_equal:today',
+        ], [
+            'weight.required' => 'Berat badan wajib diisi.',
+            'weight.numeric' => 'Berat badan harus berupa angka.',
+            'weight.min' => 'Berat badan minimal 20 kg.',
+            'weight.max' => 'Berat badan maksimal 500 kg.',
+            'date.before_or_equal' => 'Tanggal tidak boleh di masa depan.',
+        ]);
+
+        $userId = Auth::id();
+        $date = $request->input('date') ? Carbon::parse($request->input('date')) : Carbon::now();
+
+        // Update or create weight log for the given date
+        $log = WeightLog::updateOrCreate(
+            [
+                'user_id' => $userId,
+                'created_at' => $date->format('Y-m-d'),
+            ],
+            [
+                'weight' => $request->input('weight'),
+            ]
+        );
+
+        // Also update profile weight if it's today
+        if ($date->isToday()) {
+            $profile = Profile::where('user_id', $userId)->first();
+            if ($profile) {
+                $profile->update(['weight' => $request->input('weight')]);
+            }
+        }
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Berat badan berhasil dicatat.',
+            'data' => [
+                'id' => $log->id,
+                'weight' => round((float) $log->weight, 1),
+                'date' => $log->created_at->format('Y-m-d'),
+            ],
+        ], 201);
     }
 }

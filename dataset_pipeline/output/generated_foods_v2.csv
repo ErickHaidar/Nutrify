@@ -1,0 +1,906 @@
+name,name_id,serving_size,calories,protein_g,carbohydrate_g,fat_g,sugar_g,sodium_mg,fiber_g,food_type,source
+Dada Ayam Rebus,Dada Ayam Rebus,100 g,120.0,25.0,0.0,2.5,0.0,50,0.0,base_food,generated-v2
+Dada Ayam Kukus,Dada Ayam Kukus,100 g,126.0,25.5,0.0,2.5,0.0,50,0.0,base_food,generated-v2
+Dada Ayam Bakar,Dada Ayam Bakar,100 g,138.0,26.2,0.0,3.0,0.0,50,0.0,base_food,generated-v2
+Dada Ayam Goreng,Dada Ayam Goreng,100 g,216.0,21.2,0.0,10.0,0.0,50,0.0,base_food,generated-v2
+Dada Ayam Tumis,Dada Ayam Tumis,100 g,180.0,22.5,0.0,7.5,0.0,50,0.0,base_food,generated-v2
+Dada Ayam Panggang,Dada Ayam Panggang,100 g,144.0,27.0,0.0,3.2,0.0,50,0.0,base_food,generated-v2
+Dada Ayam Pepes,Dada Ayam Pepes,100 g,132.0,26.2,0.0,2.8,0.0,50,0.0,base_food,generated-v2
+Dada Ayam Bacem,Dada Ayam Bacem,100 g,156.0,22.5,0.0,2.8,0.0,50,0.0,base_food,generated-v2
+Dada Ayam Balado,Dada Ayam Balado,100 g,168.0,23.0,0.0,6.2,0.0,50,0.0,base_food,generated-v2
+Dada Ayam Rica-Rica,Dada Ayam Rica-Rica,100 g,162.0,23.2,0.0,5.8,0.0,50,0.0,base_food,generated-v2
+Dada Ayam Kecap,Dada Ayam Kecap,100 g,156.0,23.8,0.0,3.5,0.0,50,0.0,base_food,generated-v2
+Dada Ayam Semur,Dada Ayam Semur,100 g,162.0,23.2,0.0,4.5,0.0,50,0.0,base_food,generated-v2
+Dada Ayam Opor,Dada Ayam Opor,100 g,174.0,22.5,0.0,7.5,0.0,50,0.0,base_food,generated-v2
+Dada Ayam Gulai,Dada Ayam Gulai,100 g,180.0,22.0,0.0,8.8,0.0,50,0.0,base_food,generated-v2
+Dada Ayam Kari,Dada Ayam Kari,100 g,174.0,22.5,0.0,8.0,0.0,50,0.0,base_food,generated-v2
+Dada Ayam Asam Manis,Dada Ayam Asam Manis,100 g,150.0,23.8,0.0,3.8,0.0,50,0.0,base_food,generated-v2
+Dada Ayam Saus Tiram,Dada Ayam Saus Tiram,100 g,156.0,25.0,0.0,4.0,0.0,50,0.0,base_food,generated-v2
+Dada Ayam Lada Hitam,Dada Ayam Lada Hitam,100 g,150.0,25.0,0.0,4.5,0.0,50,0.0,base_food,generated-v2
+Dada Ayam Tepung Goreng,Dada Ayam Tepung Goreng,100 g,240.0,20.0,0.0,12.5,0.0,50,0.0,base_food,generated-v2
+Paha Ayam Rebus,Paha Ayam Rebus,100 g,145.0,20.0,0.0,7.0,0.0,65,0.0,base_food,generated-v2
+Paha Ayam Kukus,Paha Ayam Kukus,100 g,152.2,20.4,0.0,7.0,0.0,65,0.0,base_food,generated-v2
+Paha Ayam Bakar,Paha Ayam Bakar,100 g,166.8,21.0,0.0,8.4,0.0,65,0.0,base_food,generated-v2
+Paha Ayam Goreng,Paha Ayam Goreng,100 g,261.0,17.0,0.0,28.0,0.0,65,0.0,base_food,generated-v2
+Paha Ayam Tumis,Paha Ayam Tumis,100 g,217.5,18.0,0.0,21.0,0.0,65,0.0,base_food,generated-v2
+Paha Ayam Panggang,Paha Ayam Panggang,100 g,174.0,21.6,0.0,9.1,0.0,65,0.0,base_food,generated-v2
+Paha Ayam Pepes,Paha Ayam Pepes,100 g,159.5,21.0,0.0,7.7,0.0,65,0.0,base_food,generated-v2
+Paha Ayam Bacem,Paha Ayam Bacem,100 g,188.5,18.0,0.0,7.7,0.0,65,0.0,base_food,generated-v2
+Paha Ayam Balado,Paha Ayam Balado,100 g,203.0,18.4,0.0,17.5,0.0,65,0.0,base_food,generated-v2
+Paha Ayam Rica-Rica,Paha Ayam Rica-Rica,100 g,195.8,18.6,0.0,16.1,0.0,65,0.0,base_food,generated-v2
+Paha Ayam Kecap,Paha Ayam Kecap,100 g,188.5,19.0,0.0,9.8,0.0,65,0.0,base_food,generated-v2
+Paha Ayam Semur,Paha Ayam Semur,100 g,195.8,18.6,0.0,12.6,0.0,65,0.0,base_food,generated-v2
+Paha Ayam Opor,Paha Ayam Opor,100 g,210.2,18.0,0.0,21.0,0.0,65,0.0,base_food,generated-v2
+Paha Ayam Gulai,Paha Ayam Gulai,100 g,217.5,17.6,0.0,24.5,0.0,65,0.0,base_food,generated-v2
+Paha Ayam Kari,Paha Ayam Kari,100 g,210.2,18.0,0.0,22.4,0.0,65,0.0,base_food,generated-v2
+Paha Ayam Asam Manis,Paha Ayam Asam Manis,100 g,181.2,19.0,0.0,10.5,0.0,65,0.0,base_food,generated-v2
+Paha Ayam Saus Tiram,Paha Ayam Saus Tiram,100 g,188.5,20.0,0.0,11.2,0.0,65,0.0,base_food,generated-v2
+Paha Ayam Lada Hitam,Paha Ayam Lada Hitam,100 g,181.2,20.0,0.0,12.6,0.0,65,0.0,base_food,generated-v2
+Paha Ayam Tepung Goreng,Paha Ayam Tepung Goreng,100 g,290.0,16.0,0.0,35.0,0.0,65,0.0,base_food,generated-v2
+Sayap Ayam Rebus,Sayap Ayam Rebus,100 g,160.0,18.0,0.0,10.0,0.0,55,0.0,base_food,generated-v2
+Sayap Ayam Kukus,Sayap Ayam Kukus,100 g,168.0,18.4,0.0,10.0,0.0,55,0.0,base_food,generated-v2
+Sayap Ayam Bakar,Sayap Ayam Bakar,100 g,184.0,18.9,0.0,12.0,0.0,55,0.0,base_food,generated-v2
+Sayap Ayam Goreng,Sayap Ayam Goreng,100 g,288.0,15.3,0.0,40.0,0.0,55,0.0,base_food,generated-v2
+Sayap Ayam Tumis,Sayap Ayam Tumis,100 g,240.0,16.2,0.0,30.0,0.0,55,0.0,base_food,generated-v2
+Sayap Ayam Panggang,Sayap Ayam Panggang,100 g,192.0,19.4,0.0,13.0,0.0,55,0.0,base_food,generated-v2
+Sayap Ayam Pepes,Sayap Ayam Pepes,100 g,176.0,18.9,0.0,11.0,0.0,55,0.0,base_food,generated-v2
+Sayap Ayam Bacem,Sayap Ayam Bacem,100 g,208.0,16.2,0.0,11.0,0.0,55,0.0,base_food,generated-v2
+Sayap Ayam Balado,Sayap Ayam Balado,100 g,224.0,16.6,0.0,25.0,0.0,55,0.0,base_food,generated-v2
+Sayap Ayam Rica-Rica,Sayap Ayam Rica-Rica,100 g,216.0,16.7,0.0,23.0,0.0,55,0.0,base_food,generated-v2
+Sayap Ayam Kecap,Sayap Ayam Kecap,100 g,208.0,17.1,0.0,14.0,0.0,55,0.0,base_food,generated-v2
+Sayap Ayam Semur,Sayap Ayam Semur,100 g,216.0,16.7,0.0,18.0,0.0,55,0.0,base_food,generated-v2
+Sayap Ayam Opor,Sayap Ayam Opor,100 g,232.0,16.2,0.0,30.0,0.0,55,0.0,base_food,generated-v2
+Sayap Ayam Gulai,Sayap Ayam Gulai,100 g,240.0,15.8,0.0,35.0,0.0,55,0.0,base_food,generated-v2
+Sayap Ayam Kari,Sayap Ayam Kari,100 g,232.0,16.2,0.0,32.0,0.0,55,0.0,base_food,generated-v2
+Sayap Ayam Asam Manis,Sayap Ayam Asam Manis,100 g,200.0,17.1,0.0,15.0,0.0,55,0.0,base_food,generated-v2
+Sayap Ayam Saus Tiram,Sayap Ayam Saus Tiram,100 g,208.0,18.0,0.0,16.0,0.0,55,0.0,base_food,generated-v2
+Sayap Ayam Lada Hitam,Sayap Ayam Lada Hitam,100 g,200.0,18.0,0.0,18.0,0.0,55,0.0,base_food,generated-v2
+Sayap Ayam Tepung Goreng,Sayap Ayam Tepung Goreng,100 g,320.0,14.4,0.0,50.0,0.0,55,0.0,base_food,generated-v2
+Ayam Utuh Rebus,Ayam Utuh Rebus,100 g,150.0,21.0,0.0,7.0,0.0,60,0.0,base_food,generated-v2
+Ayam Utuh Kukus,Ayam Utuh Kukus,100 g,157.5,21.4,0.0,7.0,0.0,60,0.0,base_food,generated-v2
+Ayam Utuh Bakar,Ayam Utuh Bakar,100 g,172.5,22.1,0.0,8.4,0.0,60,0.0,base_food,generated-v2
+Ayam Utuh Goreng,Ayam Utuh Goreng,100 g,270.0,17.8,0.0,28.0,0.0,60,0.0,base_food,generated-v2
+Ayam Utuh Tumis,Ayam Utuh Tumis,100 g,225.0,18.9,0.0,21.0,0.0,60,0.0,base_food,generated-v2
+Ayam Utuh Panggang,Ayam Utuh Panggang,100 g,180.0,22.7,0.0,9.1,0.0,60,0.0,base_food,generated-v2
+Ayam Utuh Pepes,Ayam Utuh Pepes,100 g,165.0,22.1,0.0,7.7,0.0,60,0.0,base_food,generated-v2
+Ayam Utuh Bacem,Ayam Utuh Bacem,100 g,195.0,18.9,0.0,7.7,0.0,60,0.0,base_food,generated-v2
+Ayam Utuh Balado,Ayam Utuh Balado,100 g,210.0,19.3,0.0,17.5,0.0,60,0.0,base_food,generated-v2
+Ayam Utuh Rica-Rica,Ayam Utuh Rica-Rica,100 g,202.5,19.5,0.0,16.1,0.0,60,0.0,base_food,generated-v2
+Ayam Utuh Kecap,Ayam Utuh Kecap,100 g,195.0,19.9,0.0,9.8,0.0,60,0.0,base_food,generated-v2
+Ayam Utuh Semur,Ayam Utuh Semur,100 g,202.5,19.5,0.0,12.6,0.0,60,0.0,base_food,generated-v2
+Ayam Utuh Opor,Ayam Utuh Opor,100 g,217.5,18.9,0.0,21.0,0.0,60,0.0,base_food,generated-v2
+Ayam Utuh Gulai,Ayam Utuh Gulai,100 g,225.0,18.5,0.0,24.5,0.0,60,0.0,base_food,generated-v2
+Ayam Utuh Kari,Ayam Utuh Kari,100 g,217.5,18.9,0.0,22.4,0.0,60,0.0,base_food,generated-v2
+Ayam Utuh Asam Manis,Ayam Utuh Asam Manis,100 g,187.5,19.9,0.0,10.5,0.0,60,0.0,base_food,generated-v2
+Ayam Utuh Saus Tiram,Ayam Utuh Saus Tiram,100 g,195.0,21.0,0.0,11.2,0.0,60,0.0,base_food,generated-v2
+Ayam Utuh Lada Hitam,Ayam Utuh Lada Hitam,100 g,187.5,21.0,0.0,12.6,0.0,60,0.0,base_food,generated-v2
+Ayam Utuh Tepung Goreng,Ayam Utuh Tepung Goreng,100 g,300.0,16.8,0.0,35.0,0.0,60,0.0,base_food,generated-v2
+Hati Ayam Rebus,Hati Ayam Rebus,100 g,135.0,22.0,0.5,5.0,0.0,45,0.0,base_food,generated-v2
+Hati Ayam Kukus,Hati Ayam Kukus,100 g,141.8,22.4,0.5,5.0,0.0,45,0.0,base_food,generated-v2
+Hati Ayam Bakar,Hati Ayam Bakar,100 g,155.2,23.1,0.5,6.0,0.0,45,0.0,base_food,generated-v2
+Hati Ayam Goreng,Hati Ayam Goreng,100 g,243.0,18.7,0.6,20.0,0.0,45,0.0,base_food,generated-v2
+Hati Ayam Tumis,Hati Ayam Tumis,100 g,202.5,19.8,0.6,15.0,0.0,45,0.0,base_food,generated-v2
+Hati Ayam Panggang,Hati Ayam Panggang,100 g,162.0,23.8,0.5,6.5,0.0,45,0.0,base_food,generated-v2
+Hati Ayam Pepes,Hati Ayam Pepes,100 g,148.5,23.1,0.5,5.5,0.0,45,0.0,base_food,generated-v2
+Hati Ayam Bacem,Hati Ayam Bacem,100 g,175.5,19.8,0.8,5.5,0.0,45,0.0,base_food,generated-v2
+Hati Ayam Balado,Hati Ayam Balado,100 g,189.0,20.2,0.6,12.5,0.0,45,0.0,base_food,generated-v2
+Hati Ayam Rica-Rica,Hati Ayam Rica-Rica,100 g,182.2,20.5,0.6,11.5,0.0,45,0.0,base_food,generated-v2
+Hati Ayam Kecap,Hati Ayam Kecap,100 g,175.5,20.9,0.7,7.0,0.0,45,0.0,base_food,generated-v2
+Hati Ayam Semur,Hati Ayam Semur,100 g,182.2,20.5,0.7,9.0,0.0,45,0.0,base_food,generated-v2
+Hati Ayam Opor,Hati Ayam Opor,100 g,195.8,19.8,0.6,15.0,0.0,45,0.0,base_food,generated-v2
+Hati Ayam Gulai,Hati Ayam Gulai,100 g,202.5,19.4,0.6,17.5,0.0,45,0.0,base_food,generated-v2
+Hati Ayam Kari,Hati Ayam Kari,100 g,195.8,19.8,0.6,16.0,0.0,45,0.0,base_food,generated-v2
+Hati Ayam Asam Manis,Hati Ayam Asam Manis,100 g,168.8,20.9,0.6,7.5,0.0,45,0.0,base_food,generated-v2
+Hati Ayam Saus Tiram,Hati Ayam Saus Tiram,100 g,175.5,22.0,0.6,8.0,0.0,45,0.0,base_food,generated-v2
+Hati Ayam Lada Hitam,Hati Ayam Lada Hitam,100 g,168.8,22.0,0.5,9.0,0.0,45,0.0,base_food,generated-v2
+Hati Ayam Tepung Goreng,Hati Ayam Tepung Goreng,100 g,270.0,17.6,0.7,25.0,0.0,45,0.0,base_food,generated-v2
+Ampela Ayam Rebus,Ampela Ayam Rebus,100 g,120.0,24.0,0.5,2.0,0.0,50,0.0,base_food,generated-v2
+Ampela Ayam Kukus,Ampela Ayam Kukus,100 g,126.0,24.5,0.5,2.0,0.0,50,0.0,base_food,generated-v2
+Ampela Ayam Bakar,Ampela Ayam Bakar,100 g,138.0,25.2,0.5,2.4,0.0,50,0.0,base_food,generated-v2
+Ampela Ayam Goreng,Ampela Ayam Goreng,100 g,216.0,20.4,0.6,8.0,0.0,50,0.0,base_food,generated-v2
+Ampela Ayam Tumis,Ampela Ayam Tumis,100 g,180.0,21.6,0.6,6.0,0.0,50,0.0,base_food,generated-v2
+Ampela Ayam Panggang,Ampela Ayam Panggang,100 g,144.0,25.9,0.5,2.6,0.0,50,0.0,base_food,generated-v2
+Ampela Ayam Pepes,Ampela Ayam Pepes,100 g,132.0,25.2,0.5,2.2,0.0,50,0.0,base_food,generated-v2
+Ampela Ayam Bacem,Ampela Ayam Bacem,100 g,156.0,21.6,0.8,2.2,0.0,50,0.0,base_food,generated-v2
+Ampela Ayam Balado,Ampela Ayam Balado,100 g,168.0,22.1,0.6,5.0,0.0,50,0.0,base_food,generated-v2
+Ampela Ayam Rica-Rica,Ampela Ayam Rica-Rica,100 g,162.0,22.3,0.6,4.6,0.0,50,0.0,base_food,generated-v2
+Ampela Ayam Kecap,Ampela Ayam Kecap,100 g,156.0,22.8,0.7,2.8,0.0,50,0.0,base_food,generated-v2
+Ampela Ayam Semur,Ampela Ayam Semur,100 g,162.0,22.3,0.7,3.6,0.0,50,0.0,base_food,generated-v2
+Ampela Ayam Opor,Ampela Ayam Opor,100 g,174.0,21.6,0.6,6.0,0.0,50,0.0,base_food,generated-v2
+Ampela Ayam Gulai,Ampela Ayam Gulai,100 g,180.0,21.1,0.6,7.0,0.0,50,0.0,base_food,generated-v2
+Ampela Ayam Kari,Ampela Ayam Kari,100 g,174.0,21.6,0.6,6.4,0.0,50,0.0,base_food,generated-v2
+Ampela Ayam Asam Manis,Ampela Ayam Asam Manis,100 g,150.0,22.8,0.6,3.0,0.0,50,0.0,base_food,generated-v2
+Ampela Ayam Saus Tiram,Ampela Ayam Saus Tiram,100 g,156.0,24.0,0.6,3.2,0.0,50,0.0,base_food,generated-v2
+Ampela Ayam Lada Hitam,Ampela Ayam Lada Hitam,100 g,150.0,24.0,0.5,3.6,0.0,50,0.0,base_food,generated-v2
+Ampela Ayam Tepung Goreng,Ampela Ayam Tepung Goreng,100 g,240.0,19.2,0.7,10.0,0.0,50,0.0,base_food,generated-v2
+Daging Sapi Rebus,Daging Sapi Rebus,100 g,180.0,26.0,0.0,8.0,0.0,55,0.0,base_food,generated-v2
+Daging Sapi Kukus,Daging Sapi Kukus,100 g,189.0,26.5,0.0,8.0,0.0,55,0.0,base_food,generated-v2
+Daging Sapi Bakar,Daging Sapi Bakar,100 g,207.0,27.3,0.0,9.6,0.0,55,0.0,base_food,generated-v2
+Daging Sapi Goreng,Daging Sapi Goreng,100 g,324.0,22.1,0.0,32.0,0.0,55,0.0,base_food,generated-v2
+Daging Sapi Tumis,Daging Sapi Tumis,100 g,270.0,23.4,0.0,24.0,0.0,55,0.0,base_food,generated-v2
+Daging Sapi Panggang,Daging Sapi Panggang,100 g,216.0,28.1,0.0,10.4,0.0,55,0.0,base_food,generated-v2
+Daging Sapi Pepes,Daging Sapi Pepes,100 g,198.0,27.3,0.0,8.8,0.0,55,0.0,base_food,generated-v2
+Daging Sapi Bacem,Daging Sapi Bacem,100 g,234.0,23.4,0.0,8.8,0.0,55,0.0,base_food,generated-v2
+Daging Sapi Balado,Daging Sapi Balado,100 g,252.0,23.9,0.0,20.0,0.0,55,0.0,base_food,generated-v2
+Daging Sapi Rica-Rica,Daging Sapi Rica-Rica,100 g,243.0,24.2,0.0,18.4,0.0,55,0.0,base_food,generated-v2
+Daging Sapi Kecap,Daging Sapi Kecap,100 g,234.0,24.7,0.0,11.2,0.0,55,0.0,base_food,generated-v2
+Daging Sapi Semur,Daging Sapi Semur,100 g,243.0,24.2,0.0,14.4,0.0,55,0.0,base_food,generated-v2
+Daging Sapi Opor,Daging Sapi Opor,100 g,261.0,23.4,0.0,24.0,0.0,55,0.0,base_food,generated-v2
+Daging Sapi Gulai,Daging Sapi Gulai,100 g,270.0,22.9,0.0,28.0,0.0,55,0.0,base_food,generated-v2
+Daging Sapi Kari,Daging Sapi Kari,100 g,261.0,23.4,0.0,25.6,0.0,55,0.0,base_food,generated-v2
+Daging Sapi Asam Manis,Daging Sapi Asam Manis,100 g,225.0,24.7,0.0,12.0,0.0,55,0.0,base_food,generated-v2
+Daging Sapi Saus Tiram,Daging Sapi Saus Tiram,100 g,234.0,26.0,0.0,12.8,0.0,55,0.0,base_food,generated-v2
+Daging Sapi Lada Hitam,Daging Sapi Lada Hitam,100 g,225.0,26.0,0.0,14.4,0.0,55,0.0,base_food,generated-v2
+Daging Sapi Tepung Goreng,Daging Sapi Tepung Goreng,100 g,360.0,20.8,0.0,40.0,0.0,55,0.0,base_food,generated-v2
+Daging Sapi Giling Rebus,Daging Sapi Giling Rebus,100 g,220.0,22.0,0.0,14.0,0.0,60,0.0,base_food,generated-v2
+Daging Sapi Giling Kukus,Daging Sapi Giling Kukus,100 g,231.0,22.4,0.0,14.0,0.0,60,0.0,base_food,generated-v2
+Daging Sapi Giling Bakar,Daging Sapi Giling Bakar,100 g,253.0,23.1,0.0,16.8,0.0,60,0.0,base_food,generated-v2
+Daging Sapi Giling Goreng,Daging Sapi Giling Goreng,100 g,396.0,18.7,0.0,56.0,0.0,60,0.0,base_food,generated-v2
+Daging Sapi Giling Tumis,Daging Sapi Giling Tumis,100 g,330.0,19.8,0.0,42.0,0.0,60,0.0,base_food,generated-v2
+Daging Sapi Giling Panggang,Daging Sapi Giling Panggang,100 g,264.0,23.8,0.0,18.2,0.0,60,0.0,base_food,generated-v2
+Daging Sapi Giling Pepes,Daging Sapi Giling Pepes,100 g,242.0,23.1,0.0,15.4,0.0,60,0.0,base_food,generated-v2
+Daging Sapi Giling Bacem,Daging Sapi Giling Bacem,100 g,286.0,19.8,0.0,15.4,0.0,60,0.0,base_food,generated-v2
+Daging Sapi Giling Balado,Daging Sapi Giling Balado,100 g,308.0,20.2,0.0,35.0,0.0,60,0.0,base_food,generated-v2
+Daging Sapi Giling Rica-Rica,Daging Sapi Giling Rica-Rica,100 g,297.0,20.5,0.0,32.2,0.0,60,0.0,base_food,generated-v2
+Daging Sapi Giling Kecap,Daging Sapi Giling Kecap,100 g,286.0,20.9,0.0,19.6,0.0,60,0.0,base_food,generated-v2
+Daging Sapi Giling Semur,Daging Sapi Giling Semur,100 g,297.0,20.5,0.0,25.2,0.0,60,0.0,base_food,generated-v2
+Daging Sapi Giling Opor,Daging Sapi Giling Opor,100 g,319.0,19.8,0.0,42.0,0.0,60,0.0,base_food,generated-v2
+Daging Sapi Giling Gulai,Daging Sapi Giling Gulai,100 g,330.0,19.4,0.0,49.0,0.0,60,0.0,base_food,generated-v2
+Daging Sapi Giling Kari,Daging Sapi Giling Kari,100 g,319.0,19.8,0.0,44.8,0.0,60,0.0,base_food,generated-v2
+Daging Sapi Giling Asam Manis,Daging Sapi Giling Asam Manis,100 g,275.0,20.9,0.0,21.0,0.0,60,0.0,base_food,generated-v2
+Daging Sapi Giling Saus Tiram,Daging Sapi Giling Saus Tiram,100 g,286.0,22.0,0.0,22.4,0.0,60,0.0,base_food,generated-v2
+Daging Sapi Giling Lada Hitam,Daging Sapi Giling Lada Hitam,100 g,275.0,22.0,0.0,25.2,0.0,60,0.0,base_food,generated-v2
+Daging Sapi Giling Tepung Goreng,Daging Sapi Giling Tepung Goreng,100 g,440.0,17.6,0.0,70.0,0.0,60,0.0,base_food,generated-v2
+Daging Kambing Rebus,Daging Kambing Rebus,100 g,170.0,24.0,0.0,7.5,0.0,75,0.0,base_food,generated-v2
+Daging Kambing Kukus,Daging Kambing Kukus,100 g,178.5,24.5,0.0,7.5,0.0,75,0.0,base_food,generated-v2
+Daging Kambing Bakar,Daging Kambing Bakar,100 g,195.5,25.2,0.0,9.0,0.0,75,0.0,base_food,generated-v2
+Daging Kambing Goreng,Daging Kambing Goreng,100 g,306.0,20.4,0.0,30.0,0.0,75,0.0,base_food,generated-v2
+Daging Kambing Tumis,Daging Kambing Tumis,100 g,255.0,21.6,0.0,22.5,0.0,75,0.0,base_food,generated-v2
+Daging Kambing Panggang,Daging Kambing Panggang,100 g,204.0,25.9,0.0,9.8,0.0,75,0.0,base_food,generated-v2
+Daging Kambing Pepes,Daging Kambing Pepes,100 g,187.0,25.2,0.0,8.2,0.0,75,0.0,base_food,generated-v2
+Daging Kambing Bacem,Daging Kambing Bacem,100 g,221.0,21.6,0.0,8.2,0.0,75,0.0,base_food,generated-v2
+Daging Kambing Balado,Daging Kambing Balado,100 g,238.0,22.1,0.0,18.8,0.0,75,0.0,base_food,generated-v2
+Daging Kambing Rica-Rica,Daging Kambing Rica-Rica,100 g,229.5,22.3,0.0,17.2,0.0,75,0.0,base_food,generated-v2
+Daging Kambing Kecap,Daging Kambing Kecap,100 g,221.0,22.8,0.0,10.5,0.0,75,0.0,base_food,generated-v2
+Daging Kambing Semur,Daging Kambing Semur,100 g,229.5,22.3,0.0,13.5,0.0,75,0.0,base_food,generated-v2
+Daging Kambing Opor,Daging Kambing Opor,100 g,246.5,21.6,0.0,22.5,0.0,75,0.0,base_food,generated-v2
+Daging Kambing Gulai,Daging Kambing Gulai,100 g,255.0,21.1,0.0,26.2,0.0,75,0.0,base_food,generated-v2
+Daging Kambing Kari,Daging Kambing Kari,100 g,246.5,21.6,0.0,24.0,0.0,75,0.0,base_food,generated-v2
+Daging Kambing Asam Manis,Daging Kambing Asam Manis,100 g,212.5,22.8,0.0,11.2,0.0,75,0.0,base_food,generated-v2
+Daging Kambing Saus Tiram,Daging Kambing Saus Tiram,100 g,221.0,24.0,0.0,12.0,0.0,75,0.0,base_food,generated-v2
+Daging Kambing Lada Hitam,Daging Kambing Lada Hitam,100 g,212.5,24.0,0.0,13.5,0.0,75,0.0,base_food,generated-v2
+Daging Kambing Tepung Goreng,Daging Kambing Tepung Goreng,100 g,340.0,19.2,0.0,37.5,0.0,75,0.0,base_food,generated-v2
+Iga Sapi Rebus,Iga Sapi Rebus,100 g,230.0,20.0,0.0,16.0,0.0,50,0.0,base_food,generated-v2
+Iga Sapi Kukus,Iga Sapi Kukus,100 g,241.5,20.4,0.0,16.0,0.0,50,0.0,base_food,generated-v2
+Iga Sapi Bakar,Iga Sapi Bakar,100 g,264.5,21.0,0.0,19.2,0.0,50,0.0,base_food,generated-v2
+Iga Sapi Goreng,Iga Sapi Goreng,100 g,414.0,17.0,0.0,64.0,0.0,50,0.0,base_food,generated-v2
+Iga Sapi Tumis,Iga Sapi Tumis,100 g,345.0,18.0,0.0,48.0,0.0,50,0.0,base_food,generated-v2
+Iga Sapi Panggang,Iga Sapi Panggang,100 g,276.0,21.6,0.0,20.8,0.0,50,0.0,base_food,generated-v2
+Iga Sapi Pepes,Iga Sapi Pepes,100 g,253.0,21.0,0.0,17.6,0.0,50,0.0,base_food,generated-v2
+Iga Sapi Bacem,Iga Sapi Bacem,100 g,299.0,18.0,0.0,17.6,0.0,50,0.0,base_food,generated-v2
+Iga Sapi Balado,Iga Sapi Balado,100 g,322.0,18.4,0.0,40.0,0.0,50,0.0,base_food,generated-v2
+Iga Sapi Rica-Rica,Iga Sapi Rica-Rica,100 g,310.5,18.6,0.0,36.8,0.0,50,0.0,base_food,generated-v2
+Iga Sapi Kecap,Iga Sapi Kecap,100 g,299.0,19.0,0.0,22.4,0.0,50,0.0,base_food,generated-v2
+Iga Sapi Semur,Iga Sapi Semur,100 g,310.5,18.6,0.0,28.8,0.0,50,0.0,base_food,generated-v2
+Iga Sapi Opor,Iga Sapi Opor,100 g,333.5,18.0,0.0,48.0,0.0,50,0.0,base_food,generated-v2
+Iga Sapi Gulai,Iga Sapi Gulai,100 g,345.0,17.6,0.0,56.0,0.0,50,0.0,base_food,generated-v2
+Iga Sapi Kari,Iga Sapi Kari,100 g,333.5,18.0,0.0,51.2,0.0,50,0.0,base_food,generated-v2
+Iga Sapi Asam Manis,Iga Sapi Asam Manis,100 g,287.5,19.0,0.0,24.0,0.0,50,0.0,base_food,generated-v2
+Iga Sapi Saus Tiram,Iga Sapi Saus Tiram,100 g,299.0,20.0,0.0,25.6,0.0,50,0.0,base_food,generated-v2
+Iga Sapi Lada Hitam,Iga Sapi Lada Hitam,100 g,287.5,20.0,0.0,28.8,0.0,50,0.0,base_food,generated-v2
+Iga Sapi Tepung Goreng,Iga Sapi Tepung Goreng,100 g,460.0,16.0,0.0,80.0,0.0,50,0.0,base_food,generated-v2
+Lidah Sapi Rebus,Lidah Sapi Rebus,100 g,210.0,18.0,0.0,15.0,0.0,55,0.0,base_food,generated-v2
+Lidah Sapi Kukus,Lidah Sapi Kukus,100 g,220.5,18.4,0.0,15.0,0.0,55,0.0,base_food,generated-v2
+Lidah Sapi Bakar,Lidah Sapi Bakar,100 g,241.5,18.9,0.0,18.0,0.0,55,0.0,base_food,generated-v2
+Lidah Sapi Goreng,Lidah Sapi Goreng,100 g,378.0,15.3,0.0,60.0,0.0,55,0.0,base_food,generated-v2
+Lidah Sapi Tumis,Lidah Sapi Tumis,100 g,315.0,16.2,0.0,45.0,0.0,55,0.0,base_food,generated-v2
+Lidah Sapi Panggang,Lidah Sapi Panggang,100 g,252.0,19.4,0.0,19.5,0.0,55,0.0,base_food,generated-v2
+Lidah Sapi Pepes,Lidah Sapi Pepes,100 g,231.0,18.9,0.0,16.5,0.0,55,0.0,base_food,generated-v2
+Lidah Sapi Bacem,Lidah Sapi Bacem,100 g,273.0,16.2,0.0,16.5,0.0,55,0.0,base_food,generated-v2
+Lidah Sapi Balado,Lidah Sapi Balado,100 g,294.0,16.6,0.0,37.5,0.0,55,0.0,base_food,generated-v2
+Lidah Sapi Rica-Rica,Lidah Sapi Rica-Rica,100 g,283.5,16.7,0.0,34.5,0.0,55,0.0,base_food,generated-v2
+Lidah Sapi Kecap,Lidah Sapi Kecap,100 g,273.0,17.1,0.0,21.0,0.0,55,0.0,base_food,generated-v2
+Lidah Sapi Semur,Lidah Sapi Semur,100 g,283.5,16.7,0.0,27.0,0.0,55,0.0,base_food,generated-v2
+Lidah Sapi Opor,Lidah Sapi Opor,100 g,304.5,16.2,0.0,45.0,0.0,55,0.0,base_food,generated-v2
+Lidah Sapi Gulai,Lidah Sapi Gulai,100 g,315.0,15.8,0.0,52.5,0.0,55,0.0,base_food,generated-v2
+Lidah Sapi Kari,Lidah Sapi Kari,100 g,304.5,16.2,0.0,48.0,0.0,55,0.0,base_food,generated-v2
+Lidah Sapi Asam Manis,Lidah Sapi Asam Manis,100 g,262.5,17.1,0.0,22.5,0.0,55,0.0,base_food,generated-v2
+Lidah Sapi Saus Tiram,Lidah Sapi Saus Tiram,100 g,273.0,18.0,0.0,24.0,0.0,55,0.0,base_food,generated-v2
+Lidah Sapi Lada Hitam,Lidah Sapi Lada Hitam,100 g,262.5,18.0,0.0,27.0,0.0,55,0.0,base_food,generated-v2
+Lidah Sapi Tepung Goreng,Lidah Sapi Tepung Goreng,100 g,420.0,14.4,0.0,75.0,0.0,55,0.0,base_food,generated-v2
+Ikan Mas Rebus,Ikan Mas Rebus,100 g,125.0,18.0,0.0,5.5,0.0,45,0.0,base_food,generated-v2
+Ikan Mas Kukus,Ikan Mas Kukus,100 g,131.2,18.4,0.0,5.5,0.0,45,0.0,base_food,generated-v2
+Ikan Mas Bakar,Ikan Mas Bakar,100 g,143.8,18.9,0.0,6.6,0.0,45,0.0,base_food,generated-v2
+Ikan Mas Goreng,Ikan Mas Goreng,100 g,225.0,15.3,0.0,22.0,0.0,45,0.0,base_food,generated-v2
+Ikan Mas Panggang,Ikan Mas Panggang,100 g,150.0,19.4,0.0,7.2,0.0,45,0.0,base_food,generated-v2
+Ikan Mas Pepes,Ikan Mas Pepes,100 g,137.5,18.9,0.0,6.1,0.0,45,0.0,base_food,generated-v2
+Ikan Mas Bacem,Ikan Mas Bacem,100 g,162.5,16.2,0.0,6.1,0.0,45,0.0,base_food,generated-v2
+Ikan Mas Balado,Ikan Mas Balado,100 g,175.0,16.6,0.0,13.8,0.0,45,0.0,base_food,generated-v2
+Ikan Mas Rica-Rica,Ikan Mas Rica-Rica,100 g,168.8,16.7,0.0,12.6,0.0,45,0.0,base_food,generated-v2
+Ikan Mas Kecap,Ikan Mas Kecap,100 g,162.5,17.1,0.0,7.7,0.0,45,0.0,base_food,generated-v2
+Ikan Mas Semur,Ikan Mas Semur,100 g,168.8,16.7,0.0,9.9,0.0,45,0.0,base_food,generated-v2
+Ikan Mas Opor,Ikan Mas Opor,100 g,181.2,16.2,0.0,16.5,0.0,45,0.0,base_food,generated-v2
+Ikan Mas Gulai,Ikan Mas Gulai,100 g,187.5,15.8,0.0,19.2,0.0,45,0.0,base_food,generated-v2
+Ikan Mas Kari,Ikan Mas Kari,100 g,181.2,16.2,0.0,17.6,0.0,45,0.0,base_food,generated-v2
+Ikan Mas Asam Manis,Ikan Mas Asam Manis,100 g,156.2,17.1,0.0,8.2,0.0,45,0.0,base_food,generated-v2
+Ikan Mas Saus Tiram,Ikan Mas Saus Tiram,100 g,162.5,18.0,0.0,8.8,0.0,45,0.0,base_food,generated-v2
+Ikan Mas Lada Hitam,Ikan Mas Lada Hitam,100 g,156.2,18.0,0.0,9.9,0.0,45,0.0,base_food,generated-v2
+Ikan Mas Tepung Goreng,Ikan Mas Tepung Goreng,100 g,250.0,14.4,0.0,27.5,0.0,45,0.0,base_food,generated-v2
+Ikan Nila Rebus,Ikan Nila Rebus,100 g,115.0,19.0,0.0,4.0,0.0,40,0.0,base_food,generated-v2
+Ikan Nila Kukus,Ikan Nila Kukus,100 g,120.8,19.4,0.0,4.0,0.0,40,0.0,base_food,generated-v2
+Ikan Nila Bakar,Ikan Nila Bakar,100 g,132.2,19.9,0.0,4.8,0.0,40,0.0,base_food,generated-v2
+Ikan Nila Goreng,Ikan Nila Goreng,100 g,207.0,16.1,0.0,16.0,0.0,40,0.0,base_food,generated-v2
+Ikan Nila Panggang,Ikan Nila Panggang,100 g,138.0,20.5,0.0,5.2,0.0,40,0.0,base_food,generated-v2
+Ikan Nila Pepes,Ikan Nila Pepes,100 g,126.5,19.9,0.0,4.4,0.0,40,0.0,base_food,generated-v2
+Ikan Nila Bacem,Ikan Nila Bacem,100 g,149.5,17.1,0.0,4.4,0.0,40,0.0,base_food,generated-v2
+Ikan Nila Balado,Ikan Nila Balado,100 g,161.0,17.5,0.0,10.0,0.0,40,0.0,base_food,generated-v2
+Ikan Nila Rica-Rica,Ikan Nila Rica-Rica,100 g,155.2,17.7,0.0,9.2,0.0,40,0.0,base_food,generated-v2
+Ikan Nila Kecap,Ikan Nila Kecap,100 g,149.5,18.1,0.0,5.6,0.0,40,0.0,base_food,generated-v2
+Ikan Nila Semur,Ikan Nila Semur,100 g,155.2,17.7,0.0,7.2,0.0,40,0.0,base_food,generated-v2
+Ikan Nila Opor,Ikan Nila Opor,100 g,166.8,17.1,0.0,12.0,0.0,40,0.0,base_food,generated-v2
+Ikan Nila Gulai,Ikan Nila Gulai,100 g,172.5,16.7,0.0,14.0,0.0,40,0.0,base_food,generated-v2
+Ikan Nila Kari,Ikan Nila Kari,100 g,166.8,17.1,0.0,12.8,0.0,40,0.0,base_food,generated-v2
+Ikan Nila Asam Manis,Ikan Nila Asam Manis,100 g,143.8,18.1,0.0,6.0,0.0,40,0.0,base_food,generated-v2
+Ikan Nila Saus Tiram,Ikan Nila Saus Tiram,100 g,149.5,19.0,0.0,6.4,0.0,40,0.0,base_food,generated-v2
+Ikan Nila Lada Hitam,Ikan Nila Lada Hitam,100 g,143.8,19.0,0.0,7.2,0.0,40,0.0,base_food,generated-v2
+Ikan Nila Tepung Goreng,Ikan Nila Tepung Goreng,100 g,230.0,15.2,0.0,20.0,0.0,40,0.0,base_food,generated-v2
+Ikan Lele Rebus,Ikan Lele Rebus,100 g,140.0,17.0,0.0,7.5,0.0,48,0.0,base_food,generated-v2
+Ikan Lele Kukus,Ikan Lele Kukus,100 g,147.0,17.3,0.0,7.5,0.0,48,0.0,base_food,generated-v2
+Ikan Lele Bakar,Ikan Lele Bakar,100 g,161.0,17.9,0.0,9.0,0.0,48,0.0,base_food,generated-v2
+Ikan Lele Goreng,Ikan Lele Goreng,100 g,252.0,14.4,0.0,30.0,0.0,48,0.0,base_food,generated-v2
+Ikan Lele Panggang,Ikan Lele Panggang,100 g,168.0,18.4,0.0,9.8,0.0,48,0.0,base_food,generated-v2
+Ikan Lele Pepes,Ikan Lele Pepes,100 g,154.0,17.9,0.0,8.2,0.0,48,0.0,base_food,generated-v2
+Ikan Lele Bacem,Ikan Lele Bacem,100 g,182.0,15.3,0.0,8.2,0.0,48,0.0,base_food,generated-v2
+Ikan Lele Balado,Ikan Lele Balado,100 g,196.0,15.6,0.0,18.8,0.0,48,0.0,base_food,generated-v2
+Ikan Lele Rica-Rica,Ikan Lele Rica-Rica,100 g,189.0,15.8,0.0,17.2,0.0,48,0.0,base_food,generated-v2
+Ikan Lele Kecap,Ikan Lele Kecap,100 g,182.0,16.1,0.0,10.5,0.0,48,0.0,base_food,generated-v2
+Ikan Lele Semur,Ikan Lele Semur,100 g,189.0,15.8,0.0,13.5,0.0,48,0.0,base_food,generated-v2
+Ikan Lele Opor,Ikan Lele Opor,100 g,203.0,15.3,0.0,22.5,0.0,48,0.0,base_food,generated-v2
+Ikan Lele Gulai,Ikan Lele Gulai,100 g,210.0,15.0,0.0,26.2,0.0,48,0.0,base_food,generated-v2
+Ikan Lele Kari,Ikan Lele Kari,100 g,203.0,15.3,0.0,24.0,0.0,48,0.0,base_food,generated-v2
+Ikan Lele Asam Manis,Ikan Lele Asam Manis,100 g,175.0,16.1,0.0,11.2,0.0,48,0.0,base_food,generated-v2
+Ikan Lele Saus Tiram,Ikan Lele Saus Tiram,100 g,182.0,17.0,0.0,12.0,0.0,48,0.0,base_food,generated-v2
+Ikan Lele Lada Hitam,Ikan Lele Lada Hitam,100 g,175.0,17.0,0.0,13.5,0.0,48,0.0,base_food,generated-v2
+Ikan Lele Tepung Goreng,Ikan Lele Tepung Goreng,100 g,280.0,13.6,0.0,37.5,0.0,48,0.0,base_food,generated-v2
+Ikan Gurame Rebus,Ikan Gurame Rebus,100 g,120.0,18.5,0.0,5.0,0.0,42,0.0,base_food,generated-v2
+Ikan Gurame Kukus,Ikan Gurame Kukus,100 g,126.0,18.9,0.0,5.0,0.0,42,0.0,base_food,generated-v2
+Ikan Gurame Bakar,Ikan Gurame Bakar,100 g,138.0,19.4,0.0,6.0,0.0,42,0.0,base_food,generated-v2
+Ikan Gurame Goreng,Ikan Gurame Goreng,100 g,216.0,15.7,0.0,20.0,0.0,42,0.0,base_food,generated-v2
+Ikan Gurame Panggang,Ikan Gurame Panggang,100 g,144.0,20.0,0.0,6.5,0.0,42,0.0,base_food,generated-v2
+Ikan Gurame Pepes,Ikan Gurame Pepes,100 g,132.0,19.4,0.0,5.5,0.0,42,0.0,base_food,generated-v2
+Ikan Gurame Bacem,Ikan Gurame Bacem,100 g,156.0,16.7,0.0,5.5,0.0,42,0.0,base_food,generated-v2
+Ikan Gurame Balado,Ikan Gurame Balado,100 g,168.0,17.0,0.0,12.5,0.0,42,0.0,base_food,generated-v2
+Ikan Gurame Rica-Rica,Ikan Gurame Rica-Rica,100 g,162.0,17.2,0.0,11.5,0.0,42,0.0,base_food,generated-v2
+Ikan Gurame Kecap,Ikan Gurame Kecap,100 g,156.0,17.6,0.0,7.0,0.0,42,0.0,base_food,generated-v2
+Ikan Gurame Semur,Ikan Gurame Semur,100 g,162.0,17.2,0.0,9.0,0.0,42,0.0,base_food,generated-v2
+Ikan Gurame Opor,Ikan Gurame Opor,100 g,174.0,16.7,0.0,15.0,0.0,42,0.0,base_food,generated-v2
+Ikan Gurame Gulai,Ikan Gurame Gulai,100 g,180.0,16.3,0.0,17.5,0.0,42,0.0,base_food,generated-v2
+Ikan Gurame Kari,Ikan Gurame Kari,100 g,174.0,16.7,0.0,16.0,0.0,42,0.0,base_food,generated-v2
+Ikan Gurame Asam Manis,Ikan Gurame Asam Manis,100 g,150.0,17.6,0.0,7.5,0.0,42,0.0,base_food,generated-v2
+Ikan Gurame Saus Tiram,Ikan Gurame Saus Tiram,100 g,156.0,18.5,0.0,8.0,0.0,42,0.0,base_food,generated-v2
+Ikan Gurame Lada Hitam,Ikan Gurame Lada Hitam,100 g,150.0,18.5,0.0,9.0,0.0,42,0.0,base_food,generated-v2
+Ikan Gurame Tepung Goreng,Ikan Gurame Tepung Goreng,100 g,240.0,14.8,0.0,25.0,0.0,42,0.0,base_food,generated-v2
+Ikan Kembung Rebus,Ikan Kembung Rebus,100 g,150.0,21.0,0.0,7.0,0.0,55,0.0,base_food,generated-v2
+Ikan Kembung Kukus,Ikan Kembung Kukus,100 g,157.5,21.4,0.0,7.0,0.0,55,0.0,base_food,generated-v2
+Ikan Kembung Bakar,Ikan Kembung Bakar,100 g,172.5,22.1,0.0,8.4,0.0,55,0.0,base_food,generated-v2
+Ikan Kembung Goreng,Ikan Kembung Goreng,100 g,270.0,17.8,0.0,28.0,0.0,55,0.0,base_food,generated-v2
+Ikan Kembung Panggang,Ikan Kembung Panggang,100 g,180.0,22.7,0.0,9.1,0.0,55,0.0,base_food,generated-v2
+Ikan Kembung Pepes,Ikan Kembung Pepes,100 g,165.0,22.1,0.0,7.7,0.0,55,0.0,base_food,generated-v2
+Ikan Kembung Bacem,Ikan Kembung Bacem,100 g,195.0,18.9,0.0,7.7,0.0,55,0.0,base_food,generated-v2
+Ikan Kembung Balado,Ikan Kembung Balado,100 g,210.0,19.3,0.0,17.5,0.0,55,0.0,base_food,generated-v2
+Ikan Kembung Rica-Rica,Ikan Kembung Rica-Rica,100 g,202.5,19.5,0.0,16.1,0.0,55,0.0,base_food,generated-v2
+Ikan Kembung Kecap,Ikan Kembung Kecap,100 g,195.0,19.9,0.0,9.8,0.0,55,0.0,base_food,generated-v2
+Ikan Kembung Semur,Ikan Kembung Semur,100 g,202.5,19.5,0.0,12.6,0.0,55,0.0,base_food,generated-v2
+Ikan Kembung Opor,Ikan Kembung Opor,100 g,217.5,18.9,0.0,21.0,0.0,55,0.0,base_food,generated-v2
+Ikan Kembung Gulai,Ikan Kembung Gulai,100 g,225.0,18.5,0.0,24.5,0.0,55,0.0,base_food,generated-v2
+Ikan Kembung Kari,Ikan Kembung Kari,100 g,217.5,18.9,0.0,22.4,0.0,55,0.0,base_food,generated-v2
+Ikan Kembung Asam Manis,Ikan Kembung Asam Manis,100 g,187.5,19.9,0.0,10.5,0.0,55,0.0,base_food,generated-v2
+Ikan Kembung Saus Tiram,Ikan Kembung Saus Tiram,100 g,195.0,21.0,0.0,11.2,0.0,55,0.0,base_food,generated-v2
+Ikan Kembung Lada Hitam,Ikan Kembung Lada Hitam,100 g,187.5,21.0,0.0,12.6,0.0,55,0.0,base_food,generated-v2
+Ikan Kembung Tepung Goreng,Ikan Kembung Tepung Goreng,100 g,300.0,16.8,0.0,35.0,0.0,55,0.0,base_food,generated-v2
+Ikan Tongkol Rebus,Ikan Tongkol Rebus,100 g,155.0,23.0,0.0,6.5,0.0,50,0.0,base_food,generated-v2
+Ikan Tongkol Kukus,Ikan Tongkol Kukus,100 g,162.8,23.5,0.0,6.5,0.0,50,0.0,base_food,generated-v2
+Ikan Tongkol Bakar,Ikan Tongkol Bakar,100 g,178.2,24.2,0.0,7.8,0.0,50,0.0,base_food,generated-v2
+Ikan Tongkol Goreng,Ikan Tongkol Goreng,100 g,279.0,19.6,0.0,26.0,0.0,50,0.0,base_food,generated-v2
+Ikan Tongkol Panggang,Ikan Tongkol Panggang,100 g,186.0,24.8,0.0,8.5,0.0,50,0.0,base_food,generated-v2
+Ikan Tongkol Pepes,Ikan Tongkol Pepes,100 g,170.5,24.2,0.0,7.2,0.0,50,0.0,base_food,generated-v2
+Ikan Tongkol Bacem,Ikan Tongkol Bacem,100 g,201.5,20.7,0.0,7.2,0.0,50,0.0,base_food,generated-v2
+Ikan Tongkol Balado,Ikan Tongkol Balado,100 g,217.0,21.2,0.0,16.2,0.0,50,0.0,base_food,generated-v2
+Ikan Tongkol Rica-Rica,Ikan Tongkol Rica-Rica,100 g,209.2,21.4,0.0,14.9,0.0,50,0.0,base_food,generated-v2
+Ikan Tongkol Kecap,Ikan Tongkol Kecap,100 g,201.5,21.8,0.0,9.1,0.0,50,0.0,base_food,generated-v2
+Ikan Tongkol Semur,Ikan Tongkol Semur,100 g,209.2,21.4,0.0,11.7,0.0,50,0.0,base_food,generated-v2
+Ikan Tongkol Opor,Ikan Tongkol Opor,100 g,224.8,20.7,0.0,19.5,0.0,50,0.0,base_food,generated-v2
+Ikan Tongkol Gulai,Ikan Tongkol Gulai,100 g,232.5,20.2,0.0,22.8,0.0,50,0.0,base_food,generated-v2
+Ikan Tongkol Kari,Ikan Tongkol Kari,100 g,224.8,20.7,0.0,20.8,0.0,50,0.0,base_food,generated-v2
+Ikan Tongkol Asam Manis,Ikan Tongkol Asam Manis,100 g,193.8,21.8,0.0,9.8,0.0,50,0.0,base_food,generated-v2
+Ikan Tongkol Saus Tiram,Ikan Tongkol Saus Tiram,100 g,201.5,23.0,0.0,10.4,0.0,50,0.0,base_food,generated-v2
+Ikan Tongkol Lada Hitam,Ikan Tongkol Lada Hitam,100 g,193.8,23.0,0.0,11.7,0.0,50,0.0,base_food,generated-v2
+Ikan Tongkol Tepung Goreng,Ikan Tongkol Tepung Goreng,100 g,310.0,18.4,0.0,32.5,0.0,50,0.0,base_food,generated-v2
+Ikan Bandeng Rebus,Ikan Bandeng Rebus,100 g,140.0,19.0,0.0,6.8,0.0,50,0.0,base_food,generated-v2
+Ikan Bandeng Kukus,Ikan Bandeng Kukus,100 g,147.0,19.4,0.0,6.8,0.0,50,0.0,base_food,generated-v2
+Ikan Bandeng Bakar,Ikan Bandeng Bakar,100 g,161.0,19.9,0.0,8.2,0.0,50,0.0,base_food,generated-v2
+Ikan Bandeng Goreng,Ikan Bandeng Goreng,100 g,252.0,16.1,0.0,27.2,0.0,50,0.0,base_food,generated-v2
+Ikan Bandeng Panggang,Ikan Bandeng Panggang,100 g,168.0,20.5,0.0,8.8,0.0,50,0.0,base_food,generated-v2
+Ikan Bandeng Pepes,Ikan Bandeng Pepes,100 g,154.0,19.9,0.0,7.5,0.0,50,0.0,base_food,generated-v2
+Ikan Bandeng Bacem,Ikan Bandeng Bacem,100 g,182.0,17.1,0.0,7.5,0.0,50,0.0,base_food,generated-v2
+Ikan Bandeng Balado,Ikan Bandeng Balado,100 g,196.0,17.5,0.0,17.0,0.0,50,0.0,base_food,generated-v2
+Ikan Bandeng Rica-Rica,Ikan Bandeng Rica-Rica,100 g,189.0,17.7,0.0,15.6,0.0,50,0.0,base_food,generated-v2
+Ikan Bandeng Kecap,Ikan Bandeng Kecap,100 g,182.0,18.1,0.0,9.5,0.0,50,0.0,base_food,generated-v2
+Ikan Bandeng Semur,Ikan Bandeng Semur,100 g,189.0,17.7,0.0,12.2,0.0,50,0.0,base_food,generated-v2
+Ikan Bandeng Opor,Ikan Bandeng Opor,100 g,203.0,17.1,0.0,20.4,0.0,50,0.0,base_food,generated-v2
+Ikan Bandeng Gulai,Ikan Bandeng Gulai,100 g,210.0,16.7,0.0,23.8,0.0,50,0.0,base_food,generated-v2
+Ikan Bandeng Kari,Ikan Bandeng Kari,100 g,203.0,17.1,0.0,21.8,0.0,50,0.0,base_food,generated-v2
+Ikan Bandeng Asam Manis,Ikan Bandeng Asam Manis,100 g,175.0,18.1,0.0,10.2,0.0,50,0.0,base_food,generated-v2
+Ikan Bandeng Saus Tiram,Ikan Bandeng Saus Tiram,100 g,182.0,19.0,0.0,10.9,0.0,50,0.0,base_food,generated-v2
+Ikan Bandeng Lada Hitam,Ikan Bandeng Lada Hitam,100 g,175.0,19.0,0.0,12.2,0.0,50,0.0,base_food,generated-v2
+Ikan Bandeng Tepung Goreng,Ikan Bandeng Tepung Goreng,100 g,280.0,15.2,0.0,34.0,0.0,50,0.0,base_food,generated-v2
+Ikan Kakap Rebus,Ikan Kakap Rebus,100 g,115.0,20.0,0.0,3.5,0.0,38,0.0,base_food,generated-v2
+Ikan Kakap Kukus,Ikan Kakap Kukus,100 g,120.8,20.4,0.0,3.5,0.0,38,0.0,base_food,generated-v2
+Ikan Kakap Bakar,Ikan Kakap Bakar,100 g,132.2,21.0,0.0,4.2,0.0,38,0.0,base_food,generated-v2
+Ikan Kakap Goreng,Ikan Kakap Goreng,100 g,207.0,17.0,0.0,14.0,0.0,38,0.0,base_food,generated-v2
+Ikan Kakap Panggang,Ikan Kakap Panggang,100 g,138.0,21.6,0.0,4.5,0.0,38,0.0,base_food,generated-v2
+Ikan Kakap Pepes,Ikan Kakap Pepes,100 g,126.5,21.0,0.0,3.9,0.0,38,0.0,base_food,generated-v2
+Ikan Kakap Bacem,Ikan Kakap Bacem,100 g,149.5,18.0,0.0,3.9,0.0,38,0.0,base_food,generated-v2
+Ikan Kakap Balado,Ikan Kakap Balado,100 g,161.0,18.4,0.0,8.8,0.0,38,0.0,base_food,generated-v2
+Ikan Kakap Rica-Rica,Ikan Kakap Rica-Rica,100 g,155.2,18.6,0.0,8.0,0.0,38,0.0,base_food,generated-v2
+Ikan Kakap Kecap,Ikan Kakap Kecap,100 g,149.5,19.0,0.0,4.9,0.0,38,0.0,base_food,generated-v2
+Ikan Kakap Semur,Ikan Kakap Semur,100 g,155.2,18.6,0.0,6.3,0.0,38,0.0,base_food,generated-v2
+Ikan Kakap Opor,Ikan Kakap Opor,100 g,166.8,18.0,0.0,10.5,0.0,38,0.0,base_food,generated-v2
+Ikan Kakap Gulai,Ikan Kakap Gulai,100 g,172.5,17.6,0.0,12.2,0.0,38,0.0,base_food,generated-v2
+Ikan Kakap Kari,Ikan Kakap Kari,100 g,166.8,18.0,0.0,11.2,0.0,38,0.0,base_food,generated-v2
+Ikan Kakap Asam Manis,Ikan Kakap Asam Manis,100 g,143.8,19.0,0.0,5.2,0.0,38,0.0,base_food,generated-v2
+Ikan Kakap Saus Tiram,Ikan Kakap Saus Tiram,100 g,149.5,20.0,0.0,5.6,0.0,38,0.0,base_food,generated-v2
+Ikan Kakap Lada Hitam,Ikan Kakap Lada Hitam,100 g,143.8,20.0,0.0,6.3,0.0,38,0.0,base_food,generated-v2
+Ikan Kakap Tepung Goreng,Ikan Kakap Tepung Goreng,100 g,230.0,16.0,0.0,17.5,0.0,38,0.0,base_food,generated-v2
+Ikan Patin Rebus,Ikan Patin Rebus,100 g,155.0,17.0,0.0,9.0,0.0,52,0.0,base_food,generated-v2
+Ikan Patin Kukus,Ikan Patin Kukus,100 g,162.8,17.3,0.0,9.0,0.0,52,0.0,base_food,generated-v2
+Ikan Patin Bakar,Ikan Patin Bakar,100 g,178.2,17.9,0.0,10.8,0.0,52,0.0,base_food,generated-v2
+Ikan Patin Goreng,Ikan Patin Goreng,100 g,279.0,14.4,0.0,36.0,0.0,52,0.0,base_food,generated-v2
+Ikan Patin Panggang,Ikan Patin Panggang,100 g,186.0,18.4,0.0,11.7,0.0,52,0.0,base_food,generated-v2
+Ikan Patin Pepes,Ikan Patin Pepes,100 g,170.5,17.9,0.0,9.9,0.0,52,0.0,base_food,generated-v2
+Ikan Patin Bacem,Ikan Patin Bacem,100 g,201.5,15.3,0.0,9.9,0.0,52,0.0,base_food,generated-v2
+Ikan Patin Balado,Ikan Patin Balado,100 g,217.0,15.6,0.0,22.5,0.0,52,0.0,base_food,generated-v2
+Ikan Patin Rica-Rica,Ikan Patin Rica-Rica,100 g,209.2,15.8,0.0,20.7,0.0,52,0.0,base_food,generated-v2
+Ikan Patin Kecap,Ikan Patin Kecap,100 g,201.5,16.1,0.0,12.6,0.0,52,0.0,base_food,generated-v2
+Ikan Patin Semur,Ikan Patin Semur,100 g,209.2,15.8,0.0,16.2,0.0,52,0.0,base_food,generated-v2
+Ikan Patin Opor,Ikan Patin Opor,100 g,224.8,15.3,0.0,27.0,0.0,52,0.0,base_food,generated-v2
+Ikan Patin Gulai,Ikan Patin Gulai,100 g,232.5,15.0,0.0,31.5,0.0,52,0.0,base_food,generated-v2
+Ikan Patin Kari,Ikan Patin Kari,100 g,224.8,15.3,0.0,28.8,0.0,52,0.0,base_food,generated-v2
+Ikan Patin Asam Manis,Ikan Patin Asam Manis,100 g,193.8,16.1,0.0,13.5,0.0,52,0.0,base_food,generated-v2
+Ikan Patin Saus Tiram,Ikan Patin Saus Tiram,100 g,201.5,17.0,0.0,14.4,0.0,52,0.0,base_food,generated-v2
+Ikan Patin Lada Hitam,Ikan Patin Lada Hitam,100 g,193.8,17.0,0.0,16.2,0.0,52,0.0,base_food,generated-v2
+Ikan Patin Tepung Goreng,Ikan Patin Tepung Goreng,100 g,310.0,13.6,0.0,45.0,0.0,52,0.0,base_food,generated-v2
+Ikan Baronang Rebus,Ikan Baronang Rebus,100 g,130.0,19.0,0.0,5.5,0.0,45,0.0,base_food,generated-v2
+Ikan Baronang Kukus,Ikan Baronang Kukus,100 g,136.5,19.4,0.0,5.5,0.0,45,0.0,base_food,generated-v2
+Ikan Baronang Bakar,Ikan Baronang Bakar,100 g,149.5,19.9,0.0,6.6,0.0,45,0.0,base_food,generated-v2
+Ikan Baronang Goreng,Ikan Baronang Goreng,100 g,234.0,16.1,0.0,22.0,0.0,45,0.0,base_food,generated-v2
+Ikan Baronang Panggang,Ikan Baronang Panggang,100 g,156.0,20.5,0.0,7.2,0.0,45,0.0,base_food,generated-v2
+Ikan Baronang Pepes,Ikan Baronang Pepes,100 g,143.0,19.9,0.0,6.1,0.0,45,0.0,base_food,generated-v2
+Ikan Baronang Bacem,Ikan Baronang Bacem,100 g,169.0,17.1,0.0,6.1,0.0,45,0.0,base_food,generated-v2
+Ikan Baronang Balado,Ikan Baronang Balado,100 g,182.0,17.5,0.0,13.8,0.0,45,0.0,base_food,generated-v2
+Ikan Baronang Rica-Rica,Ikan Baronang Rica-Rica,100 g,175.5,17.7,0.0,12.6,0.0,45,0.0,base_food,generated-v2
+Ikan Baronang Kecap,Ikan Baronang Kecap,100 g,169.0,18.1,0.0,7.7,0.0,45,0.0,base_food,generated-v2
+Ikan Baronang Semur,Ikan Baronang Semur,100 g,175.5,17.7,0.0,9.9,0.0,45,0.0,base_food,generated-v2
+Ikan Baronang Opor,Ikan Baronang Opor,100 g,188.5,17.1,0.0,16.5,0.0,45,0.0,base_food,generated-v2
+Ikan Baronang Gulai,Ikan Baronang Gulai,100 g,195.0,16.7,0.0,19.2,0.0,45,0.0,base_food,generated-v2
+Ikan Baronang Kari,Ikan Baronang Kari,100 g,188.5,17.1,0.0,17.6,0.0,45,0.0,base_food,generated-v2
+Ikan Baronang Asam Manis,Ikan Baronang Asam Manis,100 g,162.5,18.1,0.0,8.2,0.0,45,0.0,base_food,generated-v2
+Ikan Baronang Saus Tiram,Ikan Baronang Saus Tiram,100 g,169.0,19.0,0.0,8.8,0.0,45,0.0,base_food,generated-v2
+Ikan Baronang Lada Hitam,Ikan Baronang Lada Hitam,100 g,162.5,19.0,0.0,9.9,0.0,45,0.0,base_food,generated-v2
+Ikan Baronang Tepung Goreng,Ikan Baronang Tepung Goreng,100 g,260.0,15.2,0.0,27.5,0.0,45,0.0,base_food,generated-v2
+Ikan Bawal Rebus,Ikan Bawal Rebus,100 g,135.0,18.5,0.0,6.5,0.0,48,0.0,base_food,generated-v2
+Ikan Bawal Kukus,Ikan Bawal Kukus,100 g,141.8,18.9,0.0,6.5,0.0,48,0.0,base_food,generated-v2
+Ikan Bawal Bakar,Ikan Bawal Bakar,100 g,155.2,19.4,0.0,7.8,0.0,48,0.0,base_food,generated-v2
+Ikan Bawal Goreng,Ikan Bawal Goreng,100 g,243.0,15.7,0.0,26.0,0.0,48,0.0,base_food,generated-v2
+Ikan Bawal Panggang,Ikan Bawal Panggang,100 g,162.0,20.0,0.0,8.5,0.0,48,0.0,base_food,generated-v2
+Ikan Bawal Pepes,Ikan Bawal Pepes,100 g,148.5,19.4,0.0,7.2,0.0,48,0.0,base_food,generated-v2
+Ikan Bawal Bacem,Ikan Bawal Bacem,100 g,175.5,16.7,0.0,7.2,0.0,48,0.0,base_food,generated-v2
+Ikan Bawal Balado,Ikan Bawal Balado,100 g,189.0,17.0,0.0,16.2,0.0,48,0.0,base_food,generated-v2
+Ikan Bawal Rica-Rica,Ikan Bawal Rica-Rica,100 g,182.2,17.2,0.0,14.9,0.0,48,0.0,base_food,generated-v2
+Ikan Bawal Kecap,Ikan Bawal Kecap,100 g,175.5,17.6,0.0,9.1,0.0,48,0.0,base_food,generated-v2
+Ikan Bawal Semur,Ikan Bawal Semur,100 g,182.2,17.2,0.0,11.7,0.0,48,0.0,base_food,generated-v2
+Ikan Bawal Opor,Ikan Bawal Opor,100 g,195.8,16.7,0.0,19.5,0.0,48,0.0,base_food,generated-v2
+Ikan Bawal Gulai,Ikan Bawal Gulai,100 g,202.5,16.3,0.0,22.8,0.0,48,0.0,base_food,generated-v2
+Ikan Bawal Kari,Ikan Bawal Kari,100 g,195.8,16.7,0.0,20.8,0.0,48,0.0,base_food,generated-v2
+Ikan Bawal Asam Manis,Ikan Bawal Asam Manis,100 g,168.8,17.6,0.0,9.8,0.0,48,0.0,base_food,generated-v2
+Ikan Bawal Saus Tiram,Ikan Bawal Saus Tiram,100 g,175.5,18.5,0.0,10.4,0.0,48,0.0,base_food,generated-v2
+Ikan Bawal Lada Hitam,Ikan Bawal Lada Hitam,100 g,168.8,18.5,0.0,11.7,0.0,48,0.0,base_food,generated-v2
+Ikan Bawal Tepung Goreng,Ikan Bawal Tepung Goreng,100 g,270.0,14.8,0.0,32.5,0.0,48,0.0,base_food,generated-v2
+Ikan Tuna Rebus,Ikan Tuna Rebus,100 g,130.0,25.0,0.0,3.0,0.0,40,0.0,base_food,generated-v2
+Ikan Tuna Kukus,Ikan Tuna Kukus,100 g,136.5,25.5,0.0,3.0,0.0,40,0.0,base_food,generated-v2
+Ikan Tuna Bakar,Ikan Tuna Bakar,100 g,149.5,26.2,0.0,3.6,0.0,40,0.0,base_food,generated-v2
+Ikan Tuna Goreng,Ikan Tuna Goreng,100 g,234.0,21.2,0.0,12.0,0.0,40,0.0,base_food,generated-v2
+Ikan Tuna Panggang,Ikan Tuna Panggang,100 g,156.0,27.0,0.0,3.9,0.0,40,0.0,base_food,generated-v2
+Ikan Tuna Pepes,Ikan Tuna Pepes,100 g,143.0,26.2,0.0,3.3,0.0,40,0.0,base_food,generated-v2
+Ikan Tuna Bacem,Ikan Tuna Bacem,100 g,169.0,22.5,0.0,3.3,0.0,40,0.0,base_food,generated-v2
+Ikan Tuna Balado,Ikan Tuna Balado,100 g,182.0,23.0,0.0,7.5,0.0,40,0.0,base_food,generated-v2
+Ikan Tuna Rica-Rica,Ikan Tuna Rica-Rica,100 g,175.5,23.2,0.0,6.9,0.0,40,0.0,base_food,generated-v2
+Ikan Tuna Kecap,Ikan Tuna Kecap,100 g,169.0,23.8,0.0,4.2,0.0,40,0.0,base_food,generated-v2
+Ikan Tuna Semur,Ikan Tuna Semur,100 g,175.5,23.2,0.0,5.4,0.0,40,0.0,base_food,generated-v2
+Ikan Tuna Opor,Ikan Tuna Opor,100 g,188.5,22.5,0.0,9.0,0.0,40,0.0,base_food,generated-v2
+Ikan Tuna Gulai,Ikan Tuna Gulai,100 g,195.0,22.0,0.0,10.5,0.0,40,0.0,base_food,generated-v2
+Ikan Tuna Kari,Ikan Tuna Kari,100 g,188.5,22.5,0.0,9.6,0.0,40,0.0,base_food,generated-v2
+Ikan Tuna Asam Manis,Ikan Tuna Asam Manis,100 g,162.5,23.8,0.0,4.5,0.0,40,0.0,base_food,generated-v2
+Ikan Tuna Saus Tiram,Ikan Tuna Saus Tiram,100 g,169.0,25.0,0.0,4.8,0.0,40,0.0,base_food,generated-v2
+Ikan Tuna Lada Hitam,Ikan Tuna Lada Hitam,100 g,162.5,25.0,0.0,5.4,0.0,40,0.0,base_food,generated-v2
+Ikan Tuna Tepung Goreng,Ikan Tuna Tepung Goreng,100 g,260.0,20.0,0.0,15.0,0.0,40,0.0,base_food,generated-v2
+Ikan Salmon Rebus,Ikan Salmon Rebus,100 g,180.0,20.0,0.0,11.0,0.0,50,0.0,base_food,generated-v2
+Ikan Salmon Kukus,Ikan Salmon Kukus,100 g,189.0,20.4,0.0,11.0,0.0,50,0.0,base_food,generated-v2
+Ikan Salmon Bakar,Ikan Salmon Bakar,100 g,207.0,21.0,0.0,13.2,0.0,50,0.0,base_food,generated-v2
+Ikan Salmon Goreng,Ikan Salmon Goreng,100 g,324.0,17.0,0.0,44.0,0.0,50,0.0,base_food,generated-v2
+Ikan Salmon Panggang,Ikan Salmon Panggang,100 g,216.0,21.6,0.0,14.3,0.0,50,0.0,base_food,generated-v2
+Ikan Salmon Pepes,Ikan Salmon Pepes,100 g,198.0,21.0,0.0,12.1,0.0,50,0.0,base_food,generated-v2
+Ikan Salmon Bacem,Ikan Salmon Bacem,100 g,234.0,18.0,0.0,12.1,0.0,50,0.0,base_food,generated-v2
+Ikan Salmon Balado,Ikan Salmon Balado,100 g,252.0,18.4,0.0,27.5,0.0,50,0.0,base_food,generated-v2
+Ikan Salmon Rica-Rica,Ikan Salmon Rica-Rica,100 g,243.0,18.6,0.0,25.3,0.0,50,0.0,base_food,generated-v2
+Ikan Salmon Kecap,Ikan Salmon Kecap,100 g,234.0,19.0,0.0,15.4,0.0,50,0.0,base_food,generated-v2
+Ikan Salmon Semur,Ikan Salmon Semur,100 g,243.0,18.6,0.0,19.8,0.0,50,0.0,base_food,generated-v2
+Ikan Salmon Opor,Ikan Salmon Opor,100 g,261.0,18.0,0.0,33.0,0.0,50,0.0,base_food,generated-v2
+Ikan Salmon Gulai,Ikan Salmon Gulai,100 g,270.0,17.6,0.0,38.5,0.0,50,0.0,base_food,generated-v2
+Ikan Salmon Kari,Ikan Salmon Kari,100 g,261.0,18.0,0.0,35.2,0.0,50,0.0,base_food,generated-v2
+Ikan Salmon Asam Manis,Ikan Salmon Asam Manis,100 g,225.0,19.0,0.0,16.5,0.0,50,0.0,base_food,generated-v2
+Ikan Salmon Saus Tiram,Ikan Salmon Saus Tiram,100 g,234.0,20.0,0.0,17.6,0.0,50,0.0,base_food,generated-v2
+Ikan Salmon Lada Hitam,Ikan Salmon Lada Hitam,100 g,225.0,20.0,0.0,19.8,0.0,50,0.0,base_food,generated-v2
+Ikan Salmon Tepung Goreng,Ikan Salmon Tepung Goreng,100 g,360.0,16.0,0.0,55.0,0.0,50,0.0,base_food,generated-v2
+Udang Rebus,Udang Rebus,100 g,95.0,19.0,0.5,1.5,0.0,140,0.0,base_food,generated-v2
+Udang Kukus,Udang Kukus,100 g,99.8,19.4,0.5,1.5,0.0,140,0.0,base_food,generated-v2
+Udang Bakar,Udang Bakar,100 g,109.2,19.9,0.5,1.8,0.0,140,0.0,base_food,generated-v2
+Udang Goreng,Udang Goreng,100 g,171.0,16.1,0.6,6.0,0.0,140,0.0,base_food,generated-v2
+Udang Tumis,Udang Tumis,100 g,142.5,17.1,0.6,4.5,0.0,140,0.0,base_food,generated-v2
+Udang Panggang,Udang Panggang,100 g,114.0,20.5,0.5,2.0,0.0,140,0.0,base_food,generated-v2
+Udang Pepes,Udang Pepes,100 g,104.5,19.9,0.5,1.7,0.0,140,0.0,base_food,generated-v2
+Udang Bacem,Udang Bacem,100 g,123.5,17.1,0.8,1.7,0.0,140,0.0,base_food,generated-v2
+Udang Balado,Udang Balado,100 g,133.0,17.5,0.6,3.8,0.0,140,0.0,base_food,generated-v2
+Udang Rica-Rica,Udang Rica-Rica,100 g,128.2,17.7,0.6,3.4,0.0,140,0.0,base_food,generated-v2
+Udang Kecap,Udang Kecap,100 g,123.5,18.1,0.7,2.1,0.0,140,0.0,base_food,generated-v2
+Udang Semur,Udang Semur,100 g,128.2,17.7,0.7,2.7,0.0,140,0.0,base_food,generated-v2
+Udang Opor,Udang Opor,100 g,137.8,17.1,0.6,4.5,0.0,140,0.0,base_food,generated-v2
+Udang Gulai,Udang Gulai,100 g,142.5,16.7,0.6,5.2,0.0,140,0.0,base_food,generated-v2
+Udang Kari,Udang Kari,100 g,137.8,17.1,0.6,4.8,0.0,140,0.0,base_food,generated-v2
+Udang Asam Manis,Udang Asam Manis,100 g,118.8,18.1,0.6,2.2,0.0,140,0.0,base_food,generated-v2
+Udang Saus Tiram,Udang Saus Tiram,100 g,123.5,19.0,0.6,2.4,0.0,140,0.0,base_food,generated-v2
+Udang Lada Hitam,Udang Lada Hitam,100 g,118.8,19.0,0.5,2.7,0.0,140,0.0,base_food,generated-v2
+Udang Tepung Goreng,Udang Tepung Goreng,100 g,190.0,15.2,0.7,7.5,0.0,140,0.0,base_food,generated-v2
+Cumi Rebus,Cumi Rebus,100 g,85.0,15.0,2.0,1.2,0.0,230,0.0,base_food,generated-v2
+Cumi Kukus,Cumi Kukus,100 g,89.2,15.3,2.0,1.2,0.0,230,0.0,base_food,generated-v2
+Cumi Bakar,Cumi Bakar,100 g,97.7,15.8,2.0,1.4,0.0,230,0.0,base_food,generated-v2
+Cumi Goreng,Cumi Goreng,100 g,153.0,12.8,2.3,4.8,0.0,230,0.0,base_food,generated-v2
+Cumi Tumis,Cumi Tumis,100 g,127.5,13.5,2.2,3.6,0.0,230,0.0,base_food,generated-v2
+Cumi Panggang,Cumi Panggang,100 g,102.0,16.2,2.0,1.6,0.0,230,0.0,base_food,generated-v2
+Cumi Pepes,Cumi Pepes,100 g,93.5,15.8,2.0,1.3,0.0,230,0.0,base_food,generated-v2
+Cumi Bacem,Cumi Bacem,100 g,110.5,13.5,3.0,1.3,0.0,230,0.0,base_food,generated-v2
+Cumi Balado,Cumi Balado,100 g,119.0,13.8,2.4,3.0,0.0,230,0.0,base_food,generated-v2
+Cumi Rica-Rica,Cumi Rica-Rica,100 g,114.8,14.0,2.2,2.8,0.0,230,0.0,base_food,generated-v2
+Cumi Kecap,Cumi Kecap,100 g,110.5,14.2,2.8,1.7,0.0,230,0.0,base_food,generated-v2
+Cumi Semur,Cumi Semur,100 g,114.8,14.0,2.6,2.2,0.0,230,0.0,base_food,generated-v2
+Cumi Opor,Cumi Opor,100 g,123.2,13.5,2.2,3.6,0.0,230,0.0,base_food,generated-v2
+Cumi Gulai,Cumi Gulai,100 g,127.5,13.2,2.2,4.2,0.0,230,0.0,base_food,generated-v2
+Cumi Kari,Cumi Kari,100 g,123.2,13.5,2.2,3.8,0.0,230,0.0,base_food,generated-v2
+Cumi Asam Manis,Cumi Asam Manis,100 g,106.2,14.2,2.4,1.8,0.0,230,0.0,base_food,generated-v2
+Cumi Saus Tiram,Cumi Saus Tiram,100 g,110.5,15.0,2.3,1.9,0.0,230,0.0,base_food,generated-v2
+Cumi Lada Hitam,Cumi Lada Hitam,100 g,106.2,15.0,2.1,2.2,0.0,230,0.0,base_food,generated-v2
+Cumi Tepung Goreng,Cumi Tepung Goreng,100 g,170.0,12.0,2.6,6.0,0.0,230,0.0,base_food,generated-v2
+Kepiting Rebus,Kepiting Rebus,100 g,90.0,18.0,0.5,1.5,0.0,280,0.0,base_food,generated-v2
+Kepiting Kukus,Kepiting Kukus,100 g,94.5,18.4,0.5,1.5,0.0,280,0.0,base_food,generated-v2
+Kepiting Bakar,Kepiting Bakar,100 g,103.5,18.9,0.5,1.8,0.0,280,0.0,base_food,generated-v2
+Kepiting Goreng,Kepiting Goreng,100 g,162.0,15.3,0.6,6.0,0.0,280,0.0,base_food,generated-v2
+Kepiting Tumis,Kepiting Tumis,100 g,135.0,16.2,0.6,4.5,0.0,280,0.0,base_food,generated-v2
+Kepiting Panggang,Kepiting Panggang,100 g,108.0,19.4,0.5,2.0,0.0,280,0.0,base_food,generated-v2
+Kepiting Pepes,Kepiting Pepes,100 g,99.0,18.9,0.5,1.7,0.0,280,0.0,base_food,generated-v2
+Kepiting Bacem,Kepiting Bacem,100 g,117.0,16.2,0.8,1.7,0.0,280,0.0,base_food,generated-v2
+Kepiting Balado,Kepiting Balado,100 g,126.0,16.6,0.6,3.8,0.0,280,0.0,base_food,generated-v2
+Kepiting Rica-Rica,Kepiting Rica-Rica,100 g,121.5,16.7,0.6,3.4,0.0,280,0.0,base_food,generated-v2
+Kepiting Kecap,Kepiting Kecap,100 g,117.0,17.1,0.7,2.1,0.0,280,0.0,base_food,generated-v2
+Kepiting Semur,Kepiting Semur,100 g,121.5,16.7,0.7,2.7,0.0,280,0.0,base_food,generated-v2
+Kepiting Opor,Kepiting Opor,100 g,130.5,16.2,0.6,4.5,0.0,280,0.0,base_food,generated-v2
+Kepiting Gulai,Kepiting Gulai,100 g,135.0,15.8,0.6,5.2,0.0,280,0.0,base_food,generated-v2
+Kepiting Kari,Kepiting Kari,100 g,130.5,16.2,0.6,4.8,0.0,280,0.0,base_food,generated-v2
+Kepiting Asam Manis,Kepiting Asam Manis,100 g,112.5,17.1,0.6,2.2,0.0,280,0.0,base_food,generated-v2
+Kepiting Saus Tiram,Kepiting Saus Tiram,100 g,117.0,18.0,0.6,2.4,0.0,280,0.0,base_food,generated-v2
+Kepiting Lada Hitam,Kepiting Lada Hitam,100 g,112.5,18.0,0.5,2.7,0.0,280,0.0,base_food,generated-v2
+Kepiting Tepung Goreng,Kepiting Tepung Goreng,100 g,180.0,14.4,0.7,7.5,0.0,280,0.0,base_food,generated-v2
+Kerang Rebus,Kerang Rebus,100 g,80.0,14.0,3.0,1.0,0.0,110,0.0,base_food,generated-v2
+Kerang Kukus,Kerang Kukus,100 g,84.0,14.3,3.0,1.0,0.0,110,0.0,base_food,generated-v2
+Kerang Bakar,Kerang Bakar,100 g,92.0,14.7,3.0,1.2,0.0,110,0.0,base_food,generated-v2
+Kerang Goreng,Kerang Goreng,100 g,144.0,11.9,3.4,4.0,0.0,110,0.0,base_food,generated-v2
+Kerang Tumis,Kerang Tumis,100 g,120.0,12.6,3.3,3.0,0.0,110,0.0,base_food,generated-v2
+Kerang Panggang,Kerang Panggang,100 g,96.0,15.1,3.0,1.3,0.0,110,0.0,base_food,generated-v2
+Kerang Pepes,Kerang Pepes,100 g,88.0,14.7,3.0,1.1,0.0,110,0.0,base_food,generated-v2
+Kerang Bacem,Kerang Bacem,100 g,104.0,12.6,4.5,1.1,0.0,110,0.0,base_food,generated-v2
+Kerang Balado,Kerang Balado,100 g,112.0,12.9,3.6,2.5,0.0,110,0.0,base_food,generated-v2
+Kerang Rica-Rica,Kerang Rica-Rica,100 g,108.0,13.0,3.3,2.3,0.0,110,0.0,base_food,generated-v2
+Kerang Kecap,Kerang Kecap,100 g,104.0,13.3,4.2,1.4,0.0,110,0.0,base_food,generated-v2
+Kerang Semur,Kerang Semur,100 g,108.0,13.0,3.9,1.8,0.0,110,0.0,base_food,generated-v2
+Kerang Opor,Kerang Opor,100 g,116.0,12.6,3.3,3.0,0.0,110,0.0,base_food,generated-v2
+Kerang Gulai,Kerang Gulai,100 g,120.0,12.3,3.3,3.5,0.0,110,0.0,base_food,generated-v2
+Kerang Kari,Kerang Kari,100 g,116.0,12.6,3.3,3.2,0.0,110,0.0,base_food,generated-v2
+Kerang Asam Manis,Kerang Asam Manis,100 g,100.0,13.3,3.6,1.5,0.0,110,0.0,base_food,generated-v2
+Kerang Saus Tiram,Kerang Saus Tiram,100 g,104.0,14.0,3.4,1.6,0.0,110,0.0,base_food,generated-v2
+Kerang Lada Hitam,Kerang Lada Hitam,100 g,100.0,14.0,3.2,1.8,0.0,110,0.0,base_food,generated-v2
+Kerang Tepung Goreng,Kerang Tepung Goreng,100 g,160.0,11.2,3.9,5.0,0.0,110,0.0,base_food,generated-v2
+Tahu Putih Rebus,Tahu Putih Rebus,100 g,75.0,7.5,1.5,4.5,0.3,8,0.5,base_food,generated-v2
+Tahu Putih Kukus,Tahu Putih Kukus,100 g,78.8,7.7,1.5,4.5,0.3,8,0.5,base_food,generated-v2
+Tahu Putih Bakar,Tahu Putih Bakar,100 g,86.2,7.9,1.5,5.4,0.3,8,0.5,base_food,generated-v2
+Tahu Putih Goreng,Tahu Putih Goreng,100 g,135.0,6.4,1.7,18.0,0.3,8,0.5,base_food,generated-v2
+Tahu Putih Tumis,Tahu Putih Tumis,100 g,112.5,6.8,1.7,13.5,0.3,8,0.5,base_food,generated-v2
+Tahu Putih Panggang,Tahu Putih Panggang,100 g,90.0,8.1,1.5,5.9,0.3,8,0.5,base_food,generated-v2
+Tahu Putih Pepes,Tahu Putih Pepes,100 g,82.5,7.9,1.5,5.0,0.3,8,0.5,base_food,generated-v2
+Tahu Putih Bacem,Tahu Putih Bacem,100 g,97.5,6.8,2.2,5.0,0.3,8,0.5,base_food,generated-v2
+Tahu Putih Balado,Tahu Putih Balado,100 g,105.0,6.9,1.8,11.2,0.3,8,0.5,base_food,generated-v2
+Tahu Putih Rica-Rica,Tahu Putih Rica-Rica,100 g,101.2,7.0,1.7,10.3,0.3,8,0.5,base_food,generated-v2
+Tahu Putih Kecap,Tahu Putih Kecap,100 g,97.5,7.1,2.1,6.3,0.3,8,0.5,base_food,generated-v2
+Tahu Putih Semur,Tahu Putih Semur,100 g,101.2,7.0,2.0,8.1,0.3,8,0.5,base_food,generated-v2
+Tahu Putih Opor,Tahu Putih Opor,100 g,108.8,6.8,1.7,13.5,0.3,8,0.5,base_food,generated-v2
+Tahu Putih Gulai,Tahu Putih Gulai,100 g,112.5,6.6,1.7,15.8,0.3,8,0.5,base_food,generated-v2
+Tahu Putih Kari,Tahu Putih Kari,100 g,108.8,6.8,1.7,14.4,0.3,8,0.5,base_food,generated-v2
+Tahu Putih Asam Manis,Tahu Putih Asam Manis,100 g,93.8,7.1,1.8,6.8,0.3,8,0.5,base_food,generated-v2
+Tahu Putih Saus Tiram,Tahu Putih Saus Tiram,100 g,97.5,7.5,1.7,7.2,0.3,8,0.5,base_food,generated-v2
+Tahu Putih Lada Hitam,Tahu Putih Lada Hitam,100 g,93.8,7.5,1.6,8.1,0.3,8,0.5,base_food,generated-v2
+Tahu Putih Tepung Goreng,Tahu Putih Tepung Goreng,100 g,150.0,6.0,2.0,22.5,0.3,8,0.4,base_food,generated-v2
+Tahu Kuning Rebus,Tahu Kuning Rebus,100 g,90.0,10.0,2.0,5.0,0.3,10,0.5,base_food,generated-v2
+Tahu Kuning Kukus,Tahu Kuning Kukus,100 g,94.5,10.2,2.0,5.0,0.3,10,0.5,base_food,generated-v2
+Tahu Kuning Bakar,Tahu Kuning Bakar,100 g,103.5,10.5,2.0,6.0,0.3,10,0.5,base_food,generated-v2
+Tahu Kuning Goreng,Tahu Kuning Goreng,100 g,162.0,8.5,2.3,20.0,0.3,10,0.5,base_food,generated-v2
+Tahu Kuning Tumis,Tahu Kuning Tumis,100 g,135.0,9.0,2.2,15.0,0.3,10,0.5,base_food,generated-v2
+Tahu Kuning Panggang,Tahu Kuning Panggang,100 g,108.0,10.8,2.0,6.5,0.3,10,0.5,base_food,generated-v2
+Tahu Kuning Pepes,Tahu Kuning Pepes,100 g,99.0,10.5,2.0,5.5,0.3,10,0.5,base_food,generated-v2
+Tahu Kuning Bacem,Tahu Kuning Bacem,100 g,117.0,9.0,3.0,5.5,0.3,10,0.5,base_food,generated-v2
+Tahu Kuning Balado,Tahu Kuning Balado,100 g,126.0,9.2,2.4,12.5,0.3,10,0.5,base_food,generated-v2
+Tahu Kuning Rica-Rica,Tahu Kuning Rica-Rica,100 g,121.5,9.3,2.2,11.5,0.3,10,0.5,base_food,generated-v2
+Tahu Kuning Kecap,Tahu Kuning Kecap,100 g,117.0,9.5,2.8,7.0,0.3,10,0.5,base_food,generated-v2
+Tahu Kuning Semur,Tahu Kuning Semur,100 g,121.5,9.3,2.6,9.0,0.3,10,0.5,base_food,generated-v2
+Tahu Kuning Opor,Tahu Kuning Opor,100 g,130.5,9.0,2.2,15.0,0.3,10,0.5,base_food,generated-v2
+Tahu Kuning Gulai,Tahu Kuning Gulai,100 g,135.0,8.8,2.2,17.5,0.3,10,0.5,base_food,generated-v2
+Tahu Kuning Kari,Tahu Kuning Kari,100 g,130.5,9.0,2.2,16.0,0.3,10,0.5,base_food,generated-v2
+Tahu Kuning Asam Manis,Tahu Kuning Asam Manis,100 g,112.5,9.5,2.4,7.5,0.3,10,0.5,base_food,generated-v2
+Tahu Kuning Saus Tiram,Tahu Kuning Saus Tiram,100 g,117.0,10.0,2.3,8.0,0.3,10,0.5,base_food,generated-v2
+Tahu Kuning Lada Hitam,Tahu Kuning Lada Hitam,100 g,112.5,10.0,2.1,9.0,0.3,10,0.5,base_food,generated-v2
+Tahu Kuning Tepung Goreng,Tahu Kuning Tepung Goreng,100 g,180.0,8.0,2.6,25.0,0.3,10,0.4,base_food,generated-v2
+Tempe Rebus,Tempe Rebus,100 g,170.0,18.0,10.0,8.0,0.3,8,2.0,base_food,generated-v2
+Tempe Kukus,Tempe Kukus,100 g,178.5,18.4,10.0,8.0,0.3,8,2.1,base_food,generated-v2
+Tempe Bakar,Tempe Bakar,100 g,195.5,18.9,10.0,9.6,0.3,8,1.9,base_food,generated-v2
+Tempe Goreng,Tempe Goreng,100 g,306.0,15.3,11.5,32.0,0.3,8,1.8,base_food,generated-v2
+Tempe Tumis,Tempe Tumis,100 g,255.0,16.2,11.0,24.0,0.3,8,1.9,base_food,generated-v2
+Tempe Panggang,Tempe Panggang,100 g,204.0,19.4,10.0,10.4,0.3,8,1.9,base_food,generated-v2
+Tempe Pepes,Tempe Pepes,100 g,187.0,18.9,10.0,8.8,0.3,8,2.0,base_food,generated-v2
+Tempe Bacem,Tempe Bacem,100 g,221.0,16.2,15.0,8.8,0.3,8,1.8,base_food,generated-v2
+Tempe Balado,Tempe Balado,100 g,238.0,16.6,12.0,20.0,0.3,8,2.0,base_food,generated-v2
+Tempe Rica-Rica,Tempe Rica-Rica,100 g,229.5,16.7,11.0,18.4,0.3,8,2.1,base_food,generated-v2
+Tempe Kecap,Tempe Kecap,100 g,221.0,17.1,14.0,11.2,0.3,8,1.8,base_food,generated-v2
+Tempe Semur,Tempe Semur,100 g,229.5,16.7,13.0,14.4,0.3,8,1.9,base_food,generated-v2
+Tempe Opor,Tempe Opor,100 g,246.5,16.2,11.0,24.0,0.3,8,1.9,base_food,generated-v2
+Tempe Gulai,Tempe Gulai,100 g,255.0,15.8,11.0,28.0,0.3,8,2.0,base_food,generated-v2
+Tempe Kari,Tempe Kari,100 g,246.5,16.2,11.0,25.6,0.3,8,2.1,base_food,generated-v2
+Tempe Asam Manis,Tempe Asam Manis,100 g,212.5,17.1,12.0,12.0,0.3,8,2.0,base_food,generated-v2
+Tempe Saus Tiram,Tempe Saus Tiram,100 g,221.0,18.0,11.5,12.8,0.3,8,2.0,base_food,generated-v2
+Tempe Lada Hitam,Tempe Lada Hitam,100 g,212.5,18.0,10.5,14.4,0.3,8,1.9,base_food,generated-v2
+Tempe Tepung Goreng,Tempe Tepung Goreng,100 g,340.0,14.4,13.0,40.0,0.3,8,1.7,base_food,generated-v2
+Telur Ayam Rebus,Telur Ayam Rebus,100 g,155.0,12.5,1.0,10.5,1.0,120,0.0,base_food,generated-v2
+Telur Ayam Kukus,Telur Ayam Kukus,100 g,162.8,12.8,1.0,10.5,1.0,120,0.0,base_food,generated-v2
+Telur Ayam Bakar,Telur Ayam Bakar,100 g,178.2,13.1,1.0,12.6,1.0,120,0.0,base_food,generated-v2
+Telur Ayam Goreng,Telur Ayam Goreng,100 g,279.0,10.6,1.1,42.0,1.0,120,0.0,base_food,generated-v2
+Telur Ayam Tumis,Telur Ayam Tumis,100 g,232.5,11.2,1.1,31.5,1.0,120,0.0,base_food,generated-v2
+Telur Ayam Panggang,Telur Ayam Panggang,100 g,186.0,13.5,1.0,13.7,1.0,120,0.0,base_food,generated-v2
+Telur Ayam Pepes,Telur Ayam Pepes,100 g,170.5,13.1,1.0,11.6,1.0,120,0.0,base_food,generated-v2
+Telur Ayam Bacem,Telur Ayam Bacem,100 g,201.5,11.2,1.5,11.6,1.0,120,0.0,base_food,generated-v2
+Telur Ayam Balado,Telur Ayam Balado,100 g,217.0,11.5,1.2,26.2,1.0,120,0.0,base_food,generated-v2
+Telur Ayam Rica-Rica,Telur Ayam Rica-Rica,100 g,209.2,11.6,1.1,24.1,1.0,120,0.0,base_food,generated-v2
+Telur Ayam Kecap,Telur Ayam Kecap,100 g,201.5,11.9,1.4,14.7,1.0,120,0.0,base_food,generated-v2
+Telur Ayam Semur,Telur Ayam Semur,100 g,209.2,11.6,1.3,18.9,1.0,120,0.0,base_food,generated-v2
+Telur Ayam Opor,Telur Ayam Opor,100 g,224.8,11.2,1.1,31.5,1.0,120,0.0,base_food,generated-v2
+Telur Ayam Gulai,Telur Ayam Gulai,100 g,232.5,11.0,1.1,36.8,1.0,120,0.0,base_food,generated-v2
+Telur Ayam Kari,Telur Ayam Kari,100 g,224.8,11.2,1.1,33.6,1.0,120,0.0,base_food,generated-v2
+Telur Ayam Asam Manis,Telur Ayam Asam Manis,100 g,193.8,11.9,1.2,15.8,1.0,120,0.0,base_food,generated-v2
+Telur Ayam Saus Tiram,Telur Ayam Saus Tiram,100 g,201.5,12.5,1.1,16.8,1.0,120,0.0,base_food,generated-v2
+Telur Ayam Lada Hitam,Telur Ayam Lada Hitam,100 g,193.8,12.5,1.1,18.9,1.0,120,0.0,base_food,generated-v2
+Telur Ayam Tepung Goreng,Telur Ayam Tepung Goreng,100 g,310.0,10.0,1.3,52.5,1.0,120,0.0,base_food,generated-v2
+Telur Bebek Rebus,Telur Bebek Rebus,100 g,180.0,13.0,0.7,14.0,0.5,140,0.0,base_food,generated-v2
+Telur Bebek Kukus,Telur Bebek Kukus,100 g,189.0,13.3,0.7,14.0,0.5,140,0.0,base_food,generated-v2
+Telur Bebek Bakar,Telur Bebek Bakar,100 g,207.0,13.7,0.7,16.8,0.5,140,0.0,base_food,generated-v2
+Telur Bebek Goreng,Telur Bebek Goreng,100 g,324.0,11.0,0.8,56.0,0.5,140,0.0,base_food,generated-v2
+Telur Bebek Tumis,Telur Bebek Tumis,100 g,270.0,11.7,0.8,42.0,0.5,140,0.0,base_food,generated-v2
+Telur Bebek Panggang,Telur Bebek Panggang,100 g,216.0,14.0,0.7,18.2,0.5,140,0.0,base_food,generated-v2
+Telur Bebek Pepes,Telur Bebek Pepes,100 g,198.0,13.7,0.7,15.4,0.5,140,0.0,base_food,generated-v2
+Telur Bebek Bacem,Telur Bebek Bacem,100 g,234.0,11.7,1.0,15.4,0.5,140,0.0,base_food,generated-v2
+Telur Bebek Balado,Telur Bebek Balado,100 g,252.0,12.0,0.8,35.0,0.5,140,0.0,base_food,generated-v2
+Telur Bebek Rica-Rica,Telur Bebek Rica-Rica,100 g,243.0,12.1,0.8,32.2,0.5,140,0.0,base_food,generated-v2
+Telur Bebek Kecap,Telur Bebek Kecap,100 g,234.0,12.3,1.0,19.6,0.5,140,0.0,base_food,generated-v2
+Telur Bebek Semur,Telur Bebek Semur,100 g,243.0,12.1,0.9,25.2,0.5,140,0.0,base_food,generated-v2
+Telur Bebek Opor,Telur Bebek Opor,100 g,261.0,11.7,0.8,42.0,0.5,140,0.0,base_food,generated-v2
+Telur Bebek Gulai,Telur Bebek Gulai,100 g,270.0,11.4,0.8,49.0,0.5,140,0.0,base_food,generated-v2
+Telur Bebek Kari,Telur Bebek Kari,100 g,261.0,11.7,0.8,44.8,0.5,140,0.0,base_food,generated-v2
+Telur Bebek Asam Manis,Telur Bebek Asam Manis,100 g,225.0,12.3,0.8,21.0,0.5,140,0.0,base_food,generated-v2
+Telur Bebek Saus Tiram,Telur Bebek Saus Tiram,100 g,234.0,13.0,0.8,22.4,0.5,140,0.0,base_food,generated-v2
+Telur Bebek Lada Hitam,Telur Bebek Lada Hitam,100 g,225.0,13.0,0.7,25.2,0.5,140,0.0,base_food,generated-v2
+Telur Bebek Tepung Goreng,Telur Bebek Tepung Goreng,100 g,360.0,10.4,0.9,70.0,0.5,140,0.0,base_food,generated-v2
+Telur Puyuh Rebus,Telur Puyuh Rebus,100 g,158.0,13.0,0.4,11.0,0.3,125,0.0,base_food,generated-v2
+Telur Puyuh Kukus,Telur Puyuh Kukus,100 g,165.9,13.3,0.4,11.0,0.3,125,0.0,base_food,generated-v2
+Telur Puyuh Bakar,Telur Puyuh Bakar,100 g,181.7,13.7,0.4,13.2,0.3,125,0.0,base_food,generated-v2
+Telur Puyuh Goreng,Telur Puyuh Goreng,100 g,284.4,11.0,0.5,44.0,0.3,125,0.0,base_food,generated-v2
+Telur Puyuh Tumis,Telur Puyuh Tumis,100 g,237.0,11.7,0.4,33.0,0.3,125,0.0,base_food,generated-v2
+Telur Puyuh Panggang,Telur Puyuh Panggang,100 g,189.6,14.0,0.4,14.3,0.3,125,0.0,base_food,generated-v2
+Telur Puyuh Pepes,Telur Puyuh Pepes,100 g,173.8,13.7,0.4,12.1,0.3,125,0.0,base_food,generated-v2
+Telur Puyuh Bacem,Telur Puyuh Bacem,100 g,205.4,11.7,0.6,12.1,0.3,125,0.0,base_food,generated-v2
+Telur Puyuh Balado,Telur Puyuh Balado,100 g,221.2,12.0,0.5,27.5,0.3,125,0.0,base_food,generated-v2
+Telur Puyuh Rica-Rica,Telur Puyuh Rica-Rica,100 g,213.3,12.1,0.4,25.3,0.3,125,0.0,base_food,generated-v2
+Telur Puyuh Kecap,Telur Puyuh Kecap,100 g,205.4,12.3,0.6,15.4,0.3,125,0.0,base_food,generated-v2
+Telur Puyuh Semur,Telur Puyuh Semur,100 g,213.3,12.1,0.5,19.8,0.3,125,0.0,base_food,generated-v2
+Telur Puyuh Opor,Telur Puyuh Opor,100 g,229.1,11.7,0.4,33.0,0.3,125,0.0,base_food,generated-v2
+Telur Puyuh Gulai,Telur Puyuh Gulai,100 g,237.0,11.4,0.4,38.5,0.3,125,0.0,base_food,generated-v2
+Telur Puyuh Kari,Telur Puyuh Kari,100 g,229.1,11.7,0.4,35.2,0.3,125,0.0,base_food,generated-v2
+Telur Puyuh Asam Manis,Telur Puyuh Asam Manis,100 g,197.5,12.3,0.5,16.5,0.3,125,0.0,base_food,generated-v2
+Telur Puyuh Saus Tiram,Telur Puyuh Saus Tiram,100 g,205.4,13.0,0.5,17.6,0.3,125,0.0,base_food,generated-v2
+Telur Puyuh Lada Hitam,Telur Puyuh Lada Hitam,100 g,197.5,13.0,0.4,19.8,0.3,125,0.0,base_food,generated-v2
+Telur Puyuh Tepung Goreng,Telur Puyuh Tepung Goreng,100 g,316.0,10.4,0.5,55.0,0.3,125,0.0,base_food,generated-v2
+Bayam Segar,Bayam Segar,100 g,23.0,2.5,3.5,0.4,0.1,65,1.5,base_food,generated-v2
+Bayam Rebus,Bayam Rebus,100 g,23.0,2.5,3.5,0.4,0.1,65,1.5,base_food,generated-v2
+Bayam Tumis,Bayam Tumis,100 g,34.5,2.2,3.9,1.2,0.1,65,1.4,base_food,generated-v2
+Bayam Kukus,Bayam Kukus,100 g,24.2,2.5,3.5,0.4,0.1,65,1.6,base_food,generated-v2
+Sayur Bayam Bening,Sayur Bayam Bening,1 mangkok,27.5,2.5,3.5,0.9,0.1,65,1.5,local_indonesian,generated-v2
+Sayur Bayam Santan,Sayur Bayam Santan,1 mangkok,68.0,2.5,3.5,5.4,0.1,65,1.5,local_indonesian,generated-v2
+Sayur Bayam Kuning,Sayur Bayam Kuning,1 mangkok,50.0,2.5,3.5,3.4,0.1,65,1.5,local_indonesian,generated-v2
+Kangkung Segar,Kangkung Segar,100 g,20.0,2.0,3.5,0.3,0.1,55,1.2,base_food,generated-v2
+Kangkung Rebus,Kangkung Rebus,100 g,20.0,2.0,3.5,0.3,0.1,55,1.2,base_food,generated-v2
+Kangkung Tumis,Kangkung Tumis,100 g,30.0,1.8,3.9,0.9,0.1,55,1.1,base_food,generated-v2
+Kangkung Kukus,Kangkung Kukus,100 g,21.0,2.0,3.5,0.3,0.1,55,1.3,base_food,generated-v2
+Sayur Kangkung Bening,Sayur Kangkung Bening,1 mangkok,24.5,2.0,3.5,0.8,0.1,55,1.2,local_indonesian,generated-v2
+Sayur Kangkung Santan,Sayur Kangkung Santan,1 mangkok,65.0,2.0,3.5,5.3,0.1,55,1.2,local_indonesian,generated-v2
+Sayur Kangkung Kuning,Sayur Kangkung Kuning,1 mangkok,47.0,2.0,3.5,3.3,0.1,55,1.2,local_indonesian,generated-v2
+Sawi Hijau Segar,Sawi Hijau Segar,100 g,22.0,2.0,3.0,0.3,0.1,45,1.2,base_food,generated-v2
+Sawi Hijau Rebus,Sawi Hijau Rebus,100 g,22.0,2.0,3.0,0.3,0.1,45,1.2,base_food,generated-v2
+Sawi Hijau Tumis,Sawi Hijau Tumis,100 g,33.0,1.8,3.3,0.9,0.1,45,1.1,base_food,generated-v2
+Sawi Hijau Kukus,Sawi Hijau Kukus,100 g,23.1,2.0,3.0,0.3,0.1,45,1.3,base_food,generated-v2
+Sayur Sawi Hijau Bening,Sayur Sawi Hijau Bening,1 mangkok,26.5,2.0,3.0,0.8,0.1,45,1.2,local_indonesian,generated-v2
+Sayur Sawi Hijau Santan,Sayur Sawi Hijau Santan,1 mangkok,67.0,2.0,3.0,5.3,0.1,45,1.2,local_indonesian,generated-v2
+Sayur Sawi Hijau Kuning,Sayur Sawi Hijau Kuning,1 mangkok,49.0,2.0,3.0,3.3,0.1,45,1.2,local_indonesian,generated-v2
+Sawi Putih Segar,Sawi Putih Segar,100 g,18.0,1.5,2.5,0.2,0.1,38,1.0,base_food,generated-v2
+Sawi Putih Rebus,Sawi Putih Rebus,100 g,18.0,1.5,2.5,0.2,0.1,38,1.0,base_food,generated-v2
+Sawi Putih Tumis,Sawi Putih Tumis,100 g,27.0,1.4,2.8,0.6,0.1,38,0.9,base_food,generated-v2
+Sawi Putih Kukus,Sawi Putih Kukus,100 g,18.9,1.5,2.5,0.2,0.1,38,1.1,base_food,generated-v2
+Sayur Sawi Putih Bening,Sayur Sawi Putih Bening,1 mangkok,22.5,1.5,2.5,0.7,0.1,38,1.0,local_indonesian,generated-v2
+Sayur Sawi Putih Santan,Sayur Sawi Putih Santan,1 mangkok,63.0,1.5,2.5,5.2,0.1,38,1.0,local_indonesian,generated-v2
+Sayur Sawi Putih Kuning,Sayur Sawi Putih Kuning,1 mangkok,45.0,1.5,2.5,3.2,0.1,38,1.0,local_indonesian,generated-v2
+Brokoli Segar,Brokoli Segar,100 g,32.0,2.8,5.0,0.4,0.1,28,2.5,base_food,generated-v2
+Brokoli Rebus,Brokoli Rebus,100 g,32.0,2.8,5.0,0.4,0.1,28,2.5,base_food,generated-v2
+Brokoli Tumis,Brokoli Tumis,100 g,48.0,2.5,5.5,1.2,0.1,28,2.4,base_food,generated-v2
+Brokoli Kukus,Brokoli Kukus,100 g,33.6,2.9,5.0,0.4,0.1,28,2.6,base_food,generated-v2
+Sayur Brokoli Bening,Sayur Brokoli Bening,1 mangkok,36.5,2.8,5.0,0.9,0.1,28,2.5,local_indonesian,generated-v2
+Sayur Brokoli Santan,Sayur Brokoli Santan,1 mangkok,77.0,2.8,5.0,5.4,0.1,28,2.5,local_indonesian,generated-v2
+Sayur Brokoli Kuning,Sayur Brokoli Kuning,1 mangkok,59.0,2.8,5.0,3.4,0.1,28,2.5,local_indonesian,generated-v2
+Kembang Kol Segar,Kembang Kol Segar,100 g,22.0,1.8,4.0,0.2,0.1,20,2.0,base_food,generated-v2
+Kembang Kol Rebus,Kembang Kol Rebus,100 g,22.0,1.8,4.0,0.2,0.1,20,2.0,base_food,generated-v2
+Kembang Kol Tumis,Kembang Kol Tumis,100 g,33.0,1.6,4.4,0.6,0.1,20,1.9,base_food,generated-v2
+Kembang Kol Kukus,Kembang Kol Kukus,100 g,23.1,1.8,4.0,0.2,0.1,20,2.1,base_food,generated-v2
+Sayur Kembang Kol Bening,Sayur Kembang Kol Bening,1 mangkok,26.5,1.8,4.0,0.7,0.1,20,2.0,local_indonesian,generated-v2
+Sayur Kembang Kol Santan,Sayur Kembang Kol Santan,1 mangkok,67.0,1.8,4.0,5.2,0.1,20,2.0,local_indonesian,generated-v2
+Sayur Kembang Kol Kuning,Sayur Kembang Kol Kuning,1 mangkok,49.0,1.8,4.0,3.2,0.1,20,2.0,local_indonesian,generated-v2
+Wortel Segar,Wortel Segar,100 g,32.0,0.8,6.5,0.2,4.5,55,2.5,base_food,generated-v2
+Wortel Rebus,Wortel Rebus,100 g,32.0,0.8,6.5,0.2,4.5,55,2.5,base_food,generated-v2
+Wortel Tumis,Wortel Tumis,100 g,48.0,0.7,7.2,0.6,4.5,55,2.4,base_food,generated-v2
+Wortel Kukus,Wortel Kukus,100 g,33.6,0.8,6.5,0.2,4.5,55,2.6,base_food,generated-v2
+Sayur Wortel Bening,Sayur Wortel Bening,1 mangkok,36.5,0.8,6.5,0.7,4.5,55,2.5,local_indonesian,generated-v2
+Sayur Wortel Santan,Sayur Wortel Santan,1 mangkok,77.0,0.8,6.5,5.2,4.5,55,2.5,local_indonesian,generated-v2
+Sayur Wortel Kuning,Sayur Wortel Kuning,1 mangkok,59.0,0.8,6.5,3.2,4.5,55,2.5,local_indonesian,generated-v2
+Buncis Segar,Buncis Segar,100 g,28.0,1.8,5.5,0.2,1.5,5,2.0,base_food,generated-v2
+Buncis Rebus,Buncis Rebus,100 g,28.0,1.8,5.5,0.2,1.5,5,2.0,base_food,generated-v2
+Buncis Tumis,Buncis Tumis,100 g,42.0,1.6,6.1,0.6,1.5,5,1.9,base_food,generated-v2
+Buncis Kukus,Buncis Kukus,100 g,29.4,1.8,5.5,0.2,1.5,5,2.1,base_food,generated-v2
+Sayur Buncis Bening,Sayur Buncis Bening,1 mangkok,32.5,1.8,5.5,0.7,1.5,5,2.0,local_indonesian,generated-v2
+Sayur Buncis Santan,Sayur Buncis Santan,1 mangkok,73.0,1.8,5.5,5.2,1.5,5,2.0,local_indonesian,generated-v2
+Sayur Buncis Kuning,Sayur Buncis Kuning,1 mangkok,55.0,1.8,5.5,3.2,1.5,5,2.0,local_indonesian,generated-v2
+Kacang Panjang Segar,Kacang Panjang Segar,100 g,32.0,2.5,5.5,0.3,0.1,5,2.0,base_food,generated-v2
+Kacang Panjang Rebus,Kacang Panjang Rebus,100 g,32.0,2.5,5.5,0.3,0.1,5,2.0,base_food,generated-v2
+Kacang Panjang Tumis,Kacang Panjang Tumis,100 g,48.0,2.2,6.1,0.9,0.1,5,1.9,base_food,generated-v2
+Kacang Panjang Kukus,Kacang Panjang Kukus,100 g,33.6,2.5,5.5,0.3,0.1,5,2.1,base_food,generated-v2
+Sayur Kacang Panjang Bening,Sayur Kacang Panjang Bening,1 mangkok,36.5,2.5,5.5,0.8,0.1,5,2.0,local_indonesian,generated-v2
+Sayur Kacang Panjang Santan,Sayur Kacang Panjang Santan,1 mangkok,77.0,2.5,5.5,5.3,0.1,5,2.0,local_indonesian,generated-v2
+Sayur Kacang Panjang Kuning,Sayur Kacang Panjang Kuning,1 mangkok,59.0,2.5,5.5,3.3,0.1,5,2.0,local_indonesian,generated-v2
+Labu Siam Segar,Labu Siam Segar,100 g,18.0,0.6,3.5,0.1,1.8,3,1.5,base_food,generated-v2
+Labu Siam Rebus,Labu Siam Rebus,100 g,18.0,0.6,3.5,0.1,1.8,3,1.5,base_food,generated-v2
+Labu Siam Tumis,Labu Siam Tumis,100 g,27.0,0.5,3.9,0.3,1.8,3,1.4,base_food,generated-v2
+Labu Siam Kukus,Labu Siam Kukus,100 g,18.9,0.6,3.5,0.1,1.8,3,1.6,base_food,generated-v2
+Sayur Labu Siam Bening,Sayur Labu Siam Bening,1 mangkok,22.5,0.6,3.5,0.6,1.8,3,1.5,local_indonesian,generated-v2
+Sayur Labu Siam Santan,Sayur Labu Siam Santan,1 mangkok,63.0,0.6,3.5,5.1,1.8,3,1.5,local_indonesian,generated-v2
+Sayur Labu Siam Kuning,Sayur Labu Siam Kuning,1 mangkok,45.0,0.6,3.5,3.1,1.8,3,1.5,local_indonesian,generated-v2
+Terong Ungu Segar,Terong Ungu Segar,100 g,22.0,1.0,4.5,0.2,0.1,3,2.0,base_food,generated-v2
+Terong Ungu Rebus,Terong Ungu Rebus,100 g,22.0,1.0,4.5,0.2,0.1,3,2.0,base_food,generated-v2
+Terong Ungu Tumis,Terong Ungu Tumis,100 g,33.0,0.9,5.0,0.6,0.1,3,1.9,base_food,generated-v2
+Terong Ungu Kukus,Terong Ungu Kukus,100 g,23.1,1.0,4.5,0.2,0.1,3,2.1,base_food,generated-v2
+Sayur Terong Ungu Bening,Sayur Terong Ungu Bening,1 mangkok,26.5,1.0,4.5,0.7,0.1,3,2.0,local_indonesian,generated-v2
+Sayur Terong Ungu Santan,Sayur Terong Ungu Santan,1 mangkok,67.0,1.0,4.5,5.2,0.1,3,2.0,local_indonesian,generated-v2
+Sayur Terong Ungu Kuning,Sayur Terong Ungu Kuning,1 mangkok,49.0,1.0,4.5,3.2,0.1,3,2.0,local_indonesian,generated-v2
+Pare Segar,Pare Segar,100 g,18.0,1.0,3.3,0.2,0.1,3,1.8,base_food,generated-v2
+Pare Rebus,Pare Rebus,100 g,18.0,1.0,3.3,0.2,0.1,3,1.8,base_food,generated-v2
+Pare Tumis,Pare Tumis,100 g,27.0,0.9,3.6,0.6,0.1,3,1.7,base_food,generated-v2
+Pare Kukus,Pare Kukus,100 g,18.9,1.0,3.3,0.2,0.1,3,1.9,base_food,generated-v2
+Sayur Pare Bening,Sayur Pare Bening,1 mangkok,22.5,1.0,3.3,0.7,0.1,3,1.8,local_indonesian,generated-v2
+Sayur Pare Santan,Sayur Pare Santan,1 mangkok,63.0,1.0,3.3,5.2,0.1,3,1.8,local_indonesian,generated-v2
+Sayur Pare Kuning,Sayur Pare Kuning,1 mangkok,45.0,1.0,3.3,3.2,0.1,3,1.8,local_indonesian,generated-v2
+Kubis Segar,Kubis Segar,100 g,20.0,1.5,3.5,0.2,0.1,15,1.8,base_food,generated-v2
+Kubis Rebus,Kubis Rebus,100 g,20.0,1.5,3.5,0.2,0.1,15,1.8,base_food,generated-v2
+Kubis Tumis,Kubis Tumis,100 g,30.0,1.4,3.9,0.6,0.1,15,1.7,base_food,generated-v2
+Kubis Kukus,Kubis Kukus,100 g,21.0,1.5,3.5,0.2,0.1,15,1.9,base_food,generated-v2
+Sayur Kubis Bening,Sayur Kubis Bening,1 mangkok,24.5,1.5,3.5,0.7,0.1,15,1.8,local_indonesian,generated-v2
+Sayur Kubis Santan,Sayur Kubis Santan,1 mangkok,65.0,1.5,3.5,5.2,0.1,15,1.8,local_indonesian,generated-v2
+Sayur Kubis Kuning,Sayur Kubis Kuning,1 mangkok,47.0,1.5,3.5,3.2,0.1,15,1.8,local_indonesian,generated-v2
+Daun Singkong Segar,Daun Singkong Segar,100 g,38.0,3.5,6.0,0.5,0.1,10,2.5,base_food,generated-v2
+Daun Singkong Rebus,Daun Singkong Rebus,100 g,38.0,3.5,6.0,0.5,0.1,10,2.5,base_food,generated-v2
+Daun Singkong Tumis,Daun Singkong Tumis,100 g,57.0,3.1,6.6,1.5,0.1,10,2.4,base_food,generated-v2
+Daun Singkong Kukus,Daun Singkong Kukus,100 g,39.9,3.6,6.0,0.5,0.1,10,2.6,base_food,generated-v2
+Sayur Daun Singkong Bening,Sayur Daun Singkong Bening,1 mangkok,42.5,3.5,6.0,1.0,0.1,10,2.5,local_indonesian,generated-v2
+Sayur Daun Singkong Santan,Sayur Daun Singkong Santan,1 mangkok,83.0,3.5,6.0,5.5,0.1,10,2.5,local_indonesian,generated-v2
+Sayur Daun Singkong Kuning,Sayur Daun Singkong Kuning,1 mangkok,65.0,3.5,6.0,3.5,0.1,10,2.5,local_indonesian,generated-v2
+Daun Pepaya Segar,Daun Pepaya Segar,100 g,32.0,3.0,5.0,0.5,0.1,8,2.0,base_food,generated-v2
+Daun Pepaya Rebus,Daun Pepaya Rebus,100 g,32.0,3.0,5.0,0.5,0.1,8,2.0,base_food,generated-v2
+Daun Pepaya Tumis,Daun Pepaya Tumis,100 g,48.0,2.7,5.5,1.5,0.1,8,1.9,base_food,generated-v2
+Daun Pepaya Kukus,Daun Pepaya Kukus,100 g,33.6,3.1,5.0,0.5,0.1,8,2.1,base_food,generated-v2
+Sayur Daun Pepaya Bening,Sayur Daun Pepaya Bening,1 mangkok,36.5,3.0,5.0,1.0,0.1,8,2.0,local_indonesian,generated-v2
+Sayur Daun Pepaya Santan,Sayur Daun Pepaya Santan,1 mangkok,77.0,3.0,5.0,5.5,0.1,8,2.0,local_indonesian,generated-v2
+Sayur Daun Pepaya Kuning,Sayur Daun Pepaya Kuning,1 mangkok,59.0,3.0,5.0,3.5,0.1,8,2.0,local_indonesian,generated-v2
+Tauge Segar,Tauge Segar,100 g,28.0,2.5,4.0,0.3,0.1,8,1.5,base_food,generated-v2
+Tauge Rebus,Tauge Rebus,100 g,28.0,2.5,4.0,0.3,0.1,8,1.5,base_food,generated-v2
+Tauge Tumis,Tauge Tumis,100 g,42.0,2.2,4.4,0.9,0.1,8,1.4,base_food,generated-v2
+Tauge Kukus,Tauge Kukus,100 g,29.4,2.5,4.0,0.3,0.1,8,1.6,base_food,generated-v2
+Sayur Tauge Bening,Sayur Tauge Bening,1 mangkok,32.5,2.5,4.0,0.8,0.1,8,1.5,local_indonesian,generated-v2
+Sayur Tauge Santan,Sayur Tauge Santan,1 mangkok,73.0,2.5,4.0,5.3,0.1,8,1.5,local_indonesian,generated-v2
+Sayur Tauge Kuning,Sayur Tauge Kuning,1 mangkok,55.0,2.5,4.0,3.3,0.1,8,1.5,local_indonesian,generated-v2
+Oyong Segar,Oyong Segar,100 g,16.0,0.5,3.0,0.1,0.1,2,1.8,base_food,generated-v2
+Oyong Rebus,Oyong Rebus,100 g,16.0,0.5,3.0,0.1,0.1,2,1.8,base_food,generated-v2
+Oyong Tumis,Oyong Tumis,100 g,24.0,0.5,3.3,0.3,0.1,2,1.7,base_food,generated-v2
+Oyong Kukus,Oyong Kukus,100 g,16.8,0.5,3.0,0.1,0.1,2,1.9,base_food,generated-v2
+Sayur Oyong Bening,Sayur Oyong Bening,1 mangkok,20.5,0.5,3.0,0.6,0.1,2,1.8,local_indonesian,generated-v2
+Sayur Oyong Santan,Sayur Oyong Santan,1 mangkok,61.0,0.5,3.0,5.1,0.1,2,1.8,local_indonesian,generated-v2
+Sayur Oyong Kuning,Sayur Oyong Kuning,1 mangkok,43.0,0.5,3.0,3.1,0.1,2,1.8,local_indonesian,generated-v2
+Jamur Tiram Segar,Jamur Tiram Segar,100 g,30.0,3.0,4.5,0.3,0.1,5,2.0,base_food,generated-v2
+Jamur Tiram Rebus,Jamur Tiram Rebus,100 g,30.0,3.0,4.5,0.3,0.1,5,2.0,base_food,generated-v2
+Jamur Tiram Tumis,Jamur Tiram Tumis,100 g,45.0,2.7,5.0,0.9,0.1,5,1.9,base_food,generated-v2
+Jamur Tiram Kukus,Jamur Tiram Kukus,100 g,31.5,3.1,4.5,0.3,0.1,5,2.1,base_food,generated-v2
+Sayur Jamur Tiram Bening,Sayur Jamur Tiram Bening,1 mangkok,34.5,3.0,4.5,0.8,0.1,5,2.0,local_indonesian,generated-v2
+Sayur Jamur Tiram Santan,Sayur Jamur Tiram Santan,1 mangkok,75.0,3.0,4.5,5.3,0.1,5,2.0,local_indonesian,generated-v2
+Sayur Jamur Tiram Kuning,Sayur Jamur Tiram Kuning,1 mangkok,57.0,3.0,4.5,3.3,0.1,5,2.0,local_indonesian,generated-v2
+Jamur Kancing Segar,Jamur Kancing Segar,100 g,25.0,2.5,4.0,0.2,0.1,5,1.8,base_food,generated-v2
+Jamur Kancing Rebus,Jamur Kancing Rebus,100 g,25.0,2.5,4.0,0.2,0.1,5,1.8,base_food,generated-v2
+Jamur Kancing Tumis,Jamur Kancing Tumis,100 g,37.5,2.2,4.4,0.6,0.1,5,1.7,base_food,generated-v2
+Jamur Kancing Kukus,Jamur Kancing Kukus,100 g,26.2,2.5,4.0,0.2,0.1,5,1.9,base_food,generated-v2
+Sayur Jamur Kancing Bening,Sayur Jamur Kancing Bening,1 mangkok,29.5,2.5,4.0,0.7,0.1,5,1.8,local_indonesian,generated-v2
+Sayur Jamur Kancing Santan,Sayur Jamur Kancing Santan,1 mangkok,70.0,2.5,4.0,5.2,0.1,5,1.8,local_indonesian,generated-v2
+Sayur Jamur Kancing Kuning,Sayur Jamur Kancing Kuning,1 mangkok,52.0,2.5,4.0,3.2,0.1,5,1.8,local_indonesian,generated-v2
+Jamur Kuping Segar,Jamur Kuping Segar,100 g,22.0,1.0,4.5,0.1,0.1,3,3.5,base_food,generated-v2
+Jamur Kuping Rebus,Jamur Kuping Rebus,100 g,22.0,1.0,4.5,0.1,0.1,3,3.5,base_food,generated-v2
+Jamur Kuping Tumis,Jamur Kuping Tumis,100 g,33.0,0.9,5.0,0.3,0.1,3,3.3,base_food,generated-v2
+Jamur Kuping Kukus,Jamur Kuping Kukus,100 g,23.1,1.0,4.5,0.1,0.1,3,3.7,base_food,generated-v2
+Sayur Jamur Kuping Bening,Sayur Jamur Kuping Bening,1 mangkok,26.5,1.0,4.5,0.6,0.1,3,3.5,local_indonesian,generated-v2
+Sayur Jamur Kuping Santan,Sayur Jamur Kuping Santan,1 mangkok,67.0,1.0,4.5,5.1,0.1,3,3.5,local_indonesian,generated-v2
+Sayur Jamur Kuping Kuning,Sayur Jamur Kuping Kuning,1 mangkok,49.0,1.0,4.5,3.1,0.1,3,3.5,local_indonesian,generated-v2
+Jagung Muda Segar,Jagung Muda Segar,100 g,32.0,2.0,6.5,0.5,0.1,5,2.0,base_food,generated-v2
+Jagung Muda Rebus,Jagung Muda Rebus,100 g,32.0,2.0,6.5,0.5,0.1,5,2.0,base_food,generated-v2
+Jagung Muda Tumis,Jagung Muda Tumis,100 g,48.0,1.8,7.2,1.5,0.1,5,1.9,base_food,generated-v2
+Jagung Muda Kukus,Jagung Muda Kukus,100 g,33.6,2.0,6.5,0.5,0.1,5,2.1,base_food,generated-v2
+Sayur Jagung Muda Bening,Sayur Jagung Muda Bening,1 mangkok,36.5,2.0,6.5,1.0,0.1,5,2.0,local_indonesian,generated-v2
+Sayur Jagung Muda Santan,Sayur Jagung Muda Santan,1 mangkok,77.0,2.0,6.5,5.5,0.1,5,2.0,local_indonesian,generated-v2
+Sayur Jagung Muda Kuning,Sayur Jagung Muda Kuning,1 mangkok,59.0,2.0,6.5,3.5,0.1,5,2.0,local_indonesian,generated-v2
+Kapri Segar,Kapri Segar,100 g,38.0,3.0,6.5,0.3,0.5,5,2.5,base_food,generated-v2
+Kapri Rebus,Kapri Rebus,100 g,38.0,3.0,6.5,0.3,0.5,5,2.5,base_food,generated-v2
+Kapri Tumis,Kapri Tumis,100 g,57.0,2.7,7.2,0.9,0.5,5,2.4,base_food,generated-v2
+Kapri Kukus,Kapri Kukus,100 g,39.9,3.1,6.5,0.3,0.5,5,2.6,base_food,generated-v2
+Sayur Kapri Bening,Sayur Kapri Bening,1 mangkok,42.5,3.0,6.5,0.8,0.5,5,2.5,local_indonesian,generated-v2
+Sayur Kapri Santan,Sayur Kapri Santan,1 mangkok,83.0,3.0,6.5,5.3,0.5,5,2.5,local_indonesian,generated-v2
+Sayur Kapri Kuning,Sayur Kapri Kuning,1 mangkok,65.0,3.0,6.5,3.3,0.5,5,2.5,local_indonesian,generated-v2
+Kecipir Segar,Kecipir Segar,100 g,35.0,3.5,5.5,0.3,0.2,5,2.0,base_food,generated-v2
+Kecipir Rebus,Kecipir Rebus,100 g,35.0,3.5,5.5,0.3,0.2,5,2.0,base_food,generated-v2
+Kecipir Tumis,Kecipir Tumis,100 g,52.5,3.1,6.1,0.9,0.2,5,1.9,base_food,generated-v2
+Kecipir Kukus,Kecipir Kukus,100 g,36.8,3.6,5.5,0.3,0.2,5,2.1,base_food,generated-v2
+Sayur Kecipir Bening,Sayur Kecipir Bening,1 mangkok,39.5,3.5,5.5,0.8,0.2,5,2.0,local_indonesian,generated-v2
+Sayur Kecipir Santan,Sayur Kecipir Santan,1 mangkok,80.0,3.5,5.5,5.3,0.2,5,2.0,local_indonesian,generated-v2
+Sayur Kecipir Kuning,Sayur Kecipir Kuning,1 mangkok,62.0,3.5,5.5,3.3,0.2,5,2.0,local_indonesian,generated-v2
+Rebung Segar,Rebung Segar,100 g,22.0,2.0,3.5,0.2,0.1,5,2.2,base_food,generated-v2
+Rebung Rebus,Rebung Rebus,100 g,22.0,2.0,3.5,0.2,0.1,5,2.2,base_food,generated-v2
+Rebung Tumis,Rebung Tumis,100 g,33.0,1.8,3.9,0.6,0.1,5,2.1,base_food,generated-v2
+Rebung Kukus,Rebung Kukus,100 g,23.1,2.0,3.5,0.2,0.1,5,2.3,base_food,generated-v2
+Sayur Rebung Bening,Sayur Rebung Bening,1 mangkok,26.5,2.0,3.5,0.7,0.1,5,2.2,local_indonesian,generated-v2
+Sayur Rebung Santan,Sayur Rebung Santan,1 mangkok,67.0,2.0,3.5,5.2,0.1,5,2.2,local_indonesian,generated-v2
+Sayur Rebung Kuning,Sayur Rebung Kuning,1 mangkok,49.0,2.0,3.5,3.2,0.1,5,2.2,local_indonesian,generated-v2
+Nangka Muda Segar,Nangka Muda Segar,100 g,35.0,2.0,7.5,0.3,0.5,5,2.5,base_food,generated-v2
+Nangka Muda Rebus,Nangka Muda Rebus,100 g,35.0,2.0,7.5,0.3,0.5,5,2.5,base_food,generated-v2
+Nangka Muda Tumis,Nangka Muda Tumis,100 g,52.5,1.8,8.2,0.9,0.5,5,2.4,base_food,generated-v2
+Nangka Muda Kukus,Nangka Muda Kukus,100 g,36.8,2.0,7.5,0.3,0.5,5,2.6,base_food,generated-v2
+Sayur Nangka Muda Bening,Sayur Nangka Muda Bening,1 mangkok,39.5,2.0,7.5,0.8,0.5,5,2.5,local_indonesian,generated-v2
+Sayur Nangka Muda Santan,Sayur Nangka Muda Santan,1 mangkok,80.0,2.0,7.5,5.3,0.5,5,2.5,local_indonesian,generated-v2
+Sayur Nangka Muda Kuning,Sayur Nangka Muda Kuning,1 mangkok,62.0,2.0,7.5,3.3,0.5,5,2.5,local_indonesian,generated-v2
+Melinjo Segar,Melinjo Segar,100 g,65.0,5.0,12.0,1.0,0.5,5,4.0,base_food,generated-v2
+Melinjo Rebus,Melinjo Rebus,100 g,65.0,5.0,12.0,1.0,0.5,5,4.0,base_food,generated-v2
+Melinjo Tumis,Melinjo Tumis,100 g,97.5,4.5,13.2,3.0,0.5,5,3.8,base_food,generated-v2
+Melinjo Kukus,Melinjo Kukus,100 g,68.2,5.1,12.0,1.0,0.5,5,4.2,base_food,generated-v2
+Sayur Melinjo Bening,Sayur Melinjo Bening,1 mangkok,69.5,5.0,12.0,1.5,0.5,5,4.0,local_indonesian,generated-v2
+Sayur Melinjo Santan,Sayur Melinjo Santan,1 mangkok,110.0,5.0,12.0,6.0,0.5,5,4.0,local_indonesian,generated-v2
+Sayur Melinjo Kuning,Sayur Melinjo Kuning,1 mangkok,92.0,5.0,12.0,4.0,0.5,5,4.0,local_indonesian,generated-v2
+Daun Kelor Segar,Daun Kelor Segar,100 g,42.0,5.5,4.5,0.8,0.1,12,2.0,base_food,generated-v2
+Daun Kelor Rebus,Daun Kelor Rebus,100 g,42.0,5.5,4.5,0.8,0.1,12,2.0,base_food,generated-v2
+Daun Kelor Tumis,Daun Kelor Tumis,100 g,63.0,5.0,5.0,2.4,0.1,12,1.9,base_food,generated-v2
+Daun Kelor Kukus,Daun Kelor Kukus,100 g,44.1,5.6,4.5,0.8,0.1,12,2.1,base_food,generated-v2
+Sayur Daun Kelor Bening,Sayur Daun Kelor Bening,1 mangkok,46.5,5.5,4.5,1.3,0.1,12,2.0,local_indonesian,generated-v2
+Sayur Daun Kelor Santan,Sayur Daun Kelor Santan,1 mangkok,87.0,5.5,4.5,5.8,0.1,12,2.0,local_indonesian,generated-v2
+Sayur Daun Kelor Kuning,Sayur Daun Kelor Kuning,1 mangkok,69.0,5.5,4.5,3.8,0.1,12,2.0,local_indonesian,generated-v2
+Daun Katuk Segar,Daun Katuk Segar,100 g,48.0,5.0,6.5,0.7,0.1,10,2.5,base_food,generated-v2
+Daun Katuk Rebus,Daun Katuk Rebus,100 g,48.0,5.0,6.5,0.7,0.1,10,2.5,base_food,generated-v2
+Daun Katuk Tumis,Daun Katuk Tumis,100 g,72.0,4.5,7.2,2.1,0.1,10,2.4,base_food,generated-v2
+Daun Katuk Kukus,Daun Katuk Kukus,100 g,50.4,5.1,6.5,0.7,0.1,10,2.6,base_food,generated-v2
+Sayur Daun Katuk Bening,Sayur Daun Katuk Bening,1 mangkok,52.5,5.0,6.5,1.2,0.1,10,2.5,local_indonesian,generated-v2
+Sayur Daun Katuk Santan,Sayur Daun Katuk Santan,1 mangkok,93.0,5.0,6.5,5.7,0.1,10,2.5,local_indonesian,generated-v2
+Sayur Daun Katuk Kuning,Sayur Daun Katuk Kuning,1 mangkok,75.0,5.0,6.5,3.7,0.1,10,2.5,local_indonesian,generated-v2
+Genjer Segar,Genjer Segar,100 g,24.0,1.5,4.2,0.3,0.1,8,1.2,base_food,generated-v2
+Genjer Rebus,Genjer Rebus,100 g,24.0,1.5,4.2,0.3,0.1,8,1.2,base_food,generated-v2
+Genjer Tumis,Genjer Tumis,100 g,36.0,1.4,4.6,0.9,0.1,8,1.1,base_food,generated-v2
+Genjer Kukus,Genjer Kukus,100 g,25.2,1.5,4.2,0.3,0.1,8,1.3,base_food,generated-v2
+Sayur Genjer Bening,Sayur Genjer Bening,1 mangkok,28.5,1.5,4.2,0.8,0.1,8,1.2,local_indonesian,generated-v2
+Sayur Genjer Santan,Sayur Genjer Santan,1 mangkok,69.0,1.5,4.2,5.3,0.1,8,1.2,local_indonesian,generated-v2
+Sayur Genjer Kuning,Sayur Genjer Kuning,1 mangkok,51.0,1.5,4.2,3.3,0.1,8,1.2,local_indonesian,generated-v2
+Seledri Segar,Seledri Segar,100 g,20.0,0.8,3.5,0.2,0.1,80,1.5,base_food,generated-v2
+Seledri Rebus,Seledri Rebus,100 g,20.0,0.8,3.5,0.2,0.1,80,1.5,base_food,generated-v2
+Seledri Tumis,Seledri Tumis,100 g,30.0,0.7,3.9,0.6,0.1,80,1.4,base_food,generated-v2
+Seledri Kukus,Seledri Kukus,100 g,21.0,0.8,3.5,0.2,0.1,80,1.6,base_food,generated-v2
+Sayur Seledri Bening,Sayur Seledri Bening,1 mangkok,24.5,0.8,3.5,0.7,0.1,80,1.5,local_indonesian,generated-v2
+Sayur Seledri Santan,Sayur Seledri Santan,1 mangkok,65.0,0.8,3.5,5.2,0.1,80,1.5,local_indonesian,generated-v2
+Sayur Seledri Kuning,Sayur Seledri Kuning,1 mangkok,47.0,0.8,3.5,3.2,0.1,80,1.5,local_indonesian,generated-v2
+Nasi Putih,Nasi Putih,100 g,180.0,3.0,39.0,0.3,0.1,2,0.5,base_food,generated-v2
+Nasi Putih Goreng,Nasi Putih Goreng,1 porsi,324.0,2.5,44.8,1.2,0.1,2,0.5,local_indonesian,generated-v2
+Nasi Putih Tim,Nasi Putih Tim,1 porsi,153.0,3.0,39.0,0.3,0.1,2,0.5,base_food,generated-v2
+Nasi Merah,Nasi Merah,100 g,178.0,3.5,37.0,0.9,0.2,3,1.2,base_food,generated-v2
+Nasi Merah Goreng,Nasi Merah Goreng,1 porsi,320.4,3.0,42.5,3.6,0.2,3,1.1,local_indonesian,generated-v2
+Nasi Merah Tim,Nasi Merah Tim,1 porsi,151.3,3.5,37.0,0.9,0.2,3,1.2,base_food,generated-v2
+Nasi Ketan,Nasi Ketan,100 g,190.0,3.8,40.0,0.4,0.1,5,0.8,base_food,generated-v2
+Nasi Ketan Goreng,Nasi Ketan Goreng,1 porsi,342.0,3.2,46.0,1.6,0.1,5,0.7,local_indonesian,generated-v2
+Nasi Ketan Tim,Nasi Ketan Tim,1 porsi,161.5,3.8,40.0,0.4,0.1,5,0.8,base_food,generated-v2
+Bubur Nasi,Bubur Nasi,100 g,70.0,1.2,15.0,0.2,0.0,2,0.2,base_food,generated-v2
+Kentang,Kentang,100 g,87.0,2.0,19.0,0.1,0.8,6,2.0,base_food,generated-v2
+Ubi Jalar,Ubi Jalar,100 g,100.0,1.8,23.0,0.2,5.5,10,2.5,base_food,generated-v2
+Singkong,Singkong,100 g,155.0,1.2,36.0,0.3,1.5,14,1.8,base_food,generated-v2
+Talas,Talas,100 g,120.0,1.5,27.0,0.2,0.5,10,3.0,base_food,generated-v2
+Jagung,Jagung,100 g,140.0,4.5,30.0,1.5,3.0,1,3.0,base_food,generated-v2
+Mie Basah,Mie Basah,100 g,280.0,7.0,55.0,2.0,1.0,500,1.0,base_food,generated-v2
+Mie Basah Goreng,Mie Basah Goreng,1 porsi,504.0,6.0,63.2,8.0,1.0,500,0.9,local_indonesian,generated-v2
+Mie Kering,Mie Kering,100 g,340.0,10.0,72.0,1.5,1.5,600,2.0,base_food,generated-v2
+Mie Kering Goreng,Mie Kering Goreng,1 porsi,612.0,8.5,82.8,6.0,1.5,600,1.8,local_indonesian,generated-v2
+Bihun,Bihun,100 g,350.0,6.0,80.0,0.5,0.0,10,0.5,base_food,generated-v2
+Bihun Goreng,Bihun Goreng,1 porsi,630.0,5.1,92.0,2.0,0.0,10,0.5,local_indonesian,generated-v2
+Kwetiau,Kwetiau,100 g,300.0,5.0,68.0,1.0,0.0,15,0.5,base_food,generated-v2
+Kwetiau Goreng,Kwetiau Goreng,1 porsi,540.0,4.2,78.2,4.0,0.0,15,0.5,local_indonesian,generated-v2
+Soun,Soun,100 g,340.0,2.0,82.0,0.0,0.0,8,0.3,base_food,generated-v2
+Roti Tawar,Roti Tawar,100 g,265.0,8.0,49.0,3.2,4.5,500,2.5,base_food,generated-v2
+Makaroni,Makaroni,100 g,350.0,12.0,72.0,1.5,2.0,5,2.5,base_food,generated-v2
+Nasi Putih + Ayam Goreng,Nasi Putih + Ayam Goreng,1 porsi,550.0,28.0,55.0,20.0,2.0,500,1.5,local_indonesian,generated-v2
+Nasi Putih + Ayam Bakar,Nasi Putih + Ayam Bakar,1 porsi,500.0,30.0,50.0,16.0,2.0,400,1.5,local_indonesian,generated-v2
+Nasi Putih + Ikan Goreng,Nasi Putih + Ikan Goreng,1 porsi,480.0,22.0,52.0,18.0,1.0,350,1.0,local_indonesian,generated-v2
+Nasi Putih + Ikan Bakar,Nasi Putih + Ikan Bakar,1 porsi,450.0,24.0,50.0,14.0,1.0,300,1.0,local_indonesian,generated-v2
+Nasi Putih + Telur Dadar,Nasi Putih + Telur Dadar,1 porsi,420.0,16.0,48.0,18.0,1.5,350,0.8,local_indonesian,generated-v2
+Nasi Putih + Tahu Goreng,Nasi Putih + Tahu Goreng,1 porsi,380.0,12.0,48.0,18.0,1.0,250,1.5,local_indonesian,generated-v2
+Nasi Putih + Tempe Goreng,Nasi Putih + Tempe Goreng,1 porsi,400.0,15.0,48.0,19.0,1.0,250,2.0,local_indonesian,generated-v2
+Nasi Putih + Ayam Kecap,Nasi Putih + Ayam Kecap,1 porsi,500.0,29.0,52.0,17.0,7.0,600,1.0,local_indonesian,generated-v2
+Nasi Putih + Ayam Balado,Nasi Putih + Ayam Balado,1 porsi,490.0,28.0,50.0,18.0,3.0,550,1.5,local_indonesian,generated-v2
+Nasi Putih + Ayam Penyet,Nasi Putih + Ayam Penyet,1 porsi,550.0,27.0,52.0,23.0,2.0,700,2.0,local_indonesian,generated-v2
+Indomie Goreng Telur,Indomie Goreng Telur,1 porsi,550.0,14.0,58.0,25.0,3.0,1400,2.0,local_indonesian,generated-v2
+Indomie Rebus Telur,Indomie Rebus Telur,1 porsi,500.0,14.0,55.0,20.0,3.0,1300,2.0,local_indonesian,generated-v2
+Nasi Telur Ceplok Kecap,Nasi Telur Ceplok Kecap,1 porsi,380.0,14.0,45.0,15.0,5.0,500,0.8,local_indonesian,generated-v2
+Nasi Tahu Goreng Sambal,Nasi Tahu Goreng Sambal,1 porsi,350.0,10.0,45.0,16.0,2.0,400,1.5,local_indonesian,generated-v2
+Nasi Tempe Goreng Sambal,Nasi Tempe Goreng Sambal,1 porsi,370.0,14.0,45.0,18.0,2.0,400,2.0,local_indonesian,generated-v2
+Nasi Telur Dadar Sayur,Nasi Telur Dadar Sayur,1 porsi,400.0,16.0,46.0,17.0,2.0,450,1.5,local_indonesian,generated-v2
+Roti Bakar Coklat,Roti Bakar Coklat,1 porsi,300.0,6.0,45.0,12.0,18.0,350,2.0,local_indonesian,generated-v2
+Roti Bakar Keju,Roti Bakar Keju,1 porsi,320.0,10.0,40.0,15.0,5.0,400,1.5,local_indonesian,generated-v2
+Roti Bakar Coklat Keju,Roti Bakar Coklat Keju,1 porsi,380.0,10.0,48.0,18.0,16.0,380,1.5,local_indonesian,generated-v2
+Bubur Ayam Komplit,Bubur Ayam Komplit,1 porsi,250.0,12.0,35.0,8.0,1.0,500,1.5,local_indonesian,generated-v2
+Nasi Kuning Komplit,Nasi Kuning Komplit,1 porsi,450.0,15.0,50.0,20.0,3.0,600,2.5,local_indonesian,generated-v2
+Lontong Sayur Komplit,Lontong Sayur Komplit,1 porsi,400.0,12.0,48.0,18.0,4.0,700,3.0,local_indonesian,generated-v2
+Nasi Pecel Komplit,Nasi Pecel Komplit,1 porsi,420.0,14.0,48.0,20.0,5.0,550,5.0,local_indonesian,generated-v2
+Nasi Campur Sederhana,Nasi Campur Sederhana,1 porsi,480.0,16.0,52.0,22.0,3.0,750,3.0,local_indonesian,generated-v2
+Nasi Goreng Telur,Nasi Goreng Telur,1 porsi,420.0,12.0,50.0,18.0,2.0,650,1.5,local_indonesian,generated-v2
+Nasi Goreng Ayam,Nasi Goreng Ayam,1 porsi,460.0,16.0,50.0,20.0,2.0,700,1.5,local_indonesian,generated-v2
+Mie Goreng Telur,Mie Goreng Telur,1 porsi,480.0,14.0,55.0,22.0,3.0,1000,2.0,local_indonesian,generated-v2
+Mie Goreng Ayam,Mie Goreng Ayam,1 porsi,500.0,18.0,52.0,24.0,3.0,1050,2.0,local_indonesian,generated-v2
+Mie Rebus Telur,Mie Rebus Telur,1 porsi,440.0,13.0,52.0,19.0,2.5,950,1.8,local_indonesian,generated-v2
+Nasi Ayam Suwir Sambal,Nasi Ayam Suwir Sambal,1 porsi,420.0,24.0,48.0,16.0,2.0,550,1.5,local_indonesian,generated-v2
+Nasi Ikan Suwir Sambal,Nasi Ikan Suwir Sambal,1 porsi,400.0,20.0,48.0,15.0,2.0,500,1.5,local_indonesian,generated-v2
+Telur Dadar Sayur,Telur Dadar Sayur,1 porsi,180.0,14.0,5.0,12.0,2.0,280,1.5,local_indonesian,generated-v2
+Omelet Mie,Omelet Mie,1 porsi,350.0,12.0,35.0,18.0,2.0,600,1.0,local_indonesian,generated-v2
+Telur Balado,Telur Balado,1 porsi,160.0,12.0,5.0,11.0,2.0,350,0.5,local_indonesian,generated-v2
+Kentang Balado,Kentang Balado,1 porsi,180.0,3.0,22.0,10.0,3.0,350,2.5,local_indonesian,generated-v2
+Kentang Kecap,Kentang Kecap,1 porsi,170.0,3.0,24.0,8.0,5.0,400,2.5,local_indonesian,generated-v2

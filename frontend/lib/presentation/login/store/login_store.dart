@@ -112,7 +112,7 @@ abstract class _UserStore with Store {
   @action
   Future<void> signInWithGoogle() async {
     errorStore.errorMessage = '';
-    isRegisterLoading = true; // Use loading state
+    isRegisterLoading = true;
     try {
       await _userRepository.signInWithGoogle();
       isLoggedIn = true;
@@ -123,6 +123,18 @@ abstract class _UserStore with Store {
       isLoggedIn = false;
       success = false;
 
+      // Handle Google Sign-In cancellation silently (user closed popup)
+      final errorStr = e.toString().toLowerCase();
+      if (errorStr.contains('sign_in_canceled') ||
+          errorStr.contains('cancelled') ||
+          errorStr.contains('canceled') ||
+          errorStr.contains('user cancelled') ||
+          errorStr.contains('user canceled') ||
+          errorStr.contains('sign in failed') && errorStr.contains('10:')) {
+        // User cancelled — don't show error, don't rethrow
+        return;
+      }
+
       // Bug 11 fix: handle provider mismatch error
       if (e is sb.AuthException) {
         final msg = e.message.toLowerCase();
@@ -132,7 +144,7 @@ abstract class _UserStore with Store {
             msg.contains('identity already exists') ||
             msg.contains('email_address_not_authorized')) {
           errorStore.errorMessage = 'Email ini sudah terdaftar menggunakan email dan password. Silakan login menggunakan email dan password.';
-          return; // Don't rethrow - we handled it
+          return;
         }
         if (msg.contains('invalid login credentials') ||
             msg.contains('invalid_credentials')) {

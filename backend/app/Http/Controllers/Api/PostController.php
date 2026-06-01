@@ -9,6 +9,7 @@ use App\Models\Comment;
 use App\Models\CommentLike;
 use App\Models\Follow;
 use App\Models\Notification;
+use App\Models\PostReport;
 use App\Notifications\PushNotification;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -30,11 +31,16 @@ class PostController extends Controller
         $posts = Post::with(['user.profile', 'likes', 'comments.user'])
             ->withCount(['likes', 'comments'])
             ->where(function ($query) use ($userId, $followingIds) {
-                $query->where('user_id', $userId) // Own posts
-                    ->orWhereHas('user', function ($q) {
-                        $q->where('account_type', 'public'); // Public accounts
-                    })
-                    ->orWhereIn('user_id', $followingIds); // Followed users (any account type)
+                $query->where('user_id', $userId) // Own posts (always visible)
+                    ->orWhere(function ($q) use ($followingIds) {
+                        $q->where('is_hidden', false) // Not hidden
+                            ->where(function ($inner) use ($followingIds) {
+                                $inner->whereHas('user', function ($u) {
+                                    $u->where('account_type', 'public'); // Public accounts
+                                })
+                                ->orWhereIn('user_id', $followingIds); // Followed users
+                            });
+                    });
             })
             ->orderBy('created_at', 'desc')
             ->paginate(15);
@@ -109,6 +115,84 @@ class PostController extends Controller
         return response()->json([
             'success' => true,
             'message' => 'Post berhasil dihapus.',
+        ]);
+    }
+
+    public function report(Request $request, $id)
+    {
+        $post = Post::find($id);
+
+        if (!$post) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Post tidak ditemukan.',
+            ], 404);
+        }
+
+        if ($post->user_id == Auth::id()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Tidak dapat melaporkan postingan sendiri.',
+            ], 422);
+        }
+
+        $request->validate([
+            'category' => 'required|in:spam,inappropriate,sara',
+            'note' => 'nullable|string|max:500',
+        ], [
+            'category.required' => 'Kategori laporan wajib dipilih.',
+            'category.in' => 'Kategori tidak valid.',
+            'note.max' => 'Catatan maksimal 500 karakter.',
+        ]);
+
+        $userId = Auth::id();
+
+        // One user, one report per post
+        $existing = PostReport::where('post_id', $id)
+            ->where('user_id', $userId)
+            ->first();
+
+        if ($existing) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Anda sudah melaporkan postingan ini.',
+            ], 422);
+        }
+
+        PostReport::create([
+            'post_id' => $id,
+            'user_id' => $userId,
+            'category' => $request->input('category'),
+            'note' => $request->input('note'),
+        ]);
+
+        // Update counter & auto-hide if ≥3 reports
+        $reportsCount = PostReport::where('post_id', $id)->count();
+        $post->update(['reports_count' => $reportsCount]);
+
+        if ($reportsCount >= 3 && !$post->is_hidden) {
+            $post->update(['is_hidden' => true]);
+
+            // Notify post owner
+            $actor = User::find($userId);
+            Notification::create([
+                'user_id' => $post->user_id,
+                'actor_id' => $userId,
+                'type' => 'post_hidden',
+                'post_id' => $id,
+                'title' => 'Postingan Disembunyikan',
+                'body' => "Postingan Anda disembunyikan karena menerima {$reportsCount} laporan.",
+                'data' => [
+                    'category' => $request->input('category'),
+                    'reports_count' => $reportsCount,
+                ],
+            ]);
+        }
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Laporan berhasil dikirim.',
+            'reports_count' => $reportsCount,
         ]);
     }
 

@@ -80,12 +80,12 @@ class VerifySupabaseToken
             Auth::setUser($user);
 
         } catch (\Firebase\JWT\ExpiredException $e) {
-            return response()->json(['message' => 'Token expired. Please login again.'], 401);
+            return response()->json(['message' => 'Sesi telah berakhir. Silakan login kembali.'], 401);
         } catch (\Firebase\JWT\SignatureInvalidException $e) {
-            return response()->json(['message' => 'Invalid token signature.'], 401);
+            return response()->json(['message' => 'Token tidak valid. Silakan login kembali.'], 401);
         } catch (\Exception $e) {
             Log::warning('Supabase JWT verification failed: ' . $e->getMessage());
-            return response()->json(['message' => 'Invalid token.'], 401);
+            return response()->json(['message' => 'Autentikasi gagal. Silakan login kembali.'], 401);
         }
 
         return $next($request);

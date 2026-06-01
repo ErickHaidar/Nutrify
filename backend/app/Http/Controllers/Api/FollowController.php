@@ -295,9 +295,18 @@ class FollowController extends Controller
 
         $users = User::where('id', '!=', $currentUserId)
             ->where(function ($q) use ($query) {
-                $q->where('name', 'LIKE', "%{$query}%")
-                  ->orWhere('username', 'LIKE', "%{$query}%");
+                $q->where('name', 'ILIKE', "%{$query}%")
+                  ->orWhere('username', 'ILIKE', "%{$query}%");
             })
+            ->orderByRaw("
+                CASE
+                    WHEN LOWER(name) = LOWER(?) THEN 0
+                    WHEN LOWER(username) = LOWER(?) THEN 1
+                    WHEN name ILIKE ? THEN 2
+                    WHEN username ILIKE ? THEN 3
+                    ELSE 4
+                END
+            ", [$query, $query, "{$query}%", "{$query}%"])
             ->limit(20)
             ->get()
             ->map(function ($user) use ($currentUserId) {
