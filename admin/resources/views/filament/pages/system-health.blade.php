@@ -14,10 +14,16 @@
                     @endif
                 </div>
                 <p class="text-sm text-gray-700 dark:text-gray-300">
-                    @if(is_array($item['message'] ?? null))
-                        {{ implode(', ', $item['message']) }}
+                    @if(isset($item['message']))
+                        @if(is_array($item['message']))
+                            {{ implode(', ', $item['message']) }}
+                        @else
+                            {{ $item['message'] }}
+                        @endif
+                    @elseif(is_array($item))
+                        {{ json_encode($item) }}
                     @else
-                        {{ $item['message'] ?? $item }}
+                        {{ $item }}
                     @endif
                 </p>
                 @if(isset($item['pending']))

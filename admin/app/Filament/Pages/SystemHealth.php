@@ -91,10 +91,13 @@ class SystemHealth extends Page
     {
         $free = disk_free_space(storage_path());
         $total = disk_total_space(storage_path());
+        $freeMb = round($free / 1024 / 1024, 1);
+        $totalMb = round($total / 1024 / 1024, 1);
         return [
             'ok' => true,
-            'free' => round($free / 1024 / 1024, 1) . ' MB',
-            'total' => round($total / 1024 / 1024, 1) . ' MB',
+            'free' => $freeMb . ' MB',
+            'total' => $totalMb . ' MB',
+            'message' => "Free: {$freeMb} MB / Total: {$totalMb} MB",
         ];
     }
 }
