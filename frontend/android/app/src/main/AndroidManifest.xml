@@ -6,6 +6,28 @@
     <uses-permission android:name="android.permission.CAMERA"/>
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
     <uses-permission android:name="android.permission.READ_MEDIA_IMAGES"/>
+
+    <!--
+      Camera: declared as NOT required so the app stays available on devices
+      without a rear camera (Chromebooks, Android TV, Automotive, camera-less
+      tablets/phones). The image_picker plugin falls back to gallery-only when
+      no camera is present.
+    -->
+    <uses-feature android:name="android.hardware.camera" android:required="false" />
+    <uses-feature android:name="android.hardware.camera.autofocus" android:required="false" />
+
+    <!--
+      Touchscreen: declared as NOT required for Chromebook and Android TV
+      compatibility. Flutter handles mouse, keyboard, and touch input
+      transparently — no feature is mandatory.
+    -->
+    <uses-feature android:name="android.hardware.touchscreen" android:required="false" />
+
+    <!--
+      Telephony: declared as NOT required for tablets, TVs, and Automotive
+      devices that lack cellular hardware.
+    -->
+    <uses-feature android:name="android.hardware.telephony" android:required="false" />
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS"/>
     <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM"/>
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
