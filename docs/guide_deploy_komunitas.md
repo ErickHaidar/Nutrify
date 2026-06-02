@@ -109,7 +109,7 @@ php artisan config:cache && php artisan route:cache
 sudo systemctl restart php8.2-fpm && sudo systemctl reload nginx
 
 # STEP 7 — Verifikasi
-curl -s https://nutrify-app.my.id/api/posts | head -c 300
+curl -s https://nutrify-app.web.id/api/posts | head -c 300
 ```
 
 ---
@@ -263,21 +263,21 @@ sudo systemctl reload nginx
 ### Cek endpoint lama masih jalan
 
 ```bash
-curl -s https://nutrify-app.my.id/api/foods?search=nasi | head -c 200
+curl -s https://nutrify-app.web.id/api/foods?search=nasi | head -c 200
 ```
 Harus return JSON dengan `"success":true`.
 
 ### Cek endpoint baru — Follow
 
 ```bash
-curl -s https://nutrify-app.my.id/api/users/1/follow
+curl -s https://nutrify-app.web.id/api/users/1/follow
 ```
 Harus return **401 Unauthorized** atau **405 Method Not Allowed** (karena harus POST dengan token).
 
 ### Cek endpoint baru — Search users
 
 ```bash
-curl -s https://nutrify-app.my.id/api/users/search
+curl -s https://nutrify-app.web.id/api/users/search
 ```
 Harus return **401** atau **422** (butuh parameter `q`).
 

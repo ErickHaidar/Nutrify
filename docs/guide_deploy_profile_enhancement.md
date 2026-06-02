@@ -30,7 +30,7 @@ php artisan cache:clear
 Test endpoint profile:
 
 ```bash
-curl -s -X GET https://nutrify-app.my.id/api/profile \
+curl -s -X GET https://nutrify-app.web.id/api/profile \
   -H "Authorization: Bearer <token_anda>" | python3 -m json.tool | head -30
 ```
 

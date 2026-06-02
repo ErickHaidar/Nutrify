@@ -166,7 +166,7 @@ class ProfileScreenState extends State<ProfileScreen>
       final rawUrl = _profile!.photoUrl!;
       final fullUrl = rawUrl.startsWith('http')
           ? rawUrl
-          : 'https://nutrify-app.my.id$rawUrl';
+          : 'https://nutrify-app.web.id$rawUrl';
       final bustedUrl = '$fullUrl?v=$_photoVersion';
       return NetworkImage(bustedUrl);
     }
@@ -1267,7 +1267,7 @@ class ProfileScreenState extends State<ProfileScreen>
               child: Image.network(
                 post.imagePath!.startsWith('http')
                     ? post.imagePath!
-                    : 'https://nutrify-app.my.id${post.imagePath!}',
+                    : 'https://nutrify-app.web.id${post.imagePath!}',
                 width: double.infinity,
                 height: 160,
                 fit: BoxFit.cover,

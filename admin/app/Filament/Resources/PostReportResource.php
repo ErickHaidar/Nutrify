@@ -4,6 +4,10 @@ namespace App\Filament\Resources;
 
 use App\Filament\Resources\PostReportResource\Pages;
 use App\Models\PostReport;
+use Filament\Actions\Action;
+use Filament\Actions\BulkActionGroup;
+use Filament\Actions\DeleteAction;
+use Filament\Actions\DeleteBulkAction;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Columns\TextColumn;
@@ -38,14 +42,14 @@ class PostReportResource extends Resource
             ]),
         ])
         ->actions([
-            Tables\Actions\Action::make('hide_post')
+            Action::make('hide_post')
                 ->label('Sembunyikan Post')
                 ->icon('heroicon-o-eye-slash')
                 ->color('warning')
                 ->action(fn(PostReport $record) => $record->post->update(['is_hidden' => true])),
-            Tables\Actions\DeleteAction::make()->label('Hapus Laporan'),
+            DeleteAction::make()->label('Hapus Laporan'),
         ])
-        ->bulkActions([Tables\Actions\BulkActionGroup::make([Tables\Actions\DeleteBulkAction::make()])])
+        ->bulkActions([BulkActionGroup::make([DeleteBulkAction::make()])])
         ->defaultSort('created_at', 'desc');
     }
 

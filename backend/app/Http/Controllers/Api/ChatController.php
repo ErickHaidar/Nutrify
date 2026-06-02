@@ -45,12 +45,12 @@ class ChatController
                 'other_user_name' => $other->name,
                 'other_username' => $other->username,
                 'other_user_avatar_url' => $other->avatar
-                    ? 'https://nutrify-app.my.id/storage/' . $other->avatar
+                    ? 'https://nutrify-app.web.id/storage/' . $other->avatar
                     : null,
                 'last_message' => $lastMsg ? [
                     'content' => $lastMsg->content,
                     'image_url' => $lastMsg->image_url
-                        ? 'https://nutrify-app.my.id/storage/' . $lastMsg->image_url
+                        ? 'https://nutrify-app.web.id/storage/' . $lastMsg->image_url
                         : null,
                     'created_at' => $lastMsg->created_at->toIso8601String(),
                 ] : null,
@@ -102,7 +102,7 @@ class ChatController
                 'other_user_name' => $other->name,
                 'other_username' => $other->username,
                 'other_user_avatar_url' => $other->avatar
-                    ? 'https://nutrify-app.my.id/storage/' . $other->avatar
+                    ? 'https://nutrify-app.web.id/storage/' . $other->avatar
                     : null,
                 'created_at' => $conversation->created_at->toIso8601String(),
             ],
@@ -131,7 +131,7 @@ class ChatController
             'sender_id' => $msg->sender_id,
             'content' => $msg->content,
             'image_url' => $msg->image_url
-                ? 'https://nutrify-app.my.id/storage/' . $msg->image_url
+                ? 'https://nutrify-app.web.id/storage/' . $msg->image_url
                 : null,
             'is_read' => $msg->is_read,
             'created_at' => $msg->created_at->toIso8601String(),
@@ -236,7 +236,7 @@ class ChatController
                 'sender_id' => $message->sender_id,
                 'content' => $message->content,
                 'image_url' => $message->image_url
-                    ? 'https://nutrify-app.my.id/storage/' . $message->image_url
+                    ? 'https://nutrify-app.web.id/storage/' . $message->image_url
                     : null,
                 'is_read' => $message->is_read,
                 'created_at' => $message->created_at->toIso8601String(),

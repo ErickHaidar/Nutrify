@@ -75,7 +75,7 @@
 | Route `PUT /profile/photo` | ✅ Done | Ditambah di `routes/api.php` dalam middleware group |
 | Controller method `ProfileController@photo` | ✅ Done | Terima `photo` file, validate image max 10MB, store ke `profile-photos/`, hapus foto lama |
 | File storage | ✅ Done | Simpan ke `storage/app/public/profile-photos/` |
-| Return JSON `{ photo_url }` | ✅ Done | Return full URL `https://nutrify-app.my.id/storage/profile-photos/{filename}` |
+| Return JSON `{ photo_url }` | ✅ Done | Return full URL `https://nutrify-app.web.id/storage/profile-photos/{filename}` |
 | Migration `photo` column di profiles | ✅ Done | `2026_05_03_000001_add_photo_to_profiles_table.php` |
 | Profile model `$fillable` | ✅ Done | Tambah `'photo'` |
 | `ProfileController@show` response | ✅ Done | Include `photo_url` di response JSON (full URL jika photo ada, null jika tidak) |
@@ -98,7 +98,7 @@ Future<void> uploadProfilePhoto(File image) async {
 
 **Task ini sudah diimplementasikan sepenuhnya pada 3 Mei 2026 dan SUKSES DI-DEPLOY ke PRODUCTION.**
 
-**Production URL:** https://nutrify-app.my.id
+**Production URL:** https://nutrify-app.web.id
 
 **Deployment Status:**
 - ✅ All migrations executed successfully
@@ -276,7 +276,7 @@ await getIt<NotificationService>().registerPushNotifications();
 ### 🚀 Deployment Verification — ✅ PRODUCTION READY
 
 **Deployment Date:** 3 Mei 2026
-**Production URL:** https://nutrify-app.my.id
+**Production URL:** https://nutrify-app.web.id
 **VPS:** 103.253.212.55
 
 **Deployment Summary:**

@@ -4,6 +4,9 @@ namespace App\Filament\Resources;
 
 use App\Filament\Resources\ConversationResource\Pages;
 use App\Models\Conversation;
+use Filament\Actions\BulkActionGroup;
+use Filament\Actions\DeleteAction;
+use Filament\Actions\DeleteBulkAction;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Columns\TextColumn;
@@ -27,8 +30,8 @@ class ConversationResource extends Resource
             TextColumn::make('last_message_at')->label('Pesan Terakhir')->dateTime('d M Y H:i')->sortable(),
             TextColumn::make('created_at')->label('Dibuat')->dateTime('d M Y')->sortable(),
         ])
-        ->actions([Tables\Actions\DeleteAction::make()])
-        ->bulkActions([Tables\Actions\BulkActionGroup::make([Tables\Actions\DeleteBulkAction::make()])])
+        ->actions([DeleteAction::make()])
+        ->bulkActions([BulkActionGroup::make([DeleteBulkAction::make()])])
         ->defaultSort('last_message_at', 'desc');
     }
 

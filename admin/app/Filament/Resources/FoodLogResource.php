@@ -4,6 +4,9 @@ namespace App\Filament\Resources;
 
 use App\Filament\Resources\FoodLogResource\Pages;
 use App\Models\FoodLog;
+use Filament\Actions\BulkActionGroup;
+use Filament\Actions\DeleteAction;
+use Filament\Actions\DeleteBulkAction;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Columns\TextColumn;
@@ -34,8 +37,8 @@ class FoodLogResource extends Resource
                 'Dinner' => 'Makan Malam', 'Snack' => 'Camilan',
             ]),
         ])
-        ->actions([Tables\Actions\DeleteAction::make()])
-        ->bulkActions([Tables\Actions\BulkActionGroup::make([Tables\Actions\DeleteBulkAction::make()])])
+        ->actions([DeleteAction::make()])
+        ->bulkActions([BulkActionGroup::make([DeleteBulkAction::make()])])
         ->defaultSort('created_at', 'desc');
     }
 

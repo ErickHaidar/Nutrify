@@ -4,10 +4,11 @@ namespace App\Filament\Resources;
 
 use App\Filament\Resources\ProfileResource\Pages;
 use App\Models\Profile;
+use Filament\Actions\EditAction;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
-use Filament\Schemas\Schema;
 use Filament\Resources\Resource;
+use Filament\Schemas\Schema;
 use Filament\Tables;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
@@ -62,7 +63,7 @@ class ProfileResource extends Resource
                 'male' => 'Laki-laki', 'female' => 'Perempuan',
             ]),
         ])
-        ->actions([Tables\Actions\EditAction::make()]);
+        ->actions([EditAction::make()]);
     }
 
     public static function getRelations(): array { return []; }

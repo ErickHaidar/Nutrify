@@ -4,6 +4,9 @@ namespace App\Filament\Resources;
 
 use App\Filament\Resources\CommentResource\Pages;
 use App\Models\Comment;
+use Filament\Actions\BulkActionGroup;
+use Filament\Actions\DeleteAction;
+use Filament\Actions\DeleteBulkAction;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Columns\TextColumn;
@@ -26,8 +29,8 @@ class CommentResource extends Resource
             TextColumn::make('content')->label('Konten')->limit(50)->searchable(),
             TextColumn::make('created_at')->label('Dibuat')->dateTime('d M Y H:i')->sortable(),
         ])
-        ->actions([Tables\Actions\DeleteAction::make()])
-        ->bulkActions([Tables\Actions\BulkActionGroup::make([Tables\Actions\DeleteBulkAction::make()])])
+        ->actions([DeleteAction::make()])
+        ->bulkActions([BulkActionGroup::make([DeleteBulkAction::make()])])
         ->defaultSort('created_at', 'desc');
     }
 

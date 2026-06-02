@@ -164,7 +164,7 @@ class _UserProfileScreenState extends State<UserProfileScreen> with SingleTicker
               conversationId: conv.id,
               otherUserName: widget.userName,
               otherUserAvatarUrl: _avatarUrl.isNotEmpty
-                  ? (_avatarUrl.startsWith('http') ? _avatarUrl : 'https://nutrify-app.my.id/$_avatarUrl')
+                  ? (_avatarUrl.startsWith('http') ? _avatarUrl : 'https://nutrify-app.web.id/$_avatarUrl')
                   : null,
             ),
           ),
@@ -250,7 +250,7 @@ class _UserProfileScreenState extends State<UserProfileScreen> with SingleTicker
             child: _avatarUrl.isNotEmpty
                 ? ClipOval(
                     child: Image.network(
-                      _avatarUrl.startsWith('http') ? _avatarUrl : 'https://nutrify-app.my.id$_avatarUrl',
+                      _avatarUrl.startsWith('http') ? _avatarUrl : 'https://nutrify-app.web.id$_avatarUrl',
                       width: 90, height: 90, fit: BoxFit.cover,
                       errorBuilder: (_, _, _) => _buildInitialsAvatar(),
                     ),
@@ -459,7 +459,7 @@ class _UserProfileScreenState extends State<UserProfileScreen> with SingleTicker
               ClipRRect(
                 borderRadius: BorderRadius.circular(12),
                 child: Image.network(
-                  post.imagePath!.startsWith('http') ? post.imagePath! : 'https://nutrify-app.my.id${post.imagePath!}',
+                  post.imagePath!.startsWith('http') ? post.imagePath! : 'https://nutrify-app.web.id${post.imagePath!}',
                   width: double.infinity, height: 160, fit: BoxFit.cover,
                   errorBuilder: (_, _, _) => const SizedBox.shrink(),
                 ),

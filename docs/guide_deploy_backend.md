@@ -198,7 +198,7 @@ Ubah nilai-nilai berikut untuk **production**:
 # Ganti ke production
 APP_ENV=production
 APP_DEBUG=false
-APP_URL=https://nutrify-app.my.id
+APP_URL=https://nutrify-app.web.id
 
 # Database (Supabase — pastikan ini benar)
 DB_CONNECTION=pgsql
@@ -304,7 +304,7 @@ Copy-paste konfigurasi berikut:
 ```nginx
 server {
     listen 80;
-    server_name nutrify-app.my.id www.nutrify-app.my.id 103.253.212.55;
+    server_name nutrify-app.web.id www.nutrify-app.web.id 103.253.212.55;
     root /var/www/nutrify-app/backend/public;
 
     index index.php index.html;
@@ -373,7 +373,7 @@ Menggunakan **Let's Encrypt** (gratis).
 sudo apt install certbot python3-certbot-nginx -y
 
 # Generate SSL certificate
-sudo certbot --nginx -d nutrify-app.my.id -d www.nutrify-app.my.id
+sudo certbot --nginx -d nutrify-app.web.id -d www.nutrify-app.web.id
 ```
 
 Ikuti instruksi:
@@ -394,7 +394,7 @@ sudo certbot renew --dry-run
 ## 10. Verifikasi Deploy
 
 ### 10.1 Cek di browser
-Buka: `https://nutrify-app.my.id/api/foods?search=nasi`
+Buka: `https://nutrify-app.web.id/api/foods?search=nasi`
 
 Harusnya return JSON:
 ```json
@@ -402,7 +402,7 @@ Harusnya return JSON:
 ```
 
 ### 10.2 Cek health endpoint
-Buka: `https://nutrify-app.my.id/up`
+Buka: `https://nutrify-app.web.id/up`
 
 Harus return status 200.
 

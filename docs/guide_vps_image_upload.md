@@ -17,13 +17,13 @@ ssh root@103.253.212.55
 Cek config nginx yang aktif:
 
 ```bash
-cat /etc/nginx/sites-available/nutrify-app.my.id
+cat /etc/nginx/sites-available/nutrify-app.web.id
 ```
 
 Cari apakah ada `client_max_body_size`. Kalau tidak ada, tambahkan:
 
 ```bash
-nano /etc/nginx/sites-available/nutrify-app.my.id
+nano /etc/nginx/sites-available/nutrify-app.web.id
 ```
 
 Tambahkan di dalam `server { ... }` atau `location { ... }`:
@@ -37,7 +37,7 @@ Contoh posisi yang benar:
 ```nginx
 server {
     listen 80;
-    server_name nutrify-app.my.id;
+    server_name nutrify-app.web.id;
 
     client_max_body_size 10M;  # ← Tambahan ini
 
@@ -88,7 +88,7 @@ Test upload dari app. Atau test via curl:
 # Test dengan file dummy 5MB
 dd if=/dev/zero of=/tmp/test.jpg bs=1M count=5
 
-curl -s -X POST https://nutrify-app.my.id/api/posts \
+curl -s -X POST https://nutrify-app.web.id/api/posts \
   -H "Authorization: Bearer <token>" \
   -F "content=Test upload" \
   -F "image=@/tmp/test.jpg" | head -c 300

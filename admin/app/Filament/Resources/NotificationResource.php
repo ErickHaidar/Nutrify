@@ -4,6 +4,9 @@ namespace App\Filament\Resources;
 
 use App\Filament\Resources\NotificationResource\Pages;
 use App\Models\Notification;
+use Filament\Actions\BulkActionGroup;
+use Filament\Actions\DeleteAction;
+use Filament\Actions\DeleteBulkAction;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Columns\IconColumn;
@@ -37,8 +40,8 @@ class NotificationResource extends Resource
             ]),
             Tables\Filters\TernaryFilter::make('read_at')->label('Dibaca')->nullable(),
         ])
-        ->actions([Tables\Actions\DeleteAction::make()])
-        ->bulkActions([Tables\Actions\BulkActionGroup::make([Tables\Actions\DeleteBulkAction::make()])])
+        ->actions([DeleteAction::make()])
+        ->bulkActions([BulkActionGroup::make([DeleteBulkAction::make()])])
         ->defaultSort('created_at', 'desc');
     }
 

@@ -9,7 +9,7 @@ class Endpoints {
 
   // ── Backend Laravel (Ambil dari .env) ──────────────────────────────────
   static String get baseUrl {
-    final url = dotenv.env['BASE_URL'] ?? 'https://nutrify-app.my.id/api/';
+    final url = dotenv.env['BASE_URL'] ?? 'https://nutrify-app.web.id/api/';
     return url.endsWith('/') ? url : '$url/';
   }
 

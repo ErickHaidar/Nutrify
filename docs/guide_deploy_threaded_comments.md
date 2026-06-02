@@ -70,7 +70,7 @@ Jalankan `php artisan migrate` setelah upload untuk:
     "id": 5,
     "name": "Budi",
     "username": "budi123",
-    "avatar_url": "https://nutrify-app.my.id/storage/avatars/..."
+    "avatar_url": "https://nutrify-app.web.id/storage/avatars/..."
   },
   "likes_count": 3,
   "is_liked": false,
@@ -227,7 +227,7 @@ GET    api/comments/{id}/replies
 ### Cek endpoint — POST /comments/{id}/like
 
 ```bash
-curl -s -X POST https://nutrify-app.my.id/api/comments/1/like \
+curl -s -X POST https://nutrify-app.web.id/api/comments/1/like \
   -H "Authorization: Bearer <TOKEN_KAMU>" \
   -H "Accept: application/json" | head -c 300
 ```
@@ -245,7 +245,7 @@ Panggil lagi harus toggle:
 ### Cek endpoint — GET /comments/{id}/replies
 
 ```bash
-curl -s https://nutrify-app.my.id/api/comments/1/replies \
+curl -s https://nutrify-app.web.id/api/comments/1/replies \
   -H "Authorization: Bearer <TOKEN_KAMU>" \
   -H "Accept: application/json" | head -c 300
 ```
@@ -253,7 +253,7 @@ curl -s https://nutrify-app.my.id/api/comments/1/replies \
 ### Cek comments response punya field baru
 
 ```bash
-curl -s https://nutrify-app.my.id/api/posts/1/comments \
+curl -s https://nutrify-app.web.id/api/posts/1/comments \
   -H "Authorization: Bearer <TOKEN_KAMU>" \
   -H "Accept: application/json" | head -c 500
 ```

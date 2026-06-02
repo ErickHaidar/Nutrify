@@ -76,7 +76,7 @@ Hari ini (2 Mei 2026) Ibnu menyelesaikan **18 task** mencakup backend, frontend,
 | `templates.md` | 6 email template HTML (Confirm Sign Up, Invite User, Magic Link, Change Email, Reset Password, Reauthentication) |
 
 **Template email features:**
-- Logo Nutrify dari `https://nutrify-app.my.id/logo.png`
+- Logo Nutrify dari `https://nutrify-app.web.id/logo.png`
 - Branding gradient purple (#4A446F → #6B6594)
 - Warm Bahasa Indonesia copy
 - OTP code dalam card peach (Confirm Sign Up & Reauthentication)
@@ -408,7 +408,7 @@ onPressed: () {
 - **Host:** `103.253.212.55`
 - **Path:** `/var/www/nutrify-app/`
 - **Backend:** Laravel (PHP 8.2, Nginx, PostgreSQL via Supabase)
-- **Domain:** `nutrify-app.my.id` + `nutrify-app.web.id`
+- **Domain:** `nutrify-app.web.id` + `nutrify-app.web.id`
 
 ### Supabase
 - **Project:** `goifacmbmwmbwxgyqmtk`
@@ -427,7 +427,7 @@ onPressed: () {
 - **Configured in:** Supabase Google Provider + Flutter `.env`
 
 ### Email Template Logo
-- **URL:** `https://nutrify-app.my.id/logo.png`
+- **URL:** `https://nutrify-app.web.id/logo.png`
 - **Source:** `frontend/assets/images/nutrify-logo.png`
 - **Upload:** SCP ke `/var/www/nutrify-app/backend/public/logo.png`
 

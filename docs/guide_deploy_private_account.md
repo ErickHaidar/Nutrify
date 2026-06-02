@@ -109,7 +109,7 @@ sudo systemctl reload nginx
 php artisan tinker --execute="echo Schema::hasColumn('follows', 'status') ? 'OK' : 'MISSING';"
 
 # Cek endpoint baru terdaftar (harus 401 = butuh token)
-curl -s -o /dev/null -w "%{http_code}" https://nutrify-app.my.id/api/follow-requests/1/approve
+curl -s -o /dev/null -w "%{http_code}" https://nutrify-app.web.id/api/follow-requests/1/approve
 # Expected: 401 atau 405
 
 # Cek log tidak ada error

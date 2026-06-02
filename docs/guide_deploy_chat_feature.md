@@ -81,7 +81,7 @@ Jalankan `php artisan migrate` setelah upload untuk membuat 2 tabel baru:
     "other_user_id": 5,
     "other_user_name": "Budi",
     "other_username": "budi123",
-    "other_user_avatar_url": "https://nutrify-app.my.id/storage/avatars/...",
+    "other_user_avatar_url": "https://nutrify-app.web.id/storage/avatars/...",
     "created_at": "2026-05-04T10:00:00Z"
   }
 }
@@ -232,7 +232,7 @@ Output: `conversations: 1, messages: 1`
 ### Cek endpoint — GET /chat/conversations (harus return empty list)
 
 ```bash
-curl -s https://nutrify-app.my.id/api/chat/conversations \
+curl -s https://nutrify-app.web.id/api/chat/conversations \
   -H "Authorization: Bearer <TOKEN_KAMU>" \
   -H "Accept: application/json" | head -c 300
 ```
@@ -245,7 +245,7 @@ Harus return:
 ### Cek endpoint — POST /chat/conversations (buat percakapan)
 
 ```bash
-curl -s -X POST https://nutrify-app.my.id/api/chat/conversations \
+curl -s -X POST https://nutrify-app.web.id/api/chat/conversations \
   -H "Authorization: Bearer <TOKEN_KAMU>" \
   -H "Accept: application/json" \
   -H "Content-Type: application/json" \
@@ -257,7 +257,7 @@ Harus return conversation data dengan `other_user_name`, `other_user_avatar_url`
 ### Cek endpoint — Kirim pesan
 
 ```bash
-curl -s -X POST https://nutrify-app.my.id/api/chat/conversations/1/messages \
+curl -s -X POST https://nutrify-app.web.id/api/chat/conversations/1/messages \
   -H "Authorization: Bearer <TOKEN_KAMU>" \
   -H "Accept: application/json" \
   -H "Content-Type: application/json" \
@@ -269,7 +269,7 @@ Harus return message data dengan `id`, `sender_id`, `content`, `is_read: false`.
 ### Cek endpoint — Unread count
 
 ```bash
-curl -s https://nutrify-app.my.id/api/chat/unread-count \
+curl -s https://nutrify-app.web.id/api/chat/unread-count \
   -H "Authorization: Bearer <TOKEN_KAMU>" \
   -H "Accept: application/json"
 ```

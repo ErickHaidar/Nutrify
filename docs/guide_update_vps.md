@@ -337,31 +337,31 @@ Jalankan pengecekan ini di **terminal VPS**:
 
 ### Cek endpoint yang sudah ada (harus tetap jalan)
 ```bash
-curl -s https://nutrify-app.my.id/api/foods?search=nasi | head -c 200
+curl -s https://nutrify-app.web.id/api/foods?search=nasi | head -c 200
 ```
 Harus return JSON dengan `"success":true`.
 
 ### Cek endpoint baru — Favorit
 ```bash
-curl -s https://nutrify-app.my.id/api/food/favorites
+curl -s https://nutrify-app.web.id/api/food/favorites
 ```
 Harus return **401 Unauthorized** — ini NORMAL, berarti route sudah terdaftar dan butuh token Supabase.
 
 ### Cek endpoint baru — Rekomendasi
 ```bash
-curl -s https://nutrify-app.my.id/api/food/recommendations
+curl -s https://nutrify-app.web.id/api/food/recommendations
 ```
 Harus return **401 Unauthorized**.
 
 ### Cek endpoint baru — Komunitas
 ```bash
-curl -s https://nutrify-app.my.id/api/posts
+curl -s https://nutrify-app.web.id/api/posts
 ```
 Harus return **401 Unauthorized**.
 
 ### Cek endpoint baru — OTP (PUBLIC, tanpa auth)
 ```bash
-curl -s -X POST https://nutrify-app.my.id/api/auth/send-otp \
+curl -s -X POST https://nutrify-app.web.id/api/auth/send-otp \
   -H "Content-Type: application/json" \
   -d '{"email":"test@gmail.com"}'
 ```
@@ -469,8 +469,8 @@ php artisan config:cache && php artisan route:cache
 sudo systemctl restart php8.2-fpm && sudo systemctl reload nginx
 
 # Verifikasi
-curl -s https://nutrify-app.my.id/api/foods?search=rendang | head -c 100
-curl -s -X POST https://nutrify-app.my.id/api/auth/send-otp -H "Content-Type: application/json" -d '{"email":"test@gmail.com"}' | head -c 200
+curl -s https://nutrify-app.web.id/api/foods?search=rendang | head -c 100
+curl -s -X POST https://nutrify-app.web.id/api/auth/send-otp -H "Content-Type: application/json" -d '{"email":"test@gmail.com"}' | head -c 200
 ```
 
 ---

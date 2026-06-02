@@ -114,7 +114,7 @@ sudo systemctl restart php8.2-fpm && sudo systemctl reload nginx
 ### Cek endpoint baru — GET /users/me
 
 ```bash
-curl -s https://nutrify-app.my.id/api/users/me \
+curl -s https://nutrify-app.web.id/api/users/me \
   -H "Authorization: Bearer <token>" \
   -H "Accept: application/json" | head -c 500
 ```
@@ -124,7 +124,7 @@ Harus return JSON dengan `name`, `username`, `followers_count`, `followings_coun
 ### Cek endpoint baru — PUT /users/profile
 
 ```bash
-curl -s -X PUT https://nutrify-app.my.id/api/users/profile \
+curl -s -X PUT https://nutrify-app.web.id/api/users/profile \
   -H "Authorization: Bearer <token>" \
   -H "Accept: application/json" \
   -H "Content-Type: application/json" \
@@ -136,7 +136,7 @@ Harus return `{"success": true, "message": "Profil berhasil diperbarui."}`.
 ### Cek post response punya account_type
 
 ```bash
-curl -s https://nutrify-app.my.id/api/posts \
+curl -s https://nutrify-app.web.id/api/posts \
   -H "Authorization: Bearer <token>" \
   -H "Accept: application/json" | head -c 500
 ```
@@ -147,13 +147,13 @@ Harus ada `account_type` di dalam object `user` setiap post.
 
 ```bash
 # Set user jadi private dulu
-curl -s -X PUT https://nutrify-app.my.id/api/users/profile \
+curl -s -X PUT https://nutrify-app.web.id/api/users/profile \
   -H "Authorization: Bearer <token_A>" \
   -H "Content-Type: application/json" \
   -d '{"account_type": "private"}'
 
 # Cek dari akun lain — post user private TIDAK boleh muncul
-curl -s https://nutrify-app.my.id/api/posts \
+curl -s https://nutrify-app.web.id/api/posts \
   -H "Authorization: Bearer <token_B>" | head -c 500
 ```
 

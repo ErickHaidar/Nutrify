@@ -4,10 +4,15 @@ namespace App\Filament\Resources;
 
 use App\Filament\Resources\PostResource\Pages;
 use App\Models\Post;
+use Filament\Actions\Action;
+use Filament\Actions\BulkActionGroup;
+use Filament\Actions\DeleteAction;
+use Filament\Actions\DeleteBulkAction;
+use Filament\Actions\EditAction;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
-use Filament\Schemas\Schema;
 use Filament\Resources\Resource;
+use Filament\Schemas\Schema;
 use Filament\Tables;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
@@ -48,15 +53,15 @@ class PostResource extends Resource
             Tables\Filters\TernaryFilter::make('is_hidden')->label('Hidden'),
         ])
         ->actions([
-            Tables\Actions\EditAction::make(),
-            Tables\Actions\Action::make('toggle_hide')
+            EditAction::make(),
+            Action::make('toggle_hide')
                 ->label(fn(Post $record) => $record->is_hidden ? 'Unhide' : 'Hide')
                 ->action(fn(Post $record) => $record->update(['is_hidden' => !$record->is_hidden]))
                 ->color(fn(Post $record) => $record->is_hidden ? 'success' : 'warning')
                 ->icon(fn(Post $record) => $record->is_hidden ? 'heroicon-o-eye' : 'heroicon-o-eye-slash'),
-            Tables\Actions\DeleteAction::make(),
+            DeleteAction::make(),
         ])
-        ->bulkActions([Tables\Actions\BulkActionGroup::make([Tables\Actions\DeleteBulkAction::make()])])
+        ->bulkActions([BulkActionGroup::make([DeleteBulkAction::make()])])
         ->defaultSort('created_at', 'desc');
     }
 

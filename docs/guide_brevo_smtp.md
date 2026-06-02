@@ -118,7 +118,7 @@ Password: xsmtpsib-xxxxxxxxxxxx   ← SMTP key yang baru digenerate
 
 ```bash
 # Di VPS atau lokal
-curl -X POST https://nutrify-app.my.id/api/auth/send-otp \
+curl -X POST https://nutrify-app.web.id/api/auth/send-otp \
   -H "Content-Type: application/json" \
   -d '{"email":"ibnuhabib017@gmail.com"}'
 ```

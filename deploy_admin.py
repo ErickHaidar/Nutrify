@@ -14,7 +14,7 @@ EXCLUDE_FILES = {".env"}
 
 POST_COMMANDS = [
     "cd /var/www/nutrify-admin && cp .env.example .env",
-    "cd /var/www/nutrify-admin && composer install --no-dev --optimize-autoloader",
+    "cd /var/www/nutrify-admin && COMPOSER_ALLOW_SUPERUSER=1 composer install --no-dev --optimize-autoloader",
     "cd /var/www/nutrify-admin && php artisan key:generate",
     "cd /var/www/nutrify-admin && php artisan migrate --force",
     "cd /var/www/nutrify-admin && php artisan storage:link",

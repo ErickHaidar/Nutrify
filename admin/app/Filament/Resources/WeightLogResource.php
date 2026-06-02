@@ -4,6 +4,9 @@ namespace App\Filament\Resources;
 
 use App\Filament\Resources\WeightLogResource\Pages;
 use App\Models\WeightLog;
+use Filament\Actions\BulkActionGroup;
+use Filament\Actions\DeleteAction;
+use Filament\Actions\DeleteBulkAction;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Columns\TextColumn;
@@ -25,8 +28,8 @@ class WeightLogResource extends Resource
             TextColumn::make('weight')->label('Berat (kg)')->sortable(),
             TextColumn::make('created_at')->label('Tanggal')->date('d M Y')->sortable(),
         ])
-        ->actions([Tables\Actions\DeleteAction::make()])
-        ->bulkActions([Tables\Actions\BulkActionGroup::make([Tables\Actions\DeleteBulkAction::make()])])
+        ->actions([DeleteAction::make()])
+        ->bulkActions([BulkActionGroup::make([DeleteBulkAction::make()])])
         ->defaultSort('created_at', 'desc');
     }
 

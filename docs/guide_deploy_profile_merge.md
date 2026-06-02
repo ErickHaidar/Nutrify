@@ -106,10 +106,10 @@ php artisan tinker --execute="echo Schema::hasColumn('posts', 'is_pinned') ? 'OK
 php artisan tinker --execute="echo Schema::hasColumn('posts', 'pinned_at') ? 'OK' : 'MISSING';"
 
 # Cek endpoint baru terdaftar (harus 401 = butuh token)
-curl -s -o /dev/null -w "%{http_code}" -X PUT https://nutrify-app.my.id/api/posts/1
+curl -s -o /dev/null -w "%{http_code}" -X PUT https://nutrify-app.web.id/api/posts/1
 # Expected: 401
 
-curl -s -o /dev/null -w "%{http_code}" -X POST https://nutrify-app.my.id/api/posts/1/pin
+curl -s -o /dev/null -w "%{http_code}" -X POST https://nutrify-app.web.id/api/posts/1/pin
 # Expected: 401
 
 # Cek log tidak ada error

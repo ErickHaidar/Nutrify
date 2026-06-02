@@ -58,7 +58,7 @@
 **Setelah deploy:**
 ```json
 {
-  "photo_url": "https://nutrify-app.my.id/storage/profile-photos/1_1746268800.jpg",
+  "photo_url": "https://nutrify-app.web.id/storage/profile-photos/1_1746268800.jpg",
   "profile": {
     "age": 22,
     "weight": 70,
@@ -67,7 +67,7 @@
     "goal": "bulking",
     "activity_level": "active",
     "target_weight": 80,
-    "photo_url": "https://nutrify-app.my.id/storage/profile-photos/1_1746268800.jpg"
+    "photo_url": "https://nutrify-app.web.id/storage/profile-photos/1_1746268800.jpg"
   }
 }
 ```
@@ -197,7 +197,7 @@ sudo systemctl restart php8.2-fpm && sudo systemctl reload nginx
 ### Cek endpoint lama masih jalan
 
 ```bash
-curl -s https://nutrify-app.my.id/api/foods?search=nasi | head -c 200
+curl -s https://nutrify-app.web.id/api/foods?search=nasi | head -c 200
 ```
 
 Harus return JSON dengan `"success":true`.
@@ -205,7 +205,7 @@ Harus return JSON dengan `"success":true`.
 ### Cek profile response punya target_weight + photo_url
 
 ```bash
-curl -s https://nutrify-app.my.id/api/profile \
+curl -s https://nutrify-app.web.id/api/profile \
   -H "Authorization: Bearer <token>" \
   -H "Accept: application/json" | head -c 500
 ```
@@ -215,7 +215,7 @@ Harus ada `target_weight` dan `photo_url` di dalam `profile`.
 ### Cek endpoint baru — Follow
 
 ```bash
-curl -s https://nutrify-app.my.id/api/users/1/follow
+curl -s https://nutrify-app.web.id/api/users/1/follow
 ```
 
 Harus return **401 Unauthorized** atau **405 Method Not Allowed** (karena harus POST dengan token).
@@ -223,7 +223,7 @@ Harus return **401 Unauthorized** atau **405 Method Not Allowed** (karena harus 
 ### Cek endpoint baru — Search users
 
 ```bash
-curl -s "https://nutrify-app.my.id/api/users/search?q=test"
+curl -s "https://nutrify-app.web.id/api/users/search?q=test"
 ```
 
 Harus return **401** atau **422** (butuh parameter `q` dan auth).

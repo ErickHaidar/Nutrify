@@ -655,7 +655,7 @@ class _PostDetailScreenState extends State<PostDetailScreen> with SingleTickerPr
                   radius: 22,
                   backgroundColor: AppColors.peach,
                   backgroundImage: post.authorAvatarUrl.isNotEmpty
-                      ? NetworkImage(post.authorAvatarUrl.startsWith('http') ? post.authorAvatarUrl : 'https://nutrify-app.my.id${post.authorAvatarUrl}')
+                      ? NetworkImage(post.authorAvatarUrl.startsWith('http') ? post.authorAvatarUrl : 'https://nutrify-app.web.id${post.authorAvatarUrl}')
                       : null,
                   child: post.authorAvatarUrl.isEmpty
                       ? Text(post.authorName.isNotEmpty ? post.authorName[0].toUpperCase() : '-',

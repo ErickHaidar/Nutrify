@@ -470,7 +470,7 @@ class CommunityScreenState extends State<CommunityScreen> with TickerProviderSta
                     radius: 20,
                     backgroundColor: AppColors.peach,
                     backgroundImage: post.authorAvatarUrl.isNotEmpty
-                        ? NetworkImage(post.authorAvatarUrl.startsWith('http') ? post.authorAvatarUrl : 'https://nutrify-app.my.id${post.authorAvatarUrl}')
+                        ? NetworkImage(post.authorAvatarUrl.startsWith('http') ? post.authorAvatarUrl : 'https://nutrify-app.web.id${post.authorAvatarUrl}')
                         : null,
                     child: post.authorAvatarUrl.isEmpty
                         ? Text(
