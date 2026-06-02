@@ -82,9 +82,9 @@ class _AddMealScreenState extends State<AddMealScreen> {
       
       if (mounted) {
         setState(() {
-          _recentFoods = futures[0] as List<FoodItem>;
-          _favoriteFoods = futures[1] as List<FoodItem>;
-          _popularFoods = (futures[2] as List<FoodItem>).take(10).toList();
+          _recentFoods = futures[0];
+          _favoriteFoods = futures[1];
+          _popularFoods = (futures[2]).take(10).toList();
           if (_popularFoods.isEmpty) {
             _popularFoods = _fallbackPopularFoods;
           }
