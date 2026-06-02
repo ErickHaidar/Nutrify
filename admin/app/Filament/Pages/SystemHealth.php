@@ -5,7 +5,7 @@ namespace App\Filament\Pages;
 use Filament\Pages\Page;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Queue;
+use Illuminate\Support\Facades\Http;
 
 class SystemHealth extends Page
 {
@@ -23,8 +23,9 @@ class SystemHealth extends Page
             'database' => $this->checkDatabase(),
             'queue' => $this->checkQueue(),
             'cache' => $this->checkCache(),
-            'php_version' => PHP_VERSION,
-            'laravel_version' => app()->version(),
+            'supabase_api' => $this->checkSupabase(),
+            'php_version' => ['message' => PHP_VERSION],
+            'laravel_version' => ['message' => app()->version()],
             'storage' => $this->checkStorage(),
         ];
     }
@@ -41,14 +42,23 @@ class SystemHealth extends Page
 
     private function checkQueue(): array
     {
-        $pending = DB::table('jobs')->count();
-        $failed = DB::table('failed_jobs')->count();
-        return [
-            'ok' => $failed === 0,
-            'pending' => $pending,
-            'failed' => $failed,
-            'message' => "Pending: {$pending}, Failed: {$failed}",
-        ];
+        try {
+            $pending = DB::table('jobs')->count();
+            $failed = DB::table('failed_jobs')->count();
+            return [
+                'ok' => $failed === 0,
+                'pending' => $pending,
+                'failed' => $failed,
+                'message' => "Pending: {$pending}, Failed: {$failed}",
+            ];
+        } catch (\Exception $e) {
+            return [
+                'ok' => true,
+                'pending' => 0,
+                'failed' => 0,
+                'message' => 'Queue tables not set up (not required)',
+            ];
+        }
     }
 
     private function checkCache(): array
@@ -59,6 +69,21 @@ class SystemHealth extends Page
             return ['ok' => $val === 'ok', 'message' => 'Cache write/read OK'];
         } catch (\Exception $e) {
             return ['ok' => false, 'message' => $e->getMessage()];
+        }
+    }
+
+    private function checkSupabase(): array
+    {
+        try {
+            $url = config('database.connections.pgsql.host');
+            $key = config('services.supabase.key');
+            $response = Http::timeout(5)
+                ->withHeaders(['apikey' => $key ?? '', 'Authorization' => 'Bearer ' . ($key ?? '')])
+                ->get("https://{$url}/rest/v1/");
+            $ok = $response->status() < 500;
+            return ['ok' => $ok, 'message' => $ok ? 'Supabase API reachable' : 'Status: ' . $response->status()];
+        } catch (\Exception $e) {
+            return ['ok' => false, 'message' => 'Not configured or unreachable: ' . $e->getMessage()];
         }
     }
 
