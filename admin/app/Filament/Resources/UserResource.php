@@ -29,11 +29,13 @@ class UserResource extends Resource
         return $schema->schema([
             TextInput::make('name')->label('Nama')->required()->maxLength(255),
             TextInput::make('email')->label('Email')->email()->required()->unique(ignoreRecord: true),
-            TextInput::make('username')->label('Username')->unique(ignoreRecord: true),
+            TextInput::make('username')->label('Username')->unique(ignoreRecord: true)
+                ->visible(fn(string $operation) => $operation === 'create'),
             TextInput::make('password')->label('Password')->password()->revealable()
                 ->dehydrateStateUsing(fn($state) => bcrypt($state))
                 ->dehydrated(fn($state) => filled($state))
-                ->required(fn(string $operation) => $operation === 'create'),
+                ->required(fn(string $operation) => $operation === 'create')
+                ->visible(fn(string $operation) => $operation === 'create'),
             Select::make('account_type')->label('Tipe Akun')->options([
                 'public' => 'Public', 'private' => 'Private',
             ])->default('public'),
