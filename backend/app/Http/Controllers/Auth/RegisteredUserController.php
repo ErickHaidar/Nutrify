@@ -34,6 +34,17 @@ class RegisteredUserController extends Controller
 
         event(new Registered($user));
 
+        // Auto-create empty profile for new user
+        \App\Models\Profile::create([
+            'user_id' => $user->id,
+            'age' => 0,
+            'weight' => 0,
+            'height' => 0,
+            'gender' => 'male',
+            'goal' => 'maintenance',
+            'activity_level' => 'sedentary',
+        ]);
+
         Auth::login($user);
 
         return response()->noContent();

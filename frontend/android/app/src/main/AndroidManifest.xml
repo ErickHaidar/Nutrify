@@ -2,10 +2,7 @@
     <uses-permission android:name="android.permission.INTERNET"/>
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE"/>
-    <!-- Permissions for Image Picker -->
     <uses-permission android:name="android.permission.CAMERA"/>
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
-    <uses-permission android:name="android.permission.READ_MEDIA_IMAGES"/>
 
     <!--
       Camera: declared as NOT required so the app stays available on devices
@@ -37,8 +34,7 @@
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher"
         android:usesCleartextTraffic="true"
-        android:enableOnBackInvokedCallback="true"
-        android:requestLegacyExternalStorage="true">
+        android:enableOnBackInvokedCallback="true">
         <!-- Force Impeller to use OpenGLES instead of Vulkan on Qualcomm Adreno (POCO F6 etc).
              Vulkan on these devices fails to allocate pixel format 59 (RGBA_1010102) for
              the stencil buffer, causing permanent black screen. OpenGLES backend avoids this. -->

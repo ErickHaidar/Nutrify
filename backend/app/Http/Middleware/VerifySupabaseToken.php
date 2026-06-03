@@ -68,6 +68,17 @@ class VerifySupabaseToken
                                          ?? $email,
                         'password'    => bcrypt(str()->random(32)),
                     ]);
+
+                    // Auto-create empty profile for new user
+                    \App\Models\Profile::create([
+                        'user_id' => $user->id,
+                        'age' => 0,
+                        'weight' => 0,
+                        'height' => 0,
+                        'gender' => 'male',
+                        'goal' => 'maintenance',
+                        'activity_level' => 'sedentary',
+                    ]);
                 }
             }
 
